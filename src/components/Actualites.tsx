@@ -1,37 +1,67 @@
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+
+const featured = {
+  date: "Avril 2026",
+  readingTime: "8 min de lecture",
+  title: "SCPI en 2026 : ce qu'il faut savoir avant d'investir",
+  excerpt:
+    "Après deux années de correction, le marché des SCPI se stabilise. Analyse complète des rendements, de la liquidité et des critères de sélection à appliquer avant tout arbitrage. Notre cabinet décrypte les pièges à éviter et les opportunités encore valables sur le segment.",
+  tag: "Investissement",
+  image:
+    "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1800&q=80",
+};
 
 const articles = [
   {
-    date: "Avril 2026",
-    title: "SCPI en 2026 : ce qu'il faut savoir avant d'investir",
-    excerpt: "Après deux années de correction, le marché des SCPI se stabilise. Analyse des rendements, de la liquidité et des critères de sélection.",
-    tag: "Investissement",
-  },
-  {
     date: "Mars 2026",
+    readingTime: "5 min",
     title: "Assurance-vie : quand faut-il arbitrer ?",
-    excerpt: "Un contrat d'assurance-vie n'est pas un placement qu'on oublie. Quand et comment réallouer pour rester aligné avec vos objectifs.",
+    excerpt:
+      "Un contrat d'assurance-vie n'est pas un placement qu'on oublie. Quand et comment réallouer pour rester aligné avec vos objectifs.",
     tag: "Épargne",
+    image:
+      "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=1200&q=80",
   },
   {
     date: "Mars 2026",
-    title: "Donation : les règles à connaître pour transmettre sereinement",
-    excerpt: "Abattements, délais de rappel, démembrement : les mécanismes essentiels pour préparer une transmission efficace et conforme.",
+    readingTime: "6 min",
+    title: "Donation : transmettre sereinement",
+    excerpt:
+      "Abattements, délais de rappel, démembrement : les mécanismes essentiels pour préparer une transmission efficace et conforme.",
     tag: "Transmission",
+    image:
+      "https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=1200&q=80",
+  },
+  {
+    date: "Février 2026",
+    readingTime: "4 min",
+    title: "PER : encore pertinent en 2026 ?",
+    excerpt:
+      "Le Plan d'Épargne Retraite reste un outil de défiscalisation puissant. Pour qui, à quelle hauteur, et quels arbitrages prévoir à la sortie.",
+    tag: "Retraite",
+    image:
+      "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=80",
   },
 ];
 
 export default function Actualites() {
   return (
-    <section id="actualites" className="section-padding section-dark relative">
-      <div className="max-w-6xl mx-auto relative z-10">
+    <section id="actualites" className="section-padding section-dark relative overflow-hidden">
+      <div className="max-w-7xl mx-auto relative z-10">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-14 reveal gap-6">
           <div>
-            <div className="electric-line mb-5" style={{ background: "linear-gradient(90deg, hsl(210 100% 70%), hsl(210 100% 70% / 0.2))" }} />
+            <div
+              className="electric-line mb-5"
+              style={{
+                background:
+                  "linear-gradient(90deg, hsl(210 100% 70%), hsl(210 100% 70% / 0.2))",
+              }}
+            />
             <p className="text-[11px] tracking-[0.3em] uppercase text-white/50 mb-5 font-medium">
-              Éclairages
+              Magazine · Éclairages
             </p>
-            <h2 className="text-4xl md:text-5xl font-heading font-light tracking-tight leading-[1.1]">
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-heading font-light tracking-tight leading-[1.05]">
               Analyses<br />
               <span className="italic text-white/75">& décryptages</span>
             </h2>
@@ -46,29 +76,76 @@ export default function Actualites() {
             </svg>
           </Link>
         </div>
-        <div className="grid md:grid-cols-3 gap-5">
-          {articles.map((a, i) => (
-            <article
-              key={a.title}
-              className={`reveal reveal-delay-${i + 1} glass-dark rounded-2xl p-7 group cursor-pointer hover:border-white/15 hover:-translate-y-1 transition-all duration-500`}
-            >
-              <p className="text-[10px] text-white/40 tracking-widest uppercase mb-4 font-medium">
-                {a.date} · {a.tag}
-              </p>
-              <h3 className="font-heading text-xl font-normal text-white mb-4 group-hover:text-[hsl(var(--electric-soft))] transition-colors duration-500 leading-snug tracking-tight">
-                {a.title}
-              </h3>
-              <p className="text-white/55 text-sm leading-relaxed font-light mb-5">
-                {a.excerpt}
-              </p>
-              <span className="inline-flex items-center gap-1.5 text-[12px] text-white/70 group-hover:text-[hsl(var(--electric-soft))] transition-colors duration-300">
-                Lire l'article
-                <svg className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                </svg>
+
+        <div className="grid lg:grid-cols-12 gap-6 lg:gap-8">
+          {/* Featured */}
+          <motion.article
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            className="lg:col-span-7 group relative rounded-[2rem] overflow-hidden glass-dark cursor-pointer"
+          >
+            <div className="relative aspect-[16/10] lg:aspect-[16/11] overflow-hidden">
+              <div
+                className="absolute inset-0 bg-cover bg-center transition-transform duration-[1100ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.06]"
+                style={{ backgroundImage: `url(${featured.image})` }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[hsl(var(--navy-deep))]/95 via-[hsl(var(--navy-deep))]/40 to-transparent" />
+              <span className="absolute top-6 left-6 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/15 backdrop-blur-md text-[10px] tracking-[0.3em] uppercase text-white font-medium">
+                À la une · {featured.tag}
               </span>
-            </article>
-          ))}
+              <div className="absolute bottom-0 inset-x-0 p-8 lg:p-10">
+                <p className="text-[10px] tracking-[0.3em] uppercase text-white/60 mb-4 font-medium">
+                  {featured.date} · {featured.readingTime}
+                </p>
+                <h3 className="font-heading text-2xl md:text-3xl lg:text-4xl font-light text-white mb-4 leading-[1.1] tracking-tight max-w-2xl group-hover:text-[hsl(var(--electric-soft))] transition-colors duration-500">
+                  {featured.title}
+                </h3>
+                <p className="text-white/70 text-[15px] leading-relaxed font-light max-w-2xl mb-5">
+                  {featured.excerpt}
+                </p>
+                <span className="inline-flex items-center gap-2 text-sm text-white tracking-wide">
+                  Lire l'analyse
+                  <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                  </svg>
+                </span>
+              </div>
+            </div>
+          </motion.article>
+
+          {/* Side stack */}
+          <div className="lg:col-span-5 flex flex-col gap-6 lg:gap-7">
+            {articles.map((a, i) => (
+              <motion.article
+                key={a.title}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-60px" }}
+                transition={{ duration: 0.5, delay: 0.1 + i * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                className="group relative flex gap-5 p-5 rounded-[1.5rem] glass-dark cursor-pointer hover:border-white/15 transition-all duration-500"
+              >
+                <div
+                  className="relative w-28 lg:w-32 aspect-square flex-shrink-0 rounded-xl bg-cover bg-center overflow-hidden"
+                  style={{ backgroundImage: `url(${a.image})` }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-br from-transparent to-[hsl(var(--navy-deep))]/40" />
+                </div>
+                <div className="flex-1 min-w-0 flex flex-col justify-center">
+                  <p className="text-[10px] text-white/40 tracking-[0.25em] uppercase mb-2 font-medium">
+                    {a.tag} · {a.readingTime}
+                  </p>
+                  <h3 className="font-heading text-base lg:text-lg font-normal text-white mb-2 leading-snug tracking-tight group-hover:text-[hsl(var(--electric-soft))] transition-colors duration-500">
+                    {a.title}
+                  </h3>
+                  <p className="text-white/50 text-[12px] leading-relaxed font-light line-clamp-2">
+                    {a.excerpt}
+                  </p>
+                </div>
+              </motion.article>
+            ))}
+          </div>
         </div>
       </div>
     </section>
