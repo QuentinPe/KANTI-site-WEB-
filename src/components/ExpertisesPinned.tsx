@@ -74,12 +74,12 @@ function clamp01(v: number) {
  * The card fades in/out *within* its own window so two adjacent cards
  * never reach opacity > 0 simultaneously.
  */
-function buildKeyframes(start: number, end: number, fade = 0.18) {
+function buildKeyframes(start: number, end: number, fadeRatio = 0.25) {
   const span = end - start;
-  const f = Math.min(fade, span * 0.45); // cap fade to keep a stable middle
+  const fade = span * Math.min(fadeRatio, 0.45); // cap so we keep a stable middle
   const a = clamp01(start);
-  const b = clamp01(Math.max(a + 0.0001, start + span * f));
-  const c = clamp01(Math.max(b + 0.0001, end - span * f));
+  const b = clamp01(Math.max(a + 0.0001, start + fade));
+  const c = clamp01(Math.max(b + 0.0001, end - fade));
   const d = clamp01(Math.max(c + 0.0001, end));
   return [a, b, c, d] as const;
 }
@@ -225,7 +225,7 @@ function ExpertiseRow({
   end: number;
 }) {
   const reduce = useReducedMotion();
-  const kf = buildKeyframes(start, end, 0.05);
+  const kf = buildKeyframes(start, end, 0.2);
   const opacity = useTransform(progress, [...kf], [0.3, 1, 1, 0.3]);
   const x = useTransform(progress, [...kf], reduce ? [0, 0, 0, 0] : [-4, 0, 0, -4]);
   const dotScale = useTransform(progress, [...kf], [0.7, 1.3, 1.3, 0.7]);
@@ -260,7 +260,7 @@ function ExpertiseCard({
   end: number;
 }) {
   const reduce = useReducedMotion();
-  const kf = buildKeyframes(start, end, 0.07);
+  const kf = buildKeyframes(start, end, 0.22);
   const opacity = useTransform(progress, [...kf], [0, 1, 1, 0]);
   const y = useTransform(progress, [...kf], reduce ? [0, 0, 0, 0] : [50, 0, 0, -50]);
   const scale = useTransform(progress, [...kf], reduce ? [1, 1, 1, 1] : [0.96, 1, 1, 0.97]);
