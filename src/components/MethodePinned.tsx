@@ -128,17 +128,17 @@ export default function MethodePinned() {
               {steps.map((s, i) => {
                 const start = i / steps.length;
                 const end = (i + 1) / steps.length;
-                const opacity = useTransform(
-                  scrollYProgress,
-                  [start - 0.06, start, end, end + 0.06],
-                  [0, 1, 1, 0]
-                );
+                const a = Math.max(0, start - 0.06);
+                const b = Math.max(a + 0.0001, start);
+                const c = Math.min(1, Math.max(b + 0.0001, end));
+                const d = Math.min(1, Math.max(c + 0.0001, end + 0.06));
+                const opacity = useTransform(scrollYProgress, [a, b, c, d], [0, 1, 1, 0]);
                 const yMv = reduce
                   ? useTransform(scrollYProgress, () => 0)
-                  : useTransform(scrollYProgress, [start - 0.06, start, end, end + 0.06], [40, 0, 0, -40]);
+                  : useTransform(scrollYProgress, [a, b, c, d], [40, 0, 0, -40]);
                 const scale = reduce
                   ? useTransform(scrollYProgress, () => 1)
-                  : useTransform(scrollYProgress, [start - 0.06, start, end, end + 0.06], [0.96, 1, 1, 0.97]);
+                  : useTransform(scrollYProgress, [a, b, c, d], [0.96, 1, 1, 0.97]);
 
                 return (
                   <motion.article
@@ -193,8 +193,12 @@ function StepRow({
   start: number;
   end: number;
 }) {
-  const opacity = useTransform(progress, [start - 0.05, start, end, end + 0.05], [0.35, 1, 1, 0.35]);
-  const x = useTransform(progress, [start - 0.05, start, end, end + 0.05], [-6, 0, 0, -6]);
+  const a = Math.max(0, start - 0.05);
+  const b = Math.max(a + 0.0001, start);
+  const c = Math.min(1, Math.max(b + 0.0001, end));
+  const d = Math.min(1, Math.max(c + 0.0001, end + 0.05));
+  const opacity = useTransform(progress, [a, b, c, d], [0.35, 1, 1, 0.35]);
+  const x = useTransform(progress, [a, b, c, d], [-6, 0, 0, -6]);
   return (
     <motion.li style={{ opacity, x }} className="flex items-baseline gap-4 text-white">
       <span className="text-sm font-heading font-light text-[hsl(var(--electric-soft))] w-8">{number}</span>
