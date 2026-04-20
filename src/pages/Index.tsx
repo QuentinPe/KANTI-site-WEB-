@@ -10,8 +10,8 @@ import HomeCasClients from "@/components/HomeCasClients";
 import Equipe from "@/components/Equipe";
 import Confiance from "@/components/Confiance";
 import Actualites from "@/components/Actualites";
-import Contact from "@/components/Contact";
-import TrustBand from "@/components/TrustBand";
+import HomeFAQ from "@/components/HomeFAQ";
+import CTAFinal from "@/components/CTAFinal";
 import Footer from "@/components/Footer";
 import PremiumCursor from "@/components/PremiumCursor";
 import ScrollProgressRail from "@/components/ScrollProgressRail";
@@ -34,8 +34,8 @@ const Index = () => {
       <Equipe />
       <Confiance />
       <Actualites />
-      <Contact />
-      <TrustBand />
+      <HomeFAQ />
+      <CTAFinal />
       <Footer />
     </>
   );
