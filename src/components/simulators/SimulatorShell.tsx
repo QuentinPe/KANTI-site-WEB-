@@ -26,7 +26,7 @@ export default function SimulatorShell({ eyebrow = "Simulateur", title, subtitle
         >
           <span
             className="font-heading font-light tracking-[0.25em] text-foreground/[0.035] whitespace-nowrap"
-            style={{ fontSize: "clamp(8rem, 18vw, 18rem)", lineHeight: 1 }}
+            style={{ fontSize: "clamp(3rem, 7vw, 7rem)", lineHeight: 1 }}
           >
             KANTI
           </span>
