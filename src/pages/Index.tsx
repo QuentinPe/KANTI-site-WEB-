@@ -1,6 +1,8 @@
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
+import Identification from "@/components/Identification";
+import Promesse from "@/components/Promesse";
 import About from "@/components/About";
 import ExpertisesStacked from "@/components/ExpertisesStacked";
 import MethodePinned from "@/components/MethodePinned";
@@ -23,6 +25,8 @@ const Index = () => {
       <ScrollProgressRail />
       <Header />
       <Hero />
+      <Identification />
+      <Promesse />
       <About />
       <ExpertisesStacked />
       <MethodePinned />
