@@ -70,17 +70,17 @@ function clamp01(v: number) {
 }
 
 /**
- * Build non-overlapping keyframes inside a [start, end] slot.
- * The card fades in/out *within* its own window so two adjacent cards
- * never reach opacity > 0 simultaneously.
+ * Crossfade keyframes for the [start, end] slot.
+ * The card fades IN just before start and OUT just after end, with a stable
+ * full-opacity plateau across its entire window. The fade tail of card N
+ * meets the fade head of card N+1 around the boundary, so visually only
+ * one card is dominant at any time and there is no opacity gap.
  */
-function buildKeyframes(start: number, end: number, fadeRatio = 0.25) {
-  const span = end - start;
-  const fade = span * Math.min(fadeRatio, 0.45); // cap so we keep a stable middle
-  const a = clamp01(start);
-  const b = clamp01(Math.max(a + 0.0001, start + fade));
-  const c = clamp01(Math.max(b + 0.0001, end - fade));
-  const d = clamp01(Math.max(c + 0.0001, end));
+function buildKeyframes(start: number, end: number, fade = 0.04) {
+  const a = clamp01(start - fade);
+  const b = clamp01(Math.max(a + 0.0001, start));
+  const c = clamp01(Math.max(b + 0.0001, end));
+  const d = clamp01(Math.max(c + 0.0001, end + fade));
   return [a, b, c, d] as const;
 }
 
@@ -225,7 +225,7 @@ function ExpertiseRow({
   end: number;
 }) {
   const reduce = useReducedMotion();
-  const kf = buildKeyframes(start, end, 0.2);
+  const kf = buildKeyframes(start, end, 0.03);
   const opacity = useTransform(progress, [...kf], [0.3, 1, 1, 0.3]);
   const x = useTransform(progress, [...kf], reduce ? [0, 0, 0, 0] : [-4, 0, 0, -4]);
   const dotScale = useTransform(progress, [...kf], [0.7, 1.3, 1.3, 0.7]);
@@ -260,7 +260,7 @@ function ExpertiseCard({
   end: number;
 }) {
   const reduce = useReducedMotion();
-  const kf = buildKeyframes(start, end, 0.22);
+  const kf = buildKeyframes(start, end, 0.04);
   const opacity = useTransform(progress, [...kf], [0, 1, 1, 0]);
   const y = useTransform(progress, [...kf], reduce ? [0, 0, 0, 0] : [50, 0, 0, -50]);
   const scale = useTransform(progress, [...kf], reduce ? [1, 1, 1, 1] : [0.96, 1, 1, 0.97]);
