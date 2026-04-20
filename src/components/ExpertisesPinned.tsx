@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { Link } from "react-router-dom";
-import { motion, useScroll, useTransform, useReducedMotion, MotionValue } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { usePinnedSectionProgress } from "@/hooks/usePinnedSectionProgress";
 
 const expertises = [
   {
@@ -65,31 +66,12 @@ const expertises = [
   },
 ];
 
-function clamp01(v: number) {
-  return Math.min(1, Math.max(0, v));
-}
-
-/**
- * Crossfade keyframes for the [start, end] slot.
- * The card fades IN just before start and OUT just after end, with a stable
- * full-opacity plateau across its entire window. The fade tail of card N
- * meets the fade head of card N+1 around the boundary, so visually only
- * one card is dominant at any time and there is no opacity gap.
- */
-function buildKeyframes(start: number, end: number, fade = 0.04) {
-  const a = clamp01(start - fade);
-  const b = clamp01(Math.max(a + 0.0001, start));
-  const c = clamp01(Math.max(b + 0.0001, end));
-  const d = clamp01(Math.max(c + 0.0001, end + fade));
-  return [a, b, c, d] as const;
-}
-
 export default function ExpertisesPinned() {
   return (
     <>
       {/* Mobile fallback — stacked cards */}
       <section
-        id="expertises"
+        id="expertises-mobile"
         className="md:hidden section-glass texture-paper section-padding"
       >
         <div className="max-w-2xl mx-auto">
@@ -142,17 +124,15 @@ export default function ExpertisesPinned() {
 
 function ExpertisesPinnedDesktop() {
   const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start start", "end end"],
-  });
+  const { activeIndex } = usePinnedSectionProgress(ref, expertises.length);
+  const activeItem = expertises[activeIndex];
 
   return (
     <section
-      id="expertises-desktop"
+      id="expertises"
       className="hidden md:block section-glass texture-paper relative"
     >
-      <div ref={ref} className="relative" style={{ height: `${expertises.length * 95}vh` }}>
+      <div ref={ref} className="relative" style={{ height: `${100 + expertises.length * 70}vh` }}>
         <div className="sticky top-0 h-screen flex items-center overflow-hidden">
           <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-12 w-full grid grid-cols-12 gap-10 items-center">
             {/* Left — sticky text + index list */}
@@ -171,16 +151,12 @@ function ExpertisesPinnedDesktop() {
 
               <ol className="space-y-2.5 border-l border-foreground/10 pl-6">
                 {expertises.map((e, i) => {
-                  const start = i / expertises.length;
-                  const end = (i + 1) / expertises.length;
                   return (
                     <ExpertiseRow
                       key={e.title}
                       number={String(i + 1).padStart(2, "0")}
                       title={e.title}
-                      progress={scrollYProgress}
-                      start={start}
-                      end={end}
+                      active={i === activeIndex}
                     />
                   );
                 })}
@@ -189,20 +165,9 @@ function ExpertisesPinnedDesktop() {
 
             {/* Right — active expertise card with image */}
             <div className="col-span-7 relative h-[560px]">
-              {expertises.map((e, i) => {
-                const start = i / expertises.length;
-                const end = (i + 1) / expertises.length;
-                return (
-                  <ExpertiseCard
-                    key={e.title}
-                    item={e}
-                    index={i}
-                    progress={scrollYProgress}
-                    start={start}
-                    end={end}
-                  />
-                );
-              })}
+              <AnimatePresence mode="wait">
+                <ExpertiseCard key={activeItem.title} item={activeItem} index={activeIndex} />
+              </AnimatePresence>
             </div>
           </div>
         </div>
@@ -214,26 +179,22 @@ function ExpertisesPinnedDesktop() {
 function ExpertiseRow({
   number,
   title,
-  progress,
-  start,
-  end,
 }: {
   number: string;
   title: string;
-  progress: MotionValue<number>;
-  start: number;
-  end: number;
+  active: boolean;
 }) {
-  const reduce = useReducedMotion();
-  const kf = buildKeyframes(start, end, 0.03);
-  const opacity = useTransform(progress, [...kf], [0.3, 1, 1, 0.3]);
-  const x = useTransform(progress, [...kf], reduce ? [0, 0, 0, 0] : [-4, 0, 0, -4]);
-  const dotScale = useTransform(progress, [...kf], [0.7, 1.3, 1.3, 0.7]);
+  const { active } = arguments[0];
 
   return (
-    <motion.li style={{ opacity, x }} className="relative flex items-baseline gap-4 py-1">
+    <motion.li
+      animate={{ opacity: active ? 1 : 0.42, x: active ? 0 : -4 }}
+      transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+      className="relative flex items-baseline gap-4 py-1"
+    >
       <motion.span
-        style={{ scale: dotScale }}
+        animate={{ scale: active ? 1.25 : 0.78, opacity: active ? 1 : 0.45 }}
+        transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
         className="absolute -left-[28px] top-[10px] w-2 h-2 rounded-full bg-[hsl(var(--accent))] origin-center"
       />
       <span className="text-[11px] font-medium tracking-[0.25em] uppercase text-foreground/45 w-8">
@@ -249,33 +210,29 @@ function ExpertiseRow({
 function ExpertiseCard({
   item,
   index,
-  progress,
-  start,
-  end,
 }: {
   item: (typeof expertises)[number];
   index: number;
-  progress: MotionValue<number>;
-  start: number;
-  end: number;
 }) {
   const reduce = useReducedMotion();
-  const kf = buildKeyframes(start, end, 0.04);
-  const opacity = useTransform(progress, [...kf], [0, 1, 1, 0]);
-  const y = useTransform(progress, [...kf], reduce ? [0, 0, 0, 0] : [50, 0, 0, -50]);
-  const scale = useTransform(progress, [...kf], reduce ? [1, 1, 1, 1] : [0.96, 1, 1, 0.97]);
-  // Subtle inner image parallax on the active card
-  const imgScale = useTransform(progress, [...kf], reduce ? [1, 1, 1, 1] : [1.08, 1.0, 1.0, 1.08]);
 
   return (
     <motion.article
-      style={{ opacity, y, scale, zIndex: index }}
+      initial={reduce ? { opacity: 0, y: 0, scale: 1 } : { opacity: 0, y: 36, scale: 0.98 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={reduce ? { opacity: 0, y: 0, scale: 1 } : { opacity: 0, y: -24, scale: 0.985 }}
+      transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+      style={{ zIndex: index }}
       className="absolute inset-0 glass-card rounded-[2rem] overflow-hidden flex flex-col"
     >
       {/* Image — top 60% */}
       <div className="relative h-[58%] overflow-hidden">
         <motion.div
-          style={{ backgroundImage: `url(${item.image})`, scale: imgScale }}
+          initial={reduce ? { scale: 1 } : { scale: 1.06 }}
+          animate={{ scale: 1 }}
+          exit={reduce ? { scale: 1 } : { scale: 1.03 }}
+          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+          style={{ backgroundImage: `url(${item.image})` }}
           className="absolute inset-0 bg-cover bg-center will-change-transform"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-background/40 via-transparent to-transparent" />
