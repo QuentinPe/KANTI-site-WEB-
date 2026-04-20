@@ -4,7 +4,7 @@ import Hero from "@/components/Hero";
 import Identification from "@/components/Identification";
 import Promesse from "@/components/Promesse";
 import About from "@/components/About";
-import ExpertisesStacked from "@/components/ExpertisesStacked";
+import ExpertisesPinned from "@/components/ExpertisesPinned";
 import MethodePinned from "@/components/MethodePinned";
 import HomeCasClients from "@/components/HomeCasClients";
 import Equipe from "@/components/Equipe";
@@ -28,7 +28,7 @@ const Index = () => {
       <Identification />
       <Promesse />
       <About />
-      <ExpertisesStacked />
+      <ExpertisesPinned />
       <MethodePinned />
       <HomeCasClients />
       <Equipe />
