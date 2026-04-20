@@ -174,13 +174,12 @@ export default function MethodePinned() {
 function StepRow({
   number,
   title,
+  active,
 }: {
   number: string;
   title: string;
   active: boolean;
 }) {
-  const { active } = arguments[0];
-
   return (
     <motion.li
       animate={{ opacity: active ? 1 : 0.42, x: active ? 0 : -6 }}
