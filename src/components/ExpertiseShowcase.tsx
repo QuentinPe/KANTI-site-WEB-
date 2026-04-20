@@ -1,5 +1,5 @@
 interface Pillar {
-  number: string;
+  number?: string;
   title: string;
   text: string;
 }
