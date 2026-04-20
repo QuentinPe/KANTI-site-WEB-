@@ -5,6 +5,8 @@ import PageHero from "@/components/PageHero";
 import PageCTA from "@/components/PageCTA";
 import TrustBand from "@/components/TrustBand";
 import EpargneSimulator from "@/components/simulators/EpargneSimulator";
+import ExpertiseShowcase from "@/components/ExpertiseShowcase";
+import heroImg from "@/assets/expertise-gestion.jpg";
 
 export default function GestionPatrimonialePage() {
   useScrollReveal();
@@ -17,52 +19,30 @@ export default function GestionPatrimonialePage() {
         highlight="& placements"
         subtitle="Construire une allocation d'actifs cohérente avec vos objectifs, votre horizon et votre tolérance au risque. En toute indépendance."
         breadcrumb="Gestion patrimoniale"
+        eyebrow="Allocation & placements"
+        image={heroImg}
+        imageAlt="Bureau de gestion patrimoniale KANTI à Bordeaux"
+        stats={[
+          { value: "100%", label: "Architecture ouverte" },
+          { value: "0", label: "Produit maison" },
+          { value: "12+", label: "Partenaires" },
+        ]}
       />
 
-      <section className="section-padding bg-background texture-paper">
-        <div className="max-w-5xl mx-auto">
-          <div className="grid lg:grid-cols-5 gap-14 items-start">
-            <div className="lg:col-span-3 reveal">
-              <h2 className="text-2xl md:text-3xl font-heading font-semibold text-primary leading-tight mb-6">
-                Gérer son épargne, ce n'est pas cocher des cases dans un questionnaire bancaire
-              </h2>
-              <p className="text-gray-text leading-relaxed mb-4">
-                Une allocation patrimoniale efficace ne se limite pas au choix entre fonds en euros et unités de compte. Elle intègre votre fiscalité, votre régime matrimonial, vos projets à cinq ou vingt ans, vos revenus futurs et votre capacité à absorber une baisse des marchés.
-              </p>
-              <p className="text-gray-text leading-relaxed mb-4">
-                Nous travaillons en architecture ouverte : aucun produit maison, aucun quota de placement. Chaque support est sélectionné après une analyse comparative rigoureuse des performances, des frais et de la qualité de gestion.
-              </p>
-              <p className="text-gray-text leading-relaxed">
-                Le résultat : une allocation construite sur mesure, documentée, expliquée et suivie dans le temps. Pas un portefeuille modèle, mais votre stratégie.
-              </p>
-            </div>
-            <div className="lg:col-span-2 reveal reveal-delay-2">
-              <div className="border-l-2 border-gold/40 pl-8 space-y-6">
-                <div>
-                  <p className="font-heading text-lg font-semibold text-primary mb-1">Assurance-vie</p>
-                  <p className="text-sm text-gray-text">Contrats haut de gamme, fonds en euros, UC sélectionnées, gestion profilée ou libre.</p>
-                </div>
-                <div>
-                  <p className="font-heading text-lg font-semibold text-primary mb-1">PER</p>
-                  <p className="text-sm text-gray-text">Plan Épargne Retraite individuel, versements déductibles, sorties flexibles.</p>
-                </div>
-                <div>
-                  <p className="font-heading text-lg font-semibold text-primary mb-1">Compte-titres & PEA</p>
-                  <p className="text-sm text-gray-text">Titres vifs, ETF, fonds thématiques, allocation dynamique.</p>
-                </div>
-                <div>
-                  <p className="font-heading text-lg font-semibold text-primary mb-1">SCPI & immobilier papier</p>
-                  <p className="text-sm text-gray-text">Diversification immobilière, revenus réguliers, mutualisation du risque.</p>
-                </div>
-                <div>
-                  <p className="font-heading text-lg font-semibold text-primary mb-1">Private equity</p>
-                  <p className="text-sm text-gray-text">Accès sélectif à des fonds de capital-investissement pour les profils éligibles.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <ExpertiseShowcase
+        eyebrow="Notre approche"
+        title="Gérer son épargne, ce n'est pas cocher des cases dans un questionnaire bancaire."
+        intro="Une allocation patrimoniale efficace intègre votre fiscalité, votre régime matrimonial, vos projets à 5 ou 20 ans, vos revenus futurs et votre capacité à absorber une baisse des marchés. Architecture ouverte, aucun produit maison, aucun quota — chaque support est sélectionné après une analyse comparative rigoureuse."
+        image={heroImg}
+        imageAlt="Allocation patrimoniale KANTI"
+        pillars={[
+          { title: "Assurance-vie haut de gamme", text: "Contrats sélectionnés en architecture ouverte, fonds en euros, UC actives ou indicielles, gestion profilée ou libre." },
+          { title: "PER individuel", text: "Plan Épargne Retraite avec versements déductibles, sortie en capital ou en rente, optimisation TMI." },
+          { title: "Compte-titres & PEA", text: "Titres vifs, ETF, fonds thématiques, mandats, allocation dynamique adaptée à votre horizon." },
+          { title: "SCPI & immobilier papier", text: "Diversification immobilière, revenus réguliers, mutualisation du risque, intégration en assurance-vie." },
+          { title: "Private equity & dette privée", text: "Accès sélectif à des fonds de capital-investissement pour les profils éligibles, lock-up assumé." },
+        ]}
+      />
 
       {/* Simulator section */}
       <section className="section-padding">
