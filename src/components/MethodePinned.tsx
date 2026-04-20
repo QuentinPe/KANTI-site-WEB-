@@ -1,39 +1,68 @@
 import { useRef } from "react";
 import { Link } from "react-router-dom";
-import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
+import { motion, useScroll, useTransform, useReducedMotion, MotionValue } from "framer-motion";
 
 const steps = [
   {
     number: "01",
-    title: "Écoute",
+    title: "Découverte",
     description:
       "Un premier rendez-vous de 30 minutes pour comprendre votre situation, vos projets et vos préoccupations. Gratuit et sans engagement.",
+    image:
+      "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=1600&q=80",
   },
   {
     number: "02",
-    title: "Audit",
+    title: "Bilan patrimonial",
     description:
-      "Analyse complète de votre patrimoine : actifs, passifs, fiscalité, prévoyance, régimes matrimoniaux. Nous regardons tout.",
+      "Audit complet de votre patrimoine : actifs, passifs, fiscalité, prévoyance, régimes matrimoniaux. Nous regardons tout, sans angle mort.",
+    image:
+      "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=1600&q=80",
   },
   {
     number: "03",
-    title: "Stratégie",
+    title: "Objectifs",
     description:
-      "Rédaction d'une lettre de recommandations structurée, avec simulations chiffrées et scénarios comparés.",
+      "Nous formalisons ensemble vos priorités : revenus, retraite, transmission, fiscalité, projets de vie. Une carte claire avant toute décision.",
+    image:
+      "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1600&q=80",
   },
   {
     number: "04",
-    title: "Mise en œuvre",
+    title: "Préconisations",
     description:
-      "Sélection des meilleurs contrats et supports du marché, ouverture des comptes, coordination avec vos autres conseils.",
+      "Une lettre de recommandations structurée, avec simulations chiffrées et scénarios comparés. Vous gardez la main, nous éclairons les choix.",
+    image:
+      "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=1600&q=80",
   },
   {
     number: "05",
-    title: "Suivi",
+    title: "Mise en œuvre",
     description:
-      "Un rendez-vous annuel de bilan, des alertes en cas de changement législatif, un interlocuteur disponible toute l'année.",
+      "Sélection des meilleurs contrats et supports du marché, ouverture des comptes, coordination avec vos autres conseils (notaire, expert-comptable, avocat).",
+    image:
+      "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=1600&q=80",
+  },
+  {
+    number: "06",
+    title: "Suivi annuel",
+    description:
+      "Un rendez-vous annuel de bilan, des alertes en cas de changement législatif, un interlocuteur disponible toute l'année. La relation s'inscrit dans la durée.",
+    image:
+      "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1600&q=80",
   },
 ];
+
+function clamp01(v: number) {
+  return Math.min(1, Math.max(0, v));
+}
+function buildKeyframes(start: number, end: number, fade = 0.06) {
+  const a = clamp01(start - fade);
+  const b = clamp01(Math.max(a + 0.0001, start));
+  const c = clamp01(Math.max(b + 0.0001, end));
+  const d = clamp01(Math.max(c + 0.0001, end + fade));
+  return [a, b, c, d] as const;
+}
 
 export default function MethodePinned() {
   const ref = useRef<HTMLDivElement>(null);
@@ -42,6 +71,9 @@ export default function MethodePinned() {
     target: ref,
     offset: ["start start", "end end"],
   });
+
+  // Vertical progress bar fill on the left
+  const railFill = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
 
   return (
     <section id="methode" className="section-dark relative">
@@ -55,12 +87,18 @@ export default function MethodePinned() {
           </h2>
           <ol className="space-y-8">
             {steps.map((s) => (
-              <li key={s.number} className="glass-dark rounded-2xl p-6">
-                <div className="flex items-baseline gap-4 mb-3">
-                  <span className="text-2xl font-heading font-light text-[hsl(var(--electric-soft))]">{s.number}</span>
-                  <h3 className="font-heading text-xl text-white">{s.title}</h3>
+              <li key={s.number} className="glass-dark rounded-2xl overflow-hidden">
+                <div
+                  className="aspect-[16/9] bg-cover bg-center"
+                  style={{ backgroundImage: `url(${s.image})` }}
+                />
+                <div className="p-6">
+                  <div className="flex items-baseline gap-4 mb-3">
+                    <span className="text-2xl font-heading font-light text-[hsl(var(--electric-soft))]">{s.number}</span>
+                    <h3 className="font-heading text-xl text-white">{s.title}</h3>
+                  </div>
+                  <p className="text-white/60 text-sm leading-relaxed">{s.description}</p>
                 </div>
-                <p className="text-white/60 text-sm leading-relaxed">{s.description}</p>
               </li>
             ))}
           </ol>
@@ -99,17 +137,31 @@ export default function MethodePinned() {
                 Pas de formule standard, mais un processus clair, reproductible, qui respecte votre temps et vos priorités.
               </p>
 
-              {/* Vertical stepper */}
-              <ol className="space-y-3">
-                {steps.map((s, i) => {
-                  const start = i / steps.length;
-                  const end = (i + 1) / steps.length;
-                  const isActive = useTransform(scrollYProgress, (v) => v >= start - 0.05 && v < end + 0.05);
-                  return (
-                    <StepRow key={s.number} number={s.number} title={s.title} progress={scrollYProgress} start={start} end={end} />
-                  );
-                })}
-              </ol>
+              {/* Vertical timeline with progressive fill */}
+              <div className="relative pl-8">
+                <div className="absolute left-1.5 top-2 bottom-2 w-px bg-white/10 overflow-hidden">
+                  <motion.div
+                    style={{ height: railFill }}
+                    className="w-full bg-gradient-to-b from-[hsl(var(--electric-soft))] via-[hsl(var(--electric))] to-[hsl(var(--electric))/0.4]"
+                  />
+                </div>
+                <ol className="space-y-3.5">
+                  {steps.map((s, i) => {
+                    const start = i / steps.length;
+                    const end = (i + 1) / steps.length;
+                    return (
+                      <StepRow
+                        key={s.number}
+                        number={s.number}
+                        title={s.title}
+                        progress={scrollYProgress}
+                        start={start}
+                        end={end}
+                      />
+                    );
+                  })}
+                </ol>
+              </div>
 
               <Link
                 to="/notre-methode"
@@ -123,53 +175,20 @@ export default function MethodePinned() {
               </Link>
             </div>
 
-            {/* Right : active step card */}
-            <div className="col-span-7 relative h-[460px]">
+            {/* Right : active step card with editorial image + text */}
+            <div className="col-span-7 relative h-[540px]">
               {steps.map((s, i) => {
                 const start = i / steps.length;
                 const end = (i + 1) / steps.length;
-                const a = Math.max(0, start - 0.06);
-                const b = Math.max(a + 0.0001, start);
-                const c = Math.min(1, Math.max(b + 0.0001, end));
-                const d = Math.min(1, Math.max(c + 0.0001, end + 0.06));
-                const opacity = useTransform(scrollYProgress, [a, b, c, d], [0, 1, 1, 0]);
-                const yMv = reduce
-                  ? useTransform(scrollYProgress, () => 0)
-                  : useTransform(scrollYProgress, [a, b, c, d], [40, 0, 0, -40]);
-                const scale = reduce
-                  ? useTransform(scrollYProgress, () => 1)
-                  : useTransform(scrollYProgress, [a, b, c, d], [0.96, 1, 1, 0.97]);
-
                 return (
-                  <motion.article
+                  <StepCard
                     key={s.number}
-                    style={{ opacity, y: yMv, scale }}
-                    className="absolute inset-0 glass-dark rounded-[2rem] p-12 lg:p-16 flex flex-col justify-center"
-                  >
-                    {/* Giant ghost number */}
-                    <span
-                      aria-hidden
-                      className="absolute -top-6 -right-2 font-heading font-light text-white/[0.04] select-none pointer-events-none leading-none"
-                      style={{ fontSize: "clamp(10rem, 22vw, 22rem)" }}
-                    >
-                      {s.number}
-                    </span>
-
-                    <div className="relative z-10 max-w-xl">
-                      <div className="flex items-center gap-3 mb-6">
-                        <span className="text-xs tracking-[0.3em] uppercase text-[hsl(var(--electric-soft))] font-medium">
-                          Étape {s.number}
-                        </span>
-                        <span className="h-px flex-1 bg-white/10" />
-                      </div>
-                      <h3 className="font-heading text-4xl lg:text-5xl font-light text-white tracking-tight mb-6">
-                        {s.title}
-                      </h3>
-                      <p className="text-white/70 text-base lg:text-lg leading-relaxed font-light">
-                        {s.description}
-                      </p>
-                    </div>
-                  </motion.article>
+                    step={s}
+                    index={i}
+                    progress={scrollYProgress}
+                    start={start}
+                    end={end}
+                  />
                 );
               })}
             </div>
@@ -189,20 +208,85 @@ function StepRow({
 }: {
   number: string;
   title: string;
-  progress: ReturnType<typeof useScroll>["scrollYProgress"];
+  progress: MotionValue<number>;
   start: number;
   end: number;
 }) {
-  const a = Math.max(0, start - 0.05);
-  const b = Math.max(a + 0.0001, start);
-  const c = Math.min(1, Math.max(b + 0.0001, end));
-  const d = Math.min(1, Math.max(c + 0.0001, end + 0.05));
-  const opacity = useTransform(progress, [a, b, c, d], [0.35, 1, 1, 0.35]);
-  const x = useTransform(progress, [a, b, c, d], [-6, 0, 0, -6]);
+  const kf = buildKeyframes(start, end, 0.05);
+  const opacity = useTransform(progress, [...kf], [0.35, 1, 1, 0.45]);
+  const x = useTransform(progress, [...kf], [-6, 0, 0, -6]);
+  const dotScale = useTransform(progress, [...kf], [0.7, 1.4, 1.4, 0.9]);
+  const dotOpacity = useTransform(progress, [...kf], [0.4, 1, 1, 0.6]);
+
   return (
-    <motion.li style={{ opacity, x }} className="flex items-baseline gap-4 text-white">
+    <motion.li style={{ opacity, x }} className="relative flex items-baseline gap-4 text-white">
+      <motion.span
+        style={{ scale: dotScale, opacity: dotOpacity }}
+        className="absolute -left-[30px] top-[10px] w-2.5 h-2.5 rounded-full bg-[hsl(var(--electric-soft))] origin-center shadow-[0_0_12px_hsl(var(--electric)/0.6)]"
+      />
       <span className="text-sm font-heading font-light text-[hsl(var(--electric-soft))] w-8">{number}</span>
       <span className="text-base lg:text-lg font-light tracking-wide">{title}</span>
     </motion.li>
+  );
+}
+
+function StepCard({
+  step,
+  index,
+  progress,
+  start,
+  end,
+}: {
+  step: (typeof steps)[number];
+  index: number;
+  progress: MotionValue<number>;
+  start: number;
+  end: number;
+}) {
+  const reduce = useReducedMotion();
+  const kf = buildKeyframes(start, end, 0.07);
+  const opacity = useTransform(progress, [...kf], [0, 1, 1, 0]);
+  const y = useTransform(progress, [...kf], reduce ? [0, 0, 0, 0] : [50, 0, 0, -50]);
+  const scale = useTransform(progress, [...kf], reduce ? [1, 1, 1, 1] : [0.96, 1, 1, 0.97]);
+  const imgScale = useTransform(progress, [...kf], reduce ? [1, 1, 1, 1] : [1.1, 1, 1, 1.1]);
+
+  return (
+    <motion.article
+      style={{ opacity, y, scale, zIndex: index }}
+      className="absolute inset-0 glass-dark rounded-[2rem] overflow-hidden flex flex-col"
+    >
+      {/* Editorial image */}
+      <div className="relative h-[55%] overflow-hidden">
+        <motion.div
+          style={{ backgroundImage: `url(${step.image})`, scale: imgScale }}
+          className="absolute inset-0 bg-cover bg-center will-change-transform"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[hsl(var(--navy-deep))/0.85] via-[hsl(var(--navy-deep))/0.2] to-transparent" />
+        <span
+          aria-hidden
+          className="absolute top-5 left-6 text-[10px] font-medium tracking-[0.3em] uppercase text-white/85 px-3 py-1 rounded-full bg-black/30 backdrop-blur-md"
+        >
+          Étape {step.number}
+        </span>
+      </div>
+
+      {/* Text */}
+      <div className="relative z-10 p-8 lg:p-10 flex-1 flex flex-col justify-center">
+        {/* Giant ghost number */}
+        <span
+          aria-hidden
+          className="absolute -top-10 -right-2 font-heading font-light text-white/[0.04] select-none pointer-events-none leading-none"
+          style={{ fontSize: "clamp(8rem, 16vw, 16rem)" }}
+        >
+          {step.number}
+        </span>
+        <h3 className="font-heading text-3xl lg:text-[2.4rem] font-light text-white tracking-tight leading-[1.1] mb-4 max-w-lg">
+          {step.title}
+        </h3>
+        <p className="text-white/70 text-[15px] lg:text-base leading-relaxed font-light max-w-lg">
+          {step.description}
+        </p>
+      </div>
+    </motion.article>
   );
 }
