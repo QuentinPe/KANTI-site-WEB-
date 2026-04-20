@@ -69,11 +69,18 @@ function clamp01(v: number) {
   return Math.min(1, Math.max(0, v));
 }
 
-function buildKeyframes(start: number, end: number, fade = 0.06) {
-  const a = clamp01(start - fade);
-  const b = clamp01(Math.max(a + 0.0001, start));
-  const c = clamp01(Math.max(b + 0.0001, end));
-  const d = clamp01(Math.max(c + 0.0001, end + fade));
+/**
+ * Build non-overlapping keyframes inside a [start, end] slot.
+ * The card fades in/out *within* its own window so two adjacent cards
+ * never reach opacity > 0 simultaneously.
+ */
+function buildKeyframes(start: number, end: number, fade = 0.18) {
+  const span = end - start;
+  const f = Math.min(fade, span * 0.45); // cap fade to keep a stable middle
+  const a = clamp01(start);
+  const b = clamp01(Math.max(a + 0.0001, start + span * f));
+  const c = clamp01(Math.max(b + 0.0001, end - span * f));
+  const d = clamp01(Math.max(c + 0.0001, end));
   return [a, b, c, d] as const;
 }
 
