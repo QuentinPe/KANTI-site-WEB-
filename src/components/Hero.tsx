@@ -1,9 +1,26 @@
 import { Link } from "react-router-dom";
 import { useEffect, useRef } from "react";
-import heroBg from "@/assets/hero-bg.jpg";
+import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
+
+// Premium editorial photography — Bordeaux architectural / interior light
+const HERO_IMAGE =
+  "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=2400&q=80";
 
 export default function Hero() {
   const orbRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+  const reduce = useReducedMotion();
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start start", "end start"],
+  });
+
+  // Hero compaction on scroll — content lifts and fades while image scales subtly
+  const contentY = useTransform(scrollYProgress, [0, 1], reduce ? [0, 0] : [0, -80]);
+  const contentOpacity = useTransform(scrollYProgress, [0, 0.6, 1], [1, 0.6, 0]);
+  const imageScale = useTransform(scrollYProgress, [0, 1], reduce ? [1, 1] : [1.05, 1.18]);
+  const imageY = useTransform(scrollYProgress, [0, 1], reduce ? [0, 0] : [0, 60]);
 
   // Subtle cursor-tracked light reflection
   useEffect(() => {
@@ -18,11 +35,19 @@ export default function Hero() {
   }, []);
 
   return (
-    <section id="hero" className="relative min-h-screen flex items-center overflow-hidden">
-      {/* Background image */}
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat parallax-bg"
-        style={{ backgroundImage: `url(${heroBg})` }}
+    <section
+      ref={sectionRef}
+      id="hero"
+      className="relative min-h-screen flex items-center overflow-hidden"
+    >
+      {/* Background image with parallax + scale on scroll */}
+      <motion.div
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat will-change-transform"
+        style={{
+          backgroundImage: `url(${HERO_IMAGE})`,
+          scale: imageScale,
+          y: imageY,
+        }}
       />
       {/* Dark gradient overlay */}
       <div
@@ -51,7 +76,10 @@ export default function Hero() {
         }}
       />
 
-      <div className="relative z-10 max-w-6xl mx-auto px-6 py-32 w-full">
+      <motion.div
+        style={{ y: contentY, opacity: contentOpacity }}
+        className="relative z-10 max-w-6xl mx-auto px-6 py-32 w-full will-change-transform"
+      >
         <div className="max-w-3xl">
           <div
             className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-dark mb-8 opacity-0"
@@ -124,7 +152,7 @@ export default function Hero() {
             ))}
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Scroll indicator */}
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 opacity-0" style={{ animation: "fade-in 1s ease-out 1.8s forwards" }}>
