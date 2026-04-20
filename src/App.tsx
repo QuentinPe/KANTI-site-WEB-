@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { useLenis } from "@/hooks/useLenis";
 import Index from "./pages/Index.tsx";
 import CabinetPage from "./pages/CabinetPage.tsx";
 import GestionPatrimonialePage from "./pages/GestionPatrimonialePage.tsx";
@@ -23,8 +24,9 @@ import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
+const AppShell = () => {
+  useLenis();
+  return (
     <TooltipProvider>
       <Toaster />
       <Sonner />
@@ -50,6 +52,12 @@ const App = () => (
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
+  );
+};
+
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <AppShell />
   </QueryClientProvider>
 );
 
