@@ -128,17 +128,17 @@ export default function MethodePinned() {
               {steps.map((s, i) => {
                 const start = i / steps.length;
                 const end = (i + 1) / steps.length;
-                const opacity = useTransform(
-                  scrollYProgress,
-                  [start - 0.06, start, end, end + 0.06],
-                  [0, 1, 1, 0]
-                );
+                const a = Math.max(0, start - 0.06);
+                const b = Math.max(a + 0.0001, start);
+                const c = Math.min(1, Math.max(b + 0.0001, end));
+                const d = Math.min(1, Math.max(c + 0.0001, end + 0.06));
+                const opacity = useTransform(scrollYProgress, [a, b, c, d], [0, 1, 1, 0]);
                 const yMv = reduce
                   ? useTransform(scrollYProgress, () => 0)
-                  : useTransform(scrollYProgress, [start - 0.06, start, end, end + 0.06], [40, 0, 0, -40]);
+                  : useTransform(scrollYProgress, [a, b, c, d], [40, 0, 0, -40]);
                 const scale = reduce
                   ? useTransform(scrollYProgress, () => 1)
-                  : useTransform(scrollYProgress, [start - 0.06, start, end, end + 0.06], [0.96, 1, 1, 0.97]);
+                  : useTransform(scrollYProgress, [a, b, c, d], [0.96, 1, 1, 0.97]);
 
                 return (
                   <motion.article
