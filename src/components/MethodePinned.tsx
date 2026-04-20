@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { Link } from "react-router-dom";
-import { motion, useScroll, useTransform, useReducedMotion, MotionValue } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { usePinnedSectionProgress } from "@/hooks/usePinnedSectionProgress";
 
 const steps = [
   {
@@ -53,34 +54,13 @@ const steps = [
   },
 ];
 
-function clamp01(v: number) {
-  return Math.min(1, Math.max(0, v));
-}
-/**
- * Crossfade keyframes for the [start, end] slot. Short fade tails meet at
- * the boundary — one card dominant at a time, no opacity gap.
- */
-function buildKeyframes(start: number, end: number, fade = 0.04) {
-  const a = clamp01(start - fade);
-  const b = clamp01(Math.max(a + 0.0001, start));
-  const c = clamp01(Math.max(b + 0.0001, end));
-  const d = clamp01(Math.max(c + 0.0001, end + fade));
-  return [a, b, c, d] as const;
-}
-
 export default function MethodePinned() {
   const ref = useRef<HTMLDivElement>(null);
-  const reduce = useReducedMotion();
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start start", "end end"],
-  });
-
-  // Vertical progress bar fill on the left
-  const railFill = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
+  const { activeIndex, progress } = usePinnedSectionProgress(ref, steps.length);
+  const activeStep = steps[activeIndex];
 
   return (
-    <section id="methode" className="section-dark relative">
+    <section id="methode" className="relative">
       {/* Mobile fallback : simple stack */}
       <div className="md:hidden section-padding">
         <div className="max-w-2xl mx-auto">
@@ -110,7 +90,11 @@ export default function MethodePinned() {
       </div>
 
       {/* Desktop : pinned storytelling */}
-      <div ref={ref} className="hidden md:block relative" style={{ height: `${steps.length * 90}vh` }}>
+      <div
+        ref={ref}
+        className="hidden md:block relative text-primary-foreground"
+        style={{ height: `${100 + steps.length * 68}vh`, background: "var(--gradient-hero)" }}
+      >
         <div className="sticky top-0 h-screen flex items-center overflow-hidden">
           {/* Ambient orbs */}
           <div
@@ -145,25 +129,20 @@ export default function MethodePinned() {
               <div className="relative pl-8">
                 <div className="absolute left-1.5 top-2 bottom-2 w-px bg-white/10 overflow-hidden">
                   <motion.div
-                    style={{ height: railFill }}
+                    animate={{ height: `${progress * 100}%` }}
+                    transition={{ duration: 0.18, ease: "linear" }}
                     className="w-full bg-gradient-to-b from-[hsl(var(--electric-soft))] via-[hsl(var(--electric))] to-[hsl(var(--electric))/0.4]"
                   />
                 </div>
                 <ol className="space-y-3.5">
-                  {steps.map((s, i) => {
-                    const start = i / steps.length;
-                    const end = (i + 1) / steps.length;
-                    return (
-                      <StepRow
-                        key={s.number}
-                        number={s.number}
-                        title={s.title}
-                        progress={scrollYProgress}
-                        start={start}
-                        end={end}
-                      />
-                    );
-                  })}
+                  {steps.map((s, i) => (
+                    <StepRow
+                      key={s.number}
+                      number={s.number}
+                      title={s.title}
+                      active={i === activeIndex}
+                    />
+                  ))}
                 </ol>
               </div>
 
@@ -181,20 +160,9 @@ export default function MethodePinned() {
 
             {/* Right : active step card with editorial image + text */}
             <div className="col-span-7 relative h-[540px]">
-              {steps.map((s, i) => {
-                const start = i / steps.length;
-                const end = (i + 1) / steps.length;
-                return (
-                  <StepCard
-                    key={s.number}
-                    step={s}
-                    index={i}
-                    progress={scrollYProgress}
-                    start={start}
-                    end={end}
-                  />
-                );
-              })}
+              <AnimatePresence mode="wait">
+                <StepCard key={activeStep.number} step={activeStep} index={activeIndex} />
+              </AnimatePresence>
             </div>
           </div>
         </div>
@@ -206,26 +174,21 @@ export default function MethodePinned() {
 function StepRow({
   number,
   title,
-  progress,
-  start,
-  end,
+  active,
 }: {
   number: string;
   title: string;
-  progress: MotionValue<number>;
-  start: number;
-  end: number;
+  active: boolean;
 }) {
-  const kf = buildKeyframes(start, end, 0.03);
-  const opacity = useTransform(progress, [...kf], [0.35, 1, 1, 0.45]);
-  const x = useTransform(progress, [...kf], [-6, 0, 0, -6]);
-  const dotScale = useTransform(progress, [...kf], [0.7, 1.4, 1.4, 0.9]);
-  const dotOpacity = useTransform(progress, [...kf], [0.4, 1, 1, 0.6]);
-
   return (
-    <motion.li style={{ opacity, x }} className="relative flex items-baseline gap-4 text-white">
+    <motion.li
+      animate={{ opacity: active ? 1 : 0.42, x: active ? 0 : -6 }}
+      transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+      className="relative flex items-baseline gap-4 text-white"
+    >
       <motion.span
-        style={{ scale: dotScale, opacity: dotOpacity }}
+        animate={{ scale: active ? 1.4 : 0.82, opacity: active ? 1 : 0.5 }}
+        transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
         className="absolute -left-[30px] top-[10px] w-2.5 h-2.5 rounded-full bg-[hsl(var(--electric-soft))] origin-center shadow-[0_0_12px_hsl(var(--electric)/0.6)]"
       />
       <span className="text-sm font-heading font-light text-[hsl(var(--electric-soft))] w-8">{number}</span>
@@ -237,32 +200,29 @@ function StepRow({
 function StepCard({
   step,
   index,
-  progress,
-  start,
-  end,
 }: {
   step: (typeof steps)[number];
   index: number;
-  progress: MotionValue<number>;
-  start: number;
-  end: number;
 }) {
   const reduce = useReducedMotion();
-  const kf = buildKeyframes(start, end, 0.04);
-  const opacity = useTransform(progress, [...kf], [0, 1, 1, 0]);
-  const y = useTransform(progress, [...kf], reduce ? [0, 0, 0, 0] : [50, 0, 0, -50]);
-  const scale = useTransform(progress, [...kf], reduce ? [1, 1, 1, 1] : [0.96, 1, 1, 0.97]);
-  const imgScale = useTransform(progress, [...kf], reduce ? [1, 1, 1, 1] : [1.1, 1, 1, 1.1]);
 
   return (
     <motion.article
-      style={{ opacity, y, scale, zIndex: index }}
+      initial={reduce ? { opacity: 0, y: 0, scale: 1 } : { opacity: 0, y: 36, scale: 0.98 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={reduce ? { opacity: 0, y: 0, scale: 1 } : { opacity: 0, y: -24, scale: 0.985 }}
+      transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+      style={{ zIndex: index }}
       className="absolute inset-0 glass-dark rounded-[2rem] overflow-hidden flex flex-col"
     >
       {/* Editorial image */}
       <div className="relative h-[55%] overflow-hidden">
         <motion.div
-          style={{ backgroundImage: `url(${step.image})`, scale: imgScale }}
+          initial={reduce ? { scale: 1 } : { scale: 1.08 }}
+          animate={{ scale: 1 }}
+          exit={reduce ? { scale: 1 } : { scale: 1.03 }}
+          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+          style={{ backgroundImage: `url(${step.image})` }}
           className="absolute inset-0 bg-cover bg-center will-change-transform"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[hsl(var(--navy-deep))/0.85] via-[hsl(var(--navy-deep))/0.2] to-transparent" />
