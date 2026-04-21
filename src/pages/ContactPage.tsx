@@ -95,21 +95,64 @@ export default function ContactPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-80px" }}
                 transition={{ duration: 0.6, delay: i * 0.08 }}
-                className="group glass-float p-8 block hover:border-foreground/20 transition-all duration-500"
+                className="group glass-float block overflow-hidden hover:border-foreground/20 transition-all duration-500"
               >
-                <p className="text-[10px] tracking-[0.3em] uppercase text-[hsl(var(--electric))] mb-5 font-medium">
-                  {p.tag}
-                </p>
-                <h3 className="font-heading text-xl font-light text-foreground mb-3 leading-snug">{p.title}</h3>
-                <p className="text-foreground/60 text-sm leading-relaxed font-light mb-6">{p.text}</p>
-                <span className="inline-flex items-center gap-2 text-xs tracking-wide text-foreground/70 group-hover:text-foreground transition-colors">
-                  Prendre rendez-vous
-                  <svg className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                  </svg>
-                </span>
+                <ParallaxImage
+                  src={p.image}
+                  alt={p.title}
+                  className="aspect-[4/3] w-full"
+                  rounded="rounded-none"
+                  intensity={80}
+                  overlayClassName="bg-gradient-to-t from-background/85 via-background/30 to-transparent"
+                />
+                <div className="p-7">
+                  <p className="text-[10px] tracking-[0.3em] uppercase text-[hsl(var(--electric))] mb-4 font-medium">
+                    {p.tag}
+                  </p>
+                  <h3 className="font-heading text-xl font-light text-foreground mb-3 leading-snug">{p.title}</h3>
+                  <p className="text-foreground/60 text-sm leading-relaxed font-light mb-6">{p.text}</p>
+                  <span className="inline-flex items-center gap-2 text-xs tracking-wide text-foreground/70 group-hover:text-[hsl(var(--electric))] transition-colors">
+                    Prendre rendez-vous
+                    <svg className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                    </svg>
+                  </span>
+                </div>
               </motion.a>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Parallax cinematic band — Bordeaux */}
+      <section className="relative h-[60vh] md:h-[70vh] overflow-hidden">
+        <ParallaxImage
+          src={contactBordeaux}
+          alt="Bordeaux, Place de la Bourse au coucher du soleil"
+          className="absolute inset-0 w-full h-full"
+          rounded="rounded-none"
+          intensity={220}
+          overlayClassName="bg-gradient-to-b from-background/40 via-background/30 to-background/80"
+        />
+        <div className="relative z-10 h-full flex items-center">
+          <div className="max-w-6xl mx-auto px-6 w-full">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.9 }}
+              className="max-w-2xl glass-float p-8 md:p-10"
+            >
+              <p className="text-[10px] tracking-[0.32em] uppercase text-[hsl(var(--electric))] mb-4 font-medium">
+                Cabinet à Bordeaux
+              </p>
+              <h2 className="text-3xl md:text-4xl font-heading font-light text-foreground leading-[1.15] tracking-tight mb-4">
+                Au cœur du Triangle d'Or, <span className="italic text-foreground/70">à votre écoute</span>
+              </h2>
+              <p className="text-foreground/65 text-sm md:text-base leading-relaxed font-light">
+                Nous recevons sur rendez-vous au 12 Cours de l'Intendance. Pour les clients hors région, le premier échange peut avoir lieu en visioconférence.
+              </p>
+            </motion.div>
           </div>
         </div>
       </section>
