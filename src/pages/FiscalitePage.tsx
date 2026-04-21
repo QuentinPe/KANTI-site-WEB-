@@ -6,10 +6,13 @@ import PageCTA from "@/components/PageCTA";
 import TrustBand from "@/components/TrustBand";
 import FiscaliteSimulator from "@/components/simulators/FiscaliteSimulator";
 import ExpertiseShowcase from "@/components/ExpertiseShowcase";
+import ProductGrid from "@/components/ProductGrid";
+import { getCategory } from "@/data/productsCatalog";
 import heroImg from "@/assets/expertise-fiscalite.jpg";
 
 export default function FiscalitePage() {
   useScrollReveal();
+  const category = getCategory("fiscalite")!;
 
   return (
     <>
@@ -52,6 +55,13 @@ export default function FiscalitePage() {
       </section>
 
       <TrustBand />
+      <ProductGrid
+        eyebrow="Leviers fiscaux"
+        title="Les leviers que nous activons"
+        intro="Chaque levier est étudié à la lumière de votre TMI, votre patrimoine et vos projets. Survolez pour découvrir le détail."
+        categorySlug={category.slug}
+        products={category.products}
+      />
       <PageCTA
         title="Faisons le point sur votre fiscalité"
         subtitle="Un audit fiscal patrimonial pour identifier vos marges de manœuvre et construire une stratégie adaptée à votre situation."

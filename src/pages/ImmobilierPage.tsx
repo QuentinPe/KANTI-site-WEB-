@@ -6,10 +6,13 @@ import PageCTA from "@/components/PageCTA";
 import TrustBand from "@/components/TrustBand";
 import ImmobilierSimulator from "@/components/simulators/ImmobilierSimulator";
 import ExpertiseShowcase from "@/components/ExpertiseShowcase";
+import ProductGrid from "@/components/ProductGrid";
+import { getCategory } from "@/data/productsCatalog";
 import heroImg from "@/assets/expertise-immobilier.jpg";
 
 export default function ImmobilierPage() {
   useScrollReveal();
+  const category = getCategory("patrimoine-immobilier-strategie")!;
 
   return (
     <>
@@ -56,6 +59,13 @@ export default function ImmobilierPage() {
       </section>
 
       <TrustBand />
+      <ProductGrid
+        eyebrow="Modes de détention"
+        title="Les véhicules immobiliers à votre disposition"
+        intro="Du nu au démembrement, de la SCI à la SCPI : chaque mode de détention répond à un objectif précis."
+        categorySlug={category.slug}
+        products={category.products}
+      />
       <PageCTA
         title="Parlons de votre projet immobilier"
         subtitle="Un premier échange pour analyser votre projet et identifier le montage le plus adapté."

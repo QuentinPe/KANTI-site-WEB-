@@ -6,10 +6,13 @@ import PageCTA from "@/components/PageCTA";
 import TrustBand from "@/components/TrustBand";
 import CreditSimulator from "@/components/simulators/CreditSimulator";
 import ExpertiseShowcase from "@/components/ExpertiseShowcase";
+import ProductGrid from "@/components/ProductGrid";
+import { getCategory } from "@/data/productsCatalog";
 import heroImg from "@/assets/expertise-financement.jpg";
 
 export default function FinancementPage() {
   useScrollReveal();
+  const category = getCategory("financement")!;
 
   return (
     <>
@@ -55,6 +58,13 @@ export default function FinancementPage() {
       </section>
 
       <TrustBand />
+      <ProductGrid
+        eyebrow="Solutions de financement"
+        title="Les financements que nous structurons"
+        intro="De la résidence principale au crédit lombard, chaque montage est négocié et adapté à votre stratégie patrimoniale."
+        categorySlug={category.slug}
+        products={category.products}
+      />
       <PageCTA
         title="Parlons de votre projet de financement"
         subtitle="Nous étudions votre dossier et vous obtenons les meilleures conditions du marché."
