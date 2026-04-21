@@ -13,7 +13,6 @@ import Actualites from "@/components/Actualites";
 import HomeFAQ from "@/components/HomeFAQ";
 import CTAFinal from "@/components/CTAFinal";
 import Footer from "@/components/Footer";
-import PremiumCursor from "@/components/PremiumCursor";
 import ScrollProgressRail from "@/components/ScrollProgressRail";
 
 const Index = () => {
@@ -21,7 +20,6 @@ const Index = () => {
 
   return (
     <>
-      <PremiumCursor />
       <ScrollProgressRail />
       <Header />
       <Hero />
