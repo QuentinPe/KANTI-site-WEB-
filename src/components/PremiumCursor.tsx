@@ -75,7 +75,9 @@ export default function PremiumCursor() {
       <motion.div
         ref={ringRef}
         aria-hidden
-        className="pointer-events-none fixed top-0 left-0 z-[9999] rounded-full mix-blend-difference"
+        className={`pointer-events-none fixed top-0 left-0 z-[9999] rounded-full ${
+          variant === "default" ? "mix-blend-difference" : ""
+        }`}
         style={{
           x: sx,
           y: sy,
@@ -83,13 +85,30 @@ export default function PremiumCursor() {
           height: ringSize,
           translateX: "-50%",
           translateY: "-50%",
-          border: "1px solid hsl(0 0% 100% / 0.85)",
+          border:
+            variant === "default"
+              ? "1px solid hsl(0 0% 100% / 0.85)"
+              : "1px solid hsl(var(--electric) / 0.9)",
+          background:
+            variant === "open"
+              ? "hsl(var(--electric))"
+              : variant === "discover"
+                ? "hsl(0 0% 100% / 0.92)"
+                : "transparent",
+          boxShadow:
+            variant !== "default"
+              ? "0 8px 28px -8px hsl(var(--electric) / 0.55), 0 0 0 1px hsl(0 0% 100% / 0.15)"
+              : undefined,
           opacity: hidden ? 0 : 1,
-          transition: "width 220ms cubic-bezier(0.22,1,0.36,1), height 220ms cubic-bezier(0.22,1,0.36,1), opacity 250ms ease",
+          transition:
+            "width 220ms cubic-bezier(0.22,1,0.36,1), height 220ms cubic-bezier(0.22,1,0.36,1), opacity 250ms ease, background-color 200ms ease, border-color 200ms ease, box-shadow 200ms ease",
         }}
       >
         {variant !== "default" && (
-          <span className="absolute inset-0 flex items-center justify-center text-[9px] uppercase tracking-[0.18em] text-white font-medium">
+          <span
+            className="absolute inset-0 flex items-center justify-center text-[9px] uppercase tracking-[0.2em] font-semibold"
+            style={{ color: "hsl(var(--navy-deep))" }}
+          >
             {variant === "open" ? "Ouvrir" : "Voir"}
           </span>
         )}
