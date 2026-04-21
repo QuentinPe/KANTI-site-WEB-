@@ -7,6 +7,10 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PageHero from "@/components/PageHero";
 import TrustBand from "@/components/TrustBand";
+import ParallaxImage from "@/components/ParallaxImage";
+import contactMeeting from "@/assets/contact-meeting.jpg";
+import contactBordeaux from "@/assets/contact-bordeaux.jpg";
+import contactAdvisors from "@/assets/contact-advisors.jpg";
 
 const faqItems = [
   {
@@ -36,16 +40,19 @@ const profils = [
     tag: "Particulier",
     title: "Vous êtes un particulier",
     text: "Patrimoine financier, immobilier, préparation de la retraite, transmission familiale, optimisation fiscale.",
+    image: contactMeeting,
   },
   {
     tag: "Dirigeant",
     title: "Vous êtes chef d'entreprise",
     text: "Rémunération, trésorerie, holding, prévoyance, cession, transmission d'entreprise, épargne salariale.",
+    image: contactAdvisors,
   },
   {
     tag: "Immobilier",
     title: "Vous avez un projet immobilier",
     text: "Financement, investissement locatif, SCI, résidence principale, arbitrage entre achat et location.",
+    image: contactBordeaux,
   },
 ];
 
