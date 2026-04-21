@@ -127,54 +127,109 @@ export default function CasClientsPage() {
       />
 
       <section className="section-padding bg-background texture-paper">
-        <div className="max-w-5xl mx-auto">
-          <div className="reveal mb-10">
-            <p className="text-gray-text leading-relaxed">
-              Ces cas sont inspirés de missions réalisées par le cabinet. Tous les détails ont été modifiés pour garantir l'anonymat de nos clients. Ils illustrent la diversité des situations que nous traitons et la rigueur de notre approche.
-            </p>
-          </div>
+        <div className="max-w-3xl mx-auto mb-20 reveal">
+          <p className="text-foreground/65 leading-relaxed text-base font-light">
+            Ces cas sont inspirés de missions réelles, intégralement anonymisées. Ils illustrent la diversité des situations que nous traitons et la rigueur de notre approche.
+          </p>
+        </div>
 
-          <div className="space-y-16">
-            {casClients.map((cas, i) => (
-              <div key={cas.profil} className={`reveal reveal-delay-${Math.min(i + 1, 3)}`}>
-                <div className="border-t-2 border-gold/30 pt-8">
-                  <p className="text-xs tracking-widest uppercase text-gold mb-3">Cas {String(i + 1).padStart(2, "0")}</p>
-                  <h3 className="font-heading text-2xl font-semibold text-primary mb-4">{cas.profil}</h3>
-                  
-                  <div className="grid md:grid-cols-2 gap-x-12 gap-y-6">
-                    <div>
-                      <h4 className="text-xs tracking-widest uppercase text-gray-text/60 mb-2">Contexte</h4>
-                      <p className="text-gray-text text-sm leading-relaxed mb-4">{cas.contexte}</p>
-                      
-                      <h4 className="text-xs tracking-widest uppercase text-gray-text/60 mb-2">Enjeux</h4>
-                      <ul className="space-y-1.5">
-                        {cas.enjeux.map((e) => (
-                          <li key={e} className="text-sm text-gray-text flex items-start gap-2">
-                            <span className="mt-2 w-1 h-1 rounded-full bg-gold flex-shrink-0" />
-                            {e}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div>
-                      <h4 className="text-xs tracking-widest uppercase text-gray-text/60 mb-2">Axes de travail</h4>
-                      <ul className="space-y-1.5 mb-4">
-                        {cas.axes.map((a) => (
-                          <li key={a} className="text-sm text-primary flex items-start gap-2">
-                            <span className="mt-2 w-1 h-1 rounded-full bg-gold flex-shrink-0" />
-                            {a}
-                          </li>
-                        ))}
-                      </ul>
-                      
-                      <h4 className="text-xs tracking-widest uppercase text-gray-text/60 mb-2">Point de vigilance</h4>
-                      <p className="text-gray-text text-sm leading-relaxed italic">{cas.vigilance}</p>
-                    </div>
+        <div className="space-y-28 md:space-y-36">
+          {casClients.map((cas, i) => {
+            const flip = i % 2 === 1;
+            return (
+              <article key={cas.profil} className="relative">
+                {/* Parallax background band */}
+                <div className="absolute inset-y-[-8%] left-0 right-0 -z-0 overflow-hidden">
+                  <ParallaxImage
+                    src={images[i]}
+                    alt=""
+                    className="absolute inset-0 w-full h-full"
+                    rounded="rounded-none"
+                    intensity={180}
+                    overlayClassName="bg-gradient-to-b from-background/85 via-background/55 to-background/90"
+                  />
+                </div>
+
+                <div className="relative z-10 max-w-6xl mx-auto px-6">
+                  <div className={`grid lg:grid-cols-12 gap-8 items-center ${flip ? "" : ""}`}>
+                    {/* Floating numeric label */}
+                    <motion.div
+                      initial={{ opacity: 0, x: flip ? 30 : -30 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true, margin: "-80px" }}
+                      transition={{ duration: 0.7 }}
+                      className={`lg:col-span-3 ${flip ? "lg:order-2 lg:text-right" : ""}`}
+                    >
+                      <div className="electric-line mb-6" />
+                      <p className="text-[10px] tracking-[0.3em] uppercase text-[hsl(var(--electric))] mb-3 font-medium">
+                        Cas {String(i + 1).padStart(2, "0")}
+                      </p>
+                      <p className="font-heading text-5xl md:text-6xl font-light text-foreground/15 leading-none italic">
+                        0{i + 1}
+                      </p>
+                    </motion.div>
+
+                    {/* Liquid glass card */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 40 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true, margin: "-80px" }}
+                      transition={{ duration: 0.8, delay: 0.1 }}
+                      className={`lg:col-span-9 glass-float p-8 md:p-10 lg:p-12 reflection-sweep ${flip ? "lg:order-1" : ""}`}
+                    >
+                      <h3 className="font-heading text-2xl md:text-3xl font-light text-foreground mb-2 tracking-tight leading-[1.15]">
+                        {cas.profil}
+                      </h3>
+                      <div className="separator-fine my-6" />
+
+                      <div className="grid md:grid-cols-2 gap-x-10 gap-y-8">
+                        <div>
+                          <p className="text-[10px] tracking-[0.25em] uppercase text-foreground/45 mb-3 font-medium">
+                            Contexte
+                          </p>
+                          <p className="text-foreground/70 text-sm leading-relaxed font-light mb-6">
+                            {cas.contexte}
+                          </p>
+                          <p className="text-[10px] tracking-[0.25em] uppercase text-foreground/45 mb-3 font-medium">
+                            Enjeux
+                          </p>
+                          <ul className="space-y-2">
+                            {cas.enjeux.map((e) => (
+                              <li key={e} className="text-sm text-foreground/70 font-light flex items-start gap-3 leading-relaxed">
+                                <span className="mt-2 w-1 h-1 rounded-full bg-[hsl(var(--electric))] flex-shrink-0" />
+                                <span>{e}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                        <div>
+                          <p className="text-[10px] tracking-[0.25em] uppercase text-[hsl(var(--electric))] mb-3 font-medium">
+                            Axes de travail
+                          </p>
+                          <ul className="space-y-2 mb-6">
+                            {cas.axes.map((a) => (
+                              <li key={a} className="text-sm text-foreground/85 font-light flex items-start gap-3 leading-relaxed">
+                                <span className="mt-1.5 text-[hsl(var(--gold))] flex-shrink-0">✦</span>
+                                <span>{a}</span>
+                              </li>
+                            ))}
+                          </ul>
+                          <div className="glass p-4 rounded-md">
+                            <p className="text-[10px] tracking-[0.25em] uppercase text-foreground/45 mb-2 font-medium">
+                              Point de vigilance
+                            </p>
+                            <p className="text-foreground/65 text-xs leading-relaxed font-light italic">
+                              {cas.vigilance}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              </article>
+            );
+          })}
         </div>
       </section>
 
