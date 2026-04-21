@@ -1,48 +1,97 @@
 import { Link } from "react-router-dom";
+import FlipCard from "./FlipCard";
 
+/**
+ * Each "expertise" exposes a flagship product on its FlipCard verso,
+ * + a link to the full expertise page.
+ */
 const expertises = [
   {
     tag: "Épargne & placements",
     title: "Gestion patrimoniale",
-    description: "Allocation d'actifs, assurance-vie, PER, compte-titres, SCPI — une stratégie d'épargne construite pour durer.",
-    benefit: "Faire travailler votre capital en cohérence avec vos projets de vie.",
+    pitch: "Allocation d'actifs sur mesure : faire travailler votre capital en cohérence avec vos projets de vie.",
+    forWhom: "Particuliers, cadres dirigeants et familles construisant un patrimoine sur la durée.",
+    benefits: [
+      "Architecture 100 % ouverte",
+      "Aucun produit maison",
+      "Allocation revue chaque année",
+      "Assurance-vie, PER, SCPI, PE",
+    ],
+    fiscality: "Optimisation par enveloppe : assurance-vie, PER, PEA — chaque support adapté à votre TMI et horizon.",
+    horizon: "Long terme",
     href: "/gestion-patrimoniale",
     featured: true,
   },
   {
     tag: "Fiscalité",
     title: "Fiscalité du patrimoine",
-    description: "Audit fiscal, IFI, revenus fonciers, structuration — réduire votre pression fiscale sans prendre de risques inutiles.",
-    benefit: "Identifier vos marges de manœuvre fiscales réelles.",
+    pitch: "Réduire votre pression fiscale sans prendre de risque inutile, ni promesse irréaliste.",
+    forWhom: "Foyers à TMI 30 %+, contribuables IFI, dirigeants en arbitrage rémunération.",
+    benefits: [
+      "Audit fiscal complet",
+      "Stratégie IFI structurée",
+      "Optimisation revenus fonciers",
+      "Holding patrimoniale",
+    ],
+    fiscality: "Conformité totale (AMF, BOFIP). Aucun montage à risque, traçabilité documentée.",
+    horizon: "Annuel",
     href: "/fiscalite",
     featured: true,
   },
   {
     tag: "Dirigeants",
     title: "Patrimoine professionnel",
-    description: "Rémunération du dirigeant, trésorerie d'entreprise, holding, prévoyance, cession et transmission d'activité.",
-    benefit: "Articuler patrimoine privé et professionnel avec méthode.",
+    pitch: "Articuler patrimoine privé et professionnel avec une méthode dédiée aux dirigeants.",
+    forWhom: "Chefs d'entreprise, associés, professions libérales.",
+    benefits: [
+      "Arbitrage salaire / dividendes",
+      "Holding & trésorerie",
+      "Prévoyance homme-clé",
+      "Cession & transmission",
+    ],
+    fiscality: "Optimisation IS / IR croisée. Coordination expert-comptable & avocat.",
     href: "/patrimoine-professionnel",
   },
   {
     tag: "Financement",
     title: "Financement & crédit",
-    description: "Courtage indépendant, négociation des meilleures conditions, montages patrimoniaux adaptés à chaque projet.",
-    benefit: "Obtenir les conditions de crédit les plus compétitives.",
+    pitch: "Le crédit comme outil patrimonial : effet de levier, fiscalité, capacité d'investissement.",
+    forWhom: "Acquéreurs, investisseurs locatifs, dirigeants en projet de croissance.",
+    benefits: [
+      "20+ banques partenaires",
+      "Courtage indépendant",
+      "Délégation d'assurance",
+      "Crédit lombard",
+    ],
+    fiscality: "Intérêts déductibles selon usage (locatif, pro). Optimisation du coût total du crédit.",
     href: "/financement",
   },
   {
     tag: "Succession",
     title: "Transmission & prévoyance",
-    description: "Donation, démembrement, assurance-vie, pacte Dutreil — anticiper pour protéger ceux qui comptent.",
-    benefit: "Préparer la transmission en maîtrisant la fiscalité.",
+    pitch: "Anticiper pour protéger ceux qui comptent, en maîtrisant la fiscalité.",
+    forWhom: "Familles, parents souhaitant organiser leur succession, dirigeants familiaux.",
+    benefits: [
+      "Donation-partage",
+      "Démembrement",
+      "Clause bénéficiaire sur mesure",
+      "Pacte Dutreil",
+    ],
+    fiscality: "Abattements 100 000 € / 15 ans, AV 152 500 € / bénéficiaire, Dutreil −75 %.",
     href: "/transmission-patrimoine-famille",
   },
   {
     tag: "Immobilier",
     title: "Immobilier patrimonial",
-    description: "Résidence principale, locatif, SCI, nue-propriété — chaque investissement pensé dans une logique globale.",
-    benefit: "Structurer vos actifs immobiliers intelligemment.",
+    pitch: "Chaque décision immobilière pensée dans une logique patrimoniale globale.",
+    forWhom: "Acquéreurs RP, investisseurs locatifs, familles en projet SCI.",
+    benefits: [
+      "Résidence principale & locatif",
+      "SCI patrimoniale (IR / IS)",
+      "Nue-propriété démembrée",
+      "SCPI en direct ou en AV",
+    ],
+    fiscality: "Choix nu / meublé / LMNP. Régime adapté à votre TMI et vos objectifs.",
     href: "/patrimoine-immobilier-strategie",
   },
 ];
@@ -65,69 +114,37 @@ export default function Expertises() {
           </p>
         </div>
 
-        {/* Featured cards */}
-        <div className="grid md:grid-cols-2 gap-6 mb-6">
-          {expertises.filter((e) => e.featured).map((item, i) => (
-            <Link
-              to={item.href}
+        {/* Liquid-glass flip cards */}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {expertises.map((item, i) => (
+            <div
               key={item.title}
-              className={`reveal reveal-delay-${i + 1} group glass-card block p-8 md:p-10 reflection-sweep`}
+              className={`reveal reveal-delay-${(i % 3) + 1}`}
             >
-              <div className="relative z-10">
-                <div className="mb-6">
-                  <span className="text-[10px] tracking-[0.25em] uppercase text-foreground/50 font-medium">
-                    {item.tag}
-                  </span>
-                </div>
-                <h3 className="font-heading text-2xl md:text-3xl font-light text-foreground mb-4 tracking-tight transition-colors duration-300 group-hover:text-[hsl(var(--electric))]">
-                  {item.title}
-                </h3>
-                <p className="text-foreground/65 leading-relaxed text-sm mb-3 font-light">
-                  {item.description}
-                </p>
-                <p className="text-foreground/85 text-sm font-normal mb-7">
-                  {item.benefit}
-                </p>
-                <span className="inline-flex items-center gap-2 text-sm font-medium text-foreground/80 group-hover:text-[hsl(var(--electric))] transition-all duration-300">
-                  Découvrir l'expertise
-                  <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                  </svg>
-                </span>
-              </div>
-            </Link>
+              <FlipCard
+                tag={item.tag}
+                title={item.title}
+                pitch={item.pitch}
+                forWhom={item.forWhom}
+                benefits={item.benefits}
+                fiscality={item.fiscality}
+                horizon={item.horizon}
+                href={item.href}
+              />
+            </div>
           ))}
         </div>
 
-        {/* Secondary cards */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
-          {expertises.filter((e) => !e.featured).map((item, i) => (
-            <Link
-              to={item.href}
-              key={item.title}
-              className={`reveal reveal-delay-${i + 1} group glass-card block p-6 reflection-sweep`}
-            >
-              <div className="relative z-10">
-                <div className="mb-4">
-                  <span className="text-[10px] tracking-[0.2em] uppercase text-foreground/50 font-medium">
-                    {item.tag}
-                  </span>
-                </div>
-                <h3 className="font-heading text-xl font-light text-foreground mb-3 tracking-tight transition-colors duration-300 group-hover:text-[hsl(var(--electric))]">
-                  {item.title}
-                </h3>
-                <p className="text-foreground/60 leading-relaxed text-[13px] mb-4 font-light">
-                  {item.description}
-                </p>
-                <span className="inline-flex items-center gap-1 text-[12px] text-foreground/70 group-hover:text-[hsl(var(--electric))] transition-all duration-300">
-                  En savoir plus
-                  <svg className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                  </svg>
-                </span>
-              </div>
-            </Link>
-          ))}
+        <div className="mt-14 text-center reveal">
+          <Link
+            to="/contact"
+            className="inline-flex items-center gap-2 text-sm font-medium text-foreground link-underline"
+          >
+            Discuter de votre situation
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+            </svg>
+          </Link>
         </div>
       </div>
     </section>
