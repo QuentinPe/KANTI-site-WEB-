@@ -240,13 +240,13 @@ export default function ContactPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.7, delay: 0.15 }}
-            className="lg:col-span-2 space-y-5"
+            className="lg:col-span-5 space-y-5 lg:sticky lg:top-28"
           >
             <div className="relative overflow-hidden rounded-[1.25rem] border border-foreground/10 shadow-2xl">
               <ParallaxImage
                 src={contactAdvisors}
                 alt="Conseillers Kanti en rendez-vous"
-                className="aspect-[5/4] w-full"
+                className="aspect-[16/10] w-full"
                 rounded="rounded-none"
                 intensity={100}
                 overlayClassName="bg-gradient-to-t from-background/90 via-background/30 to-transparent"
@@ -261,53 +261,53 @@ export default function ContactPage() {
               </div>
             </div>
 
-            <div className="glass-float p-8">
-              <div className="flex items-center gap-3 mb-4">
-                <Calendar className="w-4 h-4 text-[hsl(var(--electric))]" />
-                <p className="text-[10px] tracking-[0.3em] uppercase text-foreground/50 font-medium">Premier rendez-vous</p>
+            <div className="glass-float p-7 divide-y divide-foreground/10">
+              <div className="pb-5">
+                <div className="flex items-center gap-3 mb-2.5">
+                  <Calendar className="w-4 h-4 text-[hsl(var(--electric))]" />
+                  <p className="text-[10px] tracking-[0.3em] uppercase text-foreground/50 font-medium">Premier rendez-vous</p>
+                </div>
+                <p className="text-foreground/65 text-sm leading-relaxed font-light">
+                  <span className="text-foreground/90">30 minutes, gratuit, sans engagement.</span> Un échange libre pour comprendre votre situation. Aucune recommandation produit n'est faite.
+                </p>
               </div>
-              <h3 className="font-heading text-lg font-light text-foreground mb-3">30 minutes, gratuit, sans engagement</h3>
-              <p className="text-foreground/60 text-sm leading-relaxed font-light">
-                Un échange libre pour comprendre votre situation, vos projets et vos préoccupations. Aucune recommandation produit n'est faite lors de ce rendez-vous.
-              </p>
+
+              <div className="py-5">
+                <div className="flex items-center gap-3 mb-3">
+                  <Users className="w-4 h-4 text-[hsl(var(--electric))]" />
+                  <p className="text-[10px] tracking-[0.3em] uppercase text-foreground/50 font-medium">Qui accompagnons-nous</p>
+                </div>
+                <ul className="grid grid-cols-1 gap-1.5 text-sm text-foreground/65 font-light">
+                  {[
+                    "Particuliers avec un patrimoine à structurer",
+                    "Cadres dirigeants et professions libérales",
+                    "Chefs d'entreprise et associés",
+                    "Familles en phase de transmission",
+                  ].map((line) => (
+                    <li key={line} className="flex items-start gap-2.5">
+                      <span className="w-1 h-1 rounded-full bg-[hsl(var(--electric))] mt-2 flex-shrink-0" />
+                      <span>{line}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="pt-5">
+                <div className="flex items-center gap-3 mb-2.5">
+                  <FileText className="w-4 h-4 text-[hsl(var(--electric))]" />
+                  <p className="text-[10px] tracking-[0.3em] uppercase text-foreground/50 font-medium">Documents utiles</p>
+                </div>
+                <p className="text-foreground/60 text-sm leading-relaxed font-light">
+                  Aucun document requis pour le premier échange. Pour aller plus loin : avis d'imposition, relevés de patrimoine, contrats en cours.
+                </p>
+              </div>
             </div>
 
-            <div className="glass-float p-8">
-              <div className="flex items-center gap-3 mb-4">
-                <Users className="w-4 h-4 text-[hsl(var(--electric))]" />
-                <p className="text-[10px] tracking-[0.3em] uppercase text-foreground/50 font-medium">Qui accompagnons-nous</p>
-              </div>
-              <ul className="space-y-2 text-sm text-foreground/65 font-light">
-                {[
-                  "Particuliers avec un patrimoine à structurer",
-                  "Cadres dirigeants et cadres supérieurs",
-                  "Professions libérales",
-                  "Chefs d'entreprise et associés",
-                  "Familles en phase de transmission",
-                ].map((line) => (
-                  <li key={line} className="flex items-start gap-3">
-                    <span className="w-1 h-1 rounded-full bg-[hsl(var(--electric))] mt-2 flex-shrink-0" />
-                    <span>{line}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="glass-float p-8">
-              <div className="flex items-center gap-3 mb-4">
-                <FileText className="w-4 h-4 text-[hsl(var(--electric))]" />
-                <p className="text-[10px] tracking-[0.3em] uppercase text-foreground/50 font-medium">Documents utiles</p>
-              </div>
-              <p className="text-foreground/60 text-sm leading-relaxed font-light">
-                Aucun document n'est nécessaire pour le premier échange. Si nous allons plus loin, nous vous demanderons votre dernier avis d'imposition, vos relevés de patrimoine et contrats en cours.
-              </p>
-            </div>
-
-            <div className="glass-float p-8 relative overflow-hidden">
+            <div className="glass-float p-7 relative overflow-hidden">
               <div className="absolute inset-0 opacity-[0.04] bg-gradient-to-br from-[hsl(var(--electric))] to-transparent pointer-events-none" />
               <div className="relative">
-                <p className="text-[10px] tracking-[0.3em] uppercase text-[hsl(var(--electric))] mb-5 font-medium">Coordonnées</p>
-                <div className="space-y-3 text-sm text-foreground/70 font-light">
+                <p className="text-[10px] tracking-[0.3em] uppercase text-[hsl(var(--electric))] mb-4 font-medium">Coordonnées</p>
+                <div className="space-y-2.5 text-sm text-foreground/70 font-light">
                   <p className="flex items-start gap-3">
                     <MapPin className="w-3.5 h-3.5 mt-1 text-foreground/40 flex-shrink-0" />
                     12 Cours de l'Intendance, 33000 Bordeaux
@@ -320,7 +320,7 @@ export default function ContactPage() {
                     <Mail className="w-3.5 h-3.5 text-foreground/40 flex-shrink-0" />
                     contact@kanti.fr
                   </p>
-                  <p className="flex items-center gap-3 text-xs text-foreground/40 pt-2 border-t border-foreground/5">
+                  <p className="flex items-center gap-3 text-xs text-foreground/40 pt-3 border-t border-foreground/10">
                     <Clock className="w-3.5 h-3.5 flex-shrink-0" />
                     Lundi – Vendredi · 9h–18h · Sur rendez-vous
                   </p>
