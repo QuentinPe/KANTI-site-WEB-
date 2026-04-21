@@ -1,9 +1,19 @@
 import { useScrollReveal } from "@/hooks/useScrollReveal";
+import { motion } from "framer-motion";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PageHero from "@/components/PageHero";
 import PageCTA from "@/components/PageCTA";
 import TrustBand from "@/components/TrustBand";
+import ParallaxImage from "@/components/ParallaxImage";
+import casCadre from "@/assets/cas-cadre.jpg";
+import casCouple from "@/assets/cas-couple.jpg";
+import casDirigeant from "@/assets/cas-dirigeant.jpg";
+import casLiberal from "@/assets/cas-liberal.jpg";
+import casImmobilier from "@/assets/cas-immobilier.jpg";
+import casExpatrie from "@/assets/cas-expatrie.jpg";
+
+const images = [casCadre, casCouple, casDirigeant, casLiberal, casImmobilier, casExpatrie];
 
 const casClients = [
   {
