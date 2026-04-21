@@ -6,10 +6,13 @@ import PageCTA from "@/components/PageCTA";
 import TrustBand from "@/components/TrustBand";
 import PatrimoineProSimulator from "@/components/simulators/PatrimoineProSimulator";
 import ExpertiseShowcase from "@/components/ExpertiseShowcase";
+import ProductGrid from "@/components/ProductGrid";
+import { getCategory } from "@/data/productsCatalog";
 import heroImg from "@/assets/expertise-patrimoinepro.jpg";
 
 export default function PatrimoineProPage() {
   useScrollReveal();
+  const category = getCategory("patrimoine-professionnel")!;
 
   return (
     <>
@@ -52,6 +55,13 @@ export default function PatrimoineProPage() {
       </section>
 
       <TrustBand />
+      <ProductGrid
+        eyebrow="Solutions dirigeants"
+        title="Les leviers que nous activons pour vous"
+        intro="Rémunération, holding, prévoyance, cession : chaque décision impacte simultanément votre entreprise et votre patrimoine privé."
+        categorySlug={category.slug}
+        products={category.products}
+      />
       <PageCTA
         title="Dirigeants, parlons stratégie"
         subtitle="Un premier échange confidentiel pour analyser votre situation et identifier les arbitrages prioritaires."

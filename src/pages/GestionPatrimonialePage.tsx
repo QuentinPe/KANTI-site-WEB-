@@ -6,10 +6,13 @@ import PageCTA from "@/components/PageCTA";
 import TrustBand from "@/components/TrustBand";
 import EpargneSimulator from "@/components/simulators/EpargneSimulator";
 import ExpertiseShowcase from "@/components/ExpertiseShowcase";
+import ProductGrid from "@/components/ProductGrid";
+import { getCategory } from "@/data/productsCatalog";
 import heroImg from "@/assets/expertise-gestion.jpg";
 
 export default function GestionPatrimonialePage() {
   useScrollReveal();
+  const category = getCategory("gestion-patrimoniale")!;
 
   return (
     <>
@@ -55,6 +58,13 @@ export default function GestionPatrimonialePage() {
       </section>
 
       <TrustBand />
+      <ProductGrid
+        eyebrow="Solutions & enveloppes"
+        title="Les outils que nous mobilisons"
+        intro="Chaque solution est sélectionnée et calibrée selon votre profil. Survolez une carte pour explorer les conditions, la fiscalité et l'horizon recommandé."
+        categorySlug={category.slug}
+        products={category.products}
+      />
       <PageCTA
         title="Faisons le point sur votre épargne"
         subtitle="Un audit de votre allocation actuelle pour identifier les axes d'amélioration : performance, frais, diversification, fiscalité."

@@ -21,6 +21,7 @@ import NotreMethodePage from "./pages/NotreMethodePage.tsx";
 import CasClientsPage from "./pages/CasClientsPage.tsx";
 import FAQPage from "./pages/FAQPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import ProductDetailPage from "./pages/ProductDetailPage.tsx";
 
 const queryClient = new QueryClient();
 
@@ -48,6 +49,8 @@ const AppShell = () => {
           <Route path="/notre-methode" element={<NotreMethodePage />} />
           <Route path="/cas-clients" element={<CasClientsPage />} />
           <Route path="/faq-patrimoniale" element={<FAQPage />} />
+          {/* Dynamic product / solution sub-pages */}
+          <Route path="/:categorySlug/:productSlug" element={<ProductDetailPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

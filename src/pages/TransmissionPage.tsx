@@ -6,10 +6,13 @@ import PageCTA from "@/components/PageCTA";
 import TrustBand from "@/components/TrustBand";
 import TransmissionSimulator from "@/components/simulators/TransmissionSimulator";
 import ExpertiseShowcase from "@/components/ExpertiseShowcase";
+import ProductGrid from "@/components/ProductGrid";
+import { getCategory } from "@/data/productsCatalog";
 import heroImg from "@/assets/expertise-transmission.jpg";
 
 export default function TransmissionPage() {
   useScrollReveal();
+  const category = getCategory("transmission-patrimoine-famille")!;
 
   return (
     <>
@@ -56,6 +59,13 @@ export default function TransmissionPage() {
       </section>
 
       <TrustBand />
+      <ProductGrid
+        eyebrow="Outils de transmission"
+        title="Les outils juridiques & financiers"
+        intro="Donation, démembrement, assurance-vie, Dutreil : autant d'outils combinables pour transmettre dans les meilleures conditions."
+        categorySlug={category.slug}
+        products={category.products}
+      />
       <PageCTA
         title="Anticipez votre transmission"
         subtitle="Un premier échange pour évaluer votre situation successorale et identifier les actions à engager."
