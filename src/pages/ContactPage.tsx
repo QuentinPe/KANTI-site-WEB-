@@ -242,6 +242,25 @@ export default function ContactPage() {
             transition={{ duration: 0.7, delay: 0.15 }}
             className="lg:col-span-2 space-y-5"
           >
+            <div className="relative overflow-hidden rounded-[1.25rem] border border-foreground/10 shadow-2xl">
+              <ParallaxImage
+                src={contactAdvisors}
+                alt="Conseillers Kanti en rendez-vous"
+                className="aspect-[5/4] w-full"
+                rounded="rounded-none"
+                intensity={100}
+                overlayClassName="bg-gradient-to-t from-background/90 via-background/30 to-transparent"
+              />
+              <div className="absolute bottom-0 left-0 right-0 p-6">
+                <p className="text-[10px] tracking-[0.3em] uppercase text-[hsl(var(--electric))] mb-2 font-medium">
+                  Une relation de confiance
+                </p>
+                <p className="font-heading text-lg font-light text-foreground leading-snug">
+                  Discrète, indépendante, <span className="italic text-foreground/70">durable</span>.
+                </p>
+              </div>
+            </div>
+
             <div className="glass-float p-8">
               <div className="flex items-center gap-3 mb-4">
                 <Calendar className="w-4 h-4 text-[hsl(var(--electric))]" />
