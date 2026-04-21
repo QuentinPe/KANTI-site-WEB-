@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
+import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
+import { MapPin, Phone, Mail, Clock, Calendar, FileText, Users } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PageHero from "@/components/PageHero";
@@ -28,6 +31,24 @@ const faqItems = [
   },
 ];
 
+const profils = [
+  {
+    tag: "Particulier",
+    title: "Vous êtes un particulier",
+    text: "Patrimoine financier, immobilier, préparation de la retraite, transmission familiale, optimisation fiscale.",
+  },
+  {
+    tag: "Dirigeant",
+    title: "Vous êtes chef d'entreprise",
+    text: "Rémunération, trésorerie, holding, prévoyance, cession, transmission d'entreprise, épargne salariale.",
+  },
+  {
+    tag: "Immobilier",
+    title: "Vous avez un projet immobilier",
+    text: "Financement, investissement locatif, SCI, résidence principale, arbitrage entre achat et location.",
+  },
+];
+
 export default function ContactPage() {
   useScrollReveal();
   const [form, setForm] = useState({ nom: "", email: "", telephone: "", profil: "", sujet: "", message: "" });
@@ -43,37 +64,45 @@ export default function ContactPage() {
       <PageHero
         title="Parlons de votre patrimoine"
         subtitle="Un premier échange de 30 minutes, gratuit et sans engagement, pour faire le point sur votre situation et clarifier vos priorités."
-        breadcrumb="Contact"
+        breadcrumb="Cabinet · Contact"
       />
 
       {/* Parcours de contact */}
-      <section className="section-padding bg-background texture-paper">
-        <div className="max-w-5xl mx-auto">
-          <div className="mb-12 reveal">
-            <p className="text-[13px] tracking-widest uppercase text-gold mb-4">Comment nous contacter</p>
-            <h2 className="text-2xl md:text-3xl font-heading font-semibold text-primary mb-4">
-              Choisissez le format qui vous convient
+      <section className="section-padding texture-paper relative overflow-hidden">
+        <div className="max-w-6xl mx-auto relative z-10">
+          <div className="mb-14 reveal max-w-2xl">
+            <div className="electric-line mb-5" />
+            <p className="text-[11px] tracking-[0.3em] uppercase text-foreground/50 mb-5 font-medium">
+              Comment nous contacter
+            </p>
+            <h2 className="text-3xl md:text-4xl font-heading font-light text-foreground leading-[1.15] tracking-tight">
+              Choisissez le format <span className="italic text-foreground/70">qui vous convient</span>
             </h2>
           </div>
-          <div className="grid md:grid-cols-3 gap-8 reveal">
-            <div className="border-t border-border pt-6">
-              <p className="text-xs tracking-widest uppercase text-gold mb-3">Particulier</p>
-              <h3 className="font-heading text-lg font-semibold text-primary mb-2">Vous êtes un particulier</h3>
-              <p className="text-gray-text text-sm leading-relaxed mb-4">Patrimoine financier, immobilier, préparation de la retraite, transmission familiale, optimisation fiscale.</p>
-              <a href="#formulaire" className="text-sm font-medium text-primary border-b border-primary/30 hover:border-primary pb-0.5 transition-colors">Prendre rendez-vous →</a>
-            </div>
-            <div className="border-t border-border pt-6">
-              <p className="text-xs tracking-widest uppercase text-gold mb-3">Dirigeant</p>
-              <h3 className="font-heading text-lg font-semibold text-primary mb-2">Vous êtes chef d'entreprise</h3>
-              <p className="text-gray-text text-sm leading-relaxed mb-4">Rémunération, trésorerie, holding, prévoyance, cession, transmission d'entreprise, épargne salariale.</p>
-              <a href="#formulaire" className="text-sm font-medium text-primary border-b border-primary/30 hover:border-primary pb-0.5 transition-colors">Prendre rendez-vous →</a>
-            </div>
-            <div className="border-t border-border pt-6">
-              <p className="text-xs tracking-widest uppercase text-gold mb-3">Immobilier</p>
-              <h3 className="font-heading text-lg font-semibold text-primary mb-2">Vous avez un projet immobilier</h3>
-              <p className="text-gray-text text-sm leading-relaxed mb-4">Financement, investissement locatif, SCI, résidence principale, arbitrage entre achat et location.</p>
-              <a href="#formulaire" className="text-sm font-medium text-primary border-b border-primary/30 hover:border-primary pb-0.5 transition-colors">Prendre rendez-vous →</a>
-            </div>
+          <div className="grid md:grid-cols-3 gap-5">
+            {profils.map((p, i) => (
+              <motion.a
+                key={p.tag}
+                href="#formulaire"
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-80px" }}
+                transition={{ duration: 0.6, delay: i * 0.08 }}
+                className="group glass-float p-8 block hover:border-foreground/20 transition-all duration-500"
+              >
+                <p className="text-[10px] tracking-[0.3em] uppercase text-[hsl(var(--electric))] mb-5 font-medium">
+                  {p.tag}
+                </p>
+                <h3 className="font-heading text-xl font-light text-foreground mb-3 leading-snug">{p.title}</h3>
+                <p className="text-foreground/60 text-sm leading-relaxed font-light mb-6">{p.text}</p>
+                <span className="inline-flex items-center gap-2 text-xs tracking-wide text-foreground/70 group-hover:text-foreground transition-colors">
+                  Prendre rendez-vous
+                  <svg className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                  </svg>
+                </span>
+              </motion.a>
+            ))}
           </div>
         </div>
       </section>
