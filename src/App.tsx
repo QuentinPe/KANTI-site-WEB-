@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useLenis } from "@/hooks/useLenis";
+import PremiumCursor from "@/components/PremiumCursor";
 import Index from "./pages/Index.tsx";
 import CabinetPage from "./pages/CabinetPage.tsx";
 import GestionPatrimonialePage from "./pages/GestionPatrimonialePage.tsx";
@@ -31,6 +32,7 @@ const AppShell = () => {
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <PremiumCursor />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
