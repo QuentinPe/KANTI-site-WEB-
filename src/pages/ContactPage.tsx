@@ -159,13 +159,13 @@ export default function ContactPage() {
 
       {/* Formulaire + infos */}
       <section id="formulaire" className="section-padding texture-paper relative overflow-hidden">
-        <div className="max-w-6xl mx-auto grid lg:grid-cols-5 gap-10 lg:gap-14 relative z-10">
+        <div className="max-w-6xl mx-auto grid lg:grid-cols-12 gap-8 lg:gap-12 relative z-10 items-start">
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.7 }}
-            className="lg:col-span-3"
+            className="lg:col-span-7"
           >
             <div className="electric-line mb-5" />
             <p className="text-[11px] tracking-[0.3em] uppercase text-foreground/50 mb-5 font-medium">
