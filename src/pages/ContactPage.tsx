@@ -263,26 +263,31 @@ export default function ContactPage() {
       </section>
 
       {/* FAQ de conversion */}
-      <section className="section-padding bg-background texture-paper">
-        <div className="max-w-3xl mx-auto">
+      <section className="section-padding texture-paper relative overflow-hidden">
+        <div className="max-w-3xl mx-auto relative z-10">
           <div className="mb-12 reveal">
-            <p className="text-[13px] tracking-widest uppercase text-gold mb-4">Questions fréquentes</p>
-            <h2 className="text-2xl md:text-3xl font-heading font-semibold text-primary">
-              Avant de prendre rendez-vous
+            <div className="electric-line mb-5" />
+            <p className="text-[11px] tracking-[0.3em] uppercase text-foreground/50 mb-5 font-medium">
+              Questions fréquentes
+            </p>
+            <h2 className="text-3xl md:text-4xl font-heading font-light text-foreground leading-[1.15] tracking-tight">
+              Avant de prendre <span className="italic text-foreground/70">rendez-vous</span>
             </h2>
           </div>
-          <div className="space-y-0 reveal">
+          <div className="glass-float p-2 reveal">
             {faqItems.map((item, i) => (
-              <div key={i} className="border-t border-border">
+              <div key={i} className={i === 0 ? "" : "border-t border-foreground/10"}>
                 <button
                   onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                  className="w-full py-5 flex items-start justify-between text-left group"
+                  className="w-full py-5 px-6 flex items-start justify-between text-left group"
                 >
-                  <span className="font-heading text-lg font-semibold text-primary pr-8 group-hover:text-gold transition-colors">{item.q}</span>
-                  <span className={`text-gold flex-shrink-0 mt-1 transition-transform duration-300 ${openFaq === i ? "rotate-45" : ""}`}>+</span>
+                  <span className="font-heading text-base md:text-lg font-light text-foreground pr-8 group-hover:text-[hsl(var(--electric))] transition-colors">
+                    {item.q}
+                  </span>
+                  <span className={`text-[hsl(var(--electric))] flex-shrink-0 mt-1 text-xl transition-transform duration-300 ${openFaq === i ? "rotate-45" : ""}`}>+</span>
                 </button>
-                <div className={`overflow-hidden transition-all duration-300 ${openFaq === i ? "max-h-40 pb-5" : "max-h-0"}`}>
-                  <p className="text-gray-text text-sm leading-relaxed">{item.a}</p>
+                <div className={`overflow-hidden transition-all duration-300 ${openFaq === i ? "max-h-60 pb-5 px-6" : "max-h-0"}`}>
+                  <p className="text-foreground/65 text-sm leading-relaxed font-light">{item.a}</p>
                 </div>
               </div>
             ))}
