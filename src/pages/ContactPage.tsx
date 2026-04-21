@@ -108,105 +108,157 @@ export default function ContactPage() {
       </section>
 
       {/* Formulaire + infos */}
-      <section id="formulaire" className="section-padding section-ivory">
-        <div className="max-w-5xl mx-auto grid lg:grid-cols-5 gap-14">
-          <div className="lg:col-span-3 reveal">
-            <h2 className="text-2xl md:text-3xl font-heading font-semibold text-primary mb-6">
+      <section id="formulaire" className="section-padding texture-paper relative overflow-hidden">
+        <div className="max-w-6xl mx-auto grid lg:grid-cols-5 gap-10 lg:gap-14 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.7 }}
+            className="lg:col-span-3"
+          >
+            <div className="electric-line mb-5" />
+            <p className="text-[11px] tracking-[0.3em] uppercase text-foreground/50 mb-5 font-medium">
               Demande de rendez-vous
+            </p>
+            <h2 className="text-3xl md:text-4xl font-heading font-light text-foreground leading-[1.15] tracking-tight mb-10">
+              Quelques informations,<br />
+              <span className="italic text-foreground/70">et nous vous rappelons</span>
             </h2>
-            <form onSubmit={(e) => e.preventDefault()} className="space-y-5">
-              <div className="grid sm:grid-cols-2 gap-5">
-                <div>
-                  <label htmlFor="nom" className="block text-xs font-medium text-primary mb-1.5 tracking-wide">Nom complet *</label>
-                  <input id="nom" name="nom" type="text" value={form.nom} onChange={handleChange} required className="w-full px-4 py-3 border border-border bg-background text-foreground text-sm focus:outline-none focus:border-gold transition-colors" placeholder="Votre nom" />
+
+            <div className="glass-float p-8 md:p-10">
+              <form onSubmit={(e) => e.preventDefault()} className="space-y-5">
+                <div className="grid sm:grid-cols-2 gap-5">
+                  <div>
+                    <label htmlFor="nom" className="block text-[11px] font-medium text-foreground/60 mb-2 tracking-[0.2em] uppercase">Nom complet *</label>
+                    <input id="nom" name="nom" type="text" value={form.nom} onChange={handleChange} required className="w-full px-4 py-3 bg-background/40 border border-foreground/15 rounded-md text-foreground text-sm focus:outline-none focus:border-[hsl(var(--electric))]/60 transition-colors" placeholder="Votre nom" />
+                  </div>
+                  <div>
+                    <label htmlFor="email" className="block text-[11px] font-medium text-foreground/60 mb-2 tracking-[0.2em] uppercase">Email *</label>
+                    <input id="email" name="email" type="email" value={form.email} onChange={handleChange} required className="w-full px-4 py-3 bg-background/40 border border-foreground/15 rounded-md text-foreground text-sm focus:outline-none focus:border-[hsl(var(--electric))]/60 transition-colors" placeholder="votre@email.fr" />
+                  </div>
+                </div>
+                <div className="grid sm:grid-cols-2 gap-5">
+                  <div>
+                    <label htmlFor="telephone" className="block text-[11px] font-medium text-foreground/60 mb-2 tracking-[0.2em] uppercase">Téléphone</label>
+                    <input id="telephone" name="telephone" type="tel" value={form.telephone} onChange={handleChange} className="w-full px-4 py-3 bg-background/40 border border-foreground/15 rounded-md text-foreground text-sm focus:outline-none focus:border-[hsl(var(--electric))]/60 transition-colors" placeholder="06 00 00 00 00" />
+                  </div>
+                  <div>
+                    <label htmlFor="profil" className="block text-[11px] font-medium text-foreground/60 mb-2 tracking-[0.2em] uppercase">Votre profil</label>
+                    <select id="profil" name="profil" value={form.profil} onChange={handleChange} className="w-full px-4 py-3 bg-background/40 border border-foreground/15 rounded-md text-foreground text-sm focus:outline-none focus:border-[hsl(var(--electric))]/60 transition-colors">
+                      <option value="">Sélectionner</option>
+                      <option value="particulier">Particulier / Famille</option>
+                      <option value="dirigeant">Chef d'entreprise / Dirigeant</option>
+                      <option value="liberal">Profession libérale</option>
+                      <option value="investisseur">Investisseur immobilier</option>
+                      <option value="expatrie">Expatrié / Retour en France</option>
+                    </select>
+                  </div>
                 </div>
                 <div>
-                  <label htmlFor="email" className="block text-xs font-medium text-primary mb-1.5 tracking-wide">Email *</label>
-                  <input id="email" name="email" type="email" value={form.email} onChange={handleChange} required className="w-full px-4 py-3 border border-border bg-background text-foreground text-sm focus:outline-none focus:border-gold transition-colors" placeholder="votre@email.fr" />
-                </div>
-              </div>
-              <div className="grid sm:grid-cols-2 gap-5">
-                <div>
-                  <label htmlFor="telephone" className="block text-xs font-medium text-primary mb-1.5 tracking-wide">Téléphone</label>
-                  <input id="telephone" name="telephone" type="tel" value={form.telephone} onChange={handleChange} className="w-full px-4 py-3 border border-border bg-background text-foreground text-sm focus:outline-none focus:border-gold transition-colors" placeholder="06 00 00 00 00" />
-                </div>
-                <div>
-                  <label htmlFor="profil" className="block text-xs font-medium text-primary mb-1.5 tracking-wide">Votre profil</label>
-                  <select id="profil" name="profil" value={form.profil} onChange={handleChange} className="w-full px-4 py-3 border border-border bg-background text-foreground text-sm focus:outline-none focus:border-gold transition-colors">
-                    <option value="">Sélectionner</option>
-                    <option value="particulier">Particulier / Famille</option>
-                    <option value="dirigeant">Chef d'entreprise / Dirigeant</option>
-                    <option value="liberal">Profession libérale</option>
-                    <option value="investisseur">Investisseur immobilier</option>
-                    <option value="expatrie">Expatrié / Retour en France</option>
+                  <label htmlFor="sujet" className="block text-[11px] font-medium text-foreground/60 mb-2 tracking-[0.2em] uppercase">Sujet principal</label>
+                  <select id="sujet" name="sujet" value={form.sujet} onChange={handleChange} className="w-full px-4 py-3 bg-background/40 border border-foreground/15 rounded-md text-foreground text-sm focus:outline-none focus:border-[hsl(var(--electric))]/60 transition-colors">
+                    <option value="">Sélectionner un sujet</option>
+                    <option value="bilan">Bilan patrimonial</option>
+                    <option value="fiscalite">Optimisation fiscale</option>
+                    <option value="placement">Placements & épargne</option>
+                    <option value="immobilier">Immobilier & financement</option>
+                    <option value="transmission">Transmission & succession</option>
+                    <option value="entreprise">Patrimoine professionnel</option>
+                    <option value="autre">Autre</option>
                   </select>
                 </div>
-              </div>
-              <div>
-                <label htmlFor="sujet" className="block text-xs font-medium text-primary mb-1.5 tracking-wide">Sujet principal</label>
-                <select id="sujet" name="sujet" value={form.sujet} onChange={handleChange} className="w-full px-4 py-3 border border-border bg-background text-foreground text-sm focus:outline-none focus:border-gold transition-colors">
-                  <option value="">Sélectionner un sujet</option>
-                  <option value="bilan">Bilan patrimonial</option>
-                  <option value="fiscalite">Optimisation fiscale</option>
-                  <option value="placement">Placements & épargne</option>
-                  <option value="immobilier">Immobilier & financement</option>
-                  <option value="transmission">Transmission & succession</option>
-                  <option value="entreprise">Patrimoine professionnel</option>
-                  <option value="autre">Autre</option>
-                </select>
-              </div>
-              <div>
-                <label htmlFor="message" className="block text-xs font-medium text-primary mb-1.5 tracking-wide">Quelques mots sur votre situation</label>
-                <textarea id="message" name="message" rows={4} value={form.message} onChange={handleChange} className="w-full px-4 py-3 border border-border bg-background text-foreground text-sm focus:outline-none focus:border-gold transition-colors resize-none" placeholder="Décrivez brièvement votre situation ou ce qui vous amène..." />
-              </div>
-              <button type="submit" className="px-8 py-3 bg-gold text-navy-deep text-sm font-medium tracking-wide hover:bg-gold-light transition-colors duration-300">
-                Envoyer ma demande
-              </button>
-              <p className="text-xs text-gray-text/60">
-                En soumettant ce formulaire, vous acceptez que vos données soient traitées conformément à notre politique de confidentialité. Réponse sous 24h ouvrées.
-              </p>
-            </form>
-          </div>
+                <div>
+                  <label htmlFor="message" className="block text-[11px] font-medium text-foreground/60 mb-2 tracking-[0.2em] uppercase">Quelques mots sur votre situation</label>
+                  <textarea id="message" name="message" rows={4} value={form.message} onChange={handleChange} className="w-full px-4 py-3 bg-background/40 border border-foreground/15 rounded-md text-foreground text-sm focus:outline-none focus:border-[hsl(var(--electric))]/60 transition-colors resize-none" placeholder="Décrivez brièvement votre situation ou ce qui vous amène..." />
+                </div>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-2">
+                  <button type="submit" className="group inline-flex items-center justify-center gap-2 py-3.5 px-8 btn-primary-glass text-sm font-medium tracking-wide reflection-sweep">
+                    <span>Envoyer ma demande</span>
+                    <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                    </svg>
+                  </button>
+                  <p className="text-[11px] text-foreground/40 font-light">Réponse sous 24h ouvrées · Confidentiel</p>
+                </div>
+              </form>
+            </div>
+          </motion.div>
 
-          <div className="lg:col-span-2 reveal reveal-delay-2 space-y-8">
-            <div className="border-l-2 border-gold/30 pl-6">
-              <h3 className="font-heading text-lg font-semibold text-primary mb-3">Le premier rendez-vous</h3>
-              <p className="text-gray-text text-sm leading-relaxed mb-2">
-                Durée : 30 minutes. Gratuit. Sans engagement.
-              </p>
-              <p className="text-gray-text text-sm leading-relaxed">
-                Il s'agit d'un échange libre pour comprendre votre situation, vos projets et vos préoccupations. Nous n'effectuons aucune recommandation produit lors de ce rendez-vous.
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.7, delay: 0.15 }}
+            className="lg:col-span-2 space-y-5"
+          >
+            <div className="glass-float p-8">
+              <div className="flex items-center gap-3 mb-4">
+                <Calendar className="w-4 h-4 text-[hsl(var(--electric))]" />
+                <p className="text-[10px] tracking-[0.3em] uppercase text-foreground/50 font-medium">Premier rendez-vous</p>
+              </div>
+              <h3 className="font-heading text-lg font-light text-foreground mb-3">30 minutes, gratuit, sans engagement</h3>
+              <p className="text-foreground/60 text-sm leading-relaxed font-light">
+                Un échange libre pour comprendre votre situation, vos projets et vos préoccupations. Aucune recommandation produit n'est faite lors de ce rendez-vous.
               </p>
             </div>
 
-            <div className="border-l-2 border-gold/30 pl-6">
-              <h3 className="font-heading text-lg font-semibold text-primary mb-3">Qui accompagnons-nous ?</h3>
-              <ul className="space-y-1.5 text-sm text-gray-text">
-                <li>• Particuliers avec un patrimoine à structurer ou optimiser</li>
-                <li>• Cadres dirigeants et cadres supérieurs</li>
-                <li>• Professions libérales (médecins, avocats, architectes…)</li>
-                <li>• Chefs d'entreprise et associés</li>
-                <li>• Familles en phase de transmission</li>
+            <div className="glass-float p-8">
+              <div className="flex items-center gap-3 mb-4">
+                <Users className="w-4 h-4 text-[hsl(var(--electric))]" />
+                <p className="text-[10px] tracking-[0.3em] uppercase text-foreground/50 font-medium">Qui accompagnons-nous</p>
+              </div>
+              <ul className="space-y-2 text-sm text-foreground/65 font-light">
+                {[
+                  "Particuliers avec un patrimoine à structurer",
+                  "Cadres dirigeants et cadres supérieurs",
+                  "Professions libérales",
+                  "Chefs d'entreprise et associés",
+                  "Familles en phase de transmission",
+                ].map((line) => (
+                  <li key={line} className="flex items-start gap-3">
+                    <span className="w-1 h-1 rounded-full bg-[hsl(var(--electric))] mt-2 flex-shrink-0" />
+                    <span>{line}</span>
+                  </li>
+                ))}
               </ul>
             </div>
 
-            <div className="border-l-2 border-gold/30 pl-6">
-              <h3 className="font-heading text-lg font-semibold text-primary mb-3">Documents utiles</h3>
-              <p className="text-gray-text text-sm leading-relaxed">
-                Pour le premier échange, aucun document n'est nécessaire. Si nous allons plus loin, nous vous demanderons : dernier avis d'imposition, relevés de patrimoine, contrats d'assurance-vie ou de prévoyance en cours.
+            <div className="glass-float p-8">
+              <div className="flex items-center gap-3 mb-4">
+                <FileText className="w-4 h-4 text-[hsl(var(--electric))]" />
+                <p className="text-[10px] tracking-[0.3em] uppercase text-foreground/50 font-medium">Documents utiles</p>
+              </div>
+              <p className="text-foreground/60 text-sm leading-relaxed font-light">
+                Aucun document n'est nécessaire pour le premier échange. Si nous allons plus loin, nous vous demanderons votre dernier avis d'imposition, vos relevés de patrimoine et contrats en cours.
               </p>
             </div>
 
-            <div className="bg-navy p-6 text-primary-foreground">
-              <h3 className="font-heading text-lg font-semibold mb-3 text-gold">Coordonnées</h3>
-              <div className="space-y-2 text-sm text-primary-foreground/70">
-                <p>12 Cours de l'Intendance, 33000 Bordeaux</p>
-                <p>05 56 00 00 00</p>
-                <p>contact@kanti.fr</p>
-                <p className="text-primary-foreground/40 pt-2 text-xs">Lundi – Vendredi, 9h–18h — Sur rendez-vous</p>
+            <div className="glass-float p-8 relative overflow-hidden">
+              <div className="absolute inset-0 opacity-[0.04] bg-gradient-to-br from-[hsl(var(--electric))] to-transparent pointer-events-none" />
+              <div className="relative">
+                <p className="text-[10px] tracking-[0.3em] uppercase text-[hsl(var(--electric))] mb-5 font-medium">Coordonnées</p>
+                <div className="space-y-3 text-sm text-foreground/70 font-light">
+                  <p className="flex items-start gap-3">
+                    <MapPin className="w-3.5 h-3.5 mt-1 text-foreground/40 flex-shrink-0" />
+                    12 Cours de l'Intendance, 33000 Bordeaux
+                  </p>
+                  <p className="flex items-center gap-3">
+                    <Phone className="w-3.5 h-3.5 text-foreground/40 flex-shrink-0" />
+                    05 56 00 00 00
+                  </p>
+                  <p className="flex items-center gap-3">
+                    <Mail className="w-3.5 h-3.5 text-foreground/40 flex-shrink-0" />
+                    contact@kanti.fr
+                  </p>
+                  <p className="flex items-center gap-3 text-xs text-foreground/40 pt-2 border-t border-foreground/5">
+                    <Clock className="w-3.5 h-3.5 flex-shrink-0" />
+                    Lundi – Vendredi · 9h–18h · Sur rendez-vous
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
