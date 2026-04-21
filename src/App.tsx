@@ -23,6 +23,9 @@ import CasClientsPage from "./pages/CasClientsPage.tsx";
 import FAQPage from "./pages/FAQPage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import ProductDetailPage from "./pages/ProductDetailPage.tsx";
+import MentionsLegalesPage from "./pages/MentionsLegalesPage.tsx";
+import PolitiqueConfidentialitePage from "./pages/PolitiqueConfidentialitePage.tsx";
+import ReclamationsPage from "./pages/ReclamationsPage.tsx";
 
 const queryClient = new QueryClient();
 
@@ -51,6 +54,9 @@ const AppShell = () => {
           <Route path="/notre-methode" element={<NotreMethodePage />} />
           <Route path="/cas-clients" element={<CasClientsPage />} />
           <Route path="/faq-patrimoniale" element={<FAQPage />} />
+          <Route path="/mentions-legales" element={<MentionsLegalesPage />} />
+          <Route path="/politique-de-confidentialite" element={<PolitiqueConfidentialitePage />} />
+          <Route path="/reclamations" element={<ReclamationsPage />} />
           {/* Dynamic product / solution sub-pages */}
           <Route path="/:categorySlug/:productSlug" element={<ProductDetailPage />} />
           <Route path="*" element={<NotFound />} />

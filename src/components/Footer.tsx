@@ -57,9 +57,9 @@ export default function Footer() {
         </div>
         <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 text-xs text-white/35 font-light">
           <div className="flex flex-wrap gap-5">
-            <a href="#" className="hover:text-white transition-colors">Mentions légales</a>
-            <a href="#" className="hover:text-white transition-colors">Politique de confidentialité</a>
-            <a href="#" className="hover:text-white transition-colors">Réclamations</a>
+            <Link to="/mentions-legales" className="hover:text-white transition-colors">Mentions légales</Link>
+            <Link to="/politique-de-confidentialite" className="hover:text-white transition-colors">Politique de confidentialité</Link>
+            <Link to="/reclamations" className="hover:text-white transition-colors">Réclamations</Link>
           </div>
           <p>© 2026 KANTI — Tous droits réservés</p>
         </div>
