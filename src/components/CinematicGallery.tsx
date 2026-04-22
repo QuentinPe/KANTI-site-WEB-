@@ -218,14 +218,16 @@ function Progress({ scrollYProgress, count }: { scrollYProgress: MotionValue<num
       {Array.from({ length: count }).map((_, i) => {
         const segment = 1 / count;
         const center = (i + 0.5) * segment;
+        const lo = Math.max(0, center - segment);
+        const hi = Math.min(1, center + segment);
         const opacity = useTransform(
           scrollYProgress,
-          [center - segment, center, center + segment],
+          [lo, center, hi],
           [0.25, 1, 0.25],
         );
         const scaleY = useTransform(
           scrollYProgress,
-          [center - segment, center, center + segment],
+          [lo, center, hi],
           [1, 2.2, 1],
         );
         return (
