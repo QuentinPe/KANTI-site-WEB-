@@ -78,12 +78,24 @@ function Slide({
   const segment = 1 / total;
   const start = index * segment;
   const end = start + segment;
-  const fadeIn = start - segment * 0.3;
-  const fadeOut = end + segment * 0.05;
-
+  // Build a strictly non-decreasing input range, clamped to [0, 1].
+  const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
+  const sortAsc = (arr: number[]) => {
+    const out = [...arr];
+    for (let i = 1; i < out.length; i++) {
+      if (out[i] < out[i - 1]) out[i] = out[i - 1];
+    }
+    return out;
+  };
+  const opacityRange = sortAsc([
+    clamp01(start - segment * 0.3),
+    clamp01(start),
+    clamp01(end - segment * 0.05),
+    clamp01(end + segment * 0.05),
+  ]);
   const opacity = useTransform(
     scrollYProgress,
-    [Math.max(0, fadeIn), start, end - segment * 0.05, Math.min(1, fadeOut)],
+    opacityRange,
     index === 0 ? [1, 1, 1, 0] : [0, 1, 1, 0],
   );
   const scale = useTransform(scrollYProgress, [start, end], reduce ? [1, 1] : [1.15, 1]);
@@ -91,7 +103,12 @@ function Slide({
   const captionY = useTransform(scrollYProgress, [start, (start + end) / 2, end], [60, 0, -60]);
   const captionOpacity = useTransform(
     scrollYProgress,
-    [start, start + segment * 0.2, end - segment * 0.15, end],
+    sortAsc([
+      clamp01(start),
+      clamp01(start + segment * 0.2),
+      clamp01(end - segment * 0.15),
+      clamp01(end),
+    ]),
     [0, 1, 1, 0],
   );
 
@@ -201,14 +218,16 @@ function Progress({ scrollYProgress, count }: { scrollYProgress: MotionValue<num
       {Array.from({ length: count }).map((_, i) => {
         const segment = 1 / count;
         const center = (i + 0.5) * segment;
+        const lo = Math.max(0, center - segment);
+        const hi = Math.min(1, center + segment);
         const opacity = useTransform(
           scrollYProgress,
-          [center - segment, center, center + segment],
+          [lo, center, hi],
           [0.25, 1, 0.25],
         );
         const scaleY = useTransform(
           scrollYProgress,
-          [center - segment, center, center + segment],
+          [lo, center, hi],
           [1, 2.2, 1],
         );
         return (
