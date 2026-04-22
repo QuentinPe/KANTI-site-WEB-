@@ -337,7 +337,7 @@
     left: -10%;
     width: 40vw;
     height: 40vw;
-    background: radial-gradient(circle, hsl(38 35% 60% / 0.12) 0%, transparent 60%);
+    background: radial-gradient(circle, hsl(218 60% 55% / 0.10) 0%, transparent 60%);
     pointer-events: none;
     filter: blur(60px);
   }
