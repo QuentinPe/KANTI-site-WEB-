@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import Header from "@/components/Header";
@@ -81,9 +81,6 @@ const faqCategories = [
 
 export default function FAQPage() {
   useScrollReveal();
-  const [openItems, setOpenItems] = useState<Record<string, boolean>>({});
-  const [activeCat, setActiveCat] = useState<string>(faqCategories[0].category);
-
   const slugify = (s: string) =>
     s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
@@ -92,25 +89,20 @@ export default function FAQPage() {
     []
   );
 
+  const [activeCatId, setActiveCatId] = useState<string>(sections[0].id);
+  const [openItems, setOpenItems] = useState<Record<string, boolean>>({});
+
+  const activeCat = sections.find((c) => c.id === activeCatId) ?? sections[0];
+  const activeIndex = sections.findIndex((c) => c.id === activeCatId);
+
   const toggle = (key: string) => {
     setOpenItems((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) setActiveCat(entry.target.id);
-        });
-      },
-      { rootMargin: "-30% 0px -60% 0px", threshold: 0 }
-    );
-    sections.forEach((s) => {
-      const el = document.getElementById(s.id);
-      if (el) observer.observe(el);
-    });
-    return () => observer.disconnect();
-  }, [sections]);
+  const selectCat = (id: string) => {
+    setActiveCatId(id);
+    setOpenItems({});
+  };
 
   return (
     <>
@@ -157,15 +149,17 @@ export default function FAQPage() {
                 </p>
                 <ul className="space-y-1">
                   {sections.map((cat, i) => {
-                    const isActive = activeCat === cat.id;
+                    const isActive = activeCatId === cat.id;
                     return (
                       <li key={cat.id}>
-                        <a
-                          href={`#${cat.id}`}
+                        <button
+                          type="button"
+                          onClick={() => selectCat(cat.id)}
                           data-magnetic
-                          className={`group flex items-center gap-4 py-2.5 transition-colors ${
+                          className={`group flex items-center gap-4 py-2.5 w-full text-left transition-colors ${
                             isActive ? "text-foreground" : "text-foreground/55 hover:text-foreground/85"
                           }`}
+                          aria-pressed={isActive}
                         >
                           <span
                             className={`h-px transition-all duration-500 ${
@@ -178,7 +172,10 @@ export default function FAQPage() {
                           <span className="font-heading text-base font-light tracking-tight">
                             {cat.category}
                           </span>
-                        </a>
+                          <span className="ml-auto text-[10px] tracking-[0.18em] uppercase text-foreground/35 font-medium">
+                            {cat.questions.length}
+                          </span>
+                        </button>
                       </li>
                     );
                   })}
@@ -188,37 +185,38 @@ export default function FAQPage() {
 
             {/* Categories + questions */}
             <div className="lg:col-span-8">
-              {sections.map((cat, catIdx) => (
-                <div
-                  key={cat.id}
-                  id={cat.id}
-                  className={`scroll-mt-32 reveal ${
-                    catIdx > 0 ? "mt-16 lg:mt-20 pt-16 lg:pt-20 border-t border-foreground/[0.08]" : ""
-                  }`}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeCat.id}
+                  initial={{ opacity: 0, x: 24 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -16 }}
+                  transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                  className="rounded-[1.75rem] border border-foreground/[0.08] bg-white/55 backdrop-blur-md p-6 lg:p-10 shadow-[0_30px_80px_-40px_hsl(var(--foreground)/0.18)]"
                 >
                   <div className="mb-8 flex items-start justify-between gap-6">
                     <div className="flex items-baseline gap-4">
                       <span className="text-[11px] font-medium tracking-[0.3em] text-foreground/40">
-                        {String(catIdx + 1).padStart(2, "0")}
+                        {String(activeIndex + 1).padStart(2, "0")}
                       </span>
                       <div>
                         <h3 className="font-heading text-2xl md:text-3xl font-light text-foreground tracking-tight leading-tight">
-                          {cat.category}
+                          {activeCat.category}
                         </h3>
                         <p className="text-foreground/55 text-sm font-light mt-1.5 max-w-md">
-                          {cat.intro}
+                          {activeCat.intro}
                         </p>
                       </div>
                     </div>
                     <span className="hidden sm:inline-flex shrink-0 items-center gap-1.5 mt-1 px-3 py-1 rounded-full border border-foreground/10 bg-white/40 backdrop-blur-sm text-[10px] tracking-[0.18em] uppercase text-foreground/55 font-medium">
                       <span className="w-1 h-1 rounded-full bg-foreground/40" />
-                      {cat.questions.length} questions
+                      {activeCat.questions.length} questions
                     </span>
                   </div>
 
                   <ul className="space-y-3">
-                    {cat.questions.map((item, i) => {
-                      const key = `${cat.id}-${i}`;
+                    {activeCat.questions.map((item, i) => {
+                      const key = `${activeCat.id}-${i}`;
                       const isOpen = !!openItems[key];
                       return (
                         <li
@@ -267,8 +265,8 @@ export default function FAQPage() {
                       );
                     })}
                   </ul>
-                </div>
-              ))}
+                </motion.div>
+              </AnimatePresence>
             </div>
           </div>
         </div>
