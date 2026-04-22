@@ -27,10 +27,11 @@ export default function CreditSimulator() {
 
   return (
     <SimulatorShell
-      eyebrow="Financement & crédit"
-      index="02"
+      eyebrow="Courtage indépendant"
+      index="06"
       title="Calculez votre capacité d'emprunt"
       subtitle="Estimez votre mensualité et le coût total de votre financement immobilier."
+      disclaimer="Simulation indicative hors assurance et frais de dossier. Les conditions réelles dépendent de votre profil emprunteur."
     >
       <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 items-start">
         <div className="lg:col-span-5 space-y-8">

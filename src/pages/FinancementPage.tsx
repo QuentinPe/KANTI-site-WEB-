@@ -48,11 +48,12 @@ export default function FinancementPage() {
 
       {/* Simulator */}
       <section className="section-padding">
-        <div className="max-w-6xl mx-auto reveal">
+        <div className="max-w-7xl mx-auto reveal">
+          <div className="mb-10 md:mb-14 flex items-center gap-4">
+            <span className="text-[10px] tracking-[0.32em] uppercase text-foreground/55 font-medium">Simulez</span>
+            <div className="h-px flex-1 bg-foreground/10" />
+          </div>
           <CreditSimulator />
-          <p className="text-[11px] text-foreground/45 mt-6 text-center">
-            Simulation indicative hors assurance et frais de dossier. Les conditions réelles dépendent de votre profil emprunteur.
-          </p>
         </div>
       </section>
 
@@ -66,8 +67,10 @@ export default function FinancementPage() {
       <PageCTA
         title="Parlons de votre projet de financement"
         subtitle="Nous étudions votre dossier et vous obtenons les meilleures conditions du marché."
-        eyebrow="Financement"
-        index="05"
+        eyebrow="Courtage indépendant"
+        index="06"
+        secondaryText="Patrimoine immobilier"
+        secondaryHref="/immobilier"
       />
       <Footer />
     </>

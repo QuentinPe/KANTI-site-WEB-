@@ -24,9 +24,10 @@ export default function PatrimoineProSimulator() {
   return (
     <SimulatorShell
       eyebrow="Dirigeants & associés"
-      index="06"
+      index="05"
       title="Comparez vos stratégies de rémunération"
       subtitle="Salaire, dividendes, holding : visualisez l'impact fiscal de chaque arbitrage."
+      disclaimer="Modélisation simplifiée à visée pédagogique. Une étude personnalisée intègre votre régime social, votre situation patrimoniale et votre projet."
     >
       <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 items-start">
         <div className="lg:col-span-5 space-y-8">

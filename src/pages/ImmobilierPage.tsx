@@ -49,11 +49,12 @@ export default function ImmobilierPage() {
 
       {/* Simulator */}
       <section className="section-padding">
-        <div className="max-w-6xl mx-auto reveal">
+        <div className="max-w-7xl mx-auto reveal">
+          <div className="mb-10 md:mb-14 flex items-center gap-4">
+            <span className="text-[10px] tracking-[0.32em] uppercase text-foreground/55 font-medium">Simulez</span>
+            <div className="h-px flex-1 bg-foreground/10" />
+          </div>
           <ImmobilierSimulator />
-          <p className="text-[11px] text-foreground/45 mt-6 text-center">
-            Simulation indicative avec revalorisation de 2 % / an et 25 % de charges. Ne constitue pas un conseil en investissement.
-          </p>
         </div>
       </section>
 
@@ -67,8 +68,8 @@ export default function ImmobilierPage() {
       <PageCTA
         title="Parlons de votre projet immobilier"
         subtitle="Un premier échange pour analyser votre projet et identifier le montage le plus adapté."
-        eyebrow="Immobilier"
-        index="04"
+        eyebrow="Pierre & stratégie"
+        index="03"
         secondaryText="Financement & crédit"
         secondaryHref="/financement"
       />

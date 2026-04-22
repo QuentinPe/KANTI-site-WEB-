@@ -30,10 +30,11 @@ export default function TransmissionSimulator() {
 
   return (
     <SimulatorShell
-      eyebrow="Transmission patrimoniale"
-      index="05"
+      eyebrow="Héritage & famille"
+      index="04"
       title="Préservez ce qui compte vraiment"
       subtitle="Mesurez l'impact d'une stratégie de transmission optimisée sur les droits dus."
+      disclaimer="Estimation indicative. Les droits réels dépendent de la composition du patrimoine et des dispositions déjà en place."
     >
       <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 items-start">
         <div className="lg:col-span-5 space-y-8">
