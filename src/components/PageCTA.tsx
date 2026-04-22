@@ -56,7 +56,7 @@ export default function PageCTA({
           </div>
 
           {/* Colonne droite : sous-titre + actions */}
-          <div className="lg:col-span-7 lg:pl-10 lg:border-l lg:${hairline}">
+          <div className={`lg:col-span-7 lg:pl-10 lg:border-l ${hairline}`}>
             <p className={`text-base md:text-lg leading-relaxed mb-10 font-light max-w-xl ${fgSoft}`}>
               {subtitle}
             </p>
