@@ -9,6 +9,8 @@ interface PageHeroProps {
   stats?: { value: string; label: string }[];
 }
 
+import { useEffect, useRef } from "react";
+
 export default function PageHero({
   title,
   subtitle,
@@ -19,20 +21,37 @@ export default function PageHero({
   imageAlt,
   stats,
 }: PageHeroProps) {
+  const orbRef = useRef<HTMLDivElement>(null);
+
+  // Cursor-tracked blue light reflection — same as homepage Hero
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (!orbRef.current) return;
+      const x = (e.clientX / window.innerWidth) * 100;
+      const y = (e.clientY / window.innerHeight) * 100;
+      orbRef.current.style.background = `radial-gradient(circle at ${x}% ${y}%, hsl(210 100% 60% / 0.18) 0%, transparent 50%)`;
+    };
+    window.addEventListener("mousemove", handler);
+    return () => window.removeEventListener("mousemove", handler);
+  }, []);
+
   return (
     <section className="relative min-h-[88vh] flex items-end overflow-hidden section-dark">
-      {/* Floating ambient orbs */}
+      {/* Cursor-tracked reflection */}
+      <div ref={orbRef} aria-hidden className="absolute inset-0 pointer-events-none transition-all duration-700" />
+
+      {/* Floating ambient blue halos — aligned with homepage Hero */}
       <div
-        className="absolute top-[10%] right-[5%] w-[400px] h-[400px] rounded-full pointer-events-none float-soft"
+        className="absolute top-[15%] right-[10%] w-[400px] h-[400px] rounded-full pointer-events-none float-soft"
         style={{
-          background: "radial-gradient(circle, hsl(218 55% 45% / 0.18) 0%, transparent 70%)",
-          filter: "blur(50px)",
+          background: "radial-gradient(circle, hsl(210 100% 60% / 0.25) 0%, transparent 70%)",
+          filter: "blur(40px)",
         }}
       />
       <div
-        className="absolute bottom-[10%] left-[5%] w-[300px] h-[300px] rounded-full pointer-events-none float-slow"
+        className="absolute bottom-[20%] left-[5%] w-[300px] h-[300px] rounded-full pointer-events-none float-slow"
         style={{
-          background: "radial-gradient(circle, hsl(215 40% 60% / 0.10) 0%, transparent 70%)",
+          background: "radial-gradient(circle, hsl(210 100% 60% / 0.12) 0%, transparent 70%)",
           filter: "blur(50px)",
         }}
       />
