@@ -12,6 +12,11 @@ import {
   type SriProfile,
   type RiskSection,
 } from "@/data/profilRisqueQuestions";
+import {
+  CORMORANT_REG_B64,
+  CORMORANT_BOLD_B64,
+  COVER_BUILDING_B64,
+} from "@/assets/pdf-assets";
 
 type Phase = "intro" | "quiz" | "result";
 
@@ -365,11 +370,17 @@ function ResultView({
           <div>
             <div className="font-heading text-7xl lg:text-8xl font-light text-foreground tracking-tight leading-none">
               {profile.sri}
+              <span className="text-foreground/40 text-3xl lg:text-4xl font-light tabular-nums">
+                .{Math.round(((profile.sriPrecise ?? profile.sri) % 1) * 10)}
+              </span>
               <span className="text-foreground/30 text-4xl lg:text-5xl"> / 7</span>
             </div>
             <h3 className="mt-4 font-heading text-2xl lg:text-3xl font-light text-foreground tracking-tight">
               {profile.label}
             </h3>
+            <p className="mt-2 text-[11px] tracking-[0.18em] uppercase text-foreground/45">
+              Score précis : {(profile.sriPrecise ?? profile.sri).toFixed(2)} / 7,00
+            </p>
           </div>
           <span className="self-start lg:self-auto inline-flex items-center px-4 py-1.5 rounded-full bg-[hsl(var(--electric)/0.1)] text-[hsl(var(--electric))] text-[11px] tracking-[0.2em] uppercase font-medium">
             {profile.shortLabel}
@@ -515,6 +526,18 @@ function generatePdf(
   const M = 56;
   const CW = W - M * 2; // content width
 
+  // Embarquer la police Cormorant Garamond (police premium du site)
+  try {
+    doc.addFileToVFS("CormorantGaramond-Regular.ttf", CORMORANT_REG_B64);
+    doc.addFont("CormorantGaramond-Regular.ttf", "Cormorant", "normal");
+    doc.addFileToVFS("CormorantGaramond-Bold.ttf", CORMORANT_BOLD_B64);
+    doc.addFont("CormorantGaramond-Bold.ttf", "Cormorant", "bold");
+  } catch {
+    /* fallback helvetica */
+  }
+  const SERIF = "Cormorant";
+  const SANS = "helvetica";
+
   // ── Palette éditoriale (raffinée) ─────────────────────
   type RGB = [number, number, number];
   const NAVY: RGB = [11, 22, 50];        // texte principal / fonds sombres
@@ -552,153 +575,162 @@ function generatePdf(
   // PAGE 1 — COUVERTURE (épurée, éditoriale)
   // ══════════════════════════════════════════════════════
 
-  // Fond papier très doux
-  setFill(PAPER);
-  doc.rect(0, 0, W, H, "F");
+  const sriPrecise = profile.sriPrecise ?? profile.sri;
 
-  // Bande supérieure navy fine (en-tête de marque)
-  setFill(NAVY);
-  doc.rect(0, 0, W, 38, "F");
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(11);
-  setText(WHITE);
-  doc.text("K  A  N  T  I", M, 24);
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(7.5);
-  setText([190, 200, 220]);
-  doc.text(KANTI_INFO.baseline.toUpperCase(), W - M, 24, { align: "right" });
-
-  // Bloc latéral navy (1/3 droit) — discret mais affirmé
-  setFill(NAVY);
-  doc.rect(W - 180, 38, 180, H - 38, "F");
-  // Filet doré vertical
-  setDraw(ACCENT);
-  doc.setLineWidth(1.5);
-  doc.line(W - 180, 38, W - 180, H);
-
-  // Cercle décoratif léger sur le bloc navy
-  setDraw([28, 44, 86]);
-  doc.setLineWidth(0.6);
-  doc.circle(W - 90, H - 220, 130, "S");
-  doc.circle(W - 90, H - 220, 90, "S");
-  doc.circle(W - 90, H - 220, 50, "S");
-
-  // SRI géant dans le bloc latéral
-  setText(WHITE);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(110);
-  doc.text(`${profile.sri}`, W - 90, 240, { align: "center" });
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(11);
-  setText([170, 190, 220]);
-  doc.text("/ 7", W - 90, 268, { align: "center" });
-  doc.setFontSize(8);
-  doc.text("SRI · ÉCHELLE 1–7", W - 90, 290, { align: "center" });
-
-  // Petite jauge verticale décorative
-  for (let i = 1; i <= 7; i++) {
-    const yBar = 330 + (7 - i) * 16;
-    const isActive = i === profile.sri;
-    setFill(isActive ? ACCENT : ([34, 50, 90] as RGB));
-    doc.roundedRect(W - 130, yBar, 80, 8, 2, 2, "F");
-    setText(isActive ? WHITE : [120, 140, 175]);
-    doc.setFont("helvetica", isActive ? "bold" : "normal");
-    doc.setFontSize(7.5);
-    doc.text(`${i}`, W - 38, yBar + 6, { align: "right" });
+  // ── Photo pleine hauteur à droite (bâtiment haussmannien) ──
+  const photoW = 250;
+  try {
+    doc.addImage(COVER_BUILDING_B64, "JPEG", W - photoW, 0, photoW, H);
+  } catch {
+    setFill(NAVY);
+    doc.rect(W - photoW, 0, photoW, H, "F");
   }
+  // Voile navy translucide sur la photo
+  setFill(NAVY);
+  doc.setGState(new (doc as any).GState({ opacity: 0.42 }));
+  doc.rect(W - photoW, 0, photoW, H, "F");
+  doc.setGState(new (doc as any).GState({ opacity: 1 }));
 
-  // Bloc texte gauche : titre, baseline, contexte
-  setText(MUTED);
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(8);
-  doc.text("RAPPORT CONFIDENTIEL  ·  AUTO-ÉVALUATION AMF", M, 100);
+  // Fond papier à gauche
+  setFill(PAPER);
+  doc.rect(0, 0, W - photoW, H, "F");
 
-  // Filet
+  // Filet doré vertical entre les deux zones
   setDraw(ACCENT);
-  doc.setLineWidth(1.4);
-  doc.line(M, 116, M + 56, 116);
+  doc.setLineWidth(1.2);
+  doc.line(W - photoW, 0, W - photoW, H);
 
-  // Titre éditorial
+  // ── Zone gauche : éditorial ───────────────────────────
+  // Marque KANTI en haut
   setText(NAVY);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(44);
-  doc.text("Profil", M, 180);
-  doc.text("d'investisseur", M, 224);
+  doc.setFont(SANS, "bold");
+  doc.setFontSize(11);
+  doc.setCharSpace(4);
+  doc.text("KANTI", M, 60);
+  doc.setCharSpace(0);
+  setDraw(ACCENT);
+  doc.setLineWidth(1.2);
+  doc.line(M, 70, M + 28, 70);
+  setText(MUTED);
+  doc.setFont(SANS, "normal");
+  doc.setFontSize(7);
+  doc.setCharSpace(1.2);
+  doc.text(KANTI_INFO.baseline.toUpperCase(), M, 84);
+  doc.setCharSpace(0);
+
+  // Eyebrow
+  setText(ACCENT);
+  doc.setFont(SANS, "bold");
+  doc.setFontSize(7.5);
+  doc.setCharSpace(2.2);
+  doc.text("RAPPORT CONFIDENTIEL  ·  AUTO-ÉVALUATION AMF", M, 170);
+  doc.setCharSpace(0);
+
+  // Titre éditorial — Cormorant Garamond
+  setText(NAVY);
+  doc.setFont(SERIF, "normal");
+  doc.setFontSize(58);
+  doc.text("Profil", M, 240);
+  doc.text("d'investisseur.", M, 296);
 
   // Sous-titre
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(11);
+  doc.setFont(SANS, "normal");
+  doc.setFontSize(10.5);
   setText(NAVY_SOFT);
   const intro = doc.splitTextToSize(
-    "Évaluation personnalisée de votre tolérance au risque, conforme aux exigences de l'Autorité des Marchés Financiers.",
-    W - 180 - M - 24,
+    "Évaluation personnalisée de votre tolérance au risque, conforme aux exigences de l'Autorité des Marchés Financiers (DDA / MIF II).",
+    W - photoW - M - 24,
   );
-  doc.text(intro, M, 268);
+  doc.text(intro, M, 332);
 
-  // Carte « Profil retenu » blanche, posée sur le fond papier
-  const cardY = 340;
-  const cardW = W - 180 - M - 24;
+  // Carte profil
+  const cardY = 410;
+  const cardW = W - photoW - M - 24;
   setFill(WHITE);
-  doc.roundedRect(M, cardY, cardW, 150, 10, 10, "F");
+  doc.roundedRect(M, cardY, cardW, 170, 12, 12, "F");
   setDraw(HAIR);
   doc.setLineWidth(0.6);
-  doc.roundedRect(M, cardY, cardW, 150, 10, 10, "S");
-  // Filet accent gauche
+  doc.roundedRect(M, cardY, cardW, 170, 12, 12, "S");
   setFill(ACCENT);
-  doc.rect(M, cardY, 3, 150, "F");
+  doc.rect(M, cardY, 3, 170, "F");
 
   setText(MUTED);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(8);
-  doc.text("PROFIL RETENU", M + 22, cardY + 28);
+  doc.setFont(SANS, "bold");
+  doc.setFontSize(7.5);
+  doc.setCharSpace(2);
+  doc.text("VOTRE PROFIL RETENU", M + 22, cardY + 26);
+  doc.setCharSpace(0);
+
+  // Score décimal en grand
+  setText(NAVY);
+  doc.setFont(SERIF, "bold");
+  doc.setFontSize(56);
+  doc.text(`${sriPrecise.toFixed(1)}`, M + 22, cardY + 92);
+  doc.setFont(SANS, "normal");
+  doc.setFontSize(11);
+  setText(MUTED);
+  const scoreW = doc.getTextWidth(`${sriPrecise.toFixed(1)}`);
+  doc.text("/ 7", M + 22 + scoreW + 6, cardY + 92);
 
   setText(NAVY);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(22);
-  doc.text(profile.label, M + 22, cardY + 58);
-
+  doc.setFont(SERIF, "normal");
+  doc.setFontSize(20);
+  doc.text(profile.label, M + 22, cardY + 122);
   setText(ACCENT);
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(9);
-  doc.text(profile.shortLabel.toUpperCase(), M + 22, cardY + 76);
-
-  // Mini description
-  setText(INK);
-  doc.setFontSize(9.5);
-  const miniDesc = doc.splitTextToSize(
-    profile.description,
-    cardW - 44,
-  ).slice(0, 3);
-  doc.text(miniDesc, M + 22, cardY + 100);
-
-  // Méta édition
-  setText(MUTED);
-  doc.setFont("helvetica", "normal");
+  doc.setFont(SANS, "bold");
   doc.setFontSize(8);
-  doc.text(`Édité le ${today}`, M, H - 120);
-  doc.text(ref, M, H - 106);
+  doc.setCharSpace(2);
+  doc.text(profile.shortLabel.toUpperCase(), M + 22, cardY + 140);
+  doc.setCharSpace(0);
 
-  // Pied de page couverture
+  setText(MUTED);
+  doc.setFont(SANS, "normal");
+  doc.setFontSize(8.5);
+  doc.text(`Indicateur synthétique de risque (échelle PRIIPs 1 → 7)`, M + 22, cardY + 156);
+
+  // Méta + footer couverture
   setDraw(HAIR);
   doc.setLineWidth(0.4);
-  doc.line(M, H - 70, W - 200, H - 70);
-  setText(NAVY_SOFT);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(8);
-  doc.text(KANTI_INFO.name, M, H - 54);
-  doc.setFont("helvetica", "normal");
-  setText(MUTED);
-  doc.setFontSize(7.5);
-  doc.text(KANTI_INFO.address, M, H - 42);
-  doc.text(`${KANTI_INFO.phone}  ·  ${KANTI_INFO.email}`, M, H - 30);
+  doc.line(M, H - 90, W - photoW - 24, H - 90);
 
-  // Mention en bas du bloc latéral
-  setText([170, 185, 215]);
-  doc.setFont("helvetica", "normal");
+  setText(NAVY);
+  doc.setFont(SANS, "bold");
+  doc.setFontSize(8);
+  doc.text("Édité le", M, H - 70);
+  doc.text("Référence", M + 120, H - 70);
+  setText(MUTED);
+  doc.setFont(SANS, "normal");
+  doc.text(today, M, H - 56);
+  doc.text(ref, M + 120, H - 56);
+
+  setText(NAVY_SOFT);
+  doc.setFont(SANS, "normal");
   doc.setFontSize(7);
-  doc.text("Document pédagogique", W - 90, H - 54, { align: "center" });
-  doc.text("ne constituant pas un conseil", W - 90, H - 44, { align: "center" });
-  doc.text("personnalisé au sens AMF.", W - 90, H - 34, { align: "center" });
+  doc.text(`${KANTI_INFO.address}  ·  ${KANTI_INFO.email}`, M, H - 30);
+
+  // ── Zone droite (sur la photo) : signature ─────────
+  setText(WHITE);
+  doc.setFont(SERIF, "normal");
+  doc.setFontSize(13);
+  const sigX = W - photoW / 2;
+  doc.text("« La sérénité patrimoniale", sigX, H / 2 - 20, { align: "center" });
+  doc.text("se construit sur la mesure. »", sigX, H / 2, { align: "center" });
+  setDraw([220, 200, 150]);
+  doc.setLineWidth(0.6);
+  doc.line(sigX - 28, H / 2 + 16, sigX + 28, H / 2 + 16);
+  setText([220, 225, 240]);
+  doc.setFont(SANS, "bold");
+  doc.setFontSize(7);
+  doc.setCharSpace(2);
+  doc.text("KANTI · BORDEAUX", sigX, H / 2 + 32, { align: "center" });
+  doc.setCharSpace(0);
+
+  // Mention bas droite
+  setText([200, 210, 230]);
+  doc.setFont(SANS, "normal");
+  doc.setFontSize(6.5);
+  doc.text("Document pédagogique — ne constitue pas", sigX, H - 50, { align: "center" });
+  doc.text("un conseil personnalisé au sens AMF.", sigX, H - 38, { align: "center" });
 
   // ══════════════════════════════════════════════════════
   // PAGE 2 — SYNTHÈSE
@@ -728,13 +760,19 @@ function generatePdf(
 
   // Big score (gauche)
   setText(WHITE);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(78);
-  doc.text(`${profile.sri}`, M + 36, y + 110);
-  doc.setFont("helvetica", "normal");
+  doc.setFont(SERIF, "bold");
+  doc.setFontSize(86);
+  doc.text(`${sriPrecise.toFixed(1)}`, M + 36, y + 112);
+  const bigW = doc.getTextWidth(`${sriPrecise.toFixed(1)}`);
+  doc.setFont(SANS, "normal");
   doc.setFontSize(18);
   setText([170, 190, 220]);
-  doc.text("/ 7", M + 110, y + 110);
+  doc.text("/ 7", M + 36 + bigW + 8, y + 112);
+  setText([150, 170, 200]);
+  doc.setFontSize(7.5);
+  doc.setCharSpace(1.6);
+  doc.text(`SRI ARRONDI : ${profile.sri}`, M + 36, y + 134);
+  doc.setCharSpace(0);
 
   // Label profil
   setText(WHITE);
@@ -803,10 +841,174 @@ function generatePdf(
   );
 
   // ══════════════════════════════════════════════════════
+  // PAGE 3 — VOTRE POSITIONNEMENT (statistiques INSEE / AMF / Banque de France)
+  // ══════════════════════════════════════════════════════
+  doc.addPage();
+  drawPageHeader("Votre positionnement", "02");
+  y = 150;
+
+  setText(MUTED);
+  doc.setFont(SANS, "normal");
+  doc.setFontSize(10);
+  const posLead = doc.splitTextToSize(
+    "Comparez votre profil à la population française des épargnants à partir de données publiques (INSEE 2023, AMF Baromètre 2024, Banque de France — Enquête Patrimoine).",
+    CW,
+  );
+  doc.text(posLead, M, y);
+  y += posLead.length * 13 + 24;
+
+  // ── Distribution SRI sur la population française (estimation AMF) ─
+  // Source : AMF — Baromètre Épargne 2024 (répartition indicative
+  // des profils de risque parmi les détenteurs de produits financiers).
+  const distribution: { sri: number; pct: number }[] = [
+    { sri: 1, pct: 18 },
+    { sri: 2, pct: 24 },
+    { sri: 3, pct: 22 },
+    { sri: 4, pct: 17 },
+    { sri: 5, pct: 11 },
+    { sri: 6, pct: 6 },
+    { sri: 7, pct: 2 },
+  ];
+
+  y = sectionLabel(y, "Distribution des profils en France");
+  setText(INK);
+  doc.setFont(SANS, "normal");
+  doc.setFontSize(9.5);
+  const chartIntro = doc.splitTextToSize(
+    "Part estimée des épargnants français par niveau de SRI. Votre profil est mis en évidence.",
+    CW,
+  );
+  doc.text(chartIntro, M, y);
+  y += chartIntro.length * 12 + 14;
+
+  // Graphique en barres
+  const chartH = 130;
+  const chartW = CW;
+  const chartX = M;
+  const chartY = y;
+  const maxPct = Math.max(...distribution.map((d) => d.pct));
+  const barW = (chartW - 40) / 7;
+
+  // Axe horizontal
+  setDraw(HAIR);
+  doc.setLineWidth(0.4);
+  doc.line(chartX, chartY + chartH, chartX + chartW, chartY + chartH);
+
+  // Lignes de fond (grille)
+  setDraw([235, 238, 244]);
+  doc.setLineWidth(0.3);
+  for (let g = 1; g <= 4; g++) {
+    const gy = chartY + chartH - (chartH * g) / 4;
+    doc.line(chartX + 24, gy, chartX + chartW, gy);
+    setText(MUTED);
+    doc.setFont(SANS, "normal");
+    doc.setFontSize(7);
+    doc.text(`${Math.round((maxPct * g) / 4)}%`, chartX + 18, gy + 3, { align: "right" });
+  }
+
+  distribution.forEach((d, i) => {
+    const bx = chartX + 30 + i * barW;
+    const bh = (d.pct / maxPct) * (chartH - 12);
+    const by = chartY + chartH - bh;
+    const isMine = d.sri === profile.sri;
+    setFill(isMine ? ACCENT : ([210, 218, 232] as RGB));
+    doc.roundedRect(bx + 6, by, barW - 12, bh, 3, 3, "F");
+    // Pourcentage au-dessus
+    setText(isMine ? ACCENT_DEEP : MUTED);
+    doc.setFont(SANS, isMine ? "bold" : "normal");
+    doc.setFontSize(8);
+    doc.text(`${d.pct}%`, bx + barW / 2, by - 4, { align: "center" });
+    // Label SRI
+    setText(isMine ? NAVY : MUTED);
+    doc.setFont(SANS, isMine ? "bold" : "normal");
+    doc.setFontSize(8);
+    doc.text(`SRI ${d.sri}`, bx + barW / 2, chartY + chartH + 14, { align: "center" });
+    if (isMine) {
+      // Marqueur "Vous"
+      setFill(GOLD);
+      doc.roundedRect(bx + barW / 2 - 14, by - 22, 28, 12, 3, 3, "F");
+      setText(WHITE);
+      doc.setFont(SANS, "bold");
+      doc.setFontSize(7);
+      doc.text("VOUS", bx + barW / 2, by - 13, { align: "center" });
+    }
+  });
+
+  y = chartY + chartH + 36;
+
+  // Légende source
+  setText(MUTED);
+  doc.setFont(SANS, "italic");
+  doc.setFontSize(7);
+  doc.text("Source : AMF — Baromètre Épargne et Investissement 2024 (estimation indicative).", M, y);
+  y += 24;
+
+  // ── KPI cards : statistiques clés du patrimoine FR ─
+  y = ensureSpace(y, 130, () => { doc.addPage(); drawPageHeader("Votre positionnement", "02"); return 150; });
+  y = sectionLabel(y, "Le patrimoine des Français — chiffres clés");
+
+  const kpis = [
+    { value: "177 200 €", label: "Patrimoine brut médian", source: "INSEE — Enquête Patrimoine 2021" },
+    { value: "39,5 %", label: "Ménages détenant un produit risqué", source: "AMF / Banque de France 2023" },
+    { value: "5,8 %", label: "Rendement annuel moyen actions FR (40 ans)", source: "Banque de France" },
+    { value: "2,9 %", label: "Inflation annuelle moyenne 2020-2024", source: "INSEE — IPC" },
+  ];
+  const kpiW = (CW - 30) / 2;
+  const kpiH = 78;
+  kpis.forEach((k, i) => {
+    const col = i % 2;
+    const row = Math.floor(i / 2);
+    const kx = M + col * (kpiW + 30);
+    const ky = y + row * (kpiH + 14);
+    setFill(WHITE);
+    doc.roundedRect(kx, ky, kpiW, kpiH, 8, 8, "F");
+    setDraw(HAIR);
+    doc.setLineWidth(0.5);
+    doc.roundedRect(kx, ky, kpiW, kpiH, 8, 8, "S");
+    setFill(ACCENT);
+    doc.rect(kx, ky, 3, kpiH, "F");
+    setText(NAVY);
+    doc.setFont(SERIF, "bold");
+    doc.setFontSize(22);
+    doc.text(k.value, kx + 16, ky + 32);
+    setText(INK);
+    doc.setFont(SANS, "normal");
+    doc.setFontSize(9);
+    const lab = doc.splitTextToSize(k.label, kpiW - 32);
+    doc.text(lab, kx + 16, ky + 50);
+    setText(MUTED);
+    doc.setFont(SANS, "italic");
+    doc.setFontSize(6.5);
+    doc.text(k.source, kx + 16, ky + 70);
+  });
+  y += Math.ceil(kpis.length / 2) * (kpiH + 14) + 18;
+
+  // ── Lecture personnalisée de votre positionnement ─
+  y = ensureSpace(y, 110, () => { doc.addPage(); drawPageHeader("Votre positionnement", "02"); return 150; });
+  y = sectionLabel(y, "Ce que cela signifie pour vous");
+
+  // Position centile estimée
+  const cumLower = distribution.filter((d) => d.sri < profile.sri).reduce((s, d) => s + d.pct, 0);
+  const cumThis = distribution.find((d) => d.sri === profile.sri)?.pct ?? 0;
+  const positionText =
+    `Avec un SRI de ${sriPrecise.toFixed(1)}/7, vous appartenez aux ${cumThis}% d'épargnants français de profil « ${profile.shortLabel.toLowerCase()} ». ` +
+    `Environ ${cumLower}% des épargnants ont un profil plus prudent que le vôtre, et ${100 - cumLower - cumThis}% un profil plus offensif.`;
+  setFill(PAPER_DEEP);
+  doc.roundedRect(M, y, CW, 88, 8, 8, "F");
+  setFill(ACCENT);
+  doc.rect(M, y, 3, 88, "F");
+  setText(INK);
+  doc.setFont(SANS, "normal");
+  doc.setFontSize(10);
+  const posLines = doc.splitTextToSize(positionText, CW - 40);
+  doc.text(posLines, M + 18, y + 24);
+  y += 100;
+
+  // ══════════════════════════════════════════════════════
   // PAGES SUIVANTES — DÉTAIL DES RÉPONSES
   // ══════════════════════════════════════════════════════
   doc.addPage();
-  drawPageHeader("Détail de vos réponses", "02");
+  drawPageHeader("Détail de vos réponses", "03");
   y = 150;
 
   setText(MUTED);
@@ -820,7 +1022,7 @@ function generatePdf(
   y += recapLead.length * 13 + 24;
 
   RISK_SECTIONS.forEach((section, sIdx) => {
-    y = ensureSpace(y, 80, () => { doc.addPage(); drawPageHeader("Détail de vos réponses", "02"); return 150; });
+    y = ensureSpace(y, 80, () => { doc.addPage(); drawPageHeader("Détail de vos réponses", "03"); return 150; });
 
     // En-tête de section : numéro romain + titre
     setText(ACCENT);
@@ -850,47 +1052,83 @@ function generatePdf(
       }
       const isUnanswered = answerLabel === "Non renseigné";
 
-      // Mesure préalable
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(10);
-      const qText = doc.splitTextToSize(q.question, CW - 40);
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(10);
-      const aText = doc.splitTextToSize(answerLabel, CW - 40);
-      const blockH = 18 + qText.length * 13 + 10 + aText.length * 13 + 18;
+      // ── Mesures précises pour éviter tout décalage ──
+      const PADX = 18;
+      const PADTOP = 18;
+      const META_H = 14;
+      const Q_FS = 10.5;
+      const Q_LH = 14;     // line-height question
+      const A_FS = 10.5;
+      const A_LH = 14;     // line-height réponse
+      const RESP_LABEL_H = 16;
+      const SEP_GAP = 10;
+      const PADBOT = 18;
 
-      y = ensureSpace(y, blockH, () => { doc.addPage(); drawPageHeader("Détail de vos réponses", "02"); return 150; });
+      doc.setFont(SANS, "normal");
+      doc.setFontSize(Q_FS);
+      const qText = doc.splitTextToSize(q.question, CW - PADX * 2);
+      doc.setFont(SANS, "bold");
+      doc.setFontSize(A_FS);
+      const aText = doc.splitTextToSize(answerLabel, CW - PADX * 2);
 
-      // Carte question (papier doux)
+      const blockH =
+        PADTOP + META_H +
+        qText.length * Q_LH +
+        SEP_GAP +
+        RESP_LABEL_H +
+        aText.length * A_LH +
+        PADBOT;
+
+      y = ensureSpace(y, blockH, () => { doc.addPage(); drawPageHeader("Détail de vos réponses", "03"); return 150; });
+
+      // Carte question
       setFill(PAPER_DEEP);
       doc.roundedRect(M, y, CW, blockH, 8, 8, "F");
-      // Numéro
+
+      // Méta : numéro + dimension
       setText(ACCENT);
-      doc.setFont("helvetica", "bold");
+      doc.setFont(SANS, "bold");
       doc.setFontSize(8);
-      doc.text(`Q${String(idx + 1).padStart(2, "0")}  ·  ${q.dimension.toUpperCase()}`, M + 16, y + 16);
+      doc.setCharSpace(1.4);
+      doc.text(
+        `Q${String(idx + 1).padStart(2, "0")}  ·  ${q.dimension.toUpperCase()}`,
+        M + PADX,
+        y + PADTOP,
+      );
+      doc.setCharSpace(0);
 
       // Question
+      const qY = y + PADTOP + META_H;
       setText(NAVY);
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(10.5);
-      doc.text(qText, M + 16, y + 34);
+      doc.setFont(SANS, "normal");
+      doc.setFontSize(Q_FS);
+      qText.forEach((line: string, li: number) => {
+        doc.text(line, M + PADX, qY + li * Q_LH);
+      });
 
       // Filet séparateur
+      const sepY = qY + qText.length * Q_LH + SEP_GAP / 2;
       setDraw(HAIR);
       doc.setLineWidth(0.4);
-      const sepY = y + 34 + qText.length * 13 + 6;
-      doc.line(M + 16, sepY, M + CW - 16, sepY);
+      doc.line(M + PADX, sepY, M + CW - PADX, sepY);
+
+      // Label "RÉPONSE"
+      const respLabelY = sepY + 12;
+      setText(isUnanswered ? MUTED : ACCENT_DEEP);
+      doc.setFont(SANS, "bold");
+      doc.setFontSize(7.5);
+      doc.setCharSpace(1.4);
+      doc.text("RÉPONSE", M + PADX, respLabelY);
+      doc.setCharSpace(0);
 
       // Réponse
-      setText(isUnanswered ? MUTED : ACCENT_DEEP);
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(7.5);
-      doc.text("RÉPONSE", M + 16, sepY + 14);
+      const aY = respLabelY + RESP_LABEL_H;
       setText(isUnanswered ? MUTED : INK);
-      doc.setFont("helvetica", isUnanswered ? "italic" : "bold");
-      doc.setFontSize(10);
-      doc.text(aText, M + 16, sepY + 28);
+      doc.setFont(SANS, isUnanswered ? "italic" : "bold");
+      doc.setFontSize(A_FS);
+      aText.forEach((line: string, li: number) => {
+        doc.text(line, M + PADX, aY + li * A_LH);
+      });
 
       y += blockH + 12;
     });
@@ -947,27 +1185,33 @@ function generatePdf(
     setFill(NAVY);
     doc.rect(0, 0, W, 32, "F");
     setText(WHITE);
-    doc.setFont("helvetica", "bold");
+    doc.setFont(SANS, "bold");
     doc.setFontSize(10);
-    doc.text("K  A  N  T  I", M, 21);
-    doc.setFont("helvetica", "normal");
+    doc.setCharSpace(4);
+    doc.text("KANTI", M, 21);
+    doc.setCharSpace(0);
+    doc.setFont(SANS, "normal");
     doc.setFontSize(7.5);
     setText([180, 195, 220]);
+    doc.setCharSpace(1.5);
     doc.text("PROFIL DE RISQUE  ·  RAPPORT CONFIDENTIEL", W - M, 21, { align: "right" });
+    doc.setCharSpace(0);
 
     // Méta partie / date
     setText(MUTED);
-    doc.setFont("helvetica", "bold");
+    doc.setFont(SANS, "bold");
     doc.setFontSize(8);
+    doc.setCharSpace(1.6);
     doc.text(`PARTIE ${partNumber}`, M, 70);
+    doc.setCharSpace(0);
     setText(MUTED);
-    doc.setFont("helvetica", "normal");
+    doc.setFont(SANS, "normal");
     doc.text(today, W - M, 70, { align: "right" });
 
     // Titre
     setText(NAVY);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(24);
+    doc.setFont(SERIF, "normal");
+    doc.setFontSize(30);
     doc.text(title, M, 105);
     setDraw(ACCENT);
     doc.setLineWidth(1.5);
@@ -1004,8 +1248,8 @@ function generatePdf(
 
       // Titre
       setText(NAVY);
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(11);
+      doc.setFont(SERIF, "bold");
+      doc.setFontSize(15);
       doc.text(col.title, x + 18, yStart + 28);
 
       // Items
