@@ -361,6 +361,8 @@ export const RISK_QUESTIONS: RiskQuestion[] = [
 
 export interface SriProfile {
   sri: number; // 1 → 7
+  /** Score continu (1.00 → 7.00) avant arrondi */
+  sriPrecise: number;
   label: string;
   shortLabel: string;
   description: string;
@@ -384,12 +386,13 @@ export function computeSri(answers: Record<string, number>): SriProfile {
     .map(([, v]) => v)
     .filter((v) => Number.isFinite(v) && v > 0);
   if (values.length === 0) {
-    return SRI_PROFILES[0];
+    return { ...SRI_PROFILES[0], sriPrecise: 1 };
   }
   const avg = values.reduce((s, v) => s + v, 0) / values.length;
-  // Map [1..5] → [1..7] linéaire, arrondi
-  const sri = Math.min(7, Math.max(1, Math.round(((avg - 1) / 4) * 6 + 1)));
-  return SRI_PROFILES[sri - 1];
+  // Map [1..5] → [1..7] linéaire
+  const precise = Math.min(7, Math.max(1, ((avg - 1) / 4) * 6 + 1));
+  const sri = Math.min(7, Math.max(1, Math.round(precise)));
+  return { ...SRI_PROFILES[sri - 1], sriPrecise: precise };
 }
 
 const SRI_PROFILES: SriProfile[] = [
