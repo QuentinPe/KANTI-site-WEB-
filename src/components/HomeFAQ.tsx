@@ -39,8 +39,8 @@ export default function HomeFAQ() {
         }}
       />
       <div className="max-w-6xl mx-auto relative z-10">
-        <div className="grid lg:grid-cols-12 gap-10 lg:gap-16">
-          <aside className="lg:col-span-5 reveal">
+        <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 items-start">
+          <aside className="lg:col-span-5 reveal lg:sticky lg:top-32 lg:self-start">
             <div className="electric-line mb-5" />
             <p className="text-[11px] tracking-[0.3em] uppercase text-foreground/50 mb-5 font-medium">
               Questions fréquentes
