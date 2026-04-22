@@ -90,9 +90,6 @@ export default function CabinetPage() {
 
       {/* Cinematic immersion in our offices */}
       <CinematicGallery
-        eyebrow="Nos bureaux à Bordeaux"
-        title="Entrez dans l'atelier patrimonial"
-        intro="Quatre espaces pensés pour la confidentialité, le travail collectif et la rencontre. Défilez pour explorer."
         slides={[
           {
             image: bureau1,
