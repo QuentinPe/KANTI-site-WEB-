@@ -57,6 +57,8 @@ export default function OptimisationFiscalePage() {
       <PageCTA
         title="Demandez un audit fiscal"
         subtitle="Un premier échange pour analyser votre imposition et identifier vos marges de manœuvre. Sans engagement."
+        eyebrow="Optimisation fiscale"
+        index="07"
         buttonText="Demander un audit fiscal"
       />
       <Footer />

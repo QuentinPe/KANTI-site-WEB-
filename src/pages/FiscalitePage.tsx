@@ -65,6 +65,8 @@ export default function FiscalitePage() {
       <PageCTA
         title="Faisons le point sur votre fiscalité"
         subtitle="Un audit fiscal patrimonial pour identifier vos marges de manœuvre et construire une stratégie adaptée à votre situation."
+        eyebrow="Fiscalité"
+        index="06"
         buttonText="Demander un audit fiscal"
         secondaryText="Voir la page optimisation fiscale"
         secondaryHref="/optimisation-fiscale-bordeaux"

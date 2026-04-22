@@ -185,6 +185,8 @@ export default function ProductDetailPage() {
       <PageCTA
         title="Allons plus loin sur cette solution"
         subtitle="Un premier échange confidentiel pour évaluer la pertinence de cette solution dans votre stratégie patrimoniale globale."
+        eyebrow="Solution patrimoniale"
+        index="06"
       />
       <Footer />
     </>

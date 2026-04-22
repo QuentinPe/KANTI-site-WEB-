@@ -65,6 +65,8 @@ export default function PatrimoineProPage() {
       <PageCTA
         title="Dirigeants, parlons stratégie"
         subtitle="Un premier échange confidentiel pour analyser votre situation et identifier les arbitrages prioritaires."
+        eyebrow="Patrimoine du dirigeant"
+        index="05"
         secondaryText="Cas clients dirigeants"
         secondaryHref="/cas-clients"
       />

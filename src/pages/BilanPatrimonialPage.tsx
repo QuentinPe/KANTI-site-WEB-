@@ -267,6 +267,8 @@ export default function BilanPatrimonialPage() {
       <PageCTA
         title="Demandez votre bilan patrimonial"
         subtitle="Un premier échange de 30 minutes pour évaluer ensemble la pertinence d'un bilan patrimonial dans votre situation."
+        eyebrow="Bilan patrimonial"
+        index="07"
         secondaryText="Découvrir notre méthode"
         secondaryHref="/notre-methode"
       />

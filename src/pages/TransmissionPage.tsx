@@ -69,6 +69,8 @@ export default function TransmissionPage() {
       <PageCTA
         title="Anticipez votre transmission"
         subtitle="Un premier échange pour évaluer votre situation successorale et identifier les actions à engager."
+        eyebrow="Transmission"
+        index="06"
         secondaryText="Demander un bilan patrimonial"
         secondaryHref="/bilan-patrimonial-bordeaux"
       />

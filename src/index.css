@@ -37,22 +37,25 @@
 
     --radius: 1.25rem;
 
-    /* Brand palette — refined */
+    /* Brand palette — refined (navy only, no gold/orange) */
     --navy: 222 50% 11%;
     --navy-deep: 224 60% 7%;
     --navy-light: 220 35% 22%;
     --ivory: 220 30% 98%;
-    --ivory-warm: 30 25% 96%;
+    --ivory-warm: 220 25% 96%;
     --stone: 220 15% 92%;
-    --gold: 38 35% 60%;
-    --gold-light: 42 40% 70%;
+    /* "gold" tokens kept as aliases but remapped to a soft navy/steel blue
+       so legacy usages (text-gold, bg-gold, var(--gold)) instantly align
+       with the navy palette — no orange/amber tints anywhere. */
+    --gold: 218 28% 55%;
+    --gold-light: 215 32% 70%;
     --gray-text: 220 10% 42%;
-    --sage: 160 12% 42%;
+    --sage: 218 18% 48%;
 
-    /* Liquid Glass system */
-    --platinum: 210 25% 88%;
-    --electric: 210 100% 60%;
-    --electric-soft: 210 100% 70%;
+    /* Liquid Glass system — softened, less saturated */
+    --platinum: 215 22% 86%;
+    --electric: 218 45% 38%;
+    --electric-soft: 215 38% 60%;
 
     /* Glass surfaces */
     --glass-bg: 0 0% 100% / 0.55;
@@ -151,7 +154,7 @@
     left: -10%;
     width: 50vw;
     height: 50vw;
-    background: radial-gradient(circle, hsl(38 35% 70% / 0.10) 0%, transparent 60%);
+    background: radial-gradient(circle, hsl(218 35% 55% / 0.08) 0%, transparent 60%);
     pointer-events: none;
     z-index: 0;
     filter: blur(60px);
@@ -334,7 +337,7 @@
     left: -10%;
     width: 40vw;
     height: 40vw;
-    background: radial-gradient(circle, hsl(38 35% 60% / 0.12) 0%, transparent 60%);
+    background: radial-gradient(circle, hsl(218 60% 55% / 0.10) 0%, transparent 60%);
     pointer-events: none;
     filter: blur(60px);
   }
