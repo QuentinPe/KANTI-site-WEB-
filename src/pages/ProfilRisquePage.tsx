@@ -272,19 +272,27 @@ function Intro({ onStart, total }: { onStart: () => void; total: number }) {
       <p className="text-[11px] tracking-[0.3em] uppercase text-foreground/50 mb-5 font-medium">
         Avant de commencer
       </p>
-      <h2 className="font-heading text-3xl lg:text-4xl font-light text-foreground mb-6 tracking-tight leading-snug">
-        Un questionnaire <span className="italic text-foreground/70">en {total} étapes</span>
+      <h2 className="font-heading text-3xl lg:text-4xl font-light text-foreground mb-6 tracking-tight leading-snug text-balance">
+        Comprendre <span className="italic text-foreground/70">qui vous êtes</span>,
+        <br className="hidden sm:block" />
+        avant de parler de <span className="italic text-foreground/70">quoi investir</span>.
       </h2>
-      <p className="text-foreground/65 text-base lg:text-lg font-light leading-relaxed max-w-xl mx-auto mb-10">
-        Ce test couvre vos connaissances financières, votre expérience, votre
-        situation, vos objectifs et votre tolérance au risque. Il ne remplace
-        pas un entretien de conseil mais constitue une première base d'échange
-        rigoureuse.
+      <p className="text-foreground/70 text-base lg:text-lg font-light leading-relaxed max-w-2xl mx-auto mb-6">
+        Chez KANTI, chaque accompagnement commence par une écoute. Pas par un produit,
+        ni par une promesse de rendement. Ce questionnaire de <strong className="font-medium text-foreground/85">{total} questions</strong> est notre
+        première conversation : il met en lumière votre rapport au temps, à
+        l'incertitude, et à votre projet de vie.
+      </p>
+      <p className="text-foreground/55 text-sm lg:text-base font-light leading-relaxed max-w-2xl mx-auto mb-10 italic">
+        Il est conforme aux exigences de l'AMF (DDA / MIF II) et reprend l'échelle
+        européenne PRIIPs — la même que celle utilisée par toutes les sociétés de gestion.
+        À l'issue, vous obtenez un score précis sur 7, une lecture personnalisée et un
+        rapport PDF que vous pourrez nous transmettre pour préparer votre rendez-vous.
       </p>
 
       <div className="grid sm:grid-cols-3 gap-4 mb-10 max-w-xl mx-auto">
         {[
-          { v: "~ 4 min", l: "Durée" },
+          { v: "~ 5 min", l: "Durée moyenne" },
           { v: "Conforme", l: "Cadre AMF" },
           { v: "Anonyme", l: "Sans inscription" },
         ].map((t) => (
@@ -578,7 +586,10 @@ function generatePdf(
   const sriPrecise = profile.sriPrecise ?? profile.sri;
 
   // ── Photo pleine hauteur à droite (bâtiment haussmannien) ──
-  const photoW = 250;
+  // Largeur réduite pour laisser respirer le bloc éditorial à gauche
+  const photoW = 200;
+  const leftW = W - photoW;            // largeur de la zone éditoriale
+  const leftInner = leftW - M - 28;    // largeur utile pour le texte (marge droite anti-débord)
   try {
     doc.addImage(COVER_BUILDING_B64, "JPEG", W - photoW, 0, photoW, H);
   } catch {
@@ -587,13 +598,13 @@ function generatePdf(
   }
   // Voile navy translucide sur la photo
   setFill(NAVY);
-  doc.setGState(new (doc as any).GState({ opacity: 0.42 }));
+  doc.setGState(new (doc as any).GState({ opacity: 0.5 }));
   doc.rect(W - photoW, 0, photoW, H, "F");
   doc.setGState(new (doc as any).GState({ opacity: 1 }));
 
   // Fond papier à gauche
   setFill(PAPER);
-  doc.rect(0, 0, W - photoW, H, "F");
+  doc.rect(0, 0, leftW, H, "F");
 
   // Filet doré vertical entre les deux zones
   setDraw(ACCENT);
@@ -621,31 +632,31 @@ function generatePdf(
   // Eyebrow
   setText(ACCENT);
   doc.setFont(SANS, "bold");
-  doc.setFontSize(7.5);
-  doc.setCharSpace(2.2);
+  doc.setFontSize(7);
+  doc.setCharSpace(2);
   doc.text("RAPPORT CONFIDENTIEL  ·  AUTO-ÉVALUATION AMF", M, 170);
   doc.setCharSpace(0);
 
-  // Titre éditorial — Cormorant Garamond
+  // Titre éditorial — Cormorant Garamond (taille adaptée pour ne pas déborder)
   setText(NAVY);
   doc.setFont(SERIF, "normal");
-  doc.setFontSize(58);
-  doc.text("Profil", M, 240);
-  doc.text("d'investisseur.", M, 296);
+  doc.setFontSize(50);
+  doc.text("Profil", M, 232);
+  doc.text("d'investisseur.", M, 282);
 
   // Sous-titre
   doc.setFont(SANS, "normal");
-  doc.setFontSize(10.5);
+  doc.setFontSize(10);
   setText(NAVY_SOFT);
   const intro = doc.splitTextToSize(
     "Évaluation personnalisée de votre tolérance au risque, conforme aux exigences de l'Autorité des Marchés Financiers (DDA / MIF II).",
-    W - photoW - M - 24,
+    leftInner,
   );
-  doc.text(intro, M, 332);
+  doc.text(intro, M, 322);
 
   // Carte profil
-  const cardY = 410;
-  const cardW = W - photoW - M - 24;
+  const cardY = 400;
+  const cardW = leftInner;
   setFill(WHITE);
   doc.roundedRect(M, cardY, cardW, 170, 12, 12, "F");
   setDraw(HAIR);
@@ -674,8 +685,10 @@ function generatePdf(
 
   setText(NAVY);
   doc.setFont(SERIF, "normal");
-  doc.setFontSize(20);
-  doc.text(profile.label, M + 22, cardY + 122);
+  // Label peut être long — on contraint à la largeur intérieure de la carte
+  doc.setFontSize(18);
+  const labelLines = doc.splitTextToSize(profile.label, cardW - 44);
+  doc.text(labelLines[0], M + 22, cardY + 122);
   setText(ACCENT);
   doc.setFont(SANS, "bold");
   doc.setFontSize(8);
@@ -685,13 +698,17 @@ function generatePdf(
 
   setText(MUTED);
   doc.setFont(SANS, "normal");
-  doc.setFontSize(8.5);
-  doc.text(`Indicateur synthétique de risque (échelle PRIIPs 1 → 7)`, M + 22, cardY + 156);
+  doc.setFontSize(8);
+  const sriLineLines = doc.splitTextToSize(
+    "Indicateur synthétique de risque (échelle PRIIPs 1 → 7)",
+    cardW - 44,
+  );
+  doc.text(sriLineLines[0], M + 22, cardY + 156);
 
   // Méta + footer couverture
   setDraw(HAIR);
   doc.setLineWidth(0.4);
-  doc.line(M, H - 90, W - photoW - 24, H - 90);
+  doc.line(M, H - 90, M + leftInner, H - 90);
 
   setText(NAVY);
   doc.setFont(SANS, "bold");
@@ -706,12 +723,17 @@ function generatePdf(
   setText(NAVY_SOFT);
   doc.setFont(SANS, "normal");
   doc.setFontSize(7);
-  doc.text(`${KANTI_INFO.address}  ·  ${KANTI_INFO.email}`, M, H - 30);
+  // Découpe sur 2 lignes si nécessaire pour éviter tout débord
+  const contactLines = doc.splitTextToSize(
+    `${KANTI_INFO.address}  ·  ${KANTI_INFO.email}`,
+    leftInner,
+  );
+  doc.text(contactLines, M, H - 30);
 
   // ── Zone droite (sur la photo) : signature ─────────
   setText(WHITE);
   doc.setFont(SERIF, "normal");
-  doc.setFontSize(13);
+  doc.setFontSize(11);
   const sigX = W - photoW / 2;
   doc.text("« La sérénité patrimoniale", sigX, H / 2 - 20, { align: "center" });
   doc.text("se construit sur la mesure. »", sigX, H / 2, { align: "center" });
@@ -733,7 +755,108 @@ function generatePdf(
   doc.text("un conseil personnalisé au sens AMF.", sigX, H - 38, { align: "center" });
 
   // ══════════════════════════════════════════════════════
-  // PAGE 2 — SYNTHÈSE
+  // PAGE 2 — NOTRE DÉMARCHE (storytelling éditorial)
+  // ══════════════════════════════════════════════════════
+  doc.addPage();
+  drawPageHeader("Notre démarche", "00");
+  let yS = 150;
+
+  // Citation d'ouverture
+  setText(NAVY);
+  doc.setFont(SERIF, "normal");
+  doc.setFontSize(20);
+  const opener = doc.splitTextToSize(
+    "« Investir n'est pas un pari. C'est un alignement — entre votre histoire, vos objectifs et le temps dont vous disposez. »",
+    CW - 40,
+  );
+  doc.text(opener, M, yS);
+  yS += opener.length * 24 + 8;
+  setDraw(ACCENT);
+  doc.setLineWidth(1);
+  doc.line(M, yS, M + 36, yS);
+  yS += 24;
+
+  // Paragraphe d'ouverture
+  setText(INK);
+  doc.setFont(SANS, "normal");
+  doc.setFontSize(10.5);
+  const story1 = doc.splitTextToSize(
+    "Avant de parler de produits, de fiscalité ou de performance, KANTI prend le temps de vous écouter. Ce questionnaire est la première pierre d'un dialogue : il transforme une notion abstraite — votre tolérance au risque — en un repère clair, partagé, et opposable. C'est aussi une exigence réglementaire, posée par l'Autorité des Marchés Financiers pour protéger l'épargnant.",
+    CW,
+  );
+  doc.text(story1, M, yS);
+  yS += story1.length * 14 + 22;
+
+  // 3 piliers de la démarche
+  yS = sectionLabel(yS, "Trois dimensions, une lecture cohérente");
+  const pillars = [
+    {
+      n: "I",
+      t: "Votre projet",
+      d: "Horizon, objectif principal, capacité à immobiliser une partie de votre épargne sans en compromettre votre quotidien.",
+    },
+    {
+      n: "II",
+      t: "Vos repères",
+      d: "Connaissance des classes d'actifs, expérience passée, compréhension des mécanismes de rendement et de perte.",
+    },
+    {
+      n: "III",
+      t: "Votre tempérament",
+      d: "Réaction émotionnelle face à une baisse, arbitrage instinctif entre sécurité et performance, seuil d'inconfort.",
+    },
+  ];
+  const pillarH = 92;
+  pillars.forEach((p, i) => {
+    const py = yS + i * (pillarH + 12);
+    setFill(WHITE);
+    doc.roundedRect(M, py, CW, pillarH, 8, 8, "F");
+    setDraw(HAIR);
+    doc.setLineWidth(0.5);
+    doc.roundedRect(M, py, CW, pillarH, 8, 8, "S");
+    setFill(ACCENT);
+    doc.rect(M, py, 3, pillarH, "F");
+    // Numéro romain
+    setText(ACCENT);
+    doc.setFont(SERIF, "bold");
+    doc.setFontSize(28);
+    doc.text(p.n, M + 22, py + 50);
+    // Titre
+    setText(NAVY);
+    doc.setFont(SERIF, "bold");
+    doc.setFontSize(16);
+    doc.text(p.t, M + 70, py + 34);
+    // Description
+    setText(INK);
+    doc.setFont(SANS, "normal");
+    doc.setFontSize(9.5);
+    const dlines = doc.splitTextToSize(p.d, CW - 90);
+    doc.text(dlines, M + 70, py + 54);
+  });
+  yS += pillars.length * (pillarH + 12) + 14;
+
+  // Note méthodologique
+  setFill(PAPER_DEEP);
+  doc.roundedRect(M, yS, CW, 64, 8, 8, "F");
+  setFill(GOLD);
+  doc.rect(M, yS, 3, 64, "F");
+  setText(NAVY);
+  doc.setFont(SANS, "bold");
+  doc.setFontSize(8);
+  doc.setCharSpace(1.5);
+  doc.text("MÉTHODOLOGIE", M + 18, yS + 20);
+  doc.setCharSpace(0);
+  setText(INK);
+  doc.setFont(SANS, "normal");
+  doc.setFontSize(9);
+  const meth = doc.splitTextToSize(
+    "Vos réponses sont pondérées sur l'échelle PRIIPs (1 → 7) reconnue à l'échelle européenne. Le score décimal final reflète la nuance de votre profil — au-delà du simple palier entier.",
+    CW - 40,
+  );
+  doc.text(meth, M + 18, yS + 36);
+
+  // ══════════════════════════════════════════════════════
+  // PAGE 3 — SYNTHÈSE
   // ══════════════════════════════════════════════════════
   doc.addPage();
   drawPageHeader("Synthèse de votre profil", "01");
@@ -780,14 +903,17 @@ function generatePdf(
   doc.setFontSize(8);
   setText([170, 190, 220]);
   doc.text("PROFIL D'INVESTISSEUR", M + 200, y + 38);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(20);
+  doc.setFont(SERIF, "bold");
+  doc.setFontSize(22);
   setText(WHITE);
-  doc.text(profile.label, M + 200, y + 62);
+  // Contraint à la largeur disponible dans l'encart navy
+  const labelMaxW = CW - 200 - 36;
+  const labelLines2 = doc.splitTextToSize(profile.label, labelMaxW);
+  doc.text(labelLines2[0], M + 200, y + 62);
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(10);
+  doc.setFontSize(9.5);
   setText([180, 200, 230]);
-  doc.text(profile.shortLabel.toUpperCase(), M + 200, y + 80);
+  doc.text(profile.shortLabel.toUpperCase(), M + 200, y + 82);
 
   // Jauge horizontale 1→7 dans l'encart
   const gaugeY = y + 130;
