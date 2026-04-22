@@ -276,6 +276,8 @@ export default function FAQPage() {
       <PageCTA
         title="Une question qui n'est pas dans la liste ?"
         subtitle="Contactez-nous directement. Nous vous répondons sous 24 heures ouvrées."
+        eyebrow="FAQ"
+        index="09"
         secondaryText="Voir notre méthode"
         secondaryHref="/notre-methode"
       />

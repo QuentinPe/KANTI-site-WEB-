@@ -237,6 +237,8 @@ export default function CasClientsPage() {
       <PageCTA
         title="Votre situation ressemble à l'un de ces cas ?"
         subtitle="Chaque patrimoine est unique. Parlons du vôtre lors d'un premier échange de 30 minutes, sans engagement."
+        eyebrow="Cas clients"
+        index="10"
       />
       <Footer />
     </>

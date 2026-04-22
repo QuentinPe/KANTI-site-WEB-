@@ -68,6 +68,8 @@ export default function FinancementPage() {
       <PageCTA
         title="Parlons de votre projet de financement"
         subtitle="Nous étudions votre dossier et vous obtenons les meilleures conditions du marché."
+        eyebrow="Financement"
+        index="05"
       />
       <Footer />
     </>

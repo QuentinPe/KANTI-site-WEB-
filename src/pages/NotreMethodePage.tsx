@@ -97,6 +97,8 @@ export default function NotreMethodePage() {
       <PageCTA
         title="Commençons par un premier échange"
         subtitle="30 minutes pour comprendre votre situation et voir si nous pouvons vous aider."
+        eyebrow="Notre méthode"
+        index="03"
         secondaryText="Voir les cas clients"
         secondaryHref="/cas-clients"
       />

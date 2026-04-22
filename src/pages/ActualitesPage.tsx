@@ -235,6 +235,8 @@ export default function ActualitesPage() {
       <PageCTA
         variant="ivory"
         title="Restez informé"
+        eyebrow="Actualités"
+        index="08"
         subtitle="Recevez nos analyses patrimoniales directement par email, une à deux fois par mois."
         buttonText="S'inscrire à la newsletter"
       />

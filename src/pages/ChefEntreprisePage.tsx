@@ -54,6 +54,8 @@ export default function ChefEntreprisePage() {
       <PageCTA
         title="Dirigeants, faisons le point"
         subtitle="Un échange confidentiel de 30 minutes pour analyser votre situation de dirigeant et identifier les premiers axes de travail."
+        eyebrow="Chef d'entreprise"
+        index="04"
         secondaryText="Voir les cas clients"
         secondaryHref="/cas-clients"
       />

@@ -69,6 +69,8 @@ export default function ImmobilierPage() {
       <PageCTA
         title="Parlons de votre projet immobilier"
         subtitle="Un premier échange pour analyser votre projet et identifier le montage le plus adapté."
+        eyebrow="Immobilier"
+        index="04"
         secondaryText="Financement & crédit"
         secondaryHref="/financement"
       />

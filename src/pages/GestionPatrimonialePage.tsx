@@ -68,6 +68,8 @@ export default function GestionPatrimonialePage() {
       <PageCTA
         title="Faisons le point sur votre épargne"
         subtitle="Un audit de votre allocation actuelle pour identifier les axes d'amélioration : performance, frais, diversification, fiscalité."
+        eyebrow="Gestion patrimoniale"
+        index="03"
         secondaryText="Demander un bilan patrimonial"
         secondaryHref="/bilan-patrimonial-bordeaux"
       />
