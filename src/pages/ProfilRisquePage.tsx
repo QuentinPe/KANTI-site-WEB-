@@ -31,7 +31,7 @@ const KANTI_INFO = {
 export default function ProfilRisquePage() {
   const [phase, setPhase] = useState<Phase>("intro");
   const [step, setStep] = useState(0);
-  const [answers, setAnswers] = useState<Record<string, number>>({});
+  const [answers, setAnswers] = useState<Record<string, AnswerValue>>({});
 
   const total = RISK_QUESTIONS.length;
   const current = RISK_QUESTIONS[step];
@@ -39,15 +39,27 @@ export default function ProfilRisquePage() {
     () => Math.round((Object.keys(answers).length / total) * 100),
     [answers, total],
   );
-  const profile = useMemo(() => computeSri(answers), [answers]);
+  // Pour le SRI on ne garde que les valeurs numériques scorées.
+  const profile = useMemo(() => {
+    const numeric: Record<string, number> = {};
+    Object.entries(answers).forEach(([k, v]) => {
+      if (typeof v === "number") numeric[k] = v;
+    });
+    return computeSri(numeric);
+  }, [answers]);
+
+  const goNext = () => {
+    if (step < total - 1) setStep((s) => s + 1);
+    else setPhase("result");
+  };
 
   const handleSelect = (qid: string, score: number) => {
     setAnswers((p) => ({ ...p, [qid]: score }));
-    if (step < total - 1) {
-      setTimeout(() => setStep((s) => s + 1), 220);
-    } else {
-      setTimeout(() => setPhase("result"), 280);
-    }
+    setTimeout(goNext, 220);
+  };
+
+  const handleNumber = (qid: string, value: string) => {
+    setAnswers((p) => ({ ...p, [qid]: value }));
   };
 
   const handleReset = () => {
