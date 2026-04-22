@@ -1,4 +1,5 @@
 import { useParams, Navigate, Link } from "react-router-dom";
+import { useState } from "react";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -10,8 +11,15 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { getProduct } from "@/data/productsCatalog";
-import { getAnalysis, RiskLevel } from "@/data/productsAnalysis";
+import { getAnalysis, enrichRisk, riskScore, RiskItem, RiskLevel } from "@/data/productsAnalysis";
 import {
   AlertTriangle,
   CheckCircle2,
@@ -24,6 +32,10 @@ import {
   BookOpen,
   HelpCircle,
   Target,
+  Activity,
+  Eye,
+  ShieldCheck,
+  UserCog,
 } from "lucide-react";
 
 /**
@@ -34,6 +46,7 @@ export default function ProductDetailPage() {
   useScrollReveal();
   const { categorySlug = "", productSlug = "" } = useParams();
   const data = getProduct(categorySlug, productSlug);
+  const [openRisk, setOpenRisk] = useState<RiskItem | null>(null);
 
   if (!data) return <Navigate to="/404" replace />;
   const { category, product } = data;
@@ -220,27 +233,39 @@ export default function ProductDetailPage() {
 
             {/* RISQUES */}
             <Block id="risques" eyebrow="05 — Risques" title="Matrice probabilité × impact">
-              <div className="overflow-x-auto rounded-[var(--radius)] border border-foreground/8">
-                <table className="w-full text-left text-sm">
-                  <thead className="bg-foreground/[0.03]">
-                    <tr className="text-[11px] tracking-[0.18em] uppercase text-foreground/55">
-                      <th className="px-4 py-3 font-medium">Risque</th>
-                      <th className="px-4 py-3 font-medium">Probabilité</th>
-                      <th className="px-4 py-3 font-medium">Impact</th>
-                      <th className="px-4 py-3 font-medium">Atténuation</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-foreground/5">
-                    {analysis.risks.map((r) => (
-                      <tr key={r.label} className="text-foreground/80">
-                        <td className="px-4 py-3 font-medium text-foreground">{r.label}</td>
-                        <td className="px-4 py-3"><RiskBadge level={r.likelihood} /></td>
-                        <td className="px-4 py-3"><RiskBadge level={r.impact} /></td>
-                        <td className="px-4 py-3 text-[13.5px] font-light">{r.mitigation}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <p className="text-foreground/65 text-[14px] font-light mb-6 max-w-2xl">
+                Cliquez sur un risque pour ouvrir sa fiche détaillée : probabilité, impact chiffré,
+                scénarios déclencheurs, signaux à surveiller et mesures d'atténuation opérationnelles.
+              </p>
+
+              <RiskMatrix risks={analysis.risks} onSelect={setOpenRisk} />
+
+              <div className="mt-8 grid sm:grid-cols-2 gap-3">
+                {analysis.risks.map((r) => (
+                  <button
+                    key={r.label}
+                    type="button"
+                    onClick={() => setOpenRisk(r)}
+                    className="group text-left p-4 rounded-[var(--radius)] border border-foreground/10 hover:border-[hsl(var(--gold))]/50 hover:bg-foreground/[0.02] transition-all"
+                  >
+                    <div className="flex items-start justify-between gap-3 mb-2">
+                      <p className="text-[14.5px] font-medium text-foreground group-hover:text-[hsl(var(--gold))] transition-colors">
+                        {r.label}
+                      </p>
+                      <span className={`shrink-0 w-7 h-7 rounded-full text-[11px] font-semibold flex items-center justify-center ${heatClasses(riskScore(r))}`}>
+                        {riskScore(r)}
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5 mb-2">
+                      <RiskBadge level={r.likelihood} />
+                      <RiskBadge level={r.impact} />
+                    </div>
+                    <p className="text-[12.5px] text-foreground/55 font-light line-clamp-2">{r.mitigation}</p>
+                    <p className="mt-2 text-[11px] text-[hsl(var(--electric))] opacity-0 group-hover:opacity-100 transition-opacity">
+                      Ouvrir la fiche →
+                    </p>
+                  </button>
+                ))}
               </div>
             </Block>
 
@@ -420,6 +445,8 @@ export default function ProductDetailPage() {
         index="06"
       />
       <Footer />
+
+      <RiskDialog risk={openRisk} onClose={() => setOpenRisk(null)} />
     </>
   );
 }
@@ -463,5 +490,236 @@ function RiskBadge({ level }: { level: RiskLevel }) {
     <span className={`inline-flex items-center px-2.5 py-1 rounded-full border text-[11px] font-medium ${cls}`}>
       {level}
     </span>
+  );
+}
+
+/* ----- Interactive risk matrix ----------------------------------------- */
+
+/** Heat colour classes based on the 1-9 severity score. */
+function heatClasses(score: number) {
+  if (score >= 6) return "bg-foreground/15 text-foreground border border-foreground/30";
+  if (score >= 3) return "bg-[hsl(var(--gold))]/15 text-[hsl(var(--gold))] border border-[hsl(var(--gold))]/40";
+  return "bg-[hsl(var(--electric))]/15 text-[hsl(var(--electric))] border border-[hsl(var(--electric))]/40";
+}
+
+const LEVELS: RiskLevel[] = ["Faible", "Modéré", "Élevé"];
+
+function RiskMatrix({ risks, onSelect }: { risks: RiskItem[]; onSelect: (r: RiskItem) => void }) {
+  // Cell key = `${impact}-${likelihood}` ; rows = impact (high → low), cols = likelihood (low → high)
+  const cells = new Map<string, RiskItem[]>();
+  risks.forEach((r) => {
+    const k = `${r.impact}|${r.likelihood}`;
+    cells.set(k, [...(cells.get(k) ?? []), r]);
+  });
+
+  return (
+    <div className="rounded-[var(--radius)] border border-foreground/10 p-4 sm:p-6 bg-foreground/[0.015]">
+      <div className="flex">
+        {/* Y axis */}
+        <div className="hidden sm:flex flex-col justify-between mr-3 py-1">
+          <span className="text-[10px] tracking-[0.18em] uppercase text-foreground/45 -rotate-90 origin-left translate-y-2 whitespace-nowrap">
+            Impact ↑
+          </span>
+        </div>
+        <div className="flex-1">
+          <div className="grid grid-cols-[auto_1fr_1fr_1fr] gap-2">
+            {[...LEVELS].reverse().map((impact) => (
+              <RowFragment
+                key={impact}
+                impact={impact}
+                cells={cells}
+                onSelect={onSelect}
+              />
+            ))}
+            <div />
+            {LEVELS.map((l) => (
+              <div key={l} className="text-[10.5px] tracking-[0.16em] uppercase text-foreground/50 text-center pt-1">
+                {l}
+              </div>
+            ))}
+          </div>
+          <p className="text-[10px] tracking-[0.18em] uppercase text-foreground/45 text-center mt-2">
+            Probabilité →
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function RowFragment({
+  impact,
+  cells,
+  onSelect,
+}: {
+  impact: RiskLevel;
+  cells: Map<string, RiskItem[]>;
+  onSelect: (r: RiskItem) => void;
+}) {
+  return (
+    <>
+      <div className="text-[10.5px] tracking-[0.16em] uppercase text-foreground/55 flex items-center justify-end pr-2">
+        {impact}
+      </div>
+      {LEVELS.map((likelihood) => {
+        const items = cells.get(`${impact}|${likelihood}`) ?? [];
+        const score = riskScore({ likelihood, impact });
+        const tone =
+          score >= 6
+            ? "bg-foreground/[0.06] border-foreground/20"
+            : score >= 3
+            ? "bg-[hsl(var(--gold))]/[0.06] border-[hsl(var(--gold))]/25"
+            : "bg-[hsl(var(--electric))]/[0.05] border-[hsl(var(--electric))]/25";
+        return (
+          <div
+            key={likelihood}
+            className={`min-h-[88px] rounded-md border p-2 flex flex-col gap-1.5 ${tone}`}
+          >
+            {items.length === 0 && (
+              <span className="text-[10px] text-foreground/25 m-auto">—</span>
+            )}
+            {items.map((r) => (
+              <button
+                key={r.label}
+                type="button"
+                onClick={() => onSelect(r)}
+                className="text-left text-[11.5px] leading-tight px-2 py-1.5 rounded bg-background/70 hover:bg-background border border-foreground/10 hover:border-[hsl(var(--gold))]/50 text-foreground/85 hover:text-foreground transition-colors"
+              >
+                {r.label}
+              </button>
+            ))}
+          </div>
+        );
+      })}
+    </>
+  );
+}
+
+/* ----- Risk detail dialog ---------------------------------------------- */
+
+function RiskDialog({ risk, onClose }: { risk: RiskItem | null; onClose: () => void }) {
+  if (!risk) return null;
+  const r = enrichRisk(risk);
+  const score = riskScore(r);
+
+  return (
+    <Dialog open={!!risk} onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <div className="flex items-center gap-3 mb-2">
+            <span className={`w-9 h-9 rounded-full text-[12px] font-semibold flex items-center justify-center ${heatClasses(score)}`}>
+              {score}
+            </span>
+            <div className="flex flex-wrap gap-1.5">
+              <RiskBadge level={r.likelihood} />
+              <RiskBadge level={r.impact} />
+            </div>
+          </div>
+          <DialogTitle className="font-heading text-xl md:text-2xl font-light tracking-tight text-foreground">
+            {r.label}
+          </DialogTitle>
+          <DialogDescription className="text-[14px] leading-relaxed text-foreground/70 font-light">
+            {r.description}
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-5 mt-2">
+          <div className="grid sm:grid-cols-2 gap-3">
+            <DetailTile
+              icon={<Activity className="w-3.5 h-3.5" />}
+              label="Probabilité estimée"
+              value={r.probabilityPct}
+              accent="electric"
+            />
+            <DetailTile
+              icon={<TrendingUp className="w-3.5 h-3.5" />}
+              label="Impact financier"
+              value={r.financialImpact}
+              accent="gold"
+            />
+          </div>
+
+          <DetailList
+            icon={<AlertTriangle className="w-3.5 h-3.5" />}
+            title="Scénarios déclencheurs"
+            items={r.scenarios}
+            accent="gold"
+          />
+
+          <DetailList
+            icon={<Eye className="w-3.5 h-3.5" />}
+            title="Signaux à surveiller"
+            items={r.leadingIndicators}
+            accent="electric"
+          />
+
+          <DetailList
+            icon={<ShieldCheck className="w-3.5 h-3.5" />}
+            title="Mesures d'atténuation"
+            items={r.mitigations}
+            accent="electric"
+          />
+
+          <div className="flex items-center gap-2 pt-2 border-t border-foreground/10 text-[12px] text-foreground/60">
+            <UserCog className="w-3.5 h-3.5 text-[hsl(var(--gold))]" />
+            <span className="uppercase tracking-[0.16em] text-[10px] text-foreground/45 mr-1">Pilotage</span>
+            <span className="text-foreground/80 font-light">{r.responsibility}</span>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function DetailTile({
+  icon,
+  label,
+  value,
+  accent,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  accent: "gold" | "electric";
+}) {
+  const accentCls = accent === "gold" ? "text-[hsl(var(--gold))]" : "text-[hsl(var(--electric))]";
+  return (
+    <div className="rounded-md border border-foreground/10 p-3.5 bg-foreground/[0.02]">
+      <p className={`flex items-center gap-1.5 text-[10px] tracking-[0.18em] uppercase mb-1.5 ${accentCls}`}>
+        {icon}
+        {label}
+      </p>
+      <p className="text-foreground/85 text-[13.5px] leading-snug font-light">{value}</p>
+    </div>
+  );
+}
+
+function DetailList({
+  icon,
+  title,
+  items,
+  accent,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  items: string[];
+  accent: "gold" | "electric";
+}) {
+  const accentCls = accent === "gold" ? "text-[hsl(var(--gold))]" : "text-[hsl(var(--electric))]";
+  return (
+    <div>
+      <p className={`flex items-center gap-1.5 text-[10px] tracking-[0.22em] uppercase mb-2.5 ${accentCls}`}>
+        {icon}
+        {title}
+      </p>
+      <ul className="space-y-1.5">
+        {items.map((it) => (
+          <li key={it} className="flex gap-2 text-foreground/80 text-[13.5px] leading-relaxed font-light">
+            <span className="text-foreground/35 mt-1">›</span>
+            <span>{it}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }

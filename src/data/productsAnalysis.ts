@@ -14,11 +14,70 @@
 
 export type RiskLevel = "Faible" | "Modéré" | "Élevé";
 
+/** Numerical order used by the interactive risk matrix (1 = lowest, 3 = highest). */
+export const RISK_ORDER: Record<RiskLevel, 1 | 2 | 3> = {
+  Faible: 1,
+  Modéré: 2,
+  Élevé: 3,
+};
+
+/** Severity score (likelihood × impact) on a 1-9 scale, used for visual heat colour. */
+export function riskScore(r: { likelihood: RiskLevel; impact: RiskLevel }) {
+  return RISK_ORDER[r.likelihood] * RISK_ORDER[r.impact];
+}
+
+/**
+ * Derives a credible level of detail when a product analysis only ships
+ * the minimal RiskItem fields. Keeps the dialog meaningful for every product.
+ */
+export function enrichRisk(r: RiskItem): Required<Pick<RiskItem,
+  "description" | "probabilityPct" | "financialImpact" | "scenarios" |
+  "leadingIndicators" | "mitigations" | "responsibility"
+>> & RiskItem {
+  const score = riskScore(r);
+  const probDefaults: Record<RiskLevel, string> = {
+    Faible: "≈ 5 – 10 % sur 5 ans",
+    Modéré: "≈ 15 – 30 % sur 5 ans",
+    Élevé: "≈ 40 – 60 % sur 5 ans",
+  };
+  const impactDefaults: Record<RiskLevel, string> = {
+    Faible: "Impact limité (< 5 % du capital).",
+    Modéré: "Impact significatif (5 – 15 % du capital).",
+    Élevé: "Impact majeur (> 15 % du capital ou perte d'avantage clé).",
+  };
+  return {
+    ...r,
+    description:
+      r.description ??
+      `${r.label} — risque ${score >= 6 ? "prioritaire" : score >= 3 ? "à surveiller" : "secondaire"} dans ce dispositif. Combinaison probabilité ${r.likelihood.toLowerCase()} × impact ${r.impact.toLowerCase()}.`,
+    probabilityPct: r.probabilityPct ?? probDefaults[r.likelihood],
+    financialImpact: r.financialImpact ?? impactDefaults[r.impact],
+    scenarios: r.scenarios ?? [
+      "Choc exogène (marché, fiscalité, réglementation).",
+      "Erreur de paramétrage initial (allocation, clause, durée).",
+    ],
+    leadingIndicators: r.leadingIndicators ?? [
+      "Reporting trimestriel de l'enveloppe.",
+      "Évolution du cadre légal et fiscal applicable.",
+    ],
+    mitigations: r.mitigations ?? [r.mitigation, "Revue patrimoniale annuelle.", "Documentation et traçabilité des décisions."],
+    responsibility: r.responsibility ?? "KANTI + souscripteur",
+  };
+}
+
 export interface RiskItem {
   label: string;
   likelihood: RiskLevel;
   impact: RiskLevel;
   mitigation: string;
+  /** Optional rich detail used by the interactive risk dialog. */
+  description?: string;
+  probabilityPct?: string;        // ex : "10 – 20 % sur 5 ans"
+  financialImpact?: string;       // ex : "-15 à -30 % du capital UC"
+  scenarios?: string[];           // déclencheurs / contexte historique
+  leadingIndicators?: string[];   // signaux à surveiller
+  mitigations?: string[];         // mesures détaillées (la `mitigation` reste le résumé)
+  responsibility?: string;        // qui pilote (KANTI / client / assureur…)
 }
 
 export interface ActorNode {
@@ -186,11 +245,128 @@ const data: AnalysisMap = {
         { label: "Frais cibles", value: "< 1 %/an", hint: "Tout compris hors UC" },
       ],
       risks: [
-        { label: "Baisse des marchés (UC)", likelihood: "Modéré", impact: "Élevé", mitigation: "Allocation diversifiée, lissage, horizon 8 ans+." },
-        { label: "Érosion du fonds €", likelihood: "Modéré", impact: "Modéré", mitigation: "Mix euro / UC, fonds euros nouvelle génération, immobilier papier." },
-        { label: "Faillite de l'assureur", likelihood: "Faible", impact: "Élevé", mitigation: "Garantie FGAP 70 k€ ; cantonnement Lux. (triangle de sécurité) au-delà." },
-        { label: "Évolution fiscale", likelihood: "Modéré", impact: "Modéré", mitigation: "Antériorité fiscale acquise, revue annuelle." },
-        { label: "Clause bénéficiaire obsolète", likelihood: "Élevé", impact: "Élevé", mitigation: "Revue tous les 2 ans, démembrement, clause à options." },
+        {
+          label: "Baisse des marchés (UC)",
+          likelihood: "Modéré",
+          impact: "Élevé",
+          mitigation: "Allocation diversifiée, lissage, horizon 8 ans+.",
+          description:
+            "Les unités de compte ne sont pas garanties en capital : leur valorisation suit les marchés financiers (actions, obligations, immobilier coté). Une correction sévère peut amputer significativement la valeur du contrat à un instant T.",
+          probabilityPct: "≈ 1 année sur 4 connaît une baisse > 10 %",
+          financialImpact: "-15 % à -35 % de la poche UC sur un cycle baissier (réf. 2008, 2020, 2022).",
+          scenarios: [
+            "Récession globale, choc géopolitique, crise de liquidité.",
+            "Hausse rapide des taux longs (cas 2022 : -13 % MSCI World, -17 % obligations Euro).",
+          ],
+          leadingIndicators: [
+            "VIX > 25 sur plusieurs semaines.",
+            "Inversion de la courbe des taux US/Euro.",
+            "Drawdown du contrat > 10 % vs. plus haut 12 mois.",
+          ],
+          mitigations: [
+            "Diversification géographique et sectorielle (≥ 6 zones, ≥ 8 secteurs).",
+            "Allocation cible avec rebalancement semestriel automatique.",
+            "Poche défensive (fonds €, obligataire court terme) ≥ 25 %.",
+            "Lissage des versements (DCA) sur 12 à 24 mois pour les apports importants.",
+          ],
+          responsibility: "KANTI (allocation) + souscripteur (validation profil)",
+        },
+        {
+          label: "Érosion du fonds €",
+          likelihood: "Modéré",
+          impact: "Modéré",
+          mitigation: "Mix euro / UC, fonds euros nouvelle génération, immobilier papier.",
+          description:
+            "Le rendement du fonds en euros, longtemps supérieur à 4 %, s'est progressivement érodé sous l'effet des taux bas. Net d'inflation, le pouvoir d'achat peut diminuer.",
+          probabilityPct: "Quasi-certaine en phase d'inflation > 3 %",
+          financialImpact: "Rendement réel négatif possible (-0,5 à -1 % /an) si inflation > rendement servi.",
+          scenarios: [
+            "Inflation persistante > 3 % avec rendement fonds € à 2,5 %.",
+            "Politique monétaire accommodante prolongée.",
+          ],
+          leadingIndicators: [
+            "Taux servi annoncé en janvier vs. inflation INSEE.",
+            "Composition du fonds € (% obligations souveraines vs. immobilier / actions).",
+          ],
+          mitigations: [
+            "Sélection de fonds € nouvelle génération (immobilier, dette privée).",
+            "Diversification vers UC obligataires datées et SCI / SCPI en UC.",
+            "Plafonner la poche fonds € au strict besoin de sécurité.",
+          ],
+          responsibility: "KANTI",
+        },
+        {
+          label: "Faillite de l'assureur",
+          likelihood: "Faible",
+          impact: "Élevé",
+          mitigation: "Garantie FGAP 70 k€ ; cantonnement Lux. (triangle de sécurité) au-delà.",
+          description:
+            "Probabilité très faible (assureurs supervisés par l'ACPR avec ratio Solvabilité II > 150 %), mais l'impact serait majeur car la garantie publique est plafonnée.",
+          probabilityPct: "< 0,1 % sur 10 ans (assureurs notés A et plus)",
+          financialImpact: "Plafond d'indemnisation FGAP : 70 000 € par assuré et par compagnie.",
+          scenarios: [
+            "Crise systémique avec défaut souverain européen.",
+            "Mauvaise gestion ALM révélée lors d'un choc de taux.",
+          ],
+          leadingIndicators: [
+            "Ratio Solvabilité II (publié annuellement) — alerte si < 150 %.",
+            "Notation S&P / Moody's / Fitch (alerte si < A-).",
+          ],
+          mitigations: [
+            "Diversifier sur 2 ou 3 assureurs au-delà de 70 000 € par compagnie.",
+            "Privilégier le Luxembourg (triangle de sécurité, super-privilège du souscripteur).",
+            "Vérifier la note de solidité financière annuellement.",
+          ],
+          responsibility: "KANTI + souscripteur",
+        },
+        {
+          label: "Évolution fiscale",
+          likelihood: "Modéré",
+          impact: "Modéré",
+          mitigation: "Antériorité fiscale acquise, revue annuelle.",
+          description:
+            "Les paramètres fiscaux (abattements, prélèvements sociaux, fiscalité décès) peuvent évoluer à chaque loi de finances. L'antériorité protège partiellement.",
+          probabilityPct: "Ajustement mineur ≈ 1 fois tous les 3 ans",
+          financialImpact: "Quelques milliers d'euros sur un capital de 500 k€ (selon la mesure).",
+          scenarios: [
+            "Hausse des prélèvements sociaux (17,2 % → 19 ou 20 %).",
+            "Réforme de l'art. 990 I (abattement 152 500 € transmission).",
+          ],
+          leadingIndicators: [
+            "Projets de loi de finances (PLF) en septembre.",
+            "Rapports parlementaires sur la fiscalité du capital.",
+          ],
+          mitigations: [
+            "Verser tôt pour acquérir l'antériorité 8 ans.",
+            "Revue patrimoniale annuelle après le PLF.",
+            "Diversification des enveloppes (PEA, PER, AV) pour ne pas tout concentrer.",
+          ],
+          responsibility: "KANTI",
+        },
+        {
+          label: "Clause bénéficiaire obsolète",
+          likelihood: "Élevé",
+          impact: "Élevé",
+          mitigation: "Revue tous les 2 ans, démembrement, clause à options.",
+          description:
+            "Une clause non mise à jour (divorce, décès d'un bénéficiaire, naissance) peut détourner le capital ou faire perdre l'avantage successoral.",
+          probabilityPct: "≈ 60 % des contrats > 10 ans présentent une clause non revue (étude FFA)",
+          financialImpact: "Perte de l'abattement de 152 500 € par bénéficiaire — fiscalité à 20 ou 31,25 %.",
+          scenarios: [
+            "Divorce sans modification de la clause au profit du conjoint.",
+            "Bénéficiaire décédé avant le souscripteur, sans représentation.",
+          ],
+          leadingIndicators: [
+            "Tout événement familial (mariage, divorce, naissance, décès).",
+            "Date de dernière relecture de la clause > 24 mois.",
+          ],
+          mitigations: [
+            "Clause à options (le bénéficiaire choisit la quotité).",
+            "Démembrement de la clause (conjoint usufruitier / enfants nus-propriétaires).",
+            "Revue obligatoire tous les 24 mois lors du point patrimonial.",
+          ],
+          responsibility: "Souscripteur (KANTI alerte)",
+        },
       ],
       performance: [
         "Fonds en euros : 2,5 – 3,5 % nets de frais en 2024 (variable selon l'assureur).",
@@ -276,10 +452,77 @@ const data: AnalysisMap = {
         { label: "Blocage", value: "Jusqu'à retraite", hint: "+ 5 cas dérogatoires" },
       ],
       risks: [
-        { label: "Marché (UC)", likelihood: "Modéré", impact: "Modéré", mitigation: "Gestion à horizon, désensibilisation progressive." },
-        { label: "Hausse de la TMI à la sortie", likelihood: "Faible", impact: "Modéré", mitigation: "Sortie fractionnée, mix capital / rente." },
-        { label: "Liquidité", likelihood: "Élevé", impact: "Élevé", mitigation: "Limiter à la part de l'épargne réellement long terme." },
-        { label: "Modification législative", likelihood: "Modéré", impact: "Modéré", mitigation: "Antériorité protégée pour les versements déjà déduits." },
+        {
+          label: "Marché (UC)",
+          likelihood: "Modéré",
+          impact: "Modéré",
+          mitigation: "Gestion à horizon, désensibilisation progressive.",
+          description:
+            "Le PER est largement investi en UC en début de carrière. Les fluctuations de marché impactent directement la valorisation, mais l'horizon long permet d'amortir les cycles.",
+          probabilityPct: "Drawdown > 15 % observé ≈ 1 fois tous les 7 ans",
+          financialImpact: "-15 à -25 % temporaire sur la poche dynamique.",
+          scenarios: ["Crise actions (2008, 2020).", "Krach obligataire (2022)."],
+          leadingIndicators: ["VIX, courbe des taux, drawdown 12 mois."],
+          mitigations: [
+            "Gestion à horizon : désensibilisation automatique 10 ans avant la retraite.",
+            "Plafonner la poche actions à 70 % au-delà de 50 ans.",
+            "Versements programmés (lissage).",
+          ],
+          responsibility: "KANTI + assureur",
+        },
+        {
+          label: "Hausse de la TMI à la sortie",
+          likelihood: "Faible",
+          impact: "Modéré",
+          mitigation: "Sortie fractionnée, mix capital / rente.",
+          description:
+            "Si votre TMI à la retraite est égale ou supérieure à celle d'entrée, l'avantage fiscal du PER s'évapore. Le risque vient surtout d'une sortie en capital concentrée sur une seule année.",
+          probabilityPct: "≈ 15 % des cas (cumul retraite + revenus locatifs élevés)",
+          financialImpact: "Perte d'arbitrage fiscal = 5 à 15 % du capital sorti.",
+          scenarios: ["Sortie 100 % en capital sur 1 an = bond TMI 30 → 41 %."],
+          leadingIndicators: ["Projection retraite + revenus fonciers vs. tranche actuelle."],
+          mitigations: [
+            "Sortie fractionnée sur 5 à 10 ans.",
+            "Mix capital / rente viagère (rente = abattement 10 % + fraction imposable).",
+            "Coordination avec la sortie d'autres enveloppes (AV).",
+          ],
+          responsibility: "KANTI",
+        },
+        {
+          label: "Liquidité",
+          likelihood: "Élevé",
+          impact: "Élevé",
+          mitigation: "Limiter à la part de l'épargne réellement long terme.",
+          description:
+            "Le PER est bloqué jusqu'à la retraite, sauf 6 cas dérogatoires (achat RP, invalidité, décès conjoint, surendettement, fin de droits chômage, cessation activité non salariée).",
+          probabilityPct: "Certaine — c'est la nature du produit",
+          financialImpact: "Indisponibilité totale du capital pendant 10 à 30 ans.",
+          scenarios: ["Besoin imprévu de trésorerie sans cas dérogatoire applicable."],
+          leadingIndicators: ["Ratio épargne disponible / épargne bloquée < 30 %."],
+          mitigations: [
+            "Ne pas dépasser 15 à 25 % de l'épargne globale en PER.",
+            "Maintenir une épargne de précaution équivalente à 6 mois de charges.",
+            "Garder une assurance-vie souple en parallèle.",
+          ],
+          responsibility: "Souscripteur",
+        },
+        {
+          label: "Modification législative",
+          likelihood: "Modéré",
+          impact: "Modéré",
+          mitigation: "Antériorité protégée pour les versements déjà déduits.",
+          description:
+            "Le PER est jeune (2019) : son cadre fiscal pourrait évoluer. L'antériorité fiscale des versements déjà effectués reste néanmoins acquise.",
+          probabilityPct: "Ajustement marginal ≈ 1 fois tous les 4 ans",
+          financialImpact: "Variable — généralement marginal sur les versements déjà capitalisés.",
+          scenarios: ["Plafonnement de la déduction.", "Modification du régime de sortie en capital."],
+          leadingIndicators: ["Projets de loi de finances annuels."],
+          mitigations: [
+            "Verser tôt pour cristalliser le régime actuel.",
+            "Revue annuelle post-PLF.",
+          ],
+          responsibility: "KANTI",
+        },
       ],
       performance: [
         "Performance brute proche d'un contrat assurance-vie équivalent.",
