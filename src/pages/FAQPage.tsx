@@ -5,7 +5,6 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PageHero from "@/components/PageHero";
 import PageCTA from "@/components/PageCTA";
-import TrustBand from "@/components/TrustBand";
 
 const faqCategories = [
   {
@@ -272,7 +271,6 @@ export default function FAQPage() {
         </div>
       </section>
 
-      <TrustBand />
       <PageCTA
         title="Une question qui n'est pas dans la liste ?"
         subtitle="Contactez-nous directement. Nous vous répondons sous 24 heures ouvrées."

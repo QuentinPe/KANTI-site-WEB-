@@ -3,7 +3,6 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PageHero from "@/components/PageHero";
 import PageCTA from "@/components/PageCTA";
-import TrustBand from "@/components/TrustBand";
 import PatrimoineProSimulator from "@/components/simulators/PatrimoineProSimulator";
 import ExpertiseShowcase from "@/components/ExpertiseShowcase";
 import ProductGrid from "@/components/ProductGrid";
@@ -54,7 +53,6 @@ export default function PatrimoineProPage() {
         </div>
       </section>
 
-      <TrustBand />
       <ProductGrid
         eyebrow="Solutions dirigeants"
         title="Les leviers que nous activons pour vous"

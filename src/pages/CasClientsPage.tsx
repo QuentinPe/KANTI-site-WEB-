@@ -4,7 +4,6 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PageHero from "@/components/PageHero";
 import PageCTA from "@/components/PageCTA";
-import TrustBand from "@/components/TrustBand";
 import ParallaxImage from "@/components/ParallaxImage";
 import casCadre from "@/assets/cas-cadre.jpg";
 import casCouple from "@/assets/cas-couple.jpg";
@@ -233,7 +232,6 @@ export default function CasClientsPage() {
         </div>
       </section>
 
-      <TrustBand />
       <PageCTA
         title="Votre situation ressemble à l'un de ces cas ?"
         subtitle="Chaque patrimoine est unique. Parlons du vôtre lors d'un premier échange de 30 minutes, sans engagement."

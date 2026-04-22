@@ -3,7 +3,6 @@ import { useScrollReveal } from "@/hooks/useScrollReveal";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PageCTA from "@/components/PageCTA";
-import TrustBand from "@/components/TrustBand";
 import { getProduct, getCategory } from "@/data/productsCatalog";
 
 /**
@@ -181,7 +180,6 @@ export default function ProductDetailPage() {
         </section>
       )}
 
-      <TrustBand />
       <PageCTA
         title="Allons plus loin sur cette solution"
         subtitle="Un premier échange confidentiel pour évaluer la pertinence de cette solution dans votre stratégie patrimoniale globale."

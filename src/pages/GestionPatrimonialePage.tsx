@@ -3,7 +3,6 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PageHero from "@/components/PageHero";
 import PageCTA from "@/components/PageCTA";
-import TrustBand from "@/components/TrustBand";
 import EpargneSimulator from "@/components/simulators/EpargneSimulator";
 import ExpertiseShowcase from "@/components/ExpertiseShowcase";
 import ProductGrid from "@/components/ProductGrid";
@@ -57,7 +56,6 @@ export default function GestionPatrimonialePage() {
         </div>
       </section>
 
-      <TrustBand />
       <ProductGrid
         eyebrow="Solutions & enveloppes"
         title="Les outils que nous mobilisons"
