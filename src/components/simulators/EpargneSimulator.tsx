@@ -31,10 +31,11 @@ export default function EpargneSimulator() {
 
   return (
     <SimulatorShell
-      eyebrow="Épargne & capitalisation"
+      eyebrow="Allocation & placements"
       index="01"
       title="Projetez la croissance de votre capital"
       subtitle="Visualisez l'effet des intérêts composés sur votre épargne, avec un rendement cible de 4 % annuel."
+      disclaimer="Simulation indicative à 4 % annuels, hors fiscalité et frais. Ne constitue pas un conseil en investissement."
     >
       <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 items-start">
         <div className="lg:col-span-5 space-y-8">

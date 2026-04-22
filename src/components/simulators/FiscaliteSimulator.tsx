@@ -24,10 +24,11 @@ export default function FiscaliteSimulator() {
 
   return (
     <SimulatorShell
-      eyebrow="Optimisation fiscale"
-      index="03"
+      eyebrow="Stratégie fiscale"
+      index="02"
       title="Estimez votre potentiel d'optimisation"
       subtitle="Comparez votre fiscalité actuelle à une stratégie optimisée par nos experts patrimoniaux."
+      disclaimer="Estimation indicative. Un audit patrimonial précis reste nécessaire pour mesurer votre potentiel réel."
     >
       <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 items-start">
         <div className="lg:col-span-5 space-y-8">
@@ -39,7 +40,6 @@ export default function FiscaliteSimulator() {
             <div className="font-heading font-extralight text-4xl md:text-5xl tracking-[-0.02em] tabular-nums text-[hsl(var(--accent))]">
               {(economie / 1000).toFixed(1)}k € / an
             </div>
-            <p className="text-[11px] text-foreground/50 pt-2 leading-relaxed">Estimation indicative. Un audit patrimonial précis reste nécessaire.</p>
           </div>
         </div>
 

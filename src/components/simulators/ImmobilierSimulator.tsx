@@ -29,10 +29,11 @@ export default function ImmobilierSimulator() {
 
   return (
     <SimulatorShell
-      eyebrow="Patrimoine immobilier"
-      index="04"
+      eyebrow="Pierre & stratégie"
+      index="03"
       title="Projetez votre investissement locatif"
       subtitle="Visualisez la valorisation du bien et les loyers cumulés sur 20 ans."
+      disclaimer="Simulation indicative avec revalorisation de 2 % / an et 25 % de charges. Ne constitue pas un conseil en investissement."
     >
       <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 items-start">
         <div className="lg:col-span-5 space-y-8">
