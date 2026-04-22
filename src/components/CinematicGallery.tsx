@@ -184,12 +184,13 @@ function IntroOverlay({
   title?: string;
   intro?: string;
 }) {
-  const opacity = useTransform(scrollYProgress, [0, 0.05], [1, 0]);
-  const y = useTransform(scrollYProgress, [0, 0.08], [0, -40]);
+  // Fade out the intro quickly so it never overlaps the first slide caption.
+  const opacity = useTransform(scrollYProgress, [0, 0.03, 0.06], [1, 1, 0]);
+  const y = useTransform(scrollYProgress, [0, 0.06], [0, -40]);
   return (
     <motion.div
       className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center px-6"
-      style={{ opacity, y }}
+      style={{ opacity, y, visibility: "visible" }}
     >
       <div className="text-center max-w-3xl">
         {eyebrow && (
