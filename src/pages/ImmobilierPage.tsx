@@ -3,7 +3,6 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PageHero from "@/components/PageHero";
 import PageCTA from "@/components/PageCTA";
-import TrustBand from "@/components/TrustBand";
 import ImmobilierSimulator from "@/components/simulators/ImmobilierSimulator";
 import ExpertiseShowcase from "@/components/ExpertiseShowcase";
 import ProductGrid from "@/components/ProductGrid";
@@ -58,7 +57,6 @@ export default function ImmobilierPage() {
         </div>
       </section>
 
-      <TrustBand />
       <ProductGrid
         eyebrow="Modes de détention"
         title="Les véhicules immobiliers à votre disposition"

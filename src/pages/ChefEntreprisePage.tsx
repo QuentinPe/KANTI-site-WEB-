@@ -3,7 +3,6 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PageHero from "@/components/PageHero";
 import PageCTA from "@/components/PageCTA";
-import TrustBand from "@/components/TrustBand";
 
 export default function ChefEntreprisePage() {
   useScrollReveal();
@@ -50,7 +49,6 @@ export default function ChefEntreprisePage() {
         </div>
       </section>
 
-      <TrustBand />
       <PageCTA
         title="Dirigeants, faisons le point"
         subtitle="Un échange confidentiel de 30 minutes pour analyser votre situation de dirigeant et identifier les premiers axes de travail."

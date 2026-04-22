@@ -3,7 +3,6 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PageHero from "@/components/PageHero";
 import PageCTA from "@/components/PageCTA";
-import TrustBand from "@/components/TrustBand";
 
 const principes = [
   {
@@ -412,7 +411,6 @@ export default function NotreMethodePage() {
         </div>
       </section>
 
-      <TrustBand />
       <PageCTA
         title="Mettons cette méthode au service de votre patrimoine."
         subtitle="30 minutes pour comprendre votre situation, identifier les sujets prioritaires et juger si notre méthode est adaptée à vos enjeux."

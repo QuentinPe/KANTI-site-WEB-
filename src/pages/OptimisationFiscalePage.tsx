@@ -3,7 +3,6 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PageHero from "@/components/PageHero";
 import PageCTA from "@/components/PageCTA";
-import TrustBand from "@/components/TrustBand";
 
 export default function OptimisationFiscalePage() {
   useScrollReveal();
@@ -53,7 +52,6 @@ export default function OptimisationFiscalePage() {
         </div>
       </section>
 
-      <TrustBand />
       <PageCTA
         title="Demandez un audit fiscal"
         subtitle="Un premier échange pour analyser votre imposition et identifier vos marges de manœuvre. Sans engagement."

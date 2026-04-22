@@ -3,7 +3,6 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PageHero from "@/components/PageHero";
 import PageCTA from "@/components/PageCTA";
-import TrustBand from "@/components/TrustBand";
 import FiscaliteSimulator from "@/components/simulators/FiscaliteSimulator";
 import ExpertiseShowcase from "@/components/ExpertiseShowcase";
 import ProductGrid from "@/components/ProductGrid";
@@ -54,7 +53,6 @@ export default function FiscalitePage() {
         </div>
       </section>
 
-      <TrustBand />
       <ProductGrid
         eyebrow="Leviers fiscaux"
         title="Les leviers que nous activons"

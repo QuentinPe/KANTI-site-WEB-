@@ -3,7 +3,6 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PageHero from "@/components/PageHero";
 import PageCTA from "@/components/PageCTA";
-import TrustBand from "@/components/TrustBand";
 import CreditSimulator from "@/components/simulators/CreditSimulator";
 import ExpertiseShowcase from "@/components/ExpertiseShowcase";
 import ProductGrid from "@/components/ProductGrid";
@@ -57,7 +56,6 @@ export default function FinancementPage() {
         </div>
       </section>
 
-      <TrustBand />
       <ProductGrid
         eyebrow="Solutions de financement"
         title="Les financements que nous structurons"

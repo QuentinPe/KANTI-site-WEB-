@@ -3,7 +3,6 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PageHero from "@/components/PageHero";
 import PageCTA from "@/components/PageCTA";
-import TrustBand from "@/components/TrustBand";
 
 export default function CabinetPage() {
   useScrollReveal();
@@ -83,7 +82,6 @@ export default function CabinetPage() {
         </div>
       </section>
 
-      <TrustBand />
       <PageCTA
         title="Rencontrons-nous"
         subtitle="Un premier échange de 30 minutes pour parler de votre situation et voir comment nous pouvons vous aider."

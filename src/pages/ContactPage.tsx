@@ -6,7 +6,6 @@ import { MapPin, Phone, Mail, Clock, Calendar, FileText, Users } from "lucide-re
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PageHero from "@/components/PageHero";
-import TrustBand from "@/components/TrustBand";
 import ParallaxImage from "@/components/ParallaxImage";
 import contactMeeting from "@/assets/contact-meeting.jpg";
 import contactBordeaux from "@/assets/contact-bordeaux.jpg";
@@ -364,7 +363,6 @@ export default function ContactPage() {
         </div>
       </section>
 
-      <TrustBand />
       <Footer />
     </>
   );

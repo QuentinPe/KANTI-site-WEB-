@@ -3,7 +3,6 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PageHero from "@/components/PageHero";
 import PageCTA from "@/components/PageCTA";
-import TrustBand from "@/components/TrustBand";
 import heroImg from "@/assets/expertise-gestion.jpg";
 
 const phases = [
@@ -263,7 +262,6 @@ export default function BilanPatrimonialPage() {
         </div>
       </section>
 
-      <TrustBand />
       <PageCTA
         title="Demandez votre bilan patrimonial"
         subtitle="Un premier échange de 30 minutes pour évaluer ensemble la pertinence d'un bilan patrimonial dans votre situation."
