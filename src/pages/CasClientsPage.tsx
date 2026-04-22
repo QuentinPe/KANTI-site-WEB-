@@ -602,10 +602,10 @@ export default function CasClientsPage() {
               <CategoryFilter active={active} onChange={setActive} counts={counts} />
             </div>
 
-            <div className="space-y-10 md:space-y-12">
+            <div className="space-y-20 md:space-y-28 lg:space-y-32">
               <AnimatePresence mode="popLayout">
                 {filtered.map((cas, i) => (
-                  <div key={cas.profil}>
+                  <div key={cas.profil} className="space-y-20 md:space-y-28">
                     <CaseCard cas={cas} index={casClients.indexOf(cas)} />
                     {/* Verbatim intercalé toutes les 2 cartes */}
                     {cas.verbatim && (i + 1) % 2 === 0 && (
