@@ -1,4 +1,5 @@
 import { useParams, Navigate, Link } from "react-router-dom";
+import { useState } from "react";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -10,8 +11,15 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { getProduct } from "@/data/productsCatalog";
-import { getAnalysis, RiskLevel } from "@/data/productsAnalysis";
+import { getAnalysis, enrichRisk, riskScore, RiskItem, RiskLevel } from "@/data/productsAnalysis";
 import {
   AlertTriangle,
   CheckCircle2,
@@ -24,6 +32,10 @@ import {
   BookOpen,
   HelpCircle,
   Target,
+  Activity,
+  Eye,
+  ShieldCheck,
+  UserCog,
 } from "lucide-react";
 
 /**
