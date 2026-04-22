@@ -272,19 +272,27 @@ function Intro({ onStart, total }: { onStart: () => void; total: number }) {
       <p className="text-[11px] tracking-[0.3em] uppercase text-foreground/50 mb-5 font-medium">
         Avant de commencer
       </p>
-      <h2 className="font-heading text-3xl lg:text-4xl font-light text-foreground mb-6 tracking-tight leading-snug">
-        Un questionnaire <span className="italic text-foreground/70">en {total} étapes</span>
+      <h2 className="font-heading text-3xl lg:text-4xl font-light text-foreground mb-6 tracking-tight leading-snug text-balance">
+        Comprendre <span className="italic text-foreground/70">qui vous êtes</span>,
+        <br className="hidden sm:block" />
+        avant de parler de <span className="italic text-foreground/70">quoi investir</span>.
       </h2>
-      <p className="text-foreground/65 text-base lg:text-lg font-light leading-relaxed max-w-xl mx-auto mb-10">
-        Ce test couvre vos connaissances financières, votre expérience, votre
-        situation, vos objectifs et votre tolérance au risque. Il ne remplace
-        pas un entretien de conseil mais constitue une première base d'échange
-        rigoureuse.
+      <p className="text-foreground/70 text-base lg:text-lg font-light leading-relaxed max-w-2xl mx-auto mb-6">
+        Chez KANTI, chaque accompagnement commence par une écoute. Pas par un produit,
+        ni par une promesse de rendement. Ce questionnaire de <strong className="font-medium text-foreground/85">{total} questions</strong> est notre
+        première conversation : il met en lumière votre rapport au temps, à
+        l'incertitude, et à votre projet de vie.
+      </p>
+      <p className="text-foreground/55 text-sm lg:text-base font-light leading-relaxed max-w-2xl mx-auto mb-10 italic">
+        Il est conforme aux exigences de l'AMF (DDA / MIF II) et reprend l'échelle
+        européenne PRIIPs — la même que celle utilisée par toutes les sociétés de gestion.
+        À l'issue, vous obtenez un score précis sur 7, une lecture personnalisée et un
+        rapport PDF que vous pourrez nous transmettre pour préparer votre rendez-vous.
       </p>
 
       <div className="grid sm:grid-cols-3 gap-4 mb-10 max-w-xl mx-auto">
         {[
-          { v: "~ 4 min", l: "Durée" },
+          { v: "~ 5 min", l: "Durée moyenne" },
           { v: "Conforme", l: "Cadre AMF" },
           { v: "Anonyme", l: "Sans inscription" },
         ].map((t) => (
