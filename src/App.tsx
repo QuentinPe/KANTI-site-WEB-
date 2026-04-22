@@ -31,6 +31,7 @@ import PolitiqueConfidentialitePage from "./pages/PolitiqueConfidentialitePage.t
 import ReclamationsPage from "./pages/ReclamationsPage.tsx";
 import MerciPage from "./pages/MerciPage.tsx";
 import RessourcesPage from "./pages/RessourcesPage.tsx";
+import ProfilRisquePage from "./pages/ProfilRisquePage.tsx";
 
 const queryClient = new QueryClient();
 
@@ -64,6 +65,7 @@ const AppShell = () => {
           <Route path="/politique-de-confidentialite" element={<PolitiqueConfidentialitePage />} />
           <Route path="/reclamations" element={<ReclamationsPage />} />
           <Route path="/ressources" element={<RessourcesPage />} />
+          <Route path="/profil-de-risque" element={<ProfilRisquePage />} />
           <Route path="/merci" element={<MerciPage />} />
           {/* Dynamic product / solution sub-pages */}
           <Route path="/:categorySlug/:productSlug" element={<ProductDetailPage />} />
