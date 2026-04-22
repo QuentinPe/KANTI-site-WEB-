@@ -373,7 +373,16 @@ export interface SriProfile {
  * en suivant la grille indicative AMF / PRIIPs.
  */
 export function computeSri(answers: Record<string, number>): SriProfile {
-  const values = Object.values(answers);
+  // On n'agrège que les réponses scorées (les saisies libres sont stockées
+  // sous forme de NaN ou d'identifiants spécifiques côté UI ; on filtre
+  // ici toute valeur non finie ou ≤ 0).
+  const values = Object.entries(answers)
+    .filter(([id]) => {
+      const q = RISK_QUESTIONS.find((r) => r.id === id);
+      return q && q.type !== "number";
+    })
+    .map(([, v]) => v)
+    .filter((v) => Number.isFinite(v) && v > 0);
   if (values.length === 0) {
     return SRI_PROFILES[0];
   }
