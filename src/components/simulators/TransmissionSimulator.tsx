@@ -30,28 +30,32 @@ export default function TransmissionSimulator() {
 
   return (
     <SimulatorShell
-      eyebrow="Simulateur · Transmission"
+      eyebrow="Transmission patrimoniale"
+      index="05"
       title="Préservez ce qui compte vraiment"
       subtitle="Mesurez l'impact d'une stratégie de transmission optimisée sur les droits dus."
     >
-      <div className="grid lg:grid-cols-5 gap-8 lg:gap-12 items-start">
-        <div className="lg:col-span-2 space-y-6">
+      <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 items-start">
+        <div className="lg:col-span-5 space-y-8">
           <GlassSlider label="Patrimoine total" value={`${(patrimoine / 1000000).toFixed(2)}M €`} min={200000} max={5000000} step={50000} current={patrimoine} onChange={setPatrimoine} />
           <GlassSlider label="Nombre d'enfants" value={`${enfants}`} min={1} max={5} step={1} current={enfants} onChange={setEnfants} />
 
-          <div className="grid grid-cols-2 gap-3 pt-4 border-t border-foreground/10">
-            <div>
-              <div className="text-[9px] uppercase tracking-[0.2em] text-foreground/45 mb-1">Sans optimisation</div>
-              <div className="font-heading font-light text-lg md:text-xl tracking-tight text-foreground">{(droitsSans / 1000).toFixed(0)}k €</div>
+          <div className="grid grid-cols-2 gap-6 pt-8 border-t border-foreground/10">
+            <div className="space-y-2">
+              <div className="text-[9px] uppercase tracking-[0.28em] text-foreground/45">Sans optimisation</div>
+              <div className="font-heading font-extralight text-3xl md:text-4xl tracking-[-0.02em] tabular-nums text-foreground/70 line-through decoration-foreground/30">{(droitsSans / 1000).toFixed(0)}k €</div>
             </div>
-            <div>
-              <div className="text-[9px] uppercase tracking-[0.2em] text-foreground/45 mb-1">Avec stratégie</div>
-              <div className="font-heading font-light text-lg md:text-xl tracking-tight text-[hsl(var(--accent))]">{(droitsAvec / 1000).toFixed(0)}k €</div>
+            <div className="space-y-2">
+              <div className="text-[9px] uppercase tracking-[0.28em] text-foreground/45">Avec stratégie</div>
+              <div className="font-heading font-extralight text-3xl md:text-4xl tracking-[-0.02em] tabular-nums text-[hsl(var(--accent))]">{(droitsAvec / 1000).toFixed(0)}k €</div>
             </div>
           </div>
         </div>
 
-        <div className="lg:col-span-3 h-[280px] md:h-[340px] flex items-center gap-6">
+        <div className="lg:col-span-7 h-[300px] md:h-[380px] flex items-center gap-6 relative">
+          <div className="absolute -top-3 left-0 text-[10px] uppercase tracking-[0.28em] text-foreground/45">
+            Répartition optimisée
+          </div>
           <ResponsiveContainer width="55%" height="100%">
             <PieChart>
               <Pie data={data} cx="50%" cy="50%" innerRadius={70} outerRadius={120} dataKey="value" stroke="none" paddingAngle={2}>

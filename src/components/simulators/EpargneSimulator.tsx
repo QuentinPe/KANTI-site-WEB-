@@ -31,24 +31,28 @@ export default function EpargneSimulator() {
 
   return (
     <SimulatorShell
-      eyebrow="Simulateur · Épargne"
+      eyebrow="Épargne & capitalisation"
+      index="01"
       title="Projetez la croissance de votre capital"
       subtitle="Visualisez l'effet des intérêts composés sur votre épargne, avec un rendement cible de 4 % annuel."
     >
-      <div className="grid lg:grid-cols-5 gap-8 lg:gap-12 items-start">
-        <div className="lg:col-span-2 space-y-6">
+      <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 items-start">
+        <div className="lg:col-span-5 space-y-8">
           <GlassSlider label="Capital initial" value={`${(capital / 1000).toFixed(0)}k €`} min={10000} max={500000} step={5000} current={capital} onChange={setCapital} />
           <GlassSlider label="Épargne mensuelle" value={`${mensualite} €`} min={100} max={5000} step={100} current={mensualite} onChange={setMensualite} />
           <GlassSlider label="Durée" value={`${duree} ans`} min={5} max={30} step={1} current={duree} onChange={setDuree} />
 
-          <div className="grid grid-cols-3 gap-3 pt-4 border-t border-foreground/10">
-            <Stat label="Versé" value={`${(totalVerse / 1000).toFixed(0)}k €`} />
-            <Stat label="Gains" value={`${gains > 0 ? "+" : ""}${(gains / 1000).toFixed(0)}k €`} accent />
+          <div className="grid grid-cols-3 gap-6 pt-8 border-t border-foreground/10">
+            <Stat label="Total versé" value={`${(totalVerse / 1000).toFixed(0)}k €`} />
+            <Stat label="Gains générés" value={`${gains > 0 ? "+" : ""}${(gains / 1000).toFixed(0)}k €`} accent />
             <Stat label="Capital final" value={`${(finalCapital / 1000).toFixed(0)}k €`} />
           </div>
         </div>
 
-        <div className="lg:col-span-3 h-[280px] md:h-[340px]">
+        <div className="lg:col-span-7 h-[300px] md:h-[380px] relative">
+          <div className="absolute -top-3 left-0 text-[10px] uppercase tracking-[0.28em] text-foreground/45">
+            Projection à {duree} ans
+          </div>
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
               <defs>
@@ -81,9 +85,9 @@ export default function EpargneSimulator() {
 
 function Stat({ label, value, accent = false }: { label: string; value: string; accent?: boolean }) {
   return (
-    <div>
-      <div className="text-[9px] uppercase tracking-[0.2em] text-foreground/45 mb-1">{label}</div>
-      <div className={`font-heading font-light text-lg md:text-xl tracking-tight ${accent ? "text-[hsl(var(--accent))]" : "text-foreground"}`}>
+    <div className="space-y-2">
+      <div className="text-[9px] uppercase tracking-[0.28em] text-foreground/45">{label}</div>
+      <div className={`font-heading font-extralight text-2xl md:text-3xl tracking-[-0.02em] tabular-nums ${accent ? "text-[hsl(var(--accent))]" : "text-foreground"}`}>
         {value}
       </div>
     </div>

@@ -2,57 +2,56 @@ import { ReactNode } from "react";
 
 interface SimulatorShellProps {
   eyebrow?: string;
+  index?: string;
   title: string;
   subtitle?: string;
   children: ReactNode;
 }
 
 /**
- * Liquid-glass shell for expertise simulators.
- * Large, premium, with discreet KANTI watermark behind.
+ * Editorial shell for expertise simulators.
+ * Magazine-like header with hairlines, numbered eyebrow,
+ * generous typography. No heavy card — sits inline like a feature spread.
  */
-export default function SimulatorShell({ eyebrow = "Simulateur", title, subtitle, children }: SimulatorShellProps) {
+export default function SimulatorShell({ eyebrow = "Simulateur", index = "01", title, subtitle, children }: SimulatorShellProps) {
   return (
     <div className="relative w-full">
-      {/* Ambient glass orbs */}
-      <div aria-hidden className="pointer-events-none absolute -top-24 -left-24 w-72 h-72 rounded-full bg-[hsl(var(--accent)/0.15)] blur-3xl" />
-      <div aria-hidden className="pointer-events-none absolute -bottom-24 -right-24 w-80 h-80 rounded-full bg-[hsl(var(--primary)/0.10)] blur-3xl" />
+      {/* Subtle ambient glow — restrained */}
+      <div aria-hidden className="pointer-events-none absolute -top-32 right-0 w-[40rem] h-[40rem] rounded-full bg-[hsl(var(--accent)/0.06)] blur-[120px]" />
 
-      <div className="relative glass-card rounded-[2rem] overflow-hidden">
-        {/* KANTI watermark */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 flex items-center justify-center select-none"
-        >
-          <span
-            className="font-heading font-light tracking-[0.25em] text-foreground/[0.035] whitespace-nowrap"
-            style={{ fontSize: "clamp(3rem, 7vw, 7rem)", lineHeight: 1 }}
-          >
-            KANTI
+      {/* Editorial header: number, eyebrow, oversized title */}
+      <div className="relative grid md:grid-cols-12 gap-6 md:gap-10 mb-12 md:mb-16">
+        <div className="md:col-span-4 lg:col-span-3 flex md:flex-col items-baseline md:items-start gap-4 md:gap-3">
+          <span className="font-heading text-5xl md:text-6xl font-extralight text-foreground/15 tabular-nums leading-none">
+            {index}
           </span>
+          <div className="h-px w-12 bg-foreground/20 hidden md:block" />
+          <p className="text-[10px] tracking-[0.32em] uppercase text-foreground/55 font-medium">
+            {eyebrow}
+          </p>
         </div>
-
-        {/* Top hairline shimmer */}
-        <div aria-hidden className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-foreground/15 to-transparent" />
-
-        <div className="relative z-10 p-8 md:p-12 lg:p-16">
-          <div className="mb-8 md:mb-12 max-w-2xl">
-            <p className="text-[10px] tracking-[0.3em] uppercase text-foreground/50 mb-3 font-medium">
-              {eyebrow}
+        <div className="md:col-span-8 lg:col-span-9">
+          <h3 className="font-heading text-3xl md:text-5xl lg:text-[3.25rem] font-extralight text-foreground tracking-[-0.02em] leading-[1.05] text-balance">
+            {title}
+          </h3>
+          {subtitle && (
+            <p className="mt-5 text-foreground/55 text-base md:text-lg font-light leading-relaxed max-w-2xl">
+              {subtitle}
             </p>
-            <h3 className="font-heading text-2xl md:text-4xl font-light text-foreground tracking-tight leading-[1.15]">
-              {title}
-            </h3>
-            {subtitle && (
-              <p className="mt-3 text-foreground/60 text-sm md:text-base font-light leading-relaxed">
-                {subtitle}
-              </p>
-            )}
-          </div>
-
-          {children}
+          )}
         </div>
       </div>
+
+      {/* Hairline divider */}
+      <div aria-hidden className="separator-fine mb-10 md:mb-14" />
+
+      {/* Working area — open, no heavy card */}
+      <div className="relative">
+        {children}
+      </div>
+
+      {/* Footer hairline */}
+      <div aria-hidden className="separator-fine mt-12 md:mt-16" />
     </div>
   );
 }

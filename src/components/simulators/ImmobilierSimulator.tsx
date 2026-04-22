@@ -29,33 +29,37 @@ export default function ImmobilierSimulator() {
 
   return (
     <SimulatorShell
-      eyebrow="Simulateur · Immobilier"
+      eyebrow="Patrimoine immobilier"
+      index="04"
       title="Projetez votre investissement locatif"
       subtitle="Visualisez la valorisation du bien et les loyers cumulés sur 20 ans."
     >
-      <div className="grid lg:grid-cols-5 gap-8 lg:gap-12 items-start">
-        <div className="lg:col-span-2 space-y-6">
+      <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 items-start">
+        <div className="lg:col-span-5 space-y-8">
           <GlassSlider label="Prix du bien" value={`${(prix / 1000).toFixed(0)}k €`} min={100000} max={2000000} step={10000} current={prix} onChange={setPrix} />
           <GlassSlider label="Loyer mensuel" value={`${loyer} €`} min={300} max={5000} step={50} current={loyer} onChange={setLoyer} />
           <GlassSlider label="Apport" value={`${(apport / 1000).toFixed(0)}k €`} min={0} max={500000} step={5000} current={apport} onChange={setApport} />
 
-          <div className="grid grid-cols-3 gap-3 pt-4 border-t border-foreground/10">
-            <div>
-              <div className="text-[9px] uppercase tracking-[0.2em] text-foreground/45 mb-1">Rdt brut</div>
-              <div className="font-heading font-light text-lg md:text-xl tracking-tight text-foreground">{rendementBrut.toFixed(1)} %</div>
+          <div className="grid grid-cols-3 gap-6 pt-8 border-t border-foreground/10">
+            <div className="space-y-2">
+              <div className="text-[9px] uppercase tracking-[0.28em] text-foreground/45">Rdt brut</div>
+              <div className="font-heading font-extralight text-2xl md:text-3xl tracking-[-0.02em] tabular-nums text-foreground">{rendementBrut.toFixed(1)}%</div>
             </div>
-            <div>
-              <div className="text-[9px] uppercase tracking-[0.2em] text-foreground/45 mb-1">Rdt net</div>
-              <div className="font-heading font-light text-lg md:text-xl tracking-tight text-[hsl(var(--accent))]">{rendementNet.toFixed(1)} %</div>
+            <div className="space-y-2">
+              <div className="text-[9px] uppercase tracking-[0.28em] text-foreground/45">Rdt net</div>
+              <div className="font-heading font-extralight text-2xl md:text-3xl tracking-[-0.02em] tabular-nums text-[hsl(var(--accent))]">{rendementNet.toFixed(1)}%</div>
             </div>
-            <div>
-              <div className="text-[9px] uppercase tracking-[0.2em] text-foreground/45 mb-1">Loyers/an</div>
-              <div className="font-heading font-light text-lg md:text-xl tracking-tight text-foreground">{((loyer * 12) / 1000).toFixed(0)}k €</div>
+            <div className="space-y-2">
+              <div className="text-[9px] uppercase tracking-[0.28em] text-foreground/45">Loyers/an</div>
+              <div className="font-heading font-extralight text-2xl md:text-3xl tracking-[-0.02em] tabular-nums text-foreground">{((loyer * 12) / 1000).toFixed(0)}k €</div>
             </div>
           </div>
         </div>
 
-        <div className="lg:col-span-3 h-[280px] md:h-[340px]">
+        <div className="lg:col-span-7 h-[300px] md:h-[380px] relative">
+          <div className="absolute -top-3 left-0 text-[10px] uppercase tracking-[0.28em] text-foreground/45">
+            Projection sur 20 ans
+          </div>
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
               <defs>
