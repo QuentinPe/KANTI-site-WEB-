@@ -6,7 +6,7 @@ const DIRECTIONS_URL =
   "https://www.google.com/maps/dir/?api=1&destination=" +
   encodeURIComponent(ADDRESS);
 const STREETVIEW_URL =
-  "https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=44.8438,-0.5762";
+  "https://www.google.com/maps/@44.8481708,-0.571695,3a,69y,141.86h,90.67t/data=!3m7!1e1!3m5!1sY-2B2Whh3J1AedtQcJiqXg!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fcb_client%3Dmaps_sv.tactile%26w%3D900%26h%3D600%26pitch%3D-0.6746400419454517%26panoid%3DY-2B2Whh3J1AedtQcJiqXg%26yaw%3D141.86449859379448!7i16384!8i8192";
 // Satellite 3D embed (tilt + rotation) centered on 12 rue Ferrère
 const EMBED_URL =
   "https://www.google.com/maps/embed?pb=!4v1729600000000!6m8!1m7!1sCAoSLEFGMVFpcE5fZmFrZQ!2m2!1d44.8438!2d-0.5762!3f0!4f45!5f0.7820865974627469";
@@ -16,8 +16,22 @@ const EMBED_URL_FALLBACK =
 
 export default function CabinetMap3D() {
   return (
-    <section className="section-padding section-ivory">
-      <div className="max-w-6xl mx-auto">
+    <section className="relative section-padding section-ivory overflow-hidden">
+      {/* Smooth transition from previous (dark) section */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 -top-px h-40 bg-gradient-to-b from-primary/95 via-primary/30 to-transparent"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-32 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 w-[60%] h-48 bg-gold/10 blur-3xl rounded-full"
+      />
+
+      <div className="relative max-w-6xl mx-auto pt-12">
         <div className="grid lg:grid-cols-5 gap-12 lg:gap-16 items-center">
           {/* Left column — editorial */}
           <div className="lg:col-span-2 reveal">
@@ -50,7 +64,7 @@ export default function CabinetMap3D() {
               </li>
               <li className="flex items-start gap-3">
                 <span className="w-1 h-1 rounded-full bg-gold mt-2 shrink-0" />
-                Tram C — arrêt Quinconces
+                Tram C — arrêts Quinconces & CAPC
               </li>
             </ul>
 
