@@ -194,11 +194,128 @@ const data: AnalysisMap = {
         { label: "Frais cibles", value: "< 1 %/an", hint: "Tout compris hors UC" },
       ],
       risks: [
-        { label: "Baisse des marchés (UC)", likelihood: "Modéré", impact: "Élevé", mitigation: "Allocation diversifiée, lissage, horizon 8 ans+." },
-        { label: "Érosion du fonds €", likelihood: "Modéré", impact: "Modéré", mitigation: "Mix euro / UC, fonds euros nouvelle génération, immobilier papier." },
-        { label: "Faillite de l'assureur", likelihood: "Faible", impact: "Élevé", mitigation: "Garantie FGAP 70 k€ ; cantonnement Lux. (triangle de sécurité) au-delà." },
-        { label: "Évolution fiscale", likelihood: "Modéré", impact: "Modéré", mitigation: "Antériorité fiscale acquise, revue annuelle." },
-        { label: "Clause bénéficiaire obsolète", likelihood: "Élevé", impact: "Élevé", mitigation: "Revue tous les 2 ans, démembrement, clause à options." },
+        {
+          label: "Baisse des marchés (UC)",
+          likelihood: "Modéré",
+          impact: "Élevé",
+          mitigation: "Allocation diversifiée, lissage, horizon 8 ans+.",
+          description:
+            "Les unités de compte ne sont pas garanties en capital : leur valorisation suit les marchés financiers (actions, obligations, immobilier coté). Une correction sévère peut amputer significativement la valeur du contrat à un instant T.",
+          probabilityPct: "≈ 1 année sur 4 connaît une baisse > 10 %",
+          financialImpact: "-15 % à -35 % de la poche UC sur un cycle baissier (réf. 2008, 2020, 2022).",
+          scenarios: [
+            "Récession globale, choc géopolitique, crise de liquidité.",
+            "Hausse rapide des taux longs (cas 2022 : -13 % MSCI World, -17 % obligations Euro).",
+          ],
+          leadingIndicators: [
+            "VIX > 25 sur plusieurs semaines.",
+            "Inversion de la courbe des taux US/Euro.",
+            "Drawdown du contrat > 10 % vs. plus haut 12 mois.",
+          ],
+          mitigations: [
+            "Diversification géographique et sectorielle (≥ 6 zones, ≥ 8 secteurs).",
+            "Allocation cible avec rebalancement semestriel automatique.",
+            "Poche défensive (fonds €, obligataire court terme) ≥ 25 %.",
+            "Lissage des versements (DCA) sur 12 à 24 mois pour les apports importants.",
+          ],
+          responsibility: "KANTI (allocation) + souscripteur (validation profil)",
+        },
+        {
+          label: "Érosion du fonds €",
+          likelihood: "Modéré",
+          impact: "Modéré",
+          mitigation: "Mix euro / UC, fonds euros nouvelle génération, immobilier papier.",
+          description:
+            "Le rendement du fonds en euros, longtemps supérieur à 4 %, s'est progressivement érodé sous l'effet des taux bas. Net d'inflation, le pouvoir d'achat peut diminuer.",
+          probabilityPct: "Quasi-certaine en phase d'inflation > 3 %",
+          financialImpact: "Rendement réel négatif possible (-0,5 à -1 % /an) si inflation > rendement servi.",
+          scenarios: [
+            "Inflation persistante > 3 % avec rendement fonds € à 2,5 %.",
+            "Politique monétaire accommodante prolongée.",
+          ],
+          leadingIndicators: [
+            "Taux servi annoncé en janvier vs. inflation INSEE.",
+            "Composition du fonds € (% obligations souveraines vs. immobilier / actions).",
+          ],
+          mitigations: [
+            "Sélection de fonds € nouvelle génération (immobilier, dette privée).",
+            "Diversification vers UC obligataires datées et SCI / SCPI en UC.",
+            "Plafonner la poche fonds € au strict besoin de sécurité.",
+          ],
+          responsibility: "KANTI",
+        },
+        {
+          label: "Faillite de l'assureur",
+          likelihood: "Faible",
+          impact: "Élevé",
+          mitigation: "Garantie FGAP 70 k€ ; cantonnement Lux. (triangle de sécurité) au-delà.",
+          description:
+            "Probabilité très faible (assureurs supervisés par l'ACPR avec ratio Solvabilité II > 150 %), mais l'impact serait majeur car la garantie publique est plafonnée.",
+          probabilityPct: "< 0,1 % sur 10 ans (assureurs notés A et plus)",
+          financialImpact: "Plafond d'indemnisation FGAP : 70 000 € par assuré et par compagnie.",
+          scenarios: [
+            "Crise systémique avec défaut souverain européen.",
+            "Mauvaise gestion ALM révélée lors d'un choc de taux.",
+          ],
+          leadingIndicators: [
+            "Ratio Solvabilité II (publié annuellement) — alerte si < 150 %.",
+            "Notation S&P / Moody's / Fitch (alerte si < A-).",
+          ],
+          mitigations: [
+            "Diversifier sur 2 ou 3 assureurs au-delà de 70 000 € par compagnie.",
+            "Privilégier le Luxembourg (triangle de sécurité, super-privilège du souscripteur).",
+            "Vérifier la note de solidité financière annuellement.",
+          ],
+          responsibility: "KANTI + souscripteur",
+        },
+        {
+          label: "Évolution fiscale",
+          likelihood: "Modéré",
+          impact: "Modéré",
+          mitigation: "Antériorité fiscale acquise, revue annuelle.",
+          description:
+            "Les paramètres fiscaux (abattements, prélèvements sociaux, fiscalité décès) peuvent évoluer à chaque loi de finances. L'antériorité protège partiellement.",
+          probabilityPct: "Ajustement mineur ≈ 1 fois tous les 3 ans",
+          financialImpact: "Quelques milliers d'euros sur un capital de 500 k€ (selon la mesure).",
+          scenarios: [
+            "Hausse des prélèvements sociaux (17,2 % → 19 ou 20 %).",
+            "Réforme de l'art. 990 I (abattement 152 500 € transmission).",
+          ],
+          leadingIndicators: [
+            "Projets de loi de finances (PLF) en septembre.",
+            "Rapports parlementaires sur la fiscalité du capital.",
+          ],
+          mitigations: [
+            "Verser tôt pour acquérir l'antériorité 8 ans.",
+            "Revue patrimoniale annuelle après le PLF.",
+            "Diversification des enveloppes (PEA, PER, AV) pour ne pas tout concentrer.",
+          ],
+          responsibility: "KANTI",
+        },
+        {
+          label: "Clause bénéficiaire obsolète",
+          likelihood: "Élevé",
+          impact: "Élevé",
+          mitigation: "Revue tous les 2 ans, démembrement, clause à options.",
+          description:
+            "Une clause non mise à jour (divorce, décès d'un bénéficiaire, naissance) peut détourner le capital ou faire perdre l'avantage successoral.",
+          probabilityPct: "≈ 60 % des contrats > 10 ans présentent une clause non revue (étude FFA)",
+          financialImpact: "Perte de l'abattement de 152 500 € par bénéficiaire — fiscalité à 20 ou 31,25 %.",
+          scenarios: [
+            "Divorce sans modification de la clause au profit du conjoint.",
+            "Bénéficiaire décédé avant le souscripteur, sans représentation.",
+          ],
+          leadingIndicators: [
+            "Tout événement familial (mariage, divorce, naissance, décès).",
+            "Date de dernière relecture de la clause > 24 mois.",
+          ],
+          mitigations: [
+            "Clause à options (le bénéficiaire choisit la quotité).",
+            "Démembrement de la clause (conjoint usufruitier / enfants nus-propriétaires).",
+            "Revue obligatoire tous les 24 mois lors du point patrimonial.",
+          ],
+          responsibility: "Souscripteur (KANTI alerte)",
+        },
       ],
       performance: [
         "Fonds en euros : 2,5 – 3,5 % nets de frais en 2024 (variable selon l'assureur).",
