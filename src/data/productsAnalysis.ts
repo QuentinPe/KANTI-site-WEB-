@@ -19,6 +19,14 @@ export interface RiskItem {
   likelihood: RiskLevel;
   impact: RiskLevel;
   mitigation: string;
+  /** Optional rich detail used by the interactive risk dialog. */
+  description?: string;
+  probabilityPct?: string;        // ex : "10 – 20 % sur 5 ans"
+  financialImpact?: string;       // ex : "-15 à -30 % du capital UC"
+  scenarios?: string[];           // déclencheurs / contexte historique
+  leadingIndicators?: string[];   // signaux à surveiller
+  mitigations?: string[];         // mesures détaillées (la `mitigation` reste le résumé)
+  responsibility?: string;        // qui pilote (KANTI / client / assureur…)
 }
 
 export interface ActorNode {
