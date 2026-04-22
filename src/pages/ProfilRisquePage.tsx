@@ -116,14 +116,17 @@ export default function ProfilRisquePage() {
                   className="rounded-[2rem] glass-strong p-8 lg:p-12"
                 >
                   {/* Progress */}
-                  <div className="flex items-center justify-between mb-8">
-                    <span className="text-[11px] tracking-[0.3em] uppercase text-foreground/50 font-medium">
-                      {current.dimension} · {step + 1} / {total}
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-[10px] tracking-[0.32em] uppercase text-[hsl(var(--electric))] font-semibold">
+                      {current.section}
                     </span>
                     <span className="text-[11px] text-foreground/50 tabular-nums">
-                      {progress}%
+                      {step + 1} / {total} · {progress}%
                     </span>
                   </div>
+                  <p className="text-[11px] tracking-[0.2em] uppercase text-foreground/45 mb-6">
+                    {current.dimension}
+                  </p>
                   <div className="h-[2px] w-full bg-foreground/10 rounded-full mb-10 overflow-hidden">
                     <motion.div
                       className="h-full"
@@ -146,39 +149,72 @@ export default function ProfilRisquePage() {
                     </p>
                   )}
 
-                  <ul className="space-y-3 mt-8">
-                    {current.options.map((opt, i) => {
-                      const selected = answers[current.id] === opt.score;
-                      return (
-                        <li key={`${current.id}-${i}`}>
-                          <button
-                            type="button"
-                            onClick={() => handleSelect(current.id, opt.score)}
-                            className={`group w-full text-left flex items-center gap-4 p-5 rounded-[1.25rem] border transition-all duration-300 ${
-                              selected
-                                ? "border-[hsl(var(--electric))] bg-[hsl(var(--electric)/0.06)] shadow-[0_8px_24px_-8px_hsl(var(--electric)/0.25)]"
-                                : "border-foreground/[0.08] bg-white/45 hover:border-foreground/20 hover:bg-white/65"
-                            }`}
-                          >
-                            <span
-                              className={`w-5 h-5 rounded-full border flex-shrink-0 flex items-center justify-center transition ${
+                  {current.type === "number" ? (
+                    <div className="mt-8">
+                      <div className="flex items-center gap-3 p-2 pl-5 rounded-[1.25rem] border border-foreground/10 bg-white/55 focus-within:border-[hsl(var(--electric))] focus-within:bg-white/80 transition">
+                        <input
+                          type="number"
+                          inputMode="numeric"
+                          min={current.numberConfig?.min}
+                          max={current.numberConfig?.max}
+                          step={current.numberConfig?.step}
+                          placeholder={current.numberConfig?.placeholder}
+                          value={(answers[current.id] as string | undefined) ?? ""}
+                          onChange={(e) => handleNumber(current.id, e.target.value)}
+                          className="flex-1 bg-transparent outline-none text-foreground text-2xl font-light tabular-nums placeholder:text-foreground/30 py-3"
+                        />
+                        {current.numberConfig?.suffix && (
+                          <span className="px-4 text-foreground/55 text-sm tracking-wide">
+                            {current.numberConfig.suffix}
+                          </span>
+                        )}
+                        <button
+                          type="button"
+                          onClick={goNext}
+                          className="px-5 py-2.5 rounded-full bg-[hsl(var(--navy-deep))] text-white text-sm tracking-wide hover:-translate-y-0.5 transition-transform"
+                        >
+                          Continuer →
+                        </button>
+                      </div>
+                      <p className="mt-3 text-[11px] text-foreground/45">
+                        Cette donnée est reportée dans votre fiche PDF mais n'influence pas le calcul du SRI.
+                      </p>
+                    </div>
+                  ) : (
+                    <ul className="space-y-3 mt-8">
+                      {current.options?.map((opt, i) => {
+                        const selected = answers[current.id] === opt.score;
+                        return (
+                          <li key={`${current.id}-${i}`}>
+                            <button
+                              type="button"
+                              onClick={() => handleSelect(current.id, opt.score)}
+                              className={`group w-full text-left flex items-center gap-4 p-5 rounded-[1.25rem] border transition-all duration-300 ${
                                 selected
-                                  ? "border-[hsl(var(--electric))] bg-[hsl(var(--electric))]"
-                                  : "border-foreground/30 group-hover:border-foreground/60"
+                                  ? "border-[hsl(var(--electric))] bg-[hsl(var(--electric)/0.06)] shadow-[0_8px_24px_-8px_hsl(var(--electric)/0.25)]"
+                                  : "border-foreground/[0.08] bg-white/45 hover:border-foreground/20 hover:bg-white/65"
                               }`}
                             >
-                              {selected && (
-                                <span className="w-2 h-2 rounded-full bg-white" />
-                              )}
-                            </span>
-                            <span className="text-foreground/85 text-[15px] font-light leading-snug">
-                              {opt.label}
-                            </span>
-                          </button>
-                        </li>
-                      );
-                    })}
-                  </ul>
+                              <span
+                                className={`w-5 h-5 rounded-full border flex-shrink-0 flex items-center justify-center transition ${
+                                  selected
+                                    ? "border-[hsl(var(--electric))] bg-[hsl(var(--electric))]"
+                                    : "border-foreground/30 group-hover:border-foreground/60"
+                                }`}
+                              >
+                                {selected && (
+                                  <span className="w-2 h-2 rounded-full bg-white" />
+                                )}
+                              </span>
+                              <span className="text-foreground/85 text-[15px] font-light leading-snug">
+                                {opt.label}
+                              </span>
+                            </button>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
 
                   <div className="flex items-center justify-between mt-10 pt-6 border-t border-foreground/10">
                     <button
