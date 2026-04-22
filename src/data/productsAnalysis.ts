@@ -14,6 +14,57 @@
 
 export type RiskLevel = "Faible" | "Modéré" | "Élevé";
 
+/** Numerical order used by the interactive risk matrix (1 = lowest, 3 = highest). */
+export const RISK_ORDER: Record<RiskLevel, 1 | 2 | 3> = {
+  Faible: 1,
+  Modéré: 2,
+  Élevé: 3,
+};
+
+/** Severity score (likelihood × impact) on a 1-9 scale, used for visual heat colour. */
+export function riskScore(r: { likelihood: RiskLevel; impact: RiskLevel }) {
+  return RISK_ORDER[r.likelihood] * RISK_ORDER[r.impact];
+}
+
+/**
+ * Derives a credible level of detail when a product analysis only ships
+ * the minimal RiskItem fields. Keeps the dialog meaningful for every product.
+ */
+export function enrichRisk(r: RiskItem): Required<Pick<RiskItem,
+  "description" | "probabilityPct" | "financialImpact" | "scenarios" |
+  "leadingIndicators" | "mitigations" | "responsibility"
+>> & RiskItem {
+  const score = riskScore(r);
+  const probDefaults: Record<RiskLevel, string> = {
+    Faible: "≈ 5 – 10 % sur 5 ans",
+    Modéré: "≈ 15 – 30 % sur 5 ans",
+    Élevé: "≈ 40 – 60 % sur 5 ans",
+  };
+  const impactDefaults: Record<RiskLevel, string> = {
+    Faible: "Impact limité (< 5 % du capital).",
+    Modéré: "Impact significatif (5 – 15 % du capital).",
+    Élevé: "Impact majeur (> 15 % du capital ou perte d'avantage clé).",
+  };
+  return {
+    ...r,
+    description:
+      r.description ??
+      `${r.label} — risque ${score >= 6 ? "prioritaire" : score >= 3 ? "à surveiller" : "secondaire"} dans ce dispositif. Combinaison probabilité ${r.likelihood.toLowerCase()} × impact ${r.impact.toLowerCase()}.`,
+    probabilityPct: r.probabilityPct ?? probDefaults[r.likelihood],
+    financialImpact: r.financialImpact ?? impactDefaults[r.impact],
+    scenarios: r.scenarios ?? [
+      "Choc exogène (marché, fiscalité, réglementation).",
+      "Erreur de paramétrage initial (allocation, clause, durée).",
+    ],
+    leadingIndicators: r.leadingIndicators ?? [
+      "Reporting trimestriel de l'enveloppe.",
+      "Évolution du cadre légal et fiscal applicable.",
+    ],
+    mitigations: r.mitigations ?? [r.mitigation, "Revue patrimoniale annuelle.", "Documentation et traçabilité des décisions."],
+    responsibility: r.responsibility ?? "KANTI + souscripteur",
+  };
+}
+
 export interface RiskItem {
   label: string;
   likelihood: RiskLevel;
