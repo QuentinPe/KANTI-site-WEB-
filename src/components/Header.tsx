@@ -4,6 +4,9 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const navLinks = [
   { label: "Le Cabinet", href: "/cabinet" },
+  { label: "Notre méthode", href: "/notre-methode" },
+  { label: "Cas clients", href: "/cas-clients" },
+  { label: "Actualités", href: "/actualites" },
   {
     label: "Expertises",
     href: "#",
@@ -14,9 +17,6 @@ const navLinks = [
       { label: "Financement & crédit", href: "/financement" },
     ],
   },
-  { label: "Notre méthode", href: "/notre-methode" },
-  { label: "Cas clients", href: "/cas-clients" },
-  { label: "Actualités", href: "/actualites" },
   { label: "Ressources", href: "/ressources" },
   { label: "Contact", href: "/contact" },
 ];
