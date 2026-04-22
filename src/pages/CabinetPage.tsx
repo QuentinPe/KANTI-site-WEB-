@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import PageHero from "@/components/PageHero";
 import PageCTA from "@/components/PageCTA";
 import CinematicGallery from "@/components/CinematicGallery";
+import CabinetMap3D from "@/components/CabinetMap3D";
 import VirtualTourFAB from "@/components/VirtualTourFAB";
 import bureau1 from "@/assets/cabinet-bureaux-1.jpg";
 import bureau2 from "@/assets/cabinet-bureaux-2.jpg";
@@ -121,6 +122,8 @@ export default function CabinetPage() {
           },
         ]}
       />
+
+      <CabinetMap3D />
 
       <PageCTA
         title="Rencontrons-nous"
