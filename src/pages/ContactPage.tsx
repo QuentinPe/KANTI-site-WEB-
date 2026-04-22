@@ -110,85 +110,72 @@ export default function ContactPage() {
         breadcrumb="Cabinet · Contact"
       />
 
-      {/* Parcours de contact */}
+      {/* Reassurance bar — pousse à la prise de rendez-vous */}
       <section className="section-padding texture-paper relative overflow-hidden">
         <div className="max-w-6xl mx-auto relative z-10">
-          <div className="mb-14 reveal max-w-2xl">
+          <div className="mb-12 reveal max-w-2xl">
             <div className="electric-line mb-5" />
             <p className="text-[11px] tracking-[0.3em] uppercase text-foreground/50 mb-5 font-medium">
-              Comment nous contacter
+              Pourquoi prendre rendez-vous
             </p>
             <h2 className="text-3xl md:text-4xl font-heading font-light text-foreground leading-[1.15] tracking-tight">
-              Choisissez le format <span className="italic text-foreground/70">qui vous convient</span>
+              Un échange court, <span className="italic text-foreground/70">utile dès la première minute</span>
             </h2>
           </div>
-          <div className="grid md:grid-cols-3 gap-5">
-            {profils.map((p, i) => (
-              <motion.a
-                key={p.tag}
-                href="#formulaire"
-                initial={{ opacity: 0, y: 24 }}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {reassurances.map((r, i) => (
+              <motion.div
+                key={r.title}
+                initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-80px" }}
-                transition={{ duration: 0.6, delay: i * 0.08 }}
-                className="group glass-float block overflow-hidden hover:border-foreground/20 transition-all duration-500"
+                viewport={{ once: true, margin: "-60px" }}
+                transition={{ duration: 0.5, delay: i * 0.06 }}
+                className="glass-float p-6"
               >
-                <ParallaxImage
-                  src={p.image}
-                  alt={p.title}
-                  className="aspect-[4/3] w-full"
-                  rounded="rounded-none"
-                  intensity={80}
-                  overlayClassName="bg-gradient-to-t from-background/85 via-background/30 to-transparent"
-                />
-                <div className="p-7">
-                  <p className="text-[10px] tracking-[0.3em] uppercase text-[hsl(var(--electric))] mb-4 font-medium">
-                    {p.tag}
-                  </p>
-                  <h3 className="font-heading text-xl font-light text-foreground mb-3 leading-snug">{p.title}</h3>
-                  <p className="text-foreground/60 text-sm leading-relaxed font-light mb-6">{p.text}</p>
-                  <span className="inline-flex items-center gap-2 text-xs tracking-wide text-foreground/70 group-hover:text-[hsl(var(--electric))] transition-colors">
-                    Prendre rendez-vous
-                    <svg className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                    </svg>
-                  </span>
-                </div>
-              </motion.a>
+                <r.icon className="w-5 h-5 text-[hsl(var(--electric))] mb-4" />
+                <p className="font-heading text-base font-light text-foreground mb-1.5">{r.title}</p>
+                <p className="text-foreground/60 text-sm font-light leading-relaxed">{r.text}</p>
+              </motion.div>
             ))}
           </div>
-        </div>
-      </section>
 
-      {/* Parallax cinematic band — Bordeaux */}
-      <section className="relative h-[60vh] md:h-[70vh] overflow-hidden">
-        <ParallaxImage
-          src={contactBordeaux}
-          alt="Bordeaux, Place de la Bourse au coucher du soleil"
-          className="absolute inset-0 w-full h-full"
-          rounded="rounded-none"
-          intensity={220}
-          overlayClassName="bg-gradient-to-b from-background/40 via-background/30 to-background/80"
-        />
-        <div className="relative z-10 h-full flex items-center">
-          <div className="max-w-6xl mx-auto px-6 w-full">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.9 }}
-              className="max-w-2xl glass-float p-8 md:p-10"
+          {/* Étapes */}
+          <div className="mt-16 grid md:grid-cols-3 gap-5">
+            {etapes.map((e, i) => (
+              <motion.div
+                key={e.n}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-60px" }}
+                transition={{ duration: 0.55, delay: i * 0.08 }}
+                className="glass-float p-7 relative"
+              >
+                <span className="font-heading text-xs text-[hsl(var(--electric))] tabular-nums tracking-[0.3em]">{e.n}</span>
+                <p className="font-heading text-lg font-light text-foreground mt-3 mb-2">{e.title}</p>
+                <p className="text-foreground/60 text-sm font-light leading-relaxed">{e.text}</p>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* CTA principal */}
+          <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4 reveal">
+            <a
+              href="#formulaire"
+              className="group inline-flex items-center justify-center gap-2 py-3.5 px-8 btn-primary-glass text-sm font-medium tracking-wide reflection-sweep"
             >
-              <p className="text-[10px] tracking-[0.32em] uppercase text-[hsl(var(--electric))] mb-4 font-medium">
-                Cabinet à Bordeaux
-              </p>
-              <h2 className="text-3xl md:text-4xl font-heading font-light text-foreground leading-[1.15] tracking-tight mb-4">
-                Au cœur du Triangle d'Or, <span className="italic text-foreground/70">à votre écoute</span>
-              </h2>
-              <p className="text-foreground/65 text-sm md:text-base leading-relaxed font-light">
-                Nous recevons sur rendez-vous au 12 Cours de l'Intendance. Pour les clients hors région, le premier échange peut avoir lieu en visioconférence.
-              </p>
-            </motion.div>
+              <MessageSquare className="w-4 h-4" />
+              <span>Réserver mon premier échange</span>
+              <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+              </svg>
+            </a>
+            <a
+              href="tel:0556000000"
+              className="inline-flex items-center gap-2 text-sm text-foreground/70 hover:text-[hsl(var(--electric))] transition-colors"
+            >
+              <Phone className="w-4 h-4" />
+              ou appelez-nous au 05 56 00 00 00
+            </a>
           </div>
         </div>
       </section>
