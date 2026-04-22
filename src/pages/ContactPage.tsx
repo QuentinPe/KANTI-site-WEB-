@@ -1,15 +1,29 @@
 import { useState } from "react";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { z } from "zod";
+import { toast } from "sonner";
 import { MapPin, Phone, Mail, Clock, Calendar, FileText, Users } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PageHero from "@/components/PageHero";
 import ParallaxImage from "@/components/ParallaxImage";
+import Seo, { breadcrumbJsonLd, faqJsonLd, localBusinessJsonLd } from "@/components/Seo";
 import contactMeeting from "@/assets/contact-meeting.jpg";
 import contactBordeaux from "@/assets/contact-bordeaux.jpg";
 import contactAdvisors from "@/assets/contact-advisors.jpg";
+
+const contactSchema = z.object({
+  nom: z.string().trim().min(2, "Indiquez votre nom complet").max(100, "Nom trop long"),
+  email: z.string().trim().email("Email invalide").max(255),
+  telephone: z.string().trim().max(30, "Téléphone trop long").optional().or(z.literal("")),
+  profil: z.string().max(60).optional().or(z.literal("")),
+  sujet: z.string().max(60).optional().or(z.literal("")),
+  message: z.string().trim().max(2000, "Message trop long").optional().or(z.literal("")),
+  // Honeypot anti-spam
+  website: z.string().max(0, "").optional().or(z.literal("")),
+});
 
 const faqItems = [
   {
@@ -57,16 +71,51 @@ const profils = [
 
 export default function ContactPage() {
   useScrollReveal();
-  const [form, setForm] = useState({ nom: "", email: "", telephone: "", profil: "", sujet: "", message: "" });
+  const navigate = useNavigate();
+  const [form, setForm] = useState({ nom: "", email: "", telephone: "", profil: "", sujet: "", message: "", website: "" });
+  const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const parsed = contactSchema.safeParse(form);
+    if (!parsed.success) {
+      toast.error(parsed.error.issues[0].message);
+      return;
+    }
+    if (parsed.data.website) {
+      // Honeypot rempli → on simule un succès silencieux
+      navigate("/merci", { state: { name: parsed.data.nom.split(" ")[0], subject: "contact" } });
+      return;
+    }
+    setStatus("loading");
+    // Mock front-only — log pour brancher le back ultérieurement
+    console.info("[KANTI mock] Contact submission:", parsed.data);
+    await new Promise((r) => setTimeout(r, 1100));
+    setStatus("idle");
+    navigate("/merci", { state: { name: parsed.data.nom.split(" ")[0], subject: "contact" } });
+  };
+
   return (
     <>
+      <Seo
+        title="Contact — Prendre rendez-vous avec un conseiller patrimonial à Bordeaux"
+        description="Premier échange de 30 minutes gratuit et sans engagement avec un conseiller KANTI. Cabinet indépendant à Bordeaux, réponse sous 24h ouvrées."
+        jsonLd={[
+          localBusinessJsonLd,
+          breadcrumbJsonLd([
+            { name: "Accueil", url: "/" },
+            { name: "Contact", url: "/contact" },
+          ]),
+          faqJsonLd(faqItems.map((f) => ({ q: f.q, a: f.a }))),
+        ]}
+      />
       <Header />
+      <main id="main">
       <PageHero
         title="Parlons de votre patrimoine"
         subtitle="Un premier échange de 30 minutes, gratuit et sans engagement, pour faire le point sur votre situation et clarifier vos priorités."
@@ -176,25 +225,38 @@ export default function ContactPage() {
             </h2>
 
             <div className="glass-float p-8 md:p-10">
-              <form onSubmit={(e) => e.preventDefault()} className="space-y-5">
+              <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+                {/* Honeypot anti-spam (invisible) */}
+                <div aria-hidden className="absolute -left-[9999px] w-px h-px overflow-hidden">
+                  <label htmlFor="website">Site web (laisser vide)</label>
+                  <input
+                    id="website"
+                    name="website"
+                    type="text"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    value={form.website}
+                    onChange={handleChange}
+                  />
+                </div>
                 <div className="grid sm:grid-cols-2 gap-5">
                   <div>
                     <label htmlFor="nom" className="block text-[11px] font-medium text-foreground/60 mb-2 tracking-[0.2em] uppercase">Nom complet *</label>
-                    <input id="nom" name="nom" type="text" value={form.nom} onChange={handleChange} required className="w-full px-4 py-3 bg-background/40 border border-foreground/15 rounded-md text-foreground text-sm focus:outline-none focus:border-[hsl(var(--electric))]/60 transition-colors" placeholder="Votre nom" />
+                    <input id="nom" name="nom" type="text" value={form.nom} onChange={handleChange} required maxLength={100} disabled={status === "loading"} className="w-full px-4 py-3 bg-background/40 border border-foreground/15 rounded-md text-foreground text-sm focus:outline-none focus:border-[hsl(var(--electric))]/60 transition-colors disabled:opacity-50" placeholder="Votre nom" />
                   </div>
                   <div>
                     <label htmlFor="email" className="block text-[11px] font-medium text-foreground/60 mb-2 tracking-[0.2em] uppercase">Email *</label>
-                    <input id="email" name="email" type="email" value={form.email} onChange={handleChange} required className="w-full px-4 py-3 bg-background/40 border border-foreground/15 rounded-md text-foreground text-sm focus:outline-none focus:border-[hsl(var(--electric))]/60 transition-colors" placeholder="votre@email.fr" />
+                    <input id="email" name="email" type="email" value={form.email} onChange={handleChange} required maxLength={255} disabled={status === "loading"} className="w-full px-4 py-3 bg-background/40 border border-foreground/15 rounded-md text-foreground text-sm focus:outline-none focus:border-[hsl(var(--electric))]/60 transition-colors disabled:opacity-50" placeholder="votre@email.fr" />
                   </div>
                 </div>
                 <div className="grid sm:grid-cols-2 gap-5">
                   <div>
                     <label htmlFor="telephone" className="block text-[11px] font-medium text-foreground/60 mb-2 tracking-[0.2em] uppercase">Téléphone</label>
-                    <input id="telephone" name="telephone" type="tel" value={form.telephone} onChange={handleChange} className="w-full px-4 py-3 bg-background/40 border border-foreground/15 rounded-md text-foreground text-sm focus:outline-none focus:border-[hsl(var(--electric))]/60 transition-colors" placeholder="06 00 00 00 00" />
+                    <input id="telephone" name="telephone" type="tel" value={form.telephone} onChange={handleChange} maxLength={30} disabled={status === "loading"} className="w-full px-4 py-3 bg-background/40 border border-foreground/15 rounded-md text-foreground text-sm focus:outline-none focus:border-[hsl(var(--electric))]/60 transition-colors disabled:opacity-50" placeholder="06 00 00 00 00" />
                   </div>
                   <div>
                     <label htmlFor="profil" className="block text-[11px] font-medium text-foreground/60 mb-2 tracking-[0.2em] uppercase">Votre profil</label>
-                    <select id="profil" name="profil" value={form.profil} onChange={handleChange} className="w-full px-4 py-3 bg-background/40 border border-foreground/15 rounded-md text-foreground text-sm focus:outline-none focus:border-[hsl(var(--electric))]/60 transition-colors">
+                    <select id="profil" name="profil" value={form.profil} onChange={handleChange} disabled={status === "loading"} className="w-full px-4 py-3 bg-background/40 border border-foreground/15 rounded-md text-foreground text-sm focus:outline-none focus:border-[hsl(var(--electric))]/60 transition-colors disabled:opacity-50">
                       <option value="">Sélectionner</option>
                       <option value="particulier">Particulier / Famille</option>
                       <option value="dirigeant">Chef d'entreprise / Dirigeant</option>
@@ -206,7 +268,7 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <label htmlFor="sujet" className="block text-[11px] font-medium text-foreground/60 mb-2 tracking-[0.2em] uppercase">Sujet principal</label>
-                  <select id="sujet" name="sujet" value={form.sujet} onChange={handleChange} className="w-full px-4 py-3 bg-background/40 border border-foreground/15 rounded-md text-foreground text-sm focus:outline-none focus:border-[hsl(var(--electric))]/60 transition-colors">
+                  <select id="sujet" name="sujet" value={form.sujet} onChange={handleChange} disabled={status === "loading"} className="w-full px-4 py-3 bg-background/40 border border-foreground/15 rounded-md text-foreground text-sm focus:outline-none focus:border-[hsl(var(--electric))]/60 transition-colors disabled:opacity-50">
                     <option value="">Sélectionner un sujet</option>
                     <option value="bilan">Bilan patrimonial</option>
                     <option value="fiscalite">Optimisation fiscale</option>
@@ -219,11 +281,15 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <label htmlFor="message" className="block text-[11px] font-medium text-foreground/60 mb-2 tracking-[0.2em] uppercase">Quelques mots sur votre situation</label>
-                  <textarea id="message" name="message" rows={4} value={form.message} onChange={handleChange} className="w-full px-4 py-3 bg-background/40 border border-foreground/15 rounded-md text-foreground text-sm focus:outline-none focus:border-[hsl(var(--electric))]/60 transition-colors resize-none" placeholder="Décrivez brièvement votre situation ou ce qui vous amène..." />
+                  <textarea id="message" name="message" rows={4} value={form.message} onChange={handleChange} maxLength={2000} disabled={status === "loading"} className="w-full px-4 py-3 bg-background/40 border border-foreground/15 rounded-md text-foreground text-sm focus:outline-none focus:border-[hsl(var(--electric))]/60 transition-colors resize-none disabled:opacity-50" placeholder="Décrivez brièvement votre situation ou ce qui vous amène..." />
                 </div>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-2">
-                  <button type="submit" className="group inline-flex items-center justify-center gap-2 py-3.5 px-8 btn-primary-glass text-sm font-medium tracking-wide reflection-sweep">
-                    <span>Envoyer ma demande</span>
+                  <button
+                    type="submit"
+                    disabled={status === "loading"}
+                    className="group inline-flex items-center justify-center gap-2 py-3.5 px-8 btn-primary-glass text-sm font-medium tracking-wide reflection-sweep disabled:opacity-60 disabled:cursor-not-allowed"
+                  >
+                    <span>{status === "loading" ? "Envoi en cours…" : "Envoyer ma demande"}</span>
                     <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                     </svg>
@@ -363,6 +429,7 @@ export default function ContactPage() {
         </div>
       </section>
 
+      </main>
       <Footer />
     </>
   );

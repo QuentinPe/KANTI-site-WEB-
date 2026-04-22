@@ -21,11 +21,12 @@ export default function Footer() {
             <h4 className="text-[10px] font-medium text-white/40 tracking-[0.25em] uppercase mb-5">
               Navigation
             </h4>
-            <ul className="space-y-2.5 text-sm text-white/65 font-light">
+            <ul className="space-y-2.5 text-sm text-white/75 font-light">
               <li><Link to="/cabinet" className="hover:text-white transition-colors link-underline-light">Le Cabinet</Link></li>
               <li><Link to="/notre-methode" className="hover:text-white transition-colors link-underline-light">Notre méthode</Link></li>
               <li><Link to="/cas-clients" className="hover:text-white transition-colors link-underline-light">Cas clients</Link></li>
               <li><Link to="/actualites" className="hover:text-white transition-colors link-underline-light">Actualités</Link></li>
+              <li><Link to="/ressources" className="hover:text-white transition-colors link-underline-light">Ressources</Link></li>
               <li><Link to="/faq-patrimoniale" className="hover:text-white transition-colors link-underline-light">FAQ</Link></li>
               <li><Link to="/contact" className="hover:text-white transition-colors link-underline-light">Contact</Link></li>
             </ul>
@@ -34,7 +35,7 @@ export default function Footer() {
             <h4 className="text-[10px] font-medium text-white/40 tracking-[0.25em] uppercase mb-5">
               Expertises
             </h4>
-            <ul className="space-y-2.5 text-sm text-white/65 font-light">
+            <ul className="space-y-2.5 text-sm text-white/75 font-light">
               <li><Link to="/gestion-patrimoniale" className="hover:text-white transition-colors link-underline-light">Gestion patrimoniale</Link></li>
               <li><Link to="/fiscalite" className="hover:text-white transition-colors link-underline-light">Fiscalité</Link></li>
               <li><Link to="/patrimoine-professionnel" className="hover:text-white transition-colors link-underline-light">Patrimoine professionnel</Link></li>
@@ -47,7 +48,7 @@ export default function Footer() {
 
         <div className="separator-fine mb-8" style={{ background: "linear-gradient(90deg, transparent, hsl(0 0% 100% / 0.12), transparent)" }} />
 
-        <div className="text-[11px] leading-relaxed mb-6 text-white/35 font-light">
+        <div className="text-[11px] leading-relaxed mb-6 text-white/55 font-light">
           <p>
             KANTI — SAS au capital de 10 000 € — RCS Bordeaux 000 000 000 — Siège social : 12 Cours de l'Intendance, 33000 Bordeaux.
             Conseiller en Investissements Financiers (CIF) enregistré à l'ORIAS sous le n° 00 000 000. Membre de la Chambre Nationale des Conseils en Gestion de Patrimoine (CNCGP), association agréée par l'Autorité des Marchés Financiers (AMF).
@@ -55,11 +56,12 @@ export default function Footer() {
             Responsabilité civile professionnelle et garantie financière conformes aux articles L.541-3 et L.512-6 du Code monétaire et financier.
           </p>
         </div>
-        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 text-xs text-white/35 font-light">
+        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 text-xs text-white/55 font-light">
           <div className="flex flex-wrap gap-5">
             <Link to="/mentions-legales" className="hover:text-white transition-colors">Mentions légales</Link>
             <Link to="/politique-de-confidentialite" className="hover:text-white transition-colors">Politique de confidentialité</Link>
             <Link to="/reclamations" className="hover:text-white transition-colors">Réclamations</Link>
+            <Link to="/ressources" className="hover:text-white transition-colors">Ressources</Link>
           </div>
           <p>© 2026 KANTI — Tous droits réservés</p>
         </div>
