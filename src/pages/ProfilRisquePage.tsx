@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import jsPDF from "jspdf";
 import Header from "@/components/Header";
@@ -8,11 +7,16 @@ import PageHero from "@/components/PageHero";
 import Seo from "@/components/Seo";
 import {
   RISK_QUESTIONS,
+  RISK_SECTIONS,
   computeSri,
   type SriProfile,
+  type RiskSection,
 } from "@/data/profilRisqueQuestions";
 
 type Phase = "intro" | "quiz" | "result";
+
+/** Réponse d'une question : numérique scorée OU saisie libre (string). */
+type AnswerValue = number | string;
 
 const KANTI_INFO = {
   name: "KANTI",
@@ -27,7 +31,7 @@ const KANTI_INFO = {
 export default function ProfilRisquePage() {
   const [phase, setPhase] = useState<Phase>("intro");
   const [step, setStep] = useState(0);
-  const [answers, setAnswers] = useState<Record<string, number>>({});
+  const [answers, setAnswers] = useState<Record<string, AnswerValue>>({});
 
   const total = RISK_QUESTIONS.length;
   const current = RISK_QUESTIONS[step];
@@ -35,15 +39,27 @@ export default function ProfilRisquePage() {
     () => Math.round((Object.keys(answers).length / total) * 100),
     [answers, total],
   );
-  const profile = useMemo(() => computeSri(answers), [answers]);
+  // Pour le SRI on ne garde que les valeurs numériques scorées.
+  const profile = useMemo(() => {
+    const numeric: Record<string, number> = {};
+    Object.entries(answers).forEach(([k, v]) => {
+      if (typeof v === "number") numeric[k] = v;
+    });
+    return computeSri(numeric);
+  }, [answers]);
+
+  const goNext = () => {
+    if (step < total - 1) setStep((s) => s + 1);
+    else setPhase("result");
+  };
 
   const handleSelect = (qid: string, score: number) => {
     setAnswers((p) => ({ ...p, [qid]: score }));
-    if (step < total - 1) {
-      setTimeout(() => setStep((s) => s + 1), 220);
-    } else {
-      setTimeout(() => setPhase("result"), 280);
-    }
+    setTimeout(goNext, 220);
+  };
+
+  const handleNumber = (qid: string, value: string) => {
+    setAnswers((p) => ({ ...p, [qid]: value }));
   };
 
   const handleReset = () => {
@@ -100,14 +116,17 @@ export default function ProfilRisquePage() {
                   className="rounded-[2rem] glass-strong p-8 lg:p-12"
                 >
                   {/* Progress */}
-                  <div className="flex items-center justify-between mb-8">
-                    <span className="text-[11px] tracking-[0.3em] uppercase text-foreground/50 font-medium">
-                      {current.dimension} · {step + 1} / {total}
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-[10px] tracking-[0.32em] uppercase text-[hsl(var(--electric))] font-semibold">
+                      {current.section}
                     </span>
                     <span className="text-[11px] text-foreground/50 tabular-nums">
-                      {progress}%
+                      {step + 1} / {total} · {progress}%
                     </span>
                   </div>
+                  <p className="text-[11px] tracking-[0.2em] uppercase text-foreground/45 mb-6">
+                    {current.dimension}
+                  </p>
                   <div className="h-[2px] w-full bg-foreground/10 rounded-full mb-10 overflow-hidden">
                     <motion.div
                       className="h-full"
@@ -130,39 +149,72 @@ export default function ProfilRisquePage() {
                     </p>
                   )}
 
-                  <ul className="space-y-3 mt-8">
-                    {current.options.map((opt, i) => {
-                      const selected = answers[current.id] === opt.score;
-                      return (
-                        <li key={`${current.id}-${i}`}>
-                          <button
-                            type="button"
-                            onClick={() => handleSelect(current.id, opt.score)}
-                            className={`group w-full text-left flex items-center gap-4 p-5 rounded-[1.25rem] border transition-all duration-300 ${
-                              selected
-                                ? "border-[hsl(var(--electric))] bg-[hsl(var(--electric)/0.06)] shadow-[0_8px_24px_-8px_hsl(var(--electric)/0.25)]"
-                                : "border-foreground/[0.08] bg-white/45 hover:border-foreground/20 hover:bg-white/65"
-                            }`}
-                          >
-                            <span
-                              className={`w-5 h-5 rounded-full border flex-shrink-0 flex items-center justify-center transition ${
+                  {current.type === "number" ? (
+                    <div className="mt-8">
+                      <div className="flex items-center gap-3 p-2 pl-5 rounded-[1.25rem] border border-foreground/10 bg-white/55 focus-within:border-[hsl(var(--electric))] focus-within:bg-white/80 transition">
+                        <input
+                          type="number"
+                          inputMode="numeric"
+                          min={current.numberConfig?.min}
+                          max={current.numberConfig?.max}
+                          step={current.numberConfig?.step}
+                          placeholder={current.numberConfig?.placeholder}
+                          value={(answers[current.id] as string | undefined) ?? ""}
+                          onChange={(e) => handleNumber(current.id, e.target.value)}
+                          className="flex-1 bg-transparent outline-none text-foreground text-2xl font-light tabular-nums placeholder:text-foreground/30 py-3"
+                        />
+                        {current.numberConfig?.suffix && (
+                          <span className="px-4 text-foreground/55 text-sm tracking-wide">
+                            {current.numberConfig.suffix}
+                          </span>
+                        )}
+                        <button
+                          type="button"
+                          onClick={goNext}
+                          className="px-5 py-2.5 rounded-full bg-[hsl(var(--navy-deep))] text-white text-sm tracking-wide hover:-translate-y-0.5 transition-transform"
+                        >
+                          Continuer →
+                        </button>
+                      </div>
+                      <p className="mt-3 text-[11px] text-foreground/45">
+                        Cette donnée est reportée dans votre fiche PDF mais n'influence pas le calcul du SRI.
+                      </p>
+                    </div>
+                  ) : (
+                    <ul className="space-y-3 mt-8">
+                      {current.options?.map((opt, i) => {
+                        const selected = answers[current.id] === opt.score;
+                        return (
+                          <li key={`${current.id}-${i}`}>
+                            <button
+                              type="button"
+                              onClick={() => handleSelect(current.id, opt.score)}
+                              className={`group w-full text-left flex items-center gap-4 p-5 rounded-[1.25rem] border transition-all duration-300 ${
                                 selected
-                                  ? "border-[hsl(var(--electric))] bg-[hsl(var(--electric))]"
-                                  : "border-foreground/30 group-hover:border-foreground/60"
+                                  ? "border-[hsl(var(--electric))] bg-[hsl(var(--electric)/0.06)] shadow-[0_8px_24px_-8px_hsl(var(--electric)/0.25)]"
+                                  : "border-foreground/[0.08] bg-white/45 hover:border-foreground/20 hover:bg-white/65"
                               }`}
                             >
-                              {selected && (
-                                <span className="w-2 h-2 rounded-full bg-white" />
-                              )}
-                            </span>
-                            <span className="text-foreground/85 text-[15px] font-light leading-snug">
-                              {opt.label}
-                            </span>
-                          </button>
-                        </li>
-                      );
-                    })}
-                  </ul>
+                              <span
+                                className={`w-5 h-5 rounded-full border flex-shrink-0 flex items-center justify-center transition ${
+                                  selected
+                                    ? "border-[hsl(var(--electric))] bg-[hsl(var(--electric))]"
+                                    : "border-foreground/30 group-hover:border-foreground/60"
+                                }`}
+                              >
+                                {selected && (
+                                  <span className="w-2 h-2 rounded-full bg-white" />
+                                )}
+                              </span>
+                              <span className="text-foreground/85 text-[15px] font-light leading-snug">
+                                {opt.label}
+                              </span>
+                            </button>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
 
                   <div className="flex items-center justify-between mt-10 pt-6 border-t border-foreground/10">
                     <button
@@ -279,10 +331,22 @@ function ResultView({
   onReset,
 }: {
   profile: SriProfile;
-  answers: Record<string, number>;
+  answers: Record<string, AnswerValue>;
   onReset: () => void;
 }) {
   const handleDownload = () => generatePdf(profile, answers);
+  const handleSend = () => {
+    // Future intégration : envoi vers une edge function / mailer KANTI.
+    // Pour l'instant on confirme le téléchargement et on ouvre un mailto.
+    generatePdf(profile, answers);
+    const subject = encodeURIComponent(
+      `Profil de risque — SRI ${profile.sri}/7 (${profile.shortLabel})`,
+    );
+    const body = encodeURIComponent(
+      "Bonjour,\n\nVeuillez trouver ci-joint ma fiche profil de risque générée sur le site KANTI.\n\nCordialement.",
+    );
+    window.location.href = `mailto:${KANTI_INFO.email}?subject=${subject}&body=${body}`;
+  };
 
   return (
     <motion.div
@@ -416,12 +480,18 @@ function ResultView({
             </svg>
           </span>
         </button>
-        <Link
-          to="/contact"
-          className="inline-flex items-center gap-2 px-7 py-3 rounded-full border border-foreground/20 text-foreground text-sm tracking-wide hover:bg-foreground/5 transition"
+        <button
+          type="button"
+          onClick={handleSend}
+          className="group inline-flex items-center gap-3 pl-8 pr-2.5 py-2.5 rounded-full border border-foreground/20 text-foreground text-sm font-medium tracking-wide hover:bg-foreground/5 transition"
         >
-          Échanger avec un conseiller
-        </Link>
+          <span>Envoyer à KANTI</span>
+          <span className="w-9 h-9 rounded-full bg-[hsl(var(--electric))] text-white flex items-center justify-center transition-transform duration-300 group-hover:translate-x-0.5">
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 5.25l7.5 7.5 7.5-7.5M3.75 18.75l7.5-7.5 7.5 7.5" />
+            </svg>
+          </span>
+        </button>
         <button
           type="button"
           onClick={onReset}
@@ -437,46 +507,59 @@ function ResultView({
 /* ───────────────── PDF GENERATION ───────────────── */
 function generatePdf(
   profile: SriProfile,
-  answers: Record<string, number>,
+  answers: Record<string, AnswerValue>,
 ) {
   const doc = new jsPDF({ unit: "pt", format: "a4" });
   const W = doc.internal.pageSize.getWidth();
   const H = doc.internal.pageSize.getHeight();
-  const M = 48;
+  const M = 56;
 
-  // Brand colors (close approximations of HSL navy/electric tokens)
+  // Brand colors (approximations RGB of HSL navy/electric tokens)
   const NAVY: [number, number, number] = [12, 22, 50];
   const NAVY_LIGHT: [number, number, number] = [60, 75, 110];
   const ELECTRIC: [number, number, number] = [54, 96, 162];
   const GOLD: [number, number, number] = [120, 140, 175];
   const GREY: [number, number, number] = [120, 125, 135];
+  const INK: [number, number, number] = [40, 45, 60];
   const STONE: [number, number, number] = [232, 234, 240];
+  const STONE_LIGHT: [number, number, number] = [245, 246, 250];
 
-  // ===== HEADER BAND =====
+  /* ════════════════════════════════════════════
+     PAGE 1 — COUVERTURE & SCORE
+     ════════════════════════════════════════════ */
+
+  // Bandeau navy compact
   doc.setFillColor(...NAVY);
-  doc.rect(0, 0, W, 110, "F");
+  doc.rect(0, 0, W, 90, "F");
   doc.setTextColor(255);
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(22);
-  doc.text(KANTI_INFO.name, M, 52);
+  doc.setFontSize(20);
+  doc.text(KANTI_INFO.name, M, 44);
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(9);
+  doc.setFontSize(8.5);
   doc.setTextColor(200, 210, 230);
-  doc.text(KANTI_INFO.baseline.toUpperCase(), M, 70);
-  doc.text("Fiche profil de risque · " + new Date().toLocaleDateString("fr-FR"), M, 86);
-
-  // Right-aligned label
+  doc.text(KANTI_INFO.baseline.toUpperCase(), M, 60);
   doc.setFontSize(8);
-  doc.text("DOCUMENT PÉDAGOGIQUE", W - M, 70, { align: "right" });
-  doc.text("Conforme au cadre AMF", W - M, 86, { align: "right" });
+  doc.text("DOCUMENT PÉDAGOGIQUE · CONFORME AU CADRE AMF", W - M, 60, { align: "right" });
+  doc.text(
+    "Édité le " + new Date().toLocaleDateString("fr-FR", { day: "2-digit", month: "long", year: "numeric" }),
+    W - M,
+    44,
+    { align: "right" },
+  );
 
-  // ===== TITLE =====
-  let y = 150;
+  // Titre principal
+  let y = 140;
   doc.setTextColor(...NAVY);
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(28);
-  doc.text("Votre profil de risque", M, y);
-  y += 22;
+  doc.setFontSize(11);
+  doc.setTextColor(...GREY);
+  doc.text("QUESTIONNAIRE PROFIL DE RISQUE", M, y);
+  y += 26;
+  doc.setFontSize(30);
+  doc.setTextColor(...NAVY);
+  doc.text("Votre profil investisseur", M, y);
+  y += 20;
   doc.setFontSize(11);
   doc.setTextColor(...GREY);
   doc.text(
@@ -485,151 +568,208 @@ function generatePdf(
     y,
   );
 
-  // ===== SCORE BLOCK =====
-  y += 28;
-  doc.setDrawColor(...STONE);
-  doc.setLineWidth(0.6);
-  doc.line(M, y, W - M, y);
-
+  // Score panel — encart aéré
   y += 30;
+  doc.setFillColor(...STONE_LIGHT);
+  doc.roundedRect(M, y, W - M * 2, 170, 10, 10, "F");
+
   // Big score
   doc.setTextColor(...NAVY);
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(64);
-  doc.text(`${profile.sri}`, M, y + 38);
+  doc.setFontSize(72);
+  doc.text(`${profile.sri}`, M + 28, y + 90);
   doc.setFontSize(20);
   doc.setFont("helvetica", "normal");
   doc.setTextColor(...NAVY_LIGHT);
-  doc.text("/ 7", M + 70, y + 38);
+  doc.text("/ 7", M + 110, y + 90);
 
+  // Profil label
   doc.setFont("helvetica", "bold");
   doc.setFontSize(16);
   doc.setTextColor(...NAVY);
-  doc.text(profile.label, M + 140, y + 18);
+  doc.text(profile.label, M + 180, y + 50);
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(10);
+  doc.setFontSize(9.5);
   doc.setTextColor(...ELECTRIC);
-  doc.text(profile.shortLabel.toUpperCase(), M + 140, y + 36);
+  doc.text(profile.shortLabel.toUpperCase(), M + 180, y + 68);
 
-  // SRI scale bars
-  const barsY = y + 56;
-  const barsW = W - M * 2;
-  const barW = barsW / 7 - 4;
+  // SRI scale bars within the panel
+  const barsY = y + 110;
+  const barsW = W - M * 2 - 56;
+  const barW = barsW / 7 - 5;
   for (let i = 1; i <= 7; i++) {
-    const x = M + (i - 1) * (barW + 4);
-    const h = 8 + i * 3;
+    const x = M + 28 + (i - 1) * (barW + 5);
+    const h = 10 + i * 4;
     if (i === profile.sri) {
       doc.setFillColor(...ELECTRIC);
     } else {
-      doc.setFillColor(220 - i * 6, 224 - i * 4, 232 - i * 4);
+      doc.setFillColor(218 - i * 4, 222 - i * 3, 232 - i * 3);
     }
-    doc.roundedRect(x, barsY + (28 - h), barW, h, 2, 2, "F");
+    doc.roundedRect(x, barsY + (40 - h), barW, h, 2, 2, "F");
     doc.setFontSize(8);
-    doc.setTextColor(i === profile.sri ? ELECTRIC[0] : 150, i === profile.sri ? ELECTRIC[1] : 155, i === profile.sri ? ELECTRIC[2] : 165);
-    doc.text(`${i}`, x + barW / 2, barsY + 42, { align: "center" });
+    doc.setTextColor(...(i === profile.sri ? NAVY : GREY));
+    doc.text(`${i}`, x + barW / 2, barsY + 52, { align: "center" });
   }
   doc.setFontSize(7);
   doc.setTextColor(...GREY);
-  doc.text("TRÈS FAIBLE", M, barsY + 56);
-  doc.text("TRÈS ÉLEVÉ", W - M, barsY + 56, { align: "right" });
+  doc.text("SÉCURITAIRE", M + 28, barsY + 64);
+  doc.text("OFFENSIF", W - M - 28, barsY + 64, { align: "right" });
 
-  // ===== DESCRIPTION =====
-  y = barsY + 80;
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(10);
-  doc.setTextColor(...NAVY);
-  doc.text("LECTURE DU PROFIL", M, y);
-  y += 14;
+  // Lecture du profil
+  y += 200;
+  y = drawSectionTitle(doc, y, "LECTURE DU PROFIL", M, NAVY, ELECTRIC);
   doc.setFont("helvetica", "normal");
   doc.setFontSize(10.5);
-  doc.setTextColor(50, 55, 70);
+  doc.setTextColor(...INK);
   const desc = doc.splitTextToSize(profile.description, W - M * 2);
   doc.text(desc, M, y);
-  y += desc.length * 13 + 18;
+  y += desc.length * 14 + 24;
 
-  // ===== RECOMMENDATIONS =====
-  y = drawSection(
-    doc,
-    y,
-    "RECOMMANDATIONS GÉNÉRALES",
-    profile.recommendations,
-    ELECTRIC,
-    M,
-    W,
-    H,
-    NAVY,
-  );
+  // Recommandations + Vigilance (page 2 si nécessaire)
+  y = ensureSpace(doc, y, 200, M, H);
+  y = drawBulletSection(doc, y, "RECOMMANDATIONS GÉNÉRALES", profile.recommendations, ELECTRIC, M, W, H, NAVY, INK);
+  y = ensureSpace(doc, y + 18, 160, M, H);
+  y = drawBulletSection(doc, y, "POINTS DE VIGILANCE", profile.cautions, GOLD, M, W, H, NAVY, INK);
 
-  // ===== CAUTIONS =====
-  y = drawSection(
-    doc,
-    y + 8,
-    "POINTS DE VIGILANCE",
-    profile.cautions,
-    GOLD,
-    M,
-    W,
-    H,
-    NAVY,
-  );
-
-  // ===== ANSWERS RECAP =====
-  if (y > H - 200) {
-    doc.addPage();
-    y = 60;
-  } else {
-    y += 14;
-  }
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(10);
+  /* ════════════════════════════════════════════
+     PAGES SUIVANTES — DÉTAIL DES RÉPONSES PAR SECTION
+     ════════════════════════════════════════════ */
+  doc.addPage();
+  y = 90;
   doc.setTextColor(...NAVY);
-  doc.text("RÉCAPITULATIF DES RÉPONSES", M, y);
-  y += 12;
-  doc.setDrawColor(...STONE);
-  doc.line(M, y, W - M, y);
-  y += 14;
-
-  doc.setFontSize(9);
   doc.setFont("helvetica", "normal");
-  RISK_QUESTIONS.forEach((q, i) => {
-    if (y > H - 80) {
-      doc.addPage();
-      y = 60;
-    }
-    const score = answers[q.id];
-    const opt = q.options.find((o) => o.score === score);
-    doc.setTextColor(...NAVY);
+  doc.setFontSize(11);
+  doc.setTextColor(...GREY);
+  doc.text("DÉTAIL DU QUESTIONNAIRE", M, y);
+  y += 26;
+  doc.setFontSize(24);
+  doc.setTextColor(...NAVY);
+  doc.text("Vos réponses", M, y);
+  y += 14;
+  doc.setFontSize(10);
+  doc.setTextColor(...GREY);
+  doc.text(
+    "Récapitulatif structuré, conservé pour traçabilité de l'évaluation.",
+    M,
+    y,
+  );
+  y += 28;
+
+  RISK_SECTIONS.forEach((section) => {
+    y = ensureSpace(doc, y, 70, M, H);
+    // Section header
+    doc.setFillColor(...NAVY);
+    doc.rect(M, y, 4, 14, "F");
     doc.setFont("helvetica", "bold");
-    const qText = doc.splitTextToSize(`${i + 1}. ${q.question}`, W - M * 2);
-    doc.text(qText, M, y);
-    y += qText.length * 11 + 2;
-    doc.setFont("helvetica", "normal");
-    doc.setTextColor(...GREY);
-    const aText = doc.splitTextToSize(`→ ${opt?.label ?? "—"}`, W - M * 2 - 12);
-    doc.text(aText, M + 12, y);
-    y += aText.length * 11 + 8;
+    doc.setFontSize(11);
+    doc.setTextColor(...NAVY);
+    doc.text(section.toUpperCase(), M + 12, y + 11);
+    y += 22;
+    doc.setDrawColor(...STONE);
+    doc.setLineWidth(0.5);
+    doc.line(M, y, W - M, y);
+    y += 18;
+
+    const sectionQuestions = RISK_QUESTIONS.filter((q) => q.section === section);
+    sectionQuestions.forEach((q, idx) => {
+      y = ensureSpace(doc, y, 60, M, H);
+
+      // dimension chip
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(7.5);
+      doc.setTextColor(...ELECTRIC);
+      doc.text(q.dimension.toUpperCase(), M, y);
+      y += 10;
+
+      // question
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+      doc.setTextColor(...NAVY);
+      const qText = doc.splitTextToSize(`${idx + 1}. ${q.question}`, W - M * 2);
+      doc.text(qText, M, y);
+      y += qText.length * 12 + 4;
+
+      // answer
+      const raw = answers[q.id];
+      let answerLabel = "Non renseigné";
+      if (q.type === "number") {
+        if (typeof raw === "string" && raw.trim() !== "") {
+          answerLabel = `${raw}${q.numberConfig?.suffix ? " " + q.numberConfig.suffix : ""}`;
+        }
+      } else if (typeof raw === "number") {
+        const opt = q.options?.find((o) => o.score === raw);
+        answerLabel = opt?.label ?? "—";
+      }
+
+      // bandeau réponse
+      const aLines = doc.splitTextToSize("→  " + answerLabel, W - M * 2 - 20);
+      const aH = aLines.length * 12 + 10;
+      doc.setFillColor(...STONE_LIGHT);
+      doc.roundedRect(M, y - 2, W - M * 2, aH, 4, 4, "F");
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(9.5);
+      doc.setTextColor(...INK);
+      doc.text(aLines, M + 10, y + 9);
+      y += aH + 14;
+    });
+
+    y += 6;
   });
 
-  // ===== FOOTER on each page =====
+  /* ════════════════════════════════════════════
+     FOOTER sur toutes les pages
+     ════════════════════════════════════════════ */
   const pageCount = doc.getNumberOfPages();
   for (let p = 1; p <= pageCount; p++) {
     doc.setPage(p);
     doc.setDrawColor(...STONE);
-    doc.line(M, H - 60, W - M, H - 60);
+    doc.setLineWidth(0.5);
+    doc.line(M, H - 70, W - M, H - 70);
+    doc.setFont("helvetica", "bold");
     doc.setFontSize(8);
+    doc.setTextColor(...NAVY);
+    doc.text(KANTI_INFO.name, M, H - 55);
+    doc.setFont("helvetica", "normal");
     doc.setTextColor(...GREY);
-    doc.text(KANTI_INFO.address, M, H - 45);
-    doc.text(`${KANTI_INFO.phone}  ·  ${KANTI_INFO.email}`, M, H - 33);
-    doc.text(`Page ${p} / ${pageCount}`, W - M, H - 33, { align: "right" });
+    doc.text(KANTI_INFO.address, M, H - 43);
+    doc.text(`${KANTI_INFO.phone}  ·  ${KANTI_INFO.email}`, M, H - 31);
+    doc.text(`Page ${p} / ${pageCount}`, W - M, H - 31, { align: "right" });
     doc.setFontSize(7);
+    doc.setTextColor(150, 155, 165);
     const legal = doc.splitTextToSize(KANTI_INFO.legal, W - M * 2);
-    doc.text(legal, M, H - 18);
+    doc.text(legal, M, H - 17);
   }
 
   doc.save(`KANTI-Profil-Risque-SRI${profile.sri}.pdf`);
 }
 
-function drawSection(
+function ensureSpace(doc: jsPDF, y: number, needed: number, M: number, H: number): number {
+  if (y + needed > H - 90) {
+    doc.addPage();
+    return 90;
+  }
+  return y;
+}
+
+function drawSectionTitle(
+  doc: jsPDF,
+  y: number,
+  title: string,
+  M: number,
+  NAVY: [number, number, number],
+  ACCENT: [number, number, number],
+): number {
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(10);
+  doc.setTextColor(...NAVY);
+  doc.text(title, M, y);
+  doc.setDrawColor(...ACCENT);
+  doc.setLineWidth(1.4);
+  doc.line(M, y + 6, M + 40, y + 6);
+  return y + 22;
+}
+
+function drawBulletSection(
   doc: jsPDF,
   startY: number,
   title: string,
@@ -639,34 +779,19 @@ function drawSection(
   W: number,
   H: number,
   NAVY: [number, number, number],
+  INK: [number, number, number],
 ): number {
-  let y = startY;
-  if (y > H - 140) {
-    doc.addPage();
-    y = 60;
-  }
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(10);
-  doc.setTextColor(...NAVY);
-  doc.text(title, M, y);
-  y += 12;
-  doc.setDrawColor(...accent);
-  doc.setLineWidth(1.2);
-  doc.line(M, y, M + 36, y);
-  y += 14;
+  let y = drawSectionTitle(doc, startY, title, M, NAVY, accent);
   doc.setFont("helvetica", "normal");
   doc.setFontSize(10);
-  doc.setTextColor(50, 55, 70);
+  doc.setTextColor(...INK);
   items.forEach((it) => {
-    if (y > H - 90) {
-      doc.addPage();
-      y = 60;
-    }
+    y = ensureSpace(doc, y, 30, M, H);
     doc.setFillColor(...accent);
     doc.circle(M + 3, y - 3, 1.6, "F");
-    const lines = doc.splitTextToSize(it, W - M * 2 - 14);
+    const lines = doc.splitTextToSize(it, W - M * 2 - 16);
     doc.text(lines, M + 14, y);
-    y += lines.length * 13 + 4;
+    y += lines.length * 13 + 6;
   });
   return y;
 }

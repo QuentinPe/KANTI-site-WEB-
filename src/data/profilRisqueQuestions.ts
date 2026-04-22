@@ -6,17 +6,37 @@ export interface RiskOption {
 
 export interface RiskQuestion {
   id: string;
-  /** AMF dimension: connaissance, expérience, situation, objectifs, tolérance */
-  dimension:
-    | "Connaissance"
-    | "Expérience"
-    | "Situation financière"
-    | "Objectifs"
-    | "Tolérance au risque";
+  /** Section thématique du questionnaire AMF */
+  section: RiskSection;
+  /** Sous-thème (libellé court) */
+  dimension: string;
   question: string;
   helper?: string;
-  options: RiskOption[];
+  /** "choice" = QCM scoré, "number" = saisie libre (non scorée, reportée dans le PDF) */
+  type?: "choice" | "number";
+  /** Pour les questions de type "number" */
+  numberConfig?: {
+    placeholder?: string;
+    suffix?: string; // ex : "€", "ans"
+    min?: number;
+    max?: number;
+    step?: number;
+  };
+  /** Permet plusieurs réponses (toujours scoré sur la meilleure réponse cochée) */
+  multi?: boolean;
+  options?: RiskOption[];
 }
+
+export type RiskSection =
+  | "Projet d'investissement"
+  | "Connaissance et expérience des placements"
+  | "Comportement et tolérance au risque";
+
+export const RISK_SECTIONS: RiskSection[] = [
+  "Projet d'investissement",
+  "Connaissance et expérience des placements",
+  "Comportement et tolérance au risque",
+];
 
 /**
  * Questionnaire d'évaluation du profil investisseur — aligné sur les
@@ -25,165 +45,316 @@ export interface RiskQuestion {
  * Le SRI final (1 → 7) est calculé à partir du score moyen.
  */
 export const RISK_QUESTIONS: RiskQuestion[] = [
-  // === Connaissance ===
+  // ═══════════ 1. PROJET D'INVESTISSEMENT ═══════════
   {
-    id: "knowledge-products",
-    dimension: "Connaissance",
-    question:
-      "Quel est votre niveau de connaissance des produits financiers (actions, obligations, OPCVM, SCPI, produits structurés) ?",
+    id: "projet-objectif",
+    section: "Projet d'investissement",
+    dimension: "Objectifs du placement",
+    question: "Quels sont les objectifs de votre placement ?",
     options: [
-      { label: "Aucune connaissance — je découvre", score: 1 },
-      { label: "Notions générales acquises par lecture / presse", score: 2 },
-      { label: "Bonne compréhension des grandes classes d'actifs", score: 3 },
-      { label: "Maîtrise opérationnelle (rendement, volatilité, frais)", score: 4 },
-      { label: "Expert — je suis ces marchés au quotidien", score: 5 },
+      { label: "Préparer ma retraite", score: 3 },
+      { label: "Réduire mon impôt sur le revenu", score: 3 },
+      { label: "Mettre de l'argent de côté pour un objectif précis", score: 2 },
+      { label: "Préparer la transmission de mon capital", score: 3 },
+      { label: "Accroître mon capital sans but spécifique", score: 4 },
+      { label: "Autre", score: 3 },
     ],
   },
   {
-    id: "knowledge-volatility",
-    dimension: "Connaissance",
-    question:
-      "Que signifie pour vous la « volatilité » d'un placement ?",
-    options: [
-      { label: "Je ne sais pas", score: 1 },
-      { label: "Une notion vague de variation", score: 2 },
-      { label: "L'amplitude de hausse et de baisse d'un actif", score: 3 },
-      { label: "Une mesure statistique (écart-type) du risque", score: 4 },
-      { label: "Une donnée que j'utilise pour arbitrer", score: 5 },
-    ],
-  },
-  // === Expérience ===
-  {
-    id: "experience-products",
-    dimension: "Expérience",
-    question:
-      "Avez-vous déjà investi sur les marchés financiers (hors livrets) ?",
-    options: [
-      { label: "Jamais", score: 1 },
-      { label: "Uniquement des fonds euros / assurance-vie sécurisée", score: 2 },
-      { label: "Quelques unités de compte ou SCPI", score: 3 },
-      { label: "Portefeuille diversifié actions / obligations", score: 4 },
-      { label: "Produits complexes (structurés, dérivés, private equity)", score: 5 },
-    ],
+    id: "projet-montant",
+    section: "Projet d'investissement",
+    dimension: "Montant envisagé",
+    question: "Quelle somme envisagez-vous d'investir ?",
+    type: "number",
+    numberConfig: { placeholder: "50 000", suffix: "€", min: 0, step: 1000 },
   },
   {
-    id: "experience-frequency",
-    dimension: "Expérience",
-    question:
-      "À quelle fréquence réalisez-vous des opérations d'investissement ?",
-    options: [
-      { label: "Jamais", score: 1 },
-      { label: "Moins d'une fois par an", score: 2 },
-      { label: "1 à 4 fois par an", score: 3 },
-      { label: "Plusieurs fois par mois", score: 4 },
-      { label: "Hebdomadaire ou plus", score: 5 },
-    ],
+    id: "projet-duree",
+    section: "Projet d'investissement",
+    dimension: "Durée du projet",
+    question: "Sur quelle durée envisagez-vous d'investir ?",
+    type: "number",
+    numberConfig: { placeholder: "15", suffix: "ans", min: 0, max: 60, step: 1 },
   },
-  // === Situation financière ===
+
+  // ═══════════ 2. CONNAISSANCE ET EXPÉRIENCE ═══════════
   {
-    id: "situation-savings",
-    dimension: "Situation financière",
-    question:
-      "Disposez-vous d'une épargne de précaution (au moins 3 à 6 mois de revenus) immédiatement disponible ?",
+    id: "ce-connaissance",
+    section: "Connaissance et expérience des placements",
+    dimension: "Connaissance des placements",
+    question: "Quelle est votre connaissance en matière de placements ?",
     options: [
-      { label: "Non, pas du tout", score: 1 },
-      { label: "Partiellement (moins de 3 mois)", score: 2 },
-      { label: "Oui, environ 3 à 6 mois", score: 3 },
-      { label: "Oui, plus de 6 mois", score: 4 },
-      { label: "Oui, très largement (> 12 mois)", score: 5 },
+      { label: "Connaissance limitée", score: 1 },
+      { label: "Connaissance de base : je comprends la différence entre actions et obligations", score: 2 },
+      { label: "Connaissance raisonnable : je connais les options de placement et les risques associés", score: 3 },
+      { label: "Bonnes connaissances : je comprends les diverses stratégies de placement", score: 4 },
+      { label: "Connaissances approfondies : je maîtrise tous les produits et stratégies", score: 5 },
     ],
   },
   {
-    id: "situation-stability",
-    dimension: "Situation financière",
-    question:
-      "Comment qualifieriez-vous la stabilité de vos revenus à moyen terme ?",
+    id: "ce-experience-generale",
+    section: "Connaissance et expérience des placements",
+    dimension: "Expérience générale",
+    question: "Quelle est votre expérience des placements financiers en général ?",
     options: [
-      { label: "Très incertaine", score: 1 },
-      { label: "Variable", score: 2 },
-      { label: "Plutôt stable", score: 3 },
-      { label: "Stable et récurrente", score: 4 },
-      { label: "Très élevée et croissante", score: 5 },
+      { label: "Aucune expérience préalable", score: 1 },
+      { label: "J'ai déjà réalisé des placements avec un conseiller financier", score: 3 },
+      { label: "J'ai déjà réalisé des placements sans conseiller financier", score: 4 },
     ],
   },
   {
-    id: "situation-share",
-    dimension: "Situation financière",
-    question:
-      "Quelle part de votre patrimoine global envisagez-vous d'investir sur ce projet ?",
+    id: "ce-assurance-vie",
+    section: "Connaissance et expérience des placements",
+    dimension: "Assurance-vie / Épargne retraite",
+    question: "Quelle est votre expérience des placements en assurance-vie ou épargne retraite ?",
     options: [
-      { label: "Plus de 75 %", score: 1 },
-      { label: "Entre 50 % et 75 %", score: 2 },
-      { label: "Entre 25 % et 50 %", score: 3 },
-      { label: "Entre 10 % et 25 %", score: 4 },
+      { label: "Aucune expérience préalable", score: 1 },
+      { label: "J'ai déjà investi en fonds euros", score: 2 },
+      { label: "J'ai déjà investi en unités de compte", score: 4 },
+    ],
+  },
+  {
+    id: "ce-autres-placements",
+    section: "Connaissance et expérience des placements",
+    dimension: "Autres placements financiers",
+    question: "Quelle est votre expérience des autres placements financiers ?",
+    helper: "Sélectionnez l'option la plus avancée vous concernant.",
+    options: [
+      { label: "Aucune expérience préalable", score: 1 },
+      { label: "Contrat de capitalisation", score: 2 },
+      { label: "Placements retraite (PER, PERP, Madelin, PERCO, Art. 83)", score: 3 },
+      { label: "Comptes-titres / PEA en fonds (OPCVM, SICAV…)", score: 3 },
+      { label: "Comptes-titres / PEA en titres vifs (actions, obligations)", score: 4 },
+      { label: "Capital risque (FCPI, FIP, FCPR, parts de PME)", score: 5 },
+      { label: "Produits financiers complexes (warrants, certificats, options, CFD)", score: 5 },
+    ],
+  },
+  {
+    id: "ce-immobilier",
+    section: "Connaissance et expérience des placements",
+    dimension: "Investissement immobilier",
+    question: "Quelle est votre expérience de l'investissement immobilier ?",
+    options: [
+      { label: "Aucune expérience préalable", score: 1 },
+      { label: "Je possède (ou ai possédé) ma résidence principale", score: 2 },
+      { label: "Je possède (ou ai possédé) une résidence secondaire", score: 3 },
+      { label: "Je possède (ou ai possédé) un bien locatif", score: 4 },
+      { label: "Je possède (ou ai possédé) des parts de SCPI", score: 4 },
+    ],
+  },
+  {
+    id: "ce-anciennete",
+    section: "Connaissance et expérience des placements",
+    dimension: "Ancienneté",
+    question: "Depuis combien de temps faites-vous des placements ?",
+    options: [
+      { label: "Moins d'un an", score: 1 },
+      { label: "De 1 à 5 ans", score: 3 },
+      { label: "Plus de 5 ans", score: 5 },
+    ],
+  },
+  {
+    id: "ce-baisse-vecue",
+    section: "Connaissance et expérience des placements",
+    dimension: "Baisse déjà vécue",
+    question: "Avez-vous déjà subi une très forte baisse de la valeur d'un placement ?",
+    options: [
+      { label: "Oui", score: 4 },
+      { label: "Non", score: 2 },
+    ],
+  },
+  {
+    id: "ce-baisse-pct",
+    section: "Connaissance et expérience des placements",
+    dimension: "Ampleur de la baisse (%)",
+    question: "Le cas échéant, quelle a été l'ampleur de cette baisse en pourcentage ?",
+    helper: "Laissez en l'état si vous n'avez jamais subi de baisse significative.",
+    options: [
+      { label: "Sans objet", score: 3 },
+      { label: "Moins de 15 %", score: 2 },
+      { label: "Entre 15 % et 25 %", score: 3 },
+      { label: "Entre 25 % et 50 %", score: 4 },
+      { label: "Plus de 50 %", score: 5 },
+    ],
+  },
+  {
+    id: "ce-baisse-eur",
+    section: "Connaissance et expérience des placements",
+    dimension: "Ampleur de la baisse (€)",
+    question: "Le cas échéant, quelle a été l'ampleur de cette baisse en euros ?",
+    options: [
+      { label: "Sans objet", score: 3 },
+      { label: "Moins de 15 000 €", score: 2 },
+      { label: "Entre 15 000 € et 50 000 €", score: 3 },
+      { label: "Plus de 50 000 €", score: 5 },
+    ],
+  },
+  {
+    id: "ce-niveau",
+    section: "Connaissance et expérience des placements",
+    dimension: "Niveau d'investisseur",
+    question: "Au final, vous vous définiriez comme un investisseur de niveau…",
+    options: [
+      { label: "Non professionnel débutant", score: 1 },
+      { label: "Non professionnel confirmé (« investisseur averti »)", score: 3 },
+      { label: "Professionnel", score: 5 },
+    ],
+  },
+
+  // ═══════════ 3. COMPORTEMENT ET TOLÉRANCE AU RISQUE ═══════════
+  {
+    id: "ct-versements",
+    section: "Comportement et tolérance au risque",
+    dimension: "Versements réguliers",
+    question: "Des versements réguliers dans votre placement sont-ils prévus ?",
+    options: [
+      { label: "Non", score: 2 },
+      { label: "Oui, tous les mois", score: 3 },
+      { label: "Oui, tous les trimestres", score: 3 },
+      { label: "Oui, tous les ans", score: 3 },
+    ],
+  },
+  {
+    id: "ct-versement-montant",
+    section: "Comportement et tolérance au risque",
+    dimension: "Montant du versement",
+    question: "Quel versement régulier envisagez-vous de réaliser ?",
+    type: "number",
+    numberConfig: { placeholder: "150", suffix: "€", min: 0, step: 50 },
+  },
+  {
+    id: "ct-risque-mot",
+    section: "Comportement et tolérance au risque",
+    dimension: "Perception du risque",
+    question: "Que signifie le mot « risque » pour vous ?",
+    options: [
+      { label: "Perte", score: 1 },
+      { label: "Incertitude", score: 2 },
+      { label: "Potentiel", score: 4 },
+      { label: "Excitation", score: 5 },
+    ],
+  },
+  {
+    id: "ct-rapport",
+    section: "Comportement et tolérance au risque",
+    dimension: "Rapport rendement / risque",
+    question:
+      "Qu'est-ce qui vous décrit le mieux dans l'analyse du rapport risque / rendement d'un investissement ?",
+    options: [
+      { label: "Le potentiel de rendement est le facteur le plus important", score: 5 },
+      { label: "Le potentiel de rendement doit correspondre au risque", score: 3 },
+      { label: "Le risque est le facteur le plus important", score: 1 },
+    ],
+  },
+  {
+    id: "ct-emploi",
+    section: "Comportement et tolérance au risque",
+    dimension: "Mise en situation — emploi",
+    question:
+      "Vous obtenez un emploi dans une entreprise en pleine croissance. Lequel de ces choix retenez-vous ?",
+    options: [
+      { label: "Un contrat de travail de 5 ans", score: 1 },
+      {
+        label:
+          "Un contrat d'un an renouvelable avec un bonus substantiel selon la performance",
+        score: 3,
+      },
+      {
+        label:
+          "Un contrat d'un an renouvelable avec la possibilité d'utiliser votre bonus pour acheter des actions de la société",
+        score: 5,
+      },
+    ],
+  },
+  {
+    id: "ct-duree",
+    section: "Comportement et tolérance au risque",
+    dimension: "Durée de l'investissement",
+    question: "Quelle est la durée prévue de votre investissement ?",
+    options: [
+      { label: "Moins de 4 ans", score: 1 },
+      { label: "Entre 4 et 8 ans", score: 3 },
+      { label: "Entre 8 et 15 ans", score: 4 },
+      { label: "Plus de 15 ans", score: 5 },
+    ],
+  },
+  {
+    id: "ct-recup",
+    section: "Comportement et tolérance au risque",
+    dimension: "Récupération anticipée",
+    question:
+      "Quelle est la probabilité de devoir récupérer votre capital avant le terme prévu ?",
+    options: [
+      { label: "Nulle", score: 5 },
+      { label: "Faible", score: 4 },
+      { label: "Moyenne", score: 2 },
+      { label: "Forte", score: 1 },
+    ],
+  },
+  {
+    id: "ct-part",
+    section: "Comportement et tolérance au risque",
+    dimension: "Part du patrimoine",
+    question:
+      "Quelle part de votre patrimoine global (hors résidence principale) envisagez-vous d'investir ?",
+    options: [
       { label: "Moins de 10 %", score: 5 },
+      { label: "De 10 à 25 %", score: 4 },
+      { label: "De 25 à 50 %", score: 2 },
+      { label: "Plus de 50 %", score: 1 },
     ],
   },
-  // === Objectifs ===
   {
-    id: "objective-horizon",
-    dimension: "Objectifs",
-    question: "Quel est votre horizon d'investissement principal ?",
+    id: "ct-reaction",
+    section: "Comportement et tolérance au risque",
+    dimension: "Réaction à une chute",
+    question: "Que feriez-vous si la valeur de votre investissement venait à chuter brutalement ?",
     options: [
-      { label: "Moins de 2 ans", score: 1 },
-      { label: "2 à 5 ans", score: 2 },
-      { label: "5 à 8 ans", score: 3 },
-      { label: "8 à 12 ans", score: 4 },
-      { label: "Plus de 12 ans", score: 5 },
+      { label: "Je vends tout de suite", score: 1 },
+      { label: "J'attends que ça remonte", score: 3 },
+      { label: "Je réinvestis", score: 5 },
     ],
   },
   {
-    id: "objective-goal",
-    dimension: "Objectifs",
-    question: "Quel est l'objectif principal de votre investissement ?",
+    id: "ct-variation",
+    section: "Comportement et tolérance au risque",
+    dimension: "Variation acceptée sur 1 an",
+    question: "Quelle variation de votre capital accepteriez-vous sur une période d'un an ?",
     options: [
-      { label: "Préserver le capital quoi qu'il arrive", score: 1 },
-      { label: "Générer un revenu régulier et stable", score: 2 },
-      { label: "Faire croître mon capital de façon mesurée", score: 3 },
-      { label: "Maximiser la performance long terme", score: 4 },
-      { label: "Recherche de surperformance (capital risque accepté)", score: 5 },
+      { label: "De 0 à 3 %", score: 1 },
+      { label: "De −5 % à +7 %", score: 2 },
+      { label: "De −10 % à +12 %", score: 3 },
+      { label: "De −20 % à +15 %", score: 4 },
+      { label: "Un écart plus grand", score: 5 },
     ],
   },
-  // === Tolérance ===
   {
-    id: "tolerance-loss",
-    dimension: "Tolérance au risque",
+    id: "ct-portefeuille",
+    section: "Comportement et tolérance au risque",
+    dimension: "Portefeuille préféré",
     question:
-      "Quelle perte temporaire annuelle maximale seriez-vous prêt(e) à accepter ?",
+      "Avec lequel de ces 4 portefeuilles hypothétiques seriez-vous le plus à l'aise ?",
     helper:
-      "Une diversification ne supprime pas le risque de perte en capital.",
+      "Du portefeuille A (le plus stable) au portefeuille D (le plus volatil).",
     options: [
-      { label: "Aucune perte tolérée", score: 1 },
-      { label: "Jusqu'à 5 %", score: 2 },
-      { label: "Jusqu'à 15 %", score: 3 },
-      { label: "Jusqu'à 30 %", score: 4 },
-      { label: "Plus de 30 %", score: 5 },
+      { label: "Portefeuille A — très stable, performance modeste", score: 1 },
+      { label: "Portefeuille B — variations modérées, performance régulière", score: 3 },
+      { label: "Portefeuille C — variations marquées, performance supérieure", score: 4 },
+      { label: "Portefeuille D — fortes variations, performance potentiellement élevée", score: 5 },
     ],
   },
   {
-    id: "tolerance-reaction",
-    dimension: "Tolérance au risque",
+    id: "ct-attente",
+    section: "Comportement et tolérance au risque",
+    dimension: "Patience face à une baisse",
     question:
-      "Si votre portefeuille perdait 20 % en quelques semaines, votre réaction serait :",
+      "Combien de temps seriez-vous prêt à attendre que vos placements regagnent leur valeur initiale ?",
     options: [
-      { label: "Vendre immédiatement pour limiter les pertes", score: 1 },
-      { label: "Vendre une partie par sécurité", score: 2 },
-      { label: "Ne rien faire et attendre la reprise", score: 3 },
-      { label: "Conserver et arbitrer si nécessaire", score: 4 },
-      { label: "Renforcer pour profiter du repli", score: 5 },
-    ],
-  },
-  {
-    id: "tolerance-tradeoff",
-    dimension: "Tolérance au risque",
-    question:
-      "Quel couple rendement / risque vous correspond le mieux ?",
-    options: [
-      { label: "+1 % par an, perte maximale ~0 %", score: 1 },
-      { label: "+3 % par an, perte maximale ~5 %", score: 2 },
-      { label: "+5 % par an, perte maximale ~15 %", score: 3 },
-      { label: "+7 % par an, perte maximale ~25 %", score: 4 },
-      { label: "+10 % par an, perte maximale > 30 %", score: 5 },
+      { label: "Moins de 3 mois", score: 1 },
+      { label: "De 3 à 6 mois", score: 2 },
+      { label: "De 6 mois à 1 an", score: 3 },
+      { label: "De 1 à 2 ans", score: 4 },
+      { label: "Plus de 2 ans", score: 5 },
     ],
   },
 ];
@@ -202,7 +373,16 @@ export interface SriProfile {
  * en suivant la grille indicative AMF / PRIIPs.
  */
 export function computeSri(answers: Record<string, number>): SriProfile {
-  const values = Object.values(answers);
+  // On n'agrège que les réponses scorées (les saisies libres sont stockées
+  // sous forme de NaN ou d'identifiants spécifiques côté UI ; on filtre
+  // ici toute valeur non finie ou ≤ 0).
+  const values = Object.entries(answers)
+    .filter(([id]) => {
+      const q = RISK_QUESTIONS.find((r) => r.id === id);
+      return q && q.type !== "number";
+    })
+    .map(([, v]) => v)
+    .filter((v) => Number.isFinite(v) && v > 0);
   if (values.length === 0) {
     return SRI_PROFILES[0];
   }
