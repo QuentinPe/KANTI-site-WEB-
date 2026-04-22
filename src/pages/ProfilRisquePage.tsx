@@ -526,6 +526,18 @@ function generatePdf(
   const M = 56;
   const CW = W - M * 2; // content width
 
+  // Embarquer la police Cormorant Garamond (police premium du site)
+  try {
+    doc.addFileToVFS("CormorantGaramond-Regular.ttf", CORMORANT_REG_B64);
+    doc.addFont("CormorantGaramond-Regular.ttf", "Cormorant", "normal");
+    doc.addFileToVFS("CormorantGaramond-Bold.ttf", CORMORANT_BOLD_B64);
+    doc.addFont("CormorantGaramond-Bold.ttf", "Cormorant", "bold");
+  } catch {
+    /* fallback helvetica */
+  }
+  const SERIF = "Cormorant";
+  const SANS = "helvetica";
+
   // ── Palette éditoriale (raffinée) ─────────────────────
   type RGB = [number, number, number];
   const NAVY: RGB = [11, 22, 50];        // texte principal / fonds sombres
