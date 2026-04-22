@@ -524,43 +524,136 @@ function generatePdf(
   const STONE: [number, number, number] = [232, 234, 240];
   const STONE_LIGHT: [number, number, number] = [245, 246, 250];
 
+  const today = new Date().toLocaleDateString("fr-FR", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
+
   /* ════════════════════════════════════════════
-     PAGE 1 — COUVERTURE & SCORE
+     PAGE 1 — COUVERTURE PLEINE PAGE
      ════════════════════════════════════════════ */
 
-  // Bandeau navy compact
+  // Fond navy plein
   doc.setFillColor(...NAVY);
-  doc.rect(0, 0, W, 90, "F");
-  doc.setTextColor(255);
+  doc.rect(0, 0, W, H, "F");
+
+  // Motif décoratif : grandes courbes dorées/électriques (cercles concentriques en bas-droite)
+  for (let i = 0; i < 6; i++) {
+    doc.setDrawColor(54 + i * 6, 96 + i * 4, 162);
+    doc.setLineWidth(0.4);
+    doc.circle(W - 40, H - 60, 110 + i * 38, "S");
+  }
+  // Cercle doux en haut-gauche
+  doc.setFillColor(28, 44, 86);
+  doc.circle(-20, -20, 220, "F");
+
+  // Filet doré horizontal
+  doc.setDrawColor(...ELECTRIC);
+  doc.setLineWidth(1.2);
+  doc.line(M, 130, M + 70, 130);
+
+  // Logo KANTI (texte large, lettrage espacé)
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(20);
-  doc.text(KANTI_INFO.name, M, 44);
+  doc.setFontSize(34);
+  doc.setTextColor(255);
+  doc.text("K A N T I", M, 110);
+
+  // Baseline
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(8.5);
-  doc.setTextColor(200, 210, 230);
-  doc.text(KANTI_INFO.baseline.toUpperCase(), M, 60);
+  doc.setFontSize(9);
+  doc.setTextColor(180, 195, 225);
+  doc.text(KANTI_INFO.baseline.toUpperCase(), M, 152);
+
+  // Bloc titre principal (centré verticalement)
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(10);
+  doc.setTextColor(150, 175, 220);
+  doc.text("RAPPORT CONFIDENTIEL", M, H / 2 - 80);
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(40);
+  doc.setTextColor(255);
+  doc.text("Profil", M, H / 2 - 30);
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(220, 230, 250);
+  doc.text("d'investisseur", M, H / 2 + 14);
+
+  // Filet de séparation
+  doc.setDrawColor(...ELECTRIC);
+  doc.setLineWidth(0.8);
+  doc.line(M, H / 2 + 40, M + 240, H / 2 + 40);
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(11);
+  doc.setTextColor(200, 215, 240);
+  const introLines = doc.splitTextToSize(
+    "Évaluation personnalisée de votre tolérance au risque, conforme aux exigences de l'Autorité des Marchés Financiers. Indicateur synthétique de risque (SRI) sur une échelle de 1 à 7.",
+    W - M * 2 - 60,
+  );
+  doc.text(introLines, M, H / 2 + 64);
+
+  // Encart résumé bas de page : SRI + profil
+  const cardY = H - 230;
+  doc.setFillColor(255, 255, 255);
+  doc.roundedRect(M, cardY, W - M * 2, 130, 8, 8, "F");
+  // Bord doré électrique
+  doc.setDrawColor(...ELECTRIC);
+  doc.setLineWidth(2.5);
+  doc.line(M, cardY, M + 60, cardY);
+
+  doc.setFont("helvetica", "normal");
   doc.setFontSize(8);
-  doc.text("DOCUMENT PÉDAGOGIQUE · CONFORME AU CADRE AMF", W - M, 60, { align: "right" });
+  doc.setTextColor(...GREY);
+  doc.text("VOTRE INDICATEUR SRI", M + 24, cardY + 28);
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(64);
+  doc.setTextColor(...NAVY);
+  doc.text(`${profile.sri}`, M + 24, cardY + 92);
+  doc.setFontSize(16);
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(...NAVY_LIGHT);
+  doc.text("/ 7", M + 84, cardY + 92);
+
+  // Profil label dans la carte
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(15);
+  doc.setTextColor(...NAVY);
+  doc.text(profile.label, M + 160, cardY + 60);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(9);
+  doc.setTextColor(...ELECTRIC);
+  doc.text(profile.shortLabel.toUpperCase(), M + 160, cardY + 78);
+
+  // Mini date / référence dans la carte
+  doc.setFontSize(8);
+  doc.setTextColor(...GREY);
+  doc.text(`Édité le ${today}`, W - M - 24, cardY + 28, { align: "right" });
   doc.text(
-    "Édité le " + new Date().toLocaleDateString("fr-FR", { day: "2-digit", month: "long", year: "numeric" }),
-    W - M,
-    44,
+    `Réf. KANTI-PR-${Date.now().toString().slice(-6)}`,
+    W - M - 24,
+    cardY + 42,
     { align: "right" },
   );
 
-  // Titre principal
-  let y = 140;
-  doc.setTextColor(...NAVY);
+  // Footer cover
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(11);
-  doc.setTextColor(...GREY);
-  doc.text("QUESTIONNAIRE PROFIL DE RISQUE", M, y);
-  y += 26;
-  doc.setFontSize(30);
-  doc.setTextColor(...NAVY);
-  doc.text("Votre profil investisseur", M, y);
-  y += 20;
-  doc.setFontSize(11);
+  doc.setFontSize(8);
+  doc.setTextColor(160, 175, 205);
+  doc.text(KANTI_INFO.address, M, H - 50);
+  doc.text(`${KANTI_INFO.phone}  ·  ${KANTI_INFO.email}`, M, H - 36);
+  doc.text("Document pédagogique — cadre AMF", W - M, H - 36, { align: "right" });
+
+  /* ════════════════════════════════════════════
+     PAGE 2 — SYNTHÈSE DU PROFIL
+     ════════════════════════════════════════════ */
+  doc.addPage();
+  drawPageHeader(doc, W, M, NAVY, GREY, ELECTRIC, "Synthèse du profil", today);
+
+  let y = 140;
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(10.5);
   doc.setTextColor(...GREY);
   doc.text(
     "Indicateur synthétique de risque (SRI) calculé sur la base de vos réponses.",
@@ -569,7 +662,7 @@ function generatePdf(
   );
 
   // Score panel — encart aéré
-  y += 30;
+  y += 22;
   doc.setFillColor(...STONE_LIGHT);
   doc.roundedRect(M, y, W - M * 2, 170, 10, 10, "F");
 
@@ -635,21 +728,13 @@ function generatePdf(
      PAGES SUIVANTES — DÉTAIL DES RÉPONSES PAR SECTION
      ════════════════════════════════════════════ */
   doc.addPage();
-  y = 90;
-  doc.setTextColor(...NAVY);
+  drawPageHeader(doc, W, M, NAVY, GREY, ELECTRIC, "Détail de vos réponses", today);
+  y = 140;
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(11);
-  doc.setTextColor(...GREY);
-  doc.text("DÉTAIL DU QUESTIONNAIRE", M, y);
-  y += 26;
-  doc.setFontSize(24);
-  doc.setTextColor(...NAVY);
-  doc.text("Vos réponses", M, y);
-  y += 14;
   doc.setFontSize(10);
   doc.setTextColor(...GREY);
   doc.text(
-    "Récapitulatif structuré, conservé pour traçabilité de l'évaluation.",
+    "Récapitulatif structuré du questionnaire, conservé pour traçabilité de l'évaluation.",
     M,
     y,
   );
@@ -720,7 +805,7 @@ function generatePdf(
      FOOTER sur toutes les pages
      ════════════════════════════════════════════ */
   const pageCount = doc.getNumberOfPages();
-  for (let p = 1; p <= pageCount; p++) {
+  for (let p = 2; p <= pageCount; p++) {
     doc.setPage(p);
     doc.setDrawColor(...STONE);
     doc.setLineWidth(0.5);
@@ -749,6 +834,41 @@ function ensureSpace(doc: jsPDF, y: number, needed: number, M: number, H: number
     return 90;
   }
   return y;
+}
+
+
+function drawPageHeader(
+  doc: jsPDF,
+  W: number,
+  M: number,
+  NAVY: [number, number, number],
+  GREY: [number, number, number],
+  ACCENT: [number, number, number],
+  title: string,
+  date: string,
+) {
+  // Bandeau supérieur sobre
+  doc.setFillColor(...NAVY);
+  doc.rect(0, 0, W, 60, "F");
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(14);
+  doc.setTextColor(255, 255, 255);
+  doc.text("K A N T I", M, 36);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8);
+  doc.setTextColor(190, 205, 230);
+  doc.text("PROFIL DE RISQUE — RAPPORT", W - M, 30, { align: "right" });
+  doc.setFontSize(7.5);
+  doc.text(date, W - M, 44, { align: "right" });
+
+  // Titre de page
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(20);
+  doc.setTextColor(...NAVY);
+  doc.text(title, M, 100);
+  doc.setDrawColor(...ACCENT);
+  doc.setLineWidth(1.4);
+  doc.line(M, 112, M + 50, 112);
 }
 
 function drawSectionTitle(
