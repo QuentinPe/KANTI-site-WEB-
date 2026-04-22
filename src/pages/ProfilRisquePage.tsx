@@ -760,13 +760,19 @@ function generatePdf(
 
   // Big score (gauche)
   setText(WHITE);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(78);
-  doc.text(`${profile.sri}`, M + 36, y + 110);
-  doc.setFont("helvetica", "normal");
+  doc.setFont(SERIF, "bold");
+  doc.setFontSize(86);
+  doc.text(`${sriPrecise.toFixed(1)}`, M + 36, y + 112);
+  const bigW = doc.getTextWidth(`${sriPrecise.toFixed(1)}`);
+  doc.setFont(SANS, "normal");
   doc.setFontSize(18);
   setText([170, 190, 220]);
-  doc.text("/ 7", M + 110, y + 110);
+  doc.text("/ 7", M + 36 + bigW + 8, y + 112);
+  setText([150, 170, 200]);
+  doc.setFontSize(7.5);
+  doc.setCharSpace(1.6);
+  doc.text(`SRI ARRONDI : ${profile.sri}`, M + 36, y + 134);
+  doc.setCharSpace(0);
 
   // Label profil
   setText(WHITE);
