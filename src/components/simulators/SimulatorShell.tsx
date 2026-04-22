@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 
 interface SimulatorShellProps {
   eyebrow?: string;
+  index?: string;
   title: string;
   subtitle?: string;
   children: ReactNode;
@@ -12,7 +13,7 @@ interface SimulatorShellProps {
  * Magazine-like header with hairlines, numbered eyebrow,
  * generous typography. No heavy card — sits inline like a feature spread.
  */
-export default function SimulatorShell({ eyebrow = "Simulateur", title, subtitle, children }: SimulatorShellProps) {
+export default function SimulatorShell({ eyebrow = "Simulateur", index = "01", title, subtitle, children }: SimulatorShellProps) {
   return (
     <div className="relative w-full">
       {/* Subtle ambient glow — restrained */}
@@ -22,7 +23,7 @@ export default function SimulatorShell({ eyebrow = "Simulateur", title, subtitle
       <div className="relative grid md:grid-cols-12 gap-6 md:gap-10 mb-12 md:mb-16">
         <div className="md:col-span-4 lg:col-span-3 flex md:flex-col items-baseline md:items-start gap-4 md:gap-3">
           <span className="font-heading text-5xl md:text-6xl font-extralight text-foreground/15 tabular-nums leading-none">
-            01
+            {index}
           </span>
           <div className="h-px w-12 bg-foreground/20 hidden md:block" />
           <p className="text-[10px] tracking-[0.32em] uppercase text-foreground/55 font-medium">
