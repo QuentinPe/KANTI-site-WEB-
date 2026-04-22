@@ -1008,7 +1008,7 @@ function generatePdf(
   // PAGES SUIVANTES — DÉTAIL DES RÉPONSES
   // ══════════════════════════════════════════════════════
   doc.addPage();
-  drawPageHeader("Détail de vos réponses", "02");
+  drawPageHeader("Détail de vos réponses", "03");
   y = 150;
 
   setText(MUTED);
@@ -1022,7 +1022,7 @@ function generatePdf(
   y += recapLead.length * 13 + 24;
 
   RISK_SECTIONS.forEach((section, sIdx) => {
-    y = ensureSpace(y, 80, () => { doc.addPage(); drawPageHeader("Détail de vos réponses", "02"); return 150; });
+    y = ensureSpace(y, 80, () => { doc.addPage(); drawPageHeader("Détail de vos réponses", "03"); return 150; });
 
     // En-tête de section : numéro romain + titre
     setText(ACCENT);
@@ -1052,47 +1052,83 @@ function generatePdf(
       }
       const isUnanswered = answerLabel === "Non renseigné";
 
-      // Mesure préalable
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(10);
-      const qText = doc.splitTextToSize(q.question, CW - 40);
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(10);
-      const aText = doc.splitTextToSize(answerLabel, CW - 40);
-      const blockH = 18 + qText.length * 13 + 10 + aText.length * 13 + 18;
+      // ── Mesures précises pour éviter tout décalage ──
+      const PADX = 18;
+      const PADTOP = 18;
+      const META_H = 14;
+      const Q_FS = 10.5;
+      const Q_LH = 14;     // line-height question
+      const A_FS = 10.5;
+      const A_LH = 14;     // line-height réponse
+      const RESP_LABEL_H = 16;
+      const SEP_GAP = 10;
+      const PADBOT = 18;
 
-      y = ensureSpace(y, blockH, () => { doc.addPage(); drawPageHeader("Détail de vos réponses", "02"); return 150; });
+      doc.setFont(SANS, "normal");
+      doc.setFontSize(Q_FS);
+      const qText = doc.splitTextToSize(q.question, CW - PADX * 2);
+      doc.setFont(SANS, "bold");
+      doc.setFontSize(A_FS);
+      const aText = doc.splitTextToSize(answerLabel, CW - PADX * 2);
 
-      // Carte question (papier doux)
+      const blockH =
+        PADTOP + META_H +
+        qText.length * Q_LH +
+        SEP_GAP +
+        RESP_LABEL_H +
+        aText.length * A_LH +
+        PADBOT;
+
+      y = ensureSpace(y, blockH, () => { doc.addPage(); drawPageHeader("Détail de vos réponses", "03"); return 150; });
+
+      // Carte question
       setFill(PAPER_DEEP);
       doc.roundedRect(M, y, CW, blockH, 8, 8, "F");
-      // Numéro
+
+      // Méta : numéro + dimension
       setText(ACCENT);
-      doc.setFont("helvetica", "bold");
+      doc.setFont(SANS, "bold");
       doc.setFontSize(8);
-      doc.text(`Q${String(idx + 1).padStart(2, "0")}  ·  ${q.dimension.toUpperCase()}`, M + 16, y + 16);
+      doc.setCharSpace(1.4);
+      doc.text(
+        `Q${String(idx + 1).padStart(2, "0")}  ·  ${q.dimension.toUpperCase()}`,
+        M + PADX,
+        y + PADTOP,
+      );
+      doc.setCharSpace(0);
 
       // Question
+      const qY = y + PADTOP + META_H;
       setText(NAVY);
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(10.5);
-      doc.text(qText, M + 16, y + 34);
+      doc.setFont(SANS, "normal");
+      doc.setFontSize(Q_FS);
+      qText.forEach((line: string, li: number) => {
+        doc.text(line, M + PADX, qY + li * Q_LH);
+      });
 
       // Filet séparateur
+      const sepY = qY + qText.length * Q_LH + SEP_GAP / 2;
       setDraw(HAIR);
       doc.setLineWidth(0.4);
-      const sepY = y + 34 + qText.length * 13 + 6;
-      doc.line(M + 16, sepY, M + CW - 16, sepY);
+      doc.line(M + PADX, sepY, M + CW - PADX, sepY);
+
+      // Label "RÉPONSE"
+      const respLabelY = sepY + 12;
+      setText(isUnanswered ? MUTED : ACCENT_DEEP);
+      doc.setFont(SANS, "bold");
+      doc.setFontSize(7.5);
+      doc.setCharSpace(1.4);
+      doc.text("RÉPONSE", M + PADX, respLabelY);
+      doc.setCharSpace(0);
 
       // Réponse
-      setText(isUnanswered ? MUTED : ACCENT_DEEP);
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(7.5);
-      doc.text("RÉPONSE", M + 16, sepY + 14);
+      const aY = respLabelY + RESP_LABEL_H;
       setText(isUnanswered ? MUTED : INK);
-      doc.setFont("helvetica", isUnanswered ? "italic" : "bold");
-      doc.setFontSize(10);
-      doc.text(aText, M + 16, sepY + 28);
+      doc.setFont(SANS, isUnanswered ? "italic" : "bold");
+      doc.setFontSize(A_FS);
+      aText.forEach((line: string, li: number) => {
+        doc.text(line, M + PADX, aY + li * A_LH);
+      });
 
       y += blockH + 12;
     });
