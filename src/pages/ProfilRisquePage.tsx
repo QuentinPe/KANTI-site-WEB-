@@ -836,6 +836,7 @@ function ensureSpace(doc: jsPDF, y: number, needed: number, M: number, H: number
   return y;
 }
 
+
 function drawPageHeader(
   doc: jsPDF,
   W: number,
