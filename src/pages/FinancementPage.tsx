@@ -6,6 +6,7 @@ import PageCTA from "@/components/PageCTA";
 import CreditSimulator from "@/components/simulators/CreditSimulator";
 import ExpertiseShowcase from "@/components/ExpertiseShowcase";
 import ProductGrid from "@/components/ProductGrid";
+import StickyImageBand from "@/components/StickyImageBand";
 import { getCategory } from "@/data/productsCatalog";
 import heroImg from "@/assets/expertise-financement.jpg";
 
@@ -21,8 +22,6 @@ export default function FinancementPage() {
         subtitle="Obtenir les meilleures conditions de financement pour vos projets immobiliers et professionnels. Courtage indépendant, conseil intégré."
         breadcrumb="Financement"
         eyebrow="Courtage indépendant"
-        image={heroImg}
-        imageAlt="Négociation de financement KANTI"
         stats={[
           { value: "20+", label: "Banques partenaires" },
           { value: "0%", label: "Frais cachés" },
@@ -44,6 +43,13 @@ export default function FinancementPage() {
           { title: "SCI & montages", text: "Financement via personnes morales, prêts intra-groupe, refinancement de holding." },
           { title: "Assurance emprunteur", text: "Délégation d'assurance, comparaison des garanties, optimisation du coût total du crédit." },
         ]}
+      />
+
+      <StickyImageBand
+        image={heroImg}
+        imageAlt="Courtage et financement KANTI"
+        eyebrow="Courtage indépendant"
+        caption="Le crédit n'est pas qu'une question de taux. C'est un outil patrimonial."
       />
 
       {/* Simulator */}

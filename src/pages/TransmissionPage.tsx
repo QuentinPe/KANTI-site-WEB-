@@ -6,6 +6,7 @@ import PageCTA from "@/components/PageCTA";
 import TransmissionSimulator from "@/components/simulators/TransmissionSimulator";
 import ExpertiseShowcase from "@/components/ExpertiseShowcase";
 import ProductGrid from "@/components/ProductGrid";
+import StickyImageBand from "@/components/StickyImageBand";
 import { getCategory } from "@/data/productsCatalog";
 import heroImg from "@/assets/expertise-transmission.jpg";
 
@@ -22,8 +23,6 @@ export default function TransmissionPage() {
         subtitle="Anticiper pour protéger ceux qui comptent. Donation, succession, démembrement, assurance-vie : préparer la transmission, c'est un acte de responsabilité."
         breadcrumb="Transmission"
         eyebrow="Héritage & famille"
-        image={heroImg}
-        imageAlt="Transmission patrimoniale familiale"
         stats={[
           { value: "152 500€", label: "Abattement assurance-vie" },
           { value: "15 ans", label: "Cycle des donations" },
@@ -45,6 +44,13 @@ export default function TransmissionPage() {
           { title: "Protection du conjoint", text: "Donation entre époux, changement de régime matrimonial, testament, mandat de protection future." },
           { title: "Calendrier de transmission", text: "Échelonner les donations pour utiliser pleinement les abattements et réduire les droits progressifs." },
         ]}
+      />
+
+      <StickyImageBand
+        image={heroImg}
+        imageAlt="Transmission patrimoniale familiale"
+        eyebrow="Héritage & famille"
+        caption="La transmission ne s'improvise pas. Elle se prépare, se structure et se documente."
       />
 
       {/* Simulator */}

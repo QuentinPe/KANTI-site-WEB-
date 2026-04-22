@@ -6,6 +6,7 @@ import PageCTA from "@/components/PageCTA";
 import FiscaliteSimulator from "@/components/simulators/FiscaliteSimulator";
 import ExpertiseShowcase from "@/components/ExpertiseShowcase";
 import ProductGrid from "@/components/ProductGrid";
+import StickyImageBand from "@/components/StickyImageBand";
 import { getCategory } from "@/data/productsCatalog";
 import heroImg from "@/assets/expertise-fiscalite.jpg";
 
@@ -21,8 +22,6 @@ export default function FiscalitePage() {
         subtitle="Réduire votre pression fiscale de façon légale, mesurée et pérenne. Sans excès, sans risque inutile, sans promesse irréaliste."
         breadcrumb="Fiscalité"
         eyebrow="Stratégie fiscale"
-        image={heroImg}
-        imageAlt="Optimisation fiscale patrimoniale"
         stats={[
           { value: "6", label: "Leviers analysés" },
           { value: "100%", label: "Conformité AMF" },
@@ -44,6 +43,13 @@ export default function FiscalitePage() {
           { title: "Holding patrimoniale", text: "Structuration juridique pour regrouper, gérer et transmettre vos actifs de façon optimale." },
           { title: "Conformité & traçabilité", text: "Vérification systématique de la licéité des montages, documentation conforme aux exigences AMF et fiscales." },
         ]}
+      />
+
+      <StickyImageBand
+        image={heroImg}
+        imageAlt="Stratégie fiscale patrimoniale"
+        eyebrow="Stratégie fiscale"
+        caption="Une optimisation fiscale durable repose sur la méthode, jamais sur le produit."
       />
 
       {/* Simulator */}
