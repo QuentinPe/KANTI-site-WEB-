@@ -1185,27 +1185,33 @@ function generatePdf(
     setFill(NAVY);
     doc.rect(0, 0, W, 32, "F");
     setText(WHITE);
-    doc.setFont("helvetica", "bold");
+    doc.setFont(SANS, "bold");
     doc.setFontSize(10);
-    doc.text("K  A  N  T  I", M, 21);
-    doc.setFont("helvetica", "normal");
+    doc.setCharSpace(4);
+    doc.text("KANTI", M, 21);
+    doc.setCharSpace(0);
+    doc.setFont(SANS, "normal");
     doc.setFontSize(7.5);
     setText([180, 195, 220]);
+    doc.setCharSpace(1.5);
     doc.text("PROFIL DE RISQUE  ·  RAPPORT CONFIDENTIEL", W - M, 21, { align: "right" });
+    doc.setCharSpace(0);
 
     // Méta partie / date
     setText(MUTED);
-    doc.setFont("helvetica", "bold");
+    doc.setFont(SANS, "bold");
     doc.setFontSize(8);
+    doc.setCharSpace(1.6);
     doc.text(`PARTIE ${partNumber}`, M, 70);
+    doc.setCharSpace(0);
     setText(MUTED);
-    doc.setFont("helvetica", "normal");
+    doc.setFont(SANS, "normal");
     doc.text(today, W - M, 70, { align: "right" });
 
     // Titre
     setText(NAVY);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(24);
+    doc.setFont(SERIF, "normal");
+    doc.setFontSize(30);
     doc.text(title, M, 105);
     setDraw(ACCENT);
     doc.setLineWidth(1.5);
@@ -1242,8 +1248,8 @@ function generatePdf(
 
       // Titre
       setText(NAVY);
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(11);
+      doc.setFont(SERIF, "bold");
+      doc.setFontSize(15);
       doc.text(col.title, x + 18, yStart + 28);
 
       // Items
