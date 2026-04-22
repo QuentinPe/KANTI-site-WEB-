@@ -595,7 +595,7 @@ function generatePdf(
 
   // Encart résumé bas de page : SRI + profil
   const cardY = H - 230;
-  doc.setFillColor(255);
+  doc.setFillColor(255, 255, 255);
   doc.roundedRect(M, cardY, W - M * 2, 130, 8, 8, "F");
   // Bord doré électrique
   doc.setDrawColor(...ELECTRIC);
@@ -851,6 +851,40 @@ function ensureSpace(doc: jsPDF, y: number, needed: number, M: number, H: number
     return 90;
   }
   return y;
+}
+
+function drawPageHeader(
+  doc: jsPDF,
+  W: number,
+  M: number,
+  NAVY: [number, number, number],
+  GREY: [number, number, number],
+  ACCENT: [number, number, number],
+  title: string,
+  date: string,
+) {
+  // Bandeau supérieur sobre
+  doc.setFillColor(...NAVY);
+  doc.rect(0, 0, W, 60, "F");
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(14);
+  doc.setTextColor(255, 255, 255);
+  doc.text("K A N T I", M, 36);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8);
+  doc.setTextColor(190, 205, 230);
+  doc.text("PROFIL DE RISQUE — RAPPORT", W - M, 30, { align: "right" });
+  doc.setFontSize(7.5);
+  doc.text(date, W - M, 44, { align: "right" });
+
+  // Titre de page
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(20);
+  doc.setTextColor(...NAVY);
+  doc.text(title, M, 100);
+  doc.setDrawColor(...ACCENT);
+  doc.setLineWidth(1.4);
+  doc.line(M, 112, M + 50, 112);
 }
 
 function drawSectionTitle(
