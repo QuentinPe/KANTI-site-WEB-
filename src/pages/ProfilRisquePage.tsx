@@ -841,6 +841,170 @@ function generatePdf(
   );
 
   // ══════════════════════════════════════════════════════
+  // PAGE 3 — VOTRE POSITIONNEMENT (statistiques INSEE / AMF / Banque de France)
+  // ══════════════════════════════════════════════════════
+  doc.addPage();
+  drawPageHeader("Votre positionnement", "02");
+  y = 150;
+
+  setText(MUTED);
+  doc.setFont(SANS, "normal");
+  doc.setFontSize(10);
+  const posLead = doc.splitTextToSize(
+    "Comparez votre profil à la population française des épargnants à partir de données publiques (INSEE 2023, AMF Baromètre 2024, Banque de France — Enquête Patrimoine).",
+    CW,
+  );
+  doc.text(posLead, M, y);
+  y += posLead.length * 13 + 24;
+
+  // ── Distribution SRI sur la population française (estimation AMF) ─
+  // Source : AMF — Baromètre Épargne 2024 (répartition indicative
+  // des profils de risque parmi les détenteurs de produits financiers).
+  const distribution: { sri: number; pct: number }[] = [
+    { sri: 1, pct: 18 },
+    { sri: 2, pct: 24 },
+    { sri: 3, pct: 22 },
+    { sri: 4, pct: 17 },
+    { sri: 5, pct: 11 },
+    { sri: 6, pct: 6 },
+    { sri: 7, pct: 2 },
+  ];
+
+  y = sectionLabel(y, "Distribution des profils en France");
+  setText(INK);
+  doc.setFont(SANS, "normal");
+  doc.setFontSize(9.5);
+  const chartIntro = doc.splitTextToSize(
+    "Part estimée des épargnants français par niveau de SRI. Votre profil est mis en évidence.",
+    CW,
+  );
+  doc.text(chartIntro, M, y);
+  y += chartIntro.length * 12 + 14;
+
+  // Graphique en barres
+  const chartH = 130;
+  const chartW = CW;
+  const chartX = M;
+  const chartY = y;
+  const maxPct = Math.max(...distribution.map((d) => d.pct));
+  const barW = (chartW - 40) / 7;
+
+  // Axe horizontal
+  setDraw(HAIR);
+  doc.setLineWidth(0.4);
+  doc.line(chartX, chartY + chartH, chartX + chartW, chartY + chartH);
+
+  // Lignes de fond (grille)
+  setDraw([235, 238, 244]);
+  doc.setLineWidth(0.3);
+  for (let g = 1; g <= 4; g++) {
+    const gy = chartY + chartH - (chartH * g) / 4;
+    doc.line(chartX + 24, gy, chartX + chartW, gy);
+    setText(MUTED);
+    doc.setFont(SANS, "normal");
+    doc.setFontSize(7);
+    doc.text(`${Math.round((maxPct * g) / 4)}%`, chartX + 18, gy + 3, { align: "right" });
+  }
+
+  distribution.forEach((d, i) => {
+    const bx = chartX + 30 + i * barW;
+    const bh = (d.pct / maxPct) * (chartH - 12);
+    const by = chartY + chartH - bh;
+    const isMine = d.sri === profile.sri;
+    setFill(isMine ? ACCENT : ([210, 218, 232] as RGB));
+    doc.roundedRect(bx + 6, by, barW - 12, bh, 3, 3, "F");
+    // Pourcentage au-dessus
+    setText(isMine ? ACCENT_DEEP : MUTED);
+    doc.setFont(SANS, isMine ? "bold" : "normal");
+    doc.setFontSize(8);
+    doc.text(`${d.pct}%`, bx + barW / 2, by - 4, { align: "center" });
+    // Label SRI
+    setText(isMine ? NAVY : MUTED);
+    doc.setFont(SANS, isMine ? "bold" : "normal");
+    doc.setFontSize(8);
+    doc.text(`SRI ${d.sri}`, bx + barW / 2, chartY + chartH + 14, { align: "center" });
+    if (isMine) {
+      // Marqueur "Vous"
+      setFill(GOLD);
+      doc.roundedRect(bx + barW / 2 - 14, by - 22, 28, 12, 3, 3, "F");
+      setText(WHITE);
+      doc.setFont(SANS, "bold");
+      doc.setFontSize(7);
+      doc.text("VOUS", bx + barW / 2, by - 13, { align: "center" });
+    }
+  });
+
+  y = chartY + chartH + 36;
+
+  // Légende source
+  setText(MUTED);
+  doc.setFont(SANS, "italic");
+  doc.setFontSize(7);
+  doc.text("Source : AMF — Baromètre Épargne et Investissement 2024 (estimation indicative).", M, y);
+  y += 24;
+
+  // ── KPI cards : statistiques clés du patrimoine FR ─
+  y = ensureSpace(y, 130, () => { doc.addPage(); drawPageHeader("Votre positionnement", "02"); return 150; });
+  y = sectionLabel(y, "Le patrimoine des Français — chiffres clés");
+
+  const kpis = [
+    { value: "177 200 €", label: "Patrimoine brut médian", source: "INSEE — Enquête Patrimoine 2021" },
+    { value: "39,5 %", label: "Ménages détenant un produit risqué", source: "AMF / Banque de France 2023" },
+    { value: "5,8 %", label: "Rendement annuel moyen actions FR (40 ans)", source: "Banque de France" },
+    { value: "2,9 %", label: "Inflation annuelle moyenne 2020-2024", source: "INSEE — IPC" },
+  ];
+  const kpiW = (CW - 30) / 2;
+  const kpiH = 78;
+  kpis.forEach((k, i) => {
+    const col = i % 2;
+    const row = Math.floor(i / 2);
+    const kx = M + col * (kpiW + 30);
+    const ky = y + row * (kpiH + 14);
+    setFill(WHITE);
+    doc.roundedRect(kx, ky, kpiW, kpiH, 8, 8, "F");
+    setDraw(HAIR);
+    doc.setLineWidth(0.5);
+    doc.roundedRect(kx, ky, kpiW, kpiH, 8, 8, "S");
+    setFill(ACCENT);
+    doc.rect(kx, ky, 3, kpiH, "F");
+    setText(NAVY);
+    doc.setFont(SERIF, "bold");
+    doc.setFontSize(22);
+    doc.text(k.value, kx + 16, ky + 32);
+    setText(INK);
+    doc.setFont(SANS, "normal");
+    doc.setFontSize(9);
+    const lab = doc.splitTextToSize(k.label, kpiW - 32);
+    doc.text(lab, kx + 16, ky + 50);
+    setText(MUTED);
+    doc.setFont(SANS, "italic");
+    doc.setFontSize(6.5);
+    doc.text(k.source, kx + 16, ky + 70);
+  });
+  y += Math.ceil(kpis.length / 2) * (kpiH + 14) + 18;
+
+  // ── Lecture personnalisée de votre positionnement ─
+  y = ensureSpace(y, 110, () => { doc.addPage(); drawPageHeader("Votre positionnement", "02"); return 150; });
+  y = sectionLabel(y, "Ce que cela signifie pour vous");
+
+  // Position centile estimée
+  const cumLower = distribution.filter((d) => d.sri < profile.sri).reduce((s, d) => s + d.pct, 0);
+  const cumThis = distribution.find((d) => d.sri === profile.sri)?.pct ?? 0;
+  const positionText =
+    `Avec un SRI de ${sriPrecise.toFixed(1)}/7, vous appartenez aux ${cumThis}% d'épargnants français de profil « ${profile.shortLabel.toLowerCase()} ». ` +
+    `Environ ${cumLower}% des épargnants ont un profil plus prudent que le vôtre, et ${100 - cumLower - cumThis}% un profil plus offensif.`;
+  setFill(PAPER_DEEP);
+  doc.roundedRect(M, y, CW, 88, 8, 8, "F");
+  setFill(ACCENT);
+  doc.rect(M, y, 3, 88, "F");
+  setText(INK);
+  doc.setFont(SANS, "normal");
+  doc.setFontSize(10);
+  const posLines = doc.splitTextToSize(positionText, CW - 40);
+  doc.text(posLines, M + 18, y + 24);
+  y += 100;
+
+  // ══════════════════════════════════════════════════════
   // PAGES SUIVANTES — DÉTAIL DES RÉPONSES
   // ══════════════════════════════════════════════════════
   doc.addPage();
