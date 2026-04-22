@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import jsPDF from "jspdf";
 import Header from "@/components/Header";
@@ -8,11 +7,16 @@ import PageHero from "@/components/PageHero";
 import Seo from "@/components/Seo";
 import {
   RISK_QUESTIONS,
+  RISK_SECTIONS,
   computeSri,
   type SriProfile,
+  type RiskSection,
 } from "@/data/profilRisqueQuestions";
 
 type Phase = "intro" | "quiz" | "result";
+
+/** Réponse d'une question : numérique scorée OU saisie libre (string). */
+type AnswerValue = number | string;
 
 const KANTI_INFO = {
   name: "KANTI",
