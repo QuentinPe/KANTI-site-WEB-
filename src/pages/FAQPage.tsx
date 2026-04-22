@@ -187,21 +187,33 @@ export default function FAQPage() {
             </aside>
 
             {/* Categories + questions */}
-            <div className="lg:col-span-8 space-y-20 lg:space-y-24">
+            <div className="lg:col-span-8">
               {sections.map((cat, catIdx) => (
-                <div key={cat.id} id={cat.id} className="scroll-mt-32 reveal">
-                  <div className="mb-8 flex items-baseline gap-4">
-                    <span className="text-[11px] font-medium tracking-[0.3em] text-foreground/40">
-                      {String(catIdx + 1).padStart(2, "0")}
-                    </span>
-                    <div>
-                      <h3 className="font-heading text-2xl md:text-3xl font-light text-foreground tracking-tight leading-tight">
-                        {cat.category}
-                      </h3>
-                      <p className="text-foreground/55 text-sm font-light mt-1.5 max-w-md">
-                        {cat.intro}
-                      </p>
+                <div
+                  key={cat.id}
+                  id={cat.id}
+                  className={`scroll-mt-32 reveal ${
+                    catIdx > 0 ? "mt-16 lg:mt-20 pt-16 lg:pt-20 border-t border-foreground/[0.08]" : ""
+                  }`}
+                >
+                  <div className="mb-8 flex items-start justify-between gap-6">
+                    <div className="flex items-baseline gap-4">
+                      <span className="text-[11px] font-medium tracking-[0.3em] text-foreground/40">
+                        {String(catIdx + 1).padStart(2, "0")}
+                      </span>
+                      <div>
+                        <h3 className="font-heading text-2xl md:text-3xl font-light text-foreground tracking-tight leading-tight">
+                          {cat.category}
+                        </h3>
+                        <p className="text-foreground/55 text-sm font-light mt-1.5 max-w-md">
+                          {cat.intro}
+                        </p>
+                      </div>
                     </div>
+                    <span className="hidden sm:inline-flex shrink-0 items-center gap-1.5 mt-1 px-3 py-1 rounded-full border border-foreground/10 bg-white/40 backdrop-blur-sm text-[10px] tracking-[0.18em] uppercase text-foreground/55 font-medium">
+                      <span className="w-1 h-1 rounded-full bg-foreground/40" />
+                      {cat.questions.length} questions
+                    </span>
                   </div>
 
                   <ul className="space-y-3">
