@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -9,6 +10,7 @@ import TrustBand from "@/components/TrustBand";
 const faqCategories = [
   {
     category: "Le cabinet",
+    intro: "Notre cadre, notre indépendance et notre rémunération.",
     questions: [
       { q: "Qu'est-ce qu'un conseiller en gestion de patrimoine indépendant ?", a: "Un CGP indépendant est un professionnel enregistré à l'ORIAS, habilité à délivrer des conseils en investissements financiers (CIF), en assurance (COA) et en opérations de banque (COBSP). Contrairement à un conseiller bancaire, il n'a aucun produit maison et travaille en architecture ouverte — il compare l'ensemble du marché pour sélectionner ce qui convient le mieux à votre situation." },
       { q: "Comment êtes-vous rémunérés ?", a: "Nous pouvons travailler en honoraires de conseil (facturation directe pour l'audit et les recommandations) ou en commissions sur les produits souscrits (versées par les compagnies d'assurance ou les sociétés de gestion). Dans tous les cas, notre mode de rémunération est communiqué en amont, de façon transparente, avant toute recommandation." },
@@ -18,6 +20,7 @@ const faqCategories = [
   },
   {
     category: "Premier rendez-vous",
+    intro: "Comment se déroule la prise de contact et le premier échange.",
     questions: [
       { q: "Le premier rendez-vous est-il payant ?", a: "Non. Le premier échange de 30 minutes est gratuit et sans engagement. Il sert à comprendre votre situation et à évaluer ensemble la pertinence d'un accompagnement." },
       { q: "Quels documents apporter ?", a: "Pour le premier échange, rien d'obligatoire. Si nous engageons un audit patrimonial, nous vous demanderons : dernier avis d'imposition, relevés de patrimoine (immobilier, financier), contrats d'assurance-vie ou de prévoyance en cours, régime matrimonial." },
@@ -26,6 +29,7 @@ const faqCategories = [
   },
   {
     category: "Accompagnement",
+    intro: "La méthode, le périmètre et la coordination avec vos conseils.",
     questions: [
       { q: "À partir de quel montant de patrimoine intervenez-vous ?", a: "Nous ne fixons pas de seuil d'entrée formel. En pratique, notre accompagnement est pertinent à partir d'un patrimoine financier et/ou immobilier de 200 000 € environ, ou lorsque la complexité de la situation le justifie (dirigeant, profession libérale, expatriation)." },
       { q: "Combien de temps dure un audit patrimonial ?", a: "En moyenne deux à trois semaines entre la remise des documents et la présentation du rapport. Ce délai peut varier selon la complexité de votre situation et la complétude des documents fournis." },
@@ -35,6 +39,7 @@ const faqCategories = [
   },
   {
     category: "Fiscalité & placements",
+    intro: "Stratégie fiscale, supports d'investissement et sécurité de vos actifs.",
     questions: [
       { q: "Pouvez-vous m'aider à réduire mes impôts ?", a: "Oui, c'est l'un de nos domaines d'expertise. Mais nous ne vendons pas de la défiscalisation — nous construisons une stratégie fiscale cohérente, adaptée à votre situation. Chaque levier est analysé en termes de rapport bénéfice/risque et intégré dans votre stratégie globale." },
       { q: "Quels types de placements proposez-vous ?", a: "En architecture ouverte, nous accédons à l'ensemble des supports du marché : assurance-vie, PER, PEA, compte-titres, SCPI, OPCI, private equity, produits structurés, nue-propriété, etc. La sélection dépend exclusivement de votre profil, de vos objectifs et de votre horizon d'investissement." },
