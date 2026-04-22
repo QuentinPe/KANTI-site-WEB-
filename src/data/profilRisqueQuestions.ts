@@ -6,17 +6,37 @@ export interface RiskOption {
 
 export interface RiskQuestion {
   id: string;
-  /** AMF dimension: connaissance, expérience, situation, objectifs, tolérance */
-  dimension:
-    | "Connaissance"
-    | "Expérience"
-    | "Situation financière"
-    | "Objectifs"
-    | "Tolérance au risque";
+  /** Section thématique du questionnaire AMF */
+  section: RiskSection;
+  /** Sous-thème (libellé court) */
+  dimension: string;
   question: string;
   helper?: string;
-  options: RiskOption[];
+  /** "choice" = QCM scoré, "number" = saisie libre (non scorée, reportée dans le PDF) */
+  type?: "choice" | "number";
+  /** Pour les questions de type "number" */
+  numberConfig?: {
+    placeholder?: string;
+    suffix?: string; // ex : "€", "ans"
+    min?: number;
+    max?: number;
+    step?: number;
+  };
+  /** Permet plusieurs réponses (toujours scoré sur la meilleure réponse cochée) */
+  multi?: boolean;
+  options?: RiskOption[];
 }
+
+export type RiskSection =
+  | "Projet d'investissement"
+  | "Connaissance et expérience des placements"
+  | "Comportement et tolérance au risque";
+
+export const RISK_SECTIONS: RiskSection[] = [
+  "Projet d'investissement",
+  "Connaissance et expérience des placements",
+  "Comportement et tolérance au risque",
+];
 
 /**
  * Questionnaire d'évaluation du profil investisseur — aligné sur les
