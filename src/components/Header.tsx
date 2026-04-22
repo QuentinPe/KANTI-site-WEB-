@@ -16,6 +16,7 @@ const navLinks = [
   { label: "Notre méthode", href: "/notre-methode" },
   { label: "Cas clients", href: "/cas-clients" },
   { label: "Actualités", href: "/actualites" },
+  { label: "Ressources", href: "/ressources" },
   { label: "Contact", href: "/contact" },
 ];
 
