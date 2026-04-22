@@ -1,10 +1,13 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useLenis } from "@/hooks/useLenis";
 import PremiumCursor from "@/components/PremiumCursor";
+import CookieBanner from "@/components/CookieBanner";
+import SkipToContent from "@/components/SkipToContent";
 import Index from "./pages/Index.tsx";
 import CabinetPage from "./pages/CabinetPage.tsx";
 import GestionPatrimonialePage from "./pages/GestionPatrimonialePage.tsx";
@@ -26,6 +29,8 @@ import ProductDetailPage from "./pages/ProductDetailPage.tsx";
 import MentionsLegalesPage from "./pages/MentionsLegalesPage.tsx";
 import PolitiqueConfidentialitePage from "./pages/PolitiqueConfidentialitePage.tsx";
 import ReclamationsPage from "./pages/ReclamationsPage.tsx";
+import MerciPage from "./pages/MerciPage.tsx";
+import RessourcesPage from "./pages/RessourcesPage.tsx";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +38,7 @@ const AppShell = () => {
   useLenis();
   return (
     <TooltipProvider>
+      <SkipToContent />
       <Toaster />
       <Sonner />
       <PremiumCursor />
@@ -57,19 +63,24 @@ const AppShell = () => {
           <Route path="/mentions-legales" element={<MentionsLegalesPage />} />
           <Route path="/politique-de-confidentialite" element={<PolitiqueConfidentialitePage />} />
           <Route path="/reclamations" element={<ReclamationsPage />} />
+          <Route path="/ressources" element={<RessourcesPage />} />
+          <Route path="/merci" element={<MerciPage />} />
           {/* Dynamic product / solution sub-pages */}
           <Route path="/:categorySlug/:productSlug" element={<ProductDetailPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
+        <CookieBanner />
       </BrowserRouter>
     </TooltipProvider>
   );
 };
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <AppShell />
-  </QueryClientProvider>
+  <HelmetProvider>
+    <QueryClientProvider client={queryClient}>
+      <AppShell />
+    </QueryClientProvider>
+  </HelmetProvider>
 );
 
 export default App;
