@@ -6,7 +6,7 @@ const DIRECTIONS_URL =
   "https://www.google.com/maps/dir/?api=1&destination=" +
   encodeURIComponent(ADDRESS);
 const STREETVIEW_URL =
-  "https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=44.8438,-0.5762";
+  "https://www.google.com/maps/@44.8481708,-0.571695,3a,69y,141.86h,90.67t/data=!3m7!1e1!3m5!1sY-2B2Whh3J1AedtQcJiqXg!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fcb_client%3Dmaps_sv.tactile%26w%3D900%26h%3D600%26pitch%3D-0.6746400419454517%26panoid%3DY-2B2Whh3J1AedtQcJiqXg%26yaw%3D141.86449859379448!7i16384!8i8192";
 // Satellite 3D embed (tilt + rotation) centered on 12 rue Ferrère
 const EMBED_URL =
   "https://www.google.com/maps/embed?pb=!4v1729600000000!6m8!1m7!1sCAoSLEFGMVFpcE5fZmFrZQ!2m2!1d44.8438!2d-0.5762!3f0!4f45!5f0.7820865974627469";
@@ -50,7 +50,7 @@ export default function CabinetMap3D() {
               </li>
               <li className="flex items-start gap-3">
                 <span className="w-1 h-1 rounded-full bg-gold mt-2 shrink-0" />
-                Tram C — arrêt Quinconces
+                Tram C — arrêts Quinconces & CAPC
               </li>
             </ul>
 
