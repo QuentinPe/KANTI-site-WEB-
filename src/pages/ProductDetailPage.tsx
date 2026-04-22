@@ -50,6 +50,7 @@ export default function ProductDetailPage() {
   if (!data) return <Navigate to="/404" replace />;
   const { category, product } = data;
   const analysis = getAnalysis(categorySlug, productSlug, product.title);
+  const [openRisk, setOpenRisk] = useState<RiskItem | null>(null);
 
   const siblings = category.products.filter((p) => p.slug !== product.slug).slice(0, 3);
 
