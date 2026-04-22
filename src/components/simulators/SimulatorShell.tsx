@@ -6,6 +6,7 @@ interface SimulatorShellProps {
   title: string;
   subtitle?: string;
   children: ReactNode;
+  disclaimer?: string;
 }
 
 /**
@@ -13,7 +14,7 @@ interface SimulatorShellProps {
  * Magazine-like header with hairlines, numbered eyebrow,
  * generous typography. No heavy card — sits inline like a feature spread.
  */
-export default function SimulatorShell({ eyebrow = "Simulateur", index = "01", title, subtitle, children }: SimulatorShellProps) {
+export default function SimulatorShell({ eyebrow = "Simulateur", index = "01", title, subtitle, children, disclaimer }: SimulatorShellProps) {
   return (
     <div className="relative w-full">
       {/* Subtle ambient glow — restrained */}
@@ -52,6 +53,12 @@ export default function SimulatorShell({ eyebrow = "Simulateur", index = "01", t
 
       {/* Footer hairline */}
       <div aria-hidden className="separator-fine mt-12 md:mt-16" />
+
+      {disclaimer && (
+        <p className="mt-6 text-[11px] text-foreground/45 text-center max-w-2xl mx-auto leading-relaxed">
+          {disclaimer}
+        </p>
+      )}
     </div>
   );
 }
