@@ -96,6 +96,8 @@ export default function Header() {
                   onMouseLeave={() => setDropdownOpen(false)}
                 >
                   <button
+                    aria-haspopup="menu"
+                    aria-expanded={dropdownOpen}
                     className={`text-[13px] font-medium tracking-wide ${textMuted} hover:${textColor.replace(
                       "text-",
                       "text-"
@@ -160,6 +162,8 @@ export default function Header() {
           {/* Mobile burger bubble */}
           <button
             onClick={() => setMenuOpen(!menuOpen)}
+            aria-expanded={menuOpen}
+            aria-controls="mobile-menu"
             className={`xl:hidden flex flex-col gap-1.5 rounded-full p-3.5 relative z-[60] transition-all duration-500 ${bubbleClass} ${textColor}`}
             aria-label="Menu"
           >
@@ -184,6 +188,7 @@ export default function Header() {
 
       {/* Mobile menu */}
       <div
+        id="mobile-menu"
         className={`xl:hidden fixed inset-0 transition-all duration-500 flex flex-col items-center justify-center gap-5 z-[55] ${
           menuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         }`}
