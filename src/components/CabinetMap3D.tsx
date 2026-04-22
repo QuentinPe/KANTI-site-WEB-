@@ -17,21 +17,17 @@ const EMBED_URL_FALLBACK =
 export default function CabinetMap3D() {
   return (
     <section className="relative section-padding section-ivory overflow-hidden">
-      {/* Smooth transition from previous (dark) section */}
+      {/* Subtle bridge from previous section */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 -top-px h-40 bg-gradient-to-b from-primary/95 via-primary/30 to-transparent"
+        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent"
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-32 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent"
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 w-[60%] h-48 bg-gold/10 blur-3xl rounded-full"
+        className="pointer-events-none absolute -top-32 left-1/2 -translate-x-1/2 w-[50%] h-48 bg-gold/10 blur-3xl rounded-full"
       />
 
-      <div className="relative max-w-6xl mx-auto pt-12">
+      <div className="relative max-w-6xl mx-auto">
         <div className="grid lg:grid-cols-5 gap-12 lg:gap-16 items-center">
           {/* Left column — editorial */}
           <div className="lg:col-span-2 reveal">
