@@ -25,14 +25,14 @@ export default function PageHero({
       <div
         className="absolute top-[10%] right-[5%] w-[400px] h-[400px] rounded-full pointer-events-none float-soft"
         style={{
-          background: "radial-gradient(circle, hsl(210 100% 60% / 0.2) 0%, transparent 70%)",
+          background: "radial-gradient(circle, hsl(218 55% 45% / 0.18) 0%, transparent 70%)",
           filter: "blur(50px)",
         }}
       />
       <div
         className="absolute bottom-[10%] left-[5%] w-[300px] h-[300px] rounded-full pointer-events-none float-slow"
         style={{
-          background: "radial-gradient(circle, hsl(38 35% 60% / 0.12) 0%, transparent 70%)",
+          background: "radial-gradient(circle, hsl(215 40% 60% / 0.10) 0%, transparent 70%)",
           filter: "blur(50px)",
         }}
       />
@@ -97,7 +97,7 @@ export default function PageHero({
               </div>
               <div
                 aria-hidden
-                className="pointer-events-none absolute -bottom-6 -left-6 w-24 h-24 rounded-full bg-[hsl(var(--gold)/0.15)] blur-2xl"
+                className="pointer-events-none absolute -bottom-6 -left-6 w-24 h-24 rounded-full bg-[hsl(var(--electric)/0.18)] blur-2xl"
               />
             </div>
           )}
