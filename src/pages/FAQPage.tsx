@@ -81,9 +81,6 @@ const faqCategories = [
 
 export default function FAQPage() {
   useScrollReveal();
-  const [openItems, setOpenItems] = useState<Record<string, boolean>>({});
-  const [activeCat, setActiveCat] = useState<string>(faqCategories[0].category);
-
   const slugify = (s: string) =>
     s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
@@ -92,25 +89,20 @@ export default function FAQPage() {
     []
   );
 
+  const [activeCatId, setActiveCatId] = useState<string>(sections[0].id);
+  const [openItems, setOpenItems] = useState<Record<string, boolean>>({});
+
+  const activeCat = sections.find((c) => c.id === activeCatId) ?? sections[0];
+  const activeIndex = sections.findIndex((c) => c.id === activeCatId);
+
   const toggle = (key: string) => {
     setOpenItems((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) setActiveCat(entry.target.id);
-        });
-      },
-      { rootMargin: "-30% 0px -60% 0px", threshold: 0 }
-    );
-    sections.forEach((s) => {
-      const el = document.getElementById(s.id);
-      if (el) observer.observe(el);
-    });
-    return () => observer.disconnect();
-  }, [sections]);
+  const selectCat = (id: string) => {
+    setActiveCatId(id);
+    setOpenItems({});
+  };
 
   return (
     <>
