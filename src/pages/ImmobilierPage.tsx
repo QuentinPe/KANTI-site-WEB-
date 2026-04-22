@@ -6,6 +6,7 @@ import PageCTA from "@/components/PageCTA";
 import ImmobilierSimulator from "@/components/simulators/ImmobilierSimulator";
 import ExpertiseShowcase from "@/components/ExpertiseShowcase";
 import ProductGrid from "@/components/ProductGrid";
+import StickyImageBand from "@/components/StickyImageBand";
 import { getCategory } from "@/data/productsCatalog";
 import heroImg from "@/assets/expertise-immobilier.jpg";
 
@@ -22,8 +23,6 @@ export default function ImmobilierPage() {
         subtitle="Résidence principale, investissement locatif, SCI, nue-propriété : chaque décision immobilière s'inscrit dans une logique patrimoniale globale."
         breadcrumb="Immobilier"
         eyebrow="Pierre & stratégie"
-        image={heroImg}
-        imageAlt="Immobilier patrimonial à Bordeaux"
         stats={[
           { value: "6", label: "Modes de détention" },
           { value: "20+", label: "Ans d'horizon" },
@@ -45,6 +44,13 @@ export default function ImmobilierPage() {
           { title: "SCPI & immobilier papier", text: "Diversification géographique et sectorielle, mutualisation, revenus réguliers, intégration en assurance-vie." },
           { title: "Financement structuré", text: "Négociation des conditions, effet de levier, déductibilité des intérêts, structuration du passif." },
         ]}
+      />
+
+      <StickyImageBand
+        image={heroImg}
+        imageAlt="Immobilier patrimonial à Bordeaux"
+        eyebrow="Pierre & stratégie"
+        caption="L'immobilier est rarement une décision isolée. Nous l'intégrons dans votre stratégie."
       />
 
       {/* Simulator */}

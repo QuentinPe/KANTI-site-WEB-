@@ -6,6 +6,7 @@ import PageCTA from "@/components/PageCTA";
 import PatrimoineProSimulator from "@/components/simulators/PatrimoineProSimulator";
 import ExpertiseShowcase from "@/components/ExpertiseShowcase";
 import ProductGrid from "@/components/ProductGrid";
+import StickyImageBand from "@/components/StickyImageBand";
 import { getCategory } from "@/data/productsCatalog";
 import heroImg from "@/assets/expertise-patrimoinepro.jpg";
 
@@ -21,8 +22,6 @@ export default function PatrimoineProPage() {
         subtitle="Dirigeants, associés, professions libérales : votre entreprise est votre premier actif. Structurez-la, protégez-la, préparez sa transmission."
         breadcrumb="Patrimoine professionnel"
         eyebrow="Dirigeants & associés"
-        image={heroImg}
-        imageAlt="Bureau dirigeant et patrimoine professionnel"
         stats={[
           { value: "Privé+pro", label: "Vision croisée" },
           { value: "Dutreil", label: "Transmission optimisée" },
@@ -44,6 +43,13 @@ export default function PatrimoineProPage() {
           { title: "Cession d'entreprise", text: "Valorisation, structuration du montage, optimisation fiscale de la plus-value, réinvestissement." },
           { title: "Transmission familiale", text: "Pacte Dutreil, donation avec réserve d'usufruit, engagement collectif, family buy-out." },
         ]}
+      />
+
+      <StickyImageBand
+        image={heroImg}
+        imageAlt="Patrimoine professionnel KANTI"
+        eyebrow="Dirigeants & associés"
+        caption="Patrimoine privé et professionnel sont indissociables. Nous les traitons ensemble."
       />
 
       {/* Simulator */}

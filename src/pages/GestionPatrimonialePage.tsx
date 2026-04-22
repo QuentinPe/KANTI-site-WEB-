@@ -6,6 +6,7 @@ import PageCTA from "@/components/PageCTA";
 import EpargneSimulator from "@/components/simulators/EpargneSimulator";
 import ExpertiseShowcase from "@/components/ExpertiseShowcase";
 import ProductGrid from "@/components/ProductGrid";
+import StickyImageBand from "@/components/StickyImageBand";
 import { getCategory } from "@/data/productsCatalog";
 import heroImg from "@/assets/expertise-gestion.jpg";
 
@@ -22,8 +23,6 @@ export default function GestionPatrimonialePage() {
         subtitle="Construire une allocation d'actifs cohérente avec vos objectifs, votre horizon et votre tolérance au risque. En toute indépendance."
         breadcrumb="Gestion patrimoniale"
         eyebrow="Allocation & placements"
-        image={heroImg}
-        imageAlt="Bureau de gestion patrimoniale KANTI à Bordeaux"
         stats={[
           { value: "100%", label: "Architecture ouverte" },
           { value: "0", label: "Produit maison" },
@@ -44,6 +43,13 @@ export default function GestionPatrimonialePage() {
           { title: "SCPI & immobilier papier", text: "Diversification immobilière, revenus réguliers, mutualisation du risque, intégration en assurance-vie." },
           { title: "Private equity & dette privée", text: "Accès sélectif à des fonds de capital-investissement pour les profils éligibles, lock-up assumé." },
         ]}
+      />
+
+      <StickyImageBand
+        image={heroImg}
+        imageAlt="Allocation patrimoniale KANTI"
+        eyebrow="Architecture ouverte"
+        caption="Aucun produit maison, aucun quota — chaque support sélectionné après analyse comparative."
       />
 
       {/* Simulator section */}
