@@ -145,9 +145,9 @@ export default function FAQPage() {
         />
 
         <div className="max-w-6xl mx-auto relative z-10">
-          <div className="grid lg:grid-cols-12 gap-10 lg:gap-16">
+          <div className="grid lg:grid-cols-12 gap-8 md:gap-10 lg:gap-16 items-start">
             {/* Sticky sidebar — categories nav */}
-            <aside className="lg:col-span-4 reveal">
+            <aside className="lg:col-span-4 reveal mb-2 lg:mb-0">
               <div className="lg:sticky lg:top-32">
                 <div className="electric-line mb-5" />
                 <p className="text-[11px] tracking-[0.3em] uppercase text-foreground/50 mb-5 font-medium">

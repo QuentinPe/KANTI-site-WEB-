@@ -188,8 +188,8 @@ export default function NotreMethodePage() {
       {/* 02 — Principes */}
       <section className="section-padding section-ivory">
         <div className="max-w-6xl mx-auto">
-          <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 border-t border-foreground/10 pt-12 md:pt-16 items-start">
-            <div className="lg:col-span-4 reveal lg:sticky lg:top-32 lg:self-start">
+          <div className="grid lg:grid-cols-12 gap-8 md:gap-10 lg:gap-16 border-t border-foreground/10 pt-12 md:pt-16 items-start">
+            <div className="lg:col-span-4 reveal lg:sticky lg:top-32 lg:self-start mb-2 lg:mb-0">
               <div className="flex items-center gap-4 mb-8">
                 <span className="font-heading font-extralight text-5xl md:text-6xl tabular-nums leading-none text-foreground/15">
                   02
@@ -298,8 +298,8 @@ export default function NotreMethodePage() {
       {/* 04 — Cadre des livrables */}
       <section className="section-padding section-ivory">
         <div className="max-w-6xl mx-auto">
-          <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 border-t border-foreground/10 pt-12 md:pt-16 items-start">
-            <div className="lg:col-span-5 reveal lg:sticky lg:top-32 lg:self-start">
+          <div className="grid lg:grid-cols-12 gap-8 md:gap-10 lg:gap-16 border-t border-foreground/10 pt-12 md:pt-16 items-start">
+            <div className="lg:col-span-5 reveal lg:sticky lg:top-32 lg:self-start mb-2 lg:mb-0">
               <div className="flex items-center gap-4 mb-8">
                 <span className="font-heading font-extralight text-5xl md:text-6xl tabular-nums leading-none text-foreground/15">
                   04
@@ -374,8 +374,8 @@ export default function NotreMethodePage() {
       {/* 06 — FAQ courte */}
       <section className="section-padding section-ivory">
         <div className="max-w-6xl mx-auto">
-          <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 border-t border-foreground/10 pt-12 md:pt-16 items-start">
-            <div className="lg:col-span-4 reveal lg:sticky lg:top-32 lg:self-start">
+          <div className="grid lg:grid-cols-12 gap-8 md:gap-10 lg:gap-16 border-t border-foreground/10 pt-12 md:pt-16 items-start">
+            <div className="lg:col-span-4 reveal lg:sticky lg:top-32 lg:self-start mb-2 lg:mb-0">
               <div className="flex items-center gap-4 mb-8">
                 <span className="font-heading font-extralight text-5xl md:text-6xl tabular-nums leading-none text-foreground/15">
                   06

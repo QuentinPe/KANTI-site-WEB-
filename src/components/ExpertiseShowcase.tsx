@@ -27,9 +27,9 @@ export default function ExpertiseShowcase({
   return (
     <section className="section-padding bg-background relative overflow-hidden">
       <div className="max-w-7xl mx-auto">
-        <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 items-start">
+        <div className="grid lg:grid-cols-12 gap-8 md:gap-10 lg:gap-16 items-start">
           {/* Image column */}
-          <div className="lg:col-span-5 reveal lg:sticky lg:top-32">
+          <div className="lg:col-span-5 reveal lg:sticky lg:top-32 lg:self-start mb-2 lg:mb-0">
             <div className="relative aspect-[4/5] overflow-hidden rounded-[1.75rem] shadow-2xl">
               <img
                 src={image}
