@@ -1,5 +1,12 @@
-import { useRef } from "react";
-import { motion, useScroll, useTransform, useReducedMotion, MotionValue } from "framer-motion";
+import { useRef, useState } from "react";
+import {
+  motion,
+  useScroll,
+  useTransform,
+  useReducedMotion,
+  useMotionValueEvent,
+  MotionValue,
+} from "framer-motion";
 
 interface Slide {
   image: string;
@@ -187,10 +194,15 @@ function IntroOverlay({
   // Fade out the intro quickly so it never overlaps the first slide caption.
   const opacity = useTransform(scrollYProgress, [0, 0.03, 0.06], [1, 1, 0]);
   const y = useTransform(scrollYProgress, [0, 0.06], [0, -40]);
+  const [hidden, setHidden] = useState(false);
+  useMotionValueEvent(scrollYProgress, "change", (v) => {
+    setHidden(v > 0.07);
+  });
   return (
     <motion.div
+      aria-hidden={hidden}
       className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center px-6"
-      style={{ opacity, y, visibility: "visible" }}
+      style={{ opacity, y, visibility: hidden ? "hidden" : "visible" }}
     >
       <div className="text-center max-w-3xl">
         {eyebrow && (
