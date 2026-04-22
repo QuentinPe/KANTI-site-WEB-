@@ -1,6 +1,7 @@
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
+import Seo, { localBusinessJsonLd, organizationJsonLd } from "@/components/Seo";
 import Identification from "@/components/Identification";
 import Promesse from "@/components/Promesse";
 import About from "@/components/About";
@@ -20,9 +21,15 @@ const Index = () => {
 
   return (
     <>
+      <Seo
+        title="KANTI — Cabinet de gestion de patrimoine indépendant à Bordeaux"
+        description="KANTI accompagne particuliers, dirigeants et familles dans la structuration, l'optimisation fiscale et la transmission de leur patrimoine. Conseil patrimonial indépendant à Bordeaux."
+        jsonLd={[organizationJsonLd, localBusinessJsonLd]}
+      />
       <ScrollProgressRail />
       <Header />
-      <Hero />
+      <main id="main">
+        <Hero />
       <Identification />
       <Promesse />
       <About />
@@ -34,6 +41,7 @@ const Index = () => {
       <Actualites />
       <HomeFAQ />
       <CTAFinal />
+      </main>
       <Footer />
     </>
   );

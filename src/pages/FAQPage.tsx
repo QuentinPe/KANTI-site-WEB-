@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PageHero from "@/components/PageHero";
 import PageCTA from "@/components/PageCTA";
+import Seo, { breadcrumbJsonLd, faqJsonLd } from "@/components/Seo";
 
 const faqCategories = [
   {
