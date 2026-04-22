@@ -370,11 +370,17 @@ function ResultView({
           <div>
             <div className="font-heading text-7xl lg:text-8xl font-light text-foreground tracking-tight leading-none">
               {profile.sri}
+              <span className="text-foreground/40 text-3xl lg:text-4xl font-light tabular-nums">
+                .{Math.round(((profile.sriPrecise ?? profile.sri) % 1) * 10)}
+              </span>
               <span className="text-foreground/30 text-4xl lg:text-5xl"> / 7</span>
             </div>
             <h3 className="mt-4 font-heading text-2xl lg:text-3xl font-light text-foreground tracking-tight">
               {profile.label}
             </h3>
+            <p className="mt-2 text-[11px] tracking-[0.18em] uppercase text-foreground/45">
+              Score précis : {(profile.sriPrecise ?? profile.sri).toFixed(2)} / 7,00
+            </p>
           </div>
           <span className="self-start lg:self-auto inline-flex items-center px-4 py-1.5 rounded-full bg-[hsl(var(--electric)/0.1)] text-[hsl(var(--electric))] text-[11px] tracking-[0.2em] uppercase font-medium">
             {profile.shortLabel}
