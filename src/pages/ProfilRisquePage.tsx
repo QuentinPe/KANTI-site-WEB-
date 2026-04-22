@@ -651,18 +651,9 @@ function generatePdf(
   doc.addPage();
   drawPageHeader(doc, W, M, NAVY, GREY, ELECTRIC, "Synthèse du profil", today);
 
-  let y = 150;
-  doc.setTextColor(...NAVY);
+  let y = 140;
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(11);
-  doc.setTextColor(...GREY);
-  doc.text("QUESTIONNAIRE PROFIL DE RISQUE", M, y);
-  y += 26;
-  doc.setFontSize(30);
-  doc.setTextColor(...NAVY);
-  doc.text("Votre profil investisseur", M, y);
-  y += 20;
-  doc.setFontSize(11);
+  doc.setFontSize(10.5);
   doc.setTextColor(...GREY);
   doc.text(
     "Indicateur synthétique de risque (SRI) calculé sur la base de vos réponses.",
@@ -671,7 +662,7 @@ function generatePdf(
   );
 
   // Score panel — encart aéré
-  y += 30;
+  y += 22;
   doc.setFillColor(...STONE_LIGHT);
   doc.roundedRect(M, y, W - M * 2, 170, 10, 10, "F");
 
@@ -737,21 +728,13 @@ function generatePdf(
      PAGES SUIVANTES — DÉTAIL DES RÉPONSES PAR SECTION
      ════════════════════════════════════════════ */
   doc.addPage();
-  y = 90;
-  doc.setTextColor(...NAVY);
+  drawPageHeader(doc, W, M, NAVY, GREY, ELECTRIC, "Détail de vos réponses", today);
+  y = 140;
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(11);
-  doc.setTextColor(...GREY);
-  doc.text("DÉTAIL DU QUESTIONNAIRE", M, y);
-  y += 26;
-  doc.setFontSize(24);
-  doc.setTextColor(...NAVY);
-  doc.text("Vos réponses", M, y);
-  y += 14;
   doc.setFontSize(10);
   doc.setTextColor(...GREY);
   doc.text(
-    "Récapitulatif structuré, conservé pour traçabilité de l'évaluation.",
+    "Récapitulatif structuré du questionnaire, conservé pour traçabilité de l'évaluation.",
     M,
     y,
   );
@@ -822,7 +805,7 @@ function generatePdf(
      FOOTER sur toutes les pages
      ════════════════════════════════════════════ */
   const pageCount = doc.getNumberOfPages();
-  for (let p = 1; p <= pageCount; p++) {
+  for (let p = 2; p <= pageCount; p++) {
     doc.setPage(p);
     doc.setDrawColor(...STONE);
     doc.setLineWidth(0.5);
