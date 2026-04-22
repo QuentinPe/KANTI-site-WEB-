@@ -4,15 +4,11 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { toast } from "sonner";
-import { MapPin, Phone, Mail, Clock, Calendar, FileText, Users } from "lucide-react";
+import { MapPin, Phone, Mail, Clock, Calendar, FileText, Users, ShieldCheck, Clock3, Sparkles, MessageSquare } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PageHero from "@/components/PageHero";
-import ParallaxImage from "@/components/ParallaxImage";
 import Seo, { breadcrumbJsonLd, faqJsonLd, localBusinessJsonLd } from "@/components/Seo";
-import contactMeeting from "@/assets/contact-meeting.jpg";
-import contactBordeaux from "@/assets/contact-bordeaux.jpg";
-import contactAdvisors from "@/assets/contact-advisors.jpg";
 
 const contactSchema = z.object({
   nom: z.string().trim().min(2, "Indiquez votre nom complet").max(100, "Nom trop long"),
