@@ -794,14 +794,17 @@ function generatePdf(
   doc.setFontSize(8);
   setText([170, 190, 220]);
   doc.text("PROFIL D'INVESTISSEUR", M + 200, y + 38);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(20);
+  doc.setFont(SERIF, "bold");
+  doc.setFontSize(22);
   setText(WHITE);
-  doc.text(profile.label, M + 200, y + 62);
+  // Contraint à la largeur disponible dans l'encart navy
+  const labelMaxW = CW - 200 - 36;
+  const labelLines2 = doc.splitTextToSize(profile.label, labelMaxW);
+  doc.text(labelLines2[0], M + 200, y + 62);
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(10);
+  doc.setFontSize(9.5);
   setText([180, 200, 230]);
-  doc.text(profile.shortLabel.toUpperCase(), M + 200, y + 80);
+  doc.text(profile.shortLabel.toUpperCase(), M + 200, y + 82);
 
   // Jauge horizontale 1→7 dans l'encart
   const gaugeY = y + 130;
