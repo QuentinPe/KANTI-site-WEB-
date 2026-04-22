@@ -575,153 +575,162 @@ function generatePdf(
   // PAGE 1 — COUVERTURE (épurée, éditoriale)
   // ══════════════════════════════════════════════════════
 
-  // Fond papier très doux
-  setFill(PAPER);
-  doc.rect(0, 0, W, H, "F");
+  const sriPrecise = profile.sriPrecise ?? profile.sri;
 
-  // Bande supérieure navy fine (en-tête de marque)
-  setFill(NAVY);
-  doc.rect(0, 0, W, 38, "F");
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(11);
-  setText(WHITE);
-  doc.text("K  A  N  T  I", M, 24);
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(7.5);
-  setText([190, 200, 220]);
-  doc.text(KANTI_INFO.baseline.toUpperCase(), W - M, 24, { align: "right" });
-
-  // Bloc latéral navy (1/3 droit) — discret mais affirmé
-  setFill(NAVY);
-  doc.rect(W - 180, 38, 180, H - 38, "F");
-  // Filet doré vertical
-  setDraw(ACCENT);
-  doc.setLineWidth(1.5);
-  doc.line(W - 180, 38, W - 180, H);
-
-  // Cercle décoratif léger sur le bloc navy
-  setDraw([28, 44, 86]);
-  doc.setLineWidth(0.6);
-  doc.circle(W - 90, H - 220, 130, "S");
-  doc.circle(W - 90, H - 220, 90, "S");
-  doc.circle(W - 90, H - 220, 50, "S");
-
-  // SRI géant dans le bloc latéral
-  setText(WHITE);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(110);
-  doc.text(`${profile.sri}`, W - 90, 240, { align: "center" });
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(11);
-  setText([170, 190, 220]);
-  doc.text("/ 7", W - 90, 268, { align: "center" });
-  doc.setFontSize(8);
-  doc.text("SRI · ÉCHELLE 1–7", W - 90, 290, { align: "center" });
-
-  // Petite jauge verticale décorative
-  for (let i = 1; i <= 7; i++) {
-    const yBar = 330 + (7 - i) * 16;
-    const isActive = i === profile.sri;
-    setFill(isActive ? ACCENT : ([34, 50, 90] as RGB));
-    doc.roundedRect(W - 130, yBar, 80, 8, 2, 2, "F");
-    setText(isActive ? WHITE : [120, 140, 175]);
-    doc.setFont("helvetica", isActive ? "bold" : "normal");
-    doc.setFontSize(7.5);
-    doc.text(`${i}`, W - 38, yBar + 6, { align: "right" });
+  // ── Photo pleine hauteur à droite (bâtiment haussmannien) ──
+  const photoW = 250;
+  try {
+    doc.addImage(COVER_BUILDING_B64, "JPEG", W - photoW, 0, photoW, H);
+  } catch {
+    setFill(NAVY);
+    doc.rect(W - photoW, 0, photoW, H, "F");
   }
+  // Voile navy translucide sur la photo
+  setFill(NAVY);
+  doc.setGState(new (doc as any).GState({ opacity: 0.42 }));
+  doc.rect(W - photoW, 0, photoW, H, "F");
+  doc.setGState(new (doc as any).GState({ opacity: 1 }));
 
-  // Bloc texte gauche : titre, baseline, contexte
-  setText(MUTED);
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(8);
-  doc.text("RAPPORT CONFIDENTIEL  ·  AUTO-ÉVALUATION AMF", M, 100);
+  // Fond papier à gauche
+  setFill(PAPER);
+  doc.rect(0, 0, W - photoW, H, "F");
 
-  // Filet
+  // Filet doré vertical entre les deux zones
   setDraw(ACCENT);
-  doc.setLineWidth(1.4);
-  doc.line(M, 116, M + 56, 116);
+  doc.setLineWidth(1.2);
+  doc.line(W - photoW, 0, W - photoW, H);
 
-  // Titre éditorial
+  // ── Zone gauche : éditorial ───────────────────────────
+  // Marque KANTI en haut
   setText(NAVY);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(44);
-  doc.text("Profil", M, 180);
-  doc.text("d'investisseur", M, 224);
+  doc.setFont(SANS, "bold");
+  doc.setFontSize(11);
+  doc.setCharSpace(4);
+  doc.text("KANTI", M, 60);
+  doc.setCharSpace(0);
+  setDraw(ACCENT);
+  doc.setLineWidth(1.2);
+  doc.line(M, 70, M + 28, 70);
+  setText(MUTED);
+  doc.setFont(SANS, "normal");
+  doc.setFontSize(7);
+  doc.setCharSpace(1.2);
+  doc.text(KANTI_INFO.baseline.toUpperCase(), M, 84);
+  doc.setCharSpace(0);
+
+  // Eyebrow
+  setText(ACCENT);
+  doc.setFont(SANS, "bold");
+  doc.setFontSize(7.5);
+  doc.setCharSpace(2.2);
+  doc.text("RAPPORT CONFIDENTIEL  ·  AUTO-ÉVALUATION AMF", M, 170);
+  doc.setCharSpace(0);
+
+  // Titre éditorial — Cormorant Garamond
+  setText(NAVY);
+  doc.setFont(SERIF, "normal");
+  doc.setFontSize(58);
+  doc.text("Profil", M, 240);
+  doc.text("d'investisseur.", M, 296);
 
   // Sous-titre
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(11);
+  doc.setFont(SANS, "normal");
+  doc.setFontSize(10.5);
   setText(NAVY_SOFT);
   const intro = doc.splitTextToSize(
-    "Évaluation personnalisée de votre tolérance au risque, conforme aux exigences de l'Autorité des Marchés Financiers.",
-    W - 180 - M - 24,
+    "Évaluation personnalisée de votre tolérance au risque, conforme aux exigences de l'Autorité des Marchés Financiers (DDA / MIF II).",
+    W - photoW - M - 24,
   );
-  doc.text(intro, M, 268);
+  doc.text(intro, M, 332);
 
-  // Carte « Profil retenu » blanche, posée sur le fond papier
-  const cardY = 340;
-  const cardW = W - 180 - M - 24;
+  // Carte profil
+  const cardY = 410;
+  const cardW = W - photoW - M - 24;
   setFill(WHITE);
-  doc.roundedRect(M, cardY, cardW, 150, 10, 10, "F");
+  doc.roundedRect(M, cardY, cardW, 170, 12, 12, "F");
   setDraw(HAIR);
   doc.setLineWidth(0.6);
-  doc.roundedRect(M, cardY, cardW, 150, 10, 10, "S");
-  // Filet accent gauche
+  doc.roundedRect(M, cardY, cardW, 170, 12, 12, "S");
   setFill(ACCENT);
-  doc.rect(M, cardY, 3, 150, "F");
+  doc.rect(M, cardY, 3, 170, "F");
 
   setText(MUTED);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(8);
-  doc.text("PROFIL RETENU", M + 22, cardY + 28);
+  doc.setFont(SANS, "bold");
+  doc.setFontSize(7.5);
+  doc.setCharSpace(2);
+  doc.text("VOTRE PROFIL RETENU", M + 22, cardY + 26);
+  doc.setCharSpace(0);
+
+  // Score décimal en grand
+  setText(NAVY);
+  doc.setFont(SERIF, "bold");
+  doc.setFontSize(56);
+  doc.text(`${sriPrecise.toFixed(1)}`, M + 22, cardY + 92);
+  doc.setFont(SANS, "normal");
+  doc.setFontSize(11);
+  setText(MUTED);
+  const scoreW = doc.getTextWidth(`${sriPrecise.toFixed(1)}`);
+  doc.text("/ 7", M + 22 + scoreW + 6, cardY + 92);
 
   setText(NAVY);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(22);
-  doc.text(profile.label, M + 22, cardY + 58);
-
+  doc.setFont(SERIF, "normal");
+  doc.setFontSize(20);
+  doc.text(profile.label, M + 22, cardY + 122);
   setText(ACCENT);
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(9);
-  doc.text(profile.shortLabel.toUpperCase(), M + 22, cardY + 76);
-
-  // Mini description
-  setText(INK);
-  doc.setFontSize(9.5);
-  const miniDesc = doc.splitTextToSize(
-    profile.description,
-    cardW - 44,
-  ).slice(0, 3);
-  doc.text(miniDesc, M + 22, cardY + 100);
-
-  // Méta édition
-  setText(MUTED);
-  doc.setFont("helvetica", "normal");
+  doc.setFont(SANS, "bold");
   doc.setFontSize(8);
-  doc.text(`Édité le ${today}`, M, H - 120);
-  doc.text(ref, M, H - 106);
+  doc.setCharSpace(2);
+  doc.text(profile.shortLabel.toUpperCase(), M + 22, cardY + 140);
+  doc.setCharSpace(0);
 
-  // Pied de page couverture
+  setText(MUTED);
+  doc.setFont(SANS, "normal");
+  doc.setFontSize(8.5);
+  doc.text(`Indicateur synthétique de risque (échelle PRIIPs 1 → 7)`, M + 22, cardY + 156);
+
+  // Méta + footer couverture
   setDraw(HAIR);
   doc.setLineWidth(0.4);
-  doc.line(M, H - 70, W - 200, H - 70);
-  setText(NAVY_SOFT);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(8);
-  doc.text(KANTI_INFO.name, M, H - 54);
-  doc.setFont("helvetica", "normal");
-  setText(MUTED);
-  doc.setFontSize(7.5);
-  doc.text(KANTI_INFO.address, M, H - 42);
-  doc.text(`${KANTI_INFO.phone}  ·  ${KANTI_INFO.email}`, M, H - 30);
+  doc.line(M, H - 90, W - photoW - 24, H - 90);
 
-  // Mention en bas du bloc latéral
-  setText([170, 185, 215]);
-  doc.setFont("helvetica", "normal");
+  setText(NAVY);
+  doc.setFont(SANS, "bold");
+  doc.setFontSize(8);
+  doc.text("Édité le", M, H - 70);
+  doc.text("Référence", M + 120, H - 70);
+  setText(MUTED);
+  doc.setFont(SANS, "normal");
+  doc.text(today, M, H - 56);
+  doc.text(ref, M + 120, H - 56);
+
+  setText(NAVY_SOFT);
+  doc.setFont(SANS, "normal");
   doc.setFontSize(7);
-  doc.text("Document pédagogique", W - 90, H - 54, { align: "center" });
-  doc.text("ne constituant pas un conseil", W - 90, H - 44, { align: "center" });
-  doc.text("personnalisé au sens AMF.", W - 90, H - 34, { align: "center" });
+  doc.text(`${KANTI_INFO.address}  ·  ${KANTI_INFO.email}`, M, H - 30);
+
+  // ── Zone droite (sur la photo) : signature ─────────
+  setText(WHITE);
+  doc.setFont(SERIF, "normal");
+  doc.setFontSize(13);
+  const sigX = W - photoW / 2;
+  doc.text("« La sérénité patrimoniale", sigX, H / 2 - 20, { align: "center" });
+  doc.text("se construit sur la mesure. »", sigX, H / 2, { align: "center" });
+  setDraw([220, 200, 150]);
+  doc.setLineWidth(0.6);
+  doc.line(sigX - 28, H / 2 + 16, sigX + 28, H / 2 + 16);
+  setText([220, 225, 240]);
+  doc.setFont(SANS, "bold");
+  doc.setFontSize(7);
+  doc.setCharSpace(2);
+  doc.text("KANTI · BORDEAUX", sigX, H / 2 + 32, { align: "center" });
+  doc.setCharSpace(0);
+
+  // Mention bas droite
+  setText([200, 210, 230]);
+  doc.setFont(SANS, "normal");
+  doc.setFontSize(6.5);
+  doc.text("Document pédagogique — ne constitue pas", sigX, H - 50, { align: "center" });
+  doc.text("un conseil personnalisé au sens AMF.", sigX, H - 38, { align: "center" });
 
   // ══════════════════════════════════════════════════════
   // PAGE 2 — SYNTHÈSE
