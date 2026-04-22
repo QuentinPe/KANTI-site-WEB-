@@ -149,15 +149,17 @@ export default function FAQPage() {
                 </p>
                 <ul className="space-y-1">
                   {sections.map((cat, i) => {
-                    const isActive = activeCat === cat.id;
+                    const isActive = activeCatId === cat.id;
                     return (
                       <li key={cat.id}>
-                        <a
-                          href={`#${cat.id}`}
+                        <button
+                          type="button"
+                          onClick={() => selectCat(cat.id)}
                           data-magnetic
-                          className={`group flex items-center gap-4 py-2.5 transition-colors ${
+                          className={`group flex items-center gap-4 py-2.5 w-full text-left transition-colors ${
                             isActive ? "text-foreground" : "text-foreground/55 hover:text-foreground/85"
                           }`}
+                          aria-pressed={isActive}
                         >
                           <span
                             className={`h-px transition-all duration-500 ${
@@ -170,7 +172,10 @@ export default function FAQPage() {
                           <span className="font-heading text-base font-light tracking-tight">
                             {cat.category}
                           </span>
-                        </a>
+                          <span className="ml-auto text-[10px] tracking-[0.18em] uppercase text-foreground/35 font-medium">
+                            {cat.questions.length}
+                          </span>
+                        </button>
                       </li>
                     );
                   })}
