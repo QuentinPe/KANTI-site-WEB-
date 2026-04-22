@@ -106,6 +106,19 @@ export default function FAQPage() {
 
   return (
     <>
+      <Seo
+        title="FAQ patrimoniale — toutes les questions sur le conseil indépendant"
+        description="Cabinet, premier rendez-vous, méthode, fiscalité, placements, transmission : les réponses détaillées aux questions que nos clients nous posent le plus souvent."
+        jsonLd={[
+          breadcrumbJsonLd([
+            { name: "Accueil", url: "/" },
+            { name: "FAQ", url: "/faq-patrimoniale" },
+          ]),
+          faqJsonLd(
+            faqCategories.flatMap((c) => c.questions.map((q) => ({ q: q.q, a: q.a }))),
+          ),
+        ]}
+      />
       <Header />
       <PageHero
         title="Questions fréquentes"
