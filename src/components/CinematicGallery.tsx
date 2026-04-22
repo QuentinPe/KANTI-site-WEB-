@@ -104,8 +104,8 @@ function Slide({
   const captionOpacity = useTransform(
     scrollYProgress,
     sortAsc([
-      clamp01(start),
-      clamp01(start + segment * 0.2),
+      clamp01(start + segment * 0.25),
+      clamp01(start + segment * 0.45),
       clamp01(end - segment * 0.15),
       clamp01(end),
     ]),
