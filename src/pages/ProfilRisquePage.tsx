@@ -331,10 +331,22 @@ function ResultView({
   onReset,
 }: {
   profile: SriProfile;
-  answers: Record<string, number>;
+  answers: Record<string, AnswerValue>;
   onReset: () => void;
 }) {
   const handleDownload = () => generatePdf(profile, answers);
+  const handleSend = () => {
+    // Future intégration : envoi vers une edge function / mailer KANTI.
+    // Pour l'instant on confirme le téléchargement et on ouvre un mailto.
+    generatePdf(profile, answers);
+    const subject = encodeURIComponent(
+      `Profil de risque — SRI ${profile.sri}/7 (${profile.shortLabel})`,
+    );
+    const body = encodeURIComponent(
+      "Bonjour,\n\nVeuillez trouver ci-joint ma fiche profil de risque générée sur le site KANTI.\n\nCordialement.",
+    );
+    window.location.href = `mailto:${KANTI_INFO.email}?subject=${subject}&body=${body}`;
+  };
 
   return (
     <motion.div
