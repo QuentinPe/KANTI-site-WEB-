@@ -123,6 +123,8 @@ export default function CabinetPage() {
         ]}
       />
 
+      <CabinetMap3D />
+
       <PageCTA
         title="Rencontrons-nous"
         subtitle="Un premier échange de 30 minutes pour parler de votre situation et voir comment nous pouvons vous aider."
