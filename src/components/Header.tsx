@@ -23,6 +23,7 @@ export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [navExpanded, setNavExpanded] = useState(false);
   const location = useLocation();
   const isHome = location.pathname === "/";
 
@@ -39,11 +40,21 @@ export default function Header() {
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
+  // Nav unfurl animation: starts collapsed (just the KANTI bubble), expands
+  // horizontally to the left from a small "seed" pill into the full menu.
+  useEffect(() => {
+    setNavExpanded(false);
+    const t = window.setTimeout(() => setNavExpanded(true), 220);
+    return () => window.clearTimeout(t);
+  }, [location.pathname]);
+
   // On home, header is transparent over the dark hero until scroll
   // On internal pages, always use light glass nav
   const useDarkGlass = isHome && !scrolled;
   const textColor = useDarkGlass ? "text-white" : "text-foreground";
   const textMuted = useDarkGlass ? "text-white/75" : "text-foreground/70";
+
+  const bubbleClass = useDarkGlass ? "glass-dark" : scrolled ? "glass-strong" : "glass";
 
   return (
     <header
@@ -52,24 +63,30 @@ export default function Header() {
       }`}
     >
       <div className="px-4 md:px-6 max-w-[1400px] mx-auto">
-        <div
-          className={`flex items-center justify-between rounded-full px-5 md:px-7 py-3 transition-all duration-500 ${
-            useDarkGlass
-              ? "glass-dark"
-              : scrolled
-              ? "glass-strong"
-              : "glass"
-          }`}
-        >
+        <div className="flex items-center justify-between gap-3">
+          {/* KANTI bubble — anchor on the left */}
           <Link
             to="/"
-            className={`font-heading text-xl md:text-2xl font-semibold tracking-[0.18em] ${textColor} hover:opacity-80 transition-opacity duration-300`}
+            aria-label="KANTI — Accueil"
+            className={`relative z-[2] flex items-center rounded-full px-6 md:px-7 py-3 transition-all duration-500 ${bubbleClass} ${textColor} hover:opacity-95`}
           >
-            KANTI
+            <span className="font-heading text-xl md:text-2xl font-semibold tracking-[0.18em]">
+              KANTI
+            </span>
           </Link>
 
-          {/* Desktop nav */}
-          <nav className="hidden xl:flex items-center gap-6">
+          {/* Desktop nav bubble — unfurls horizontally from the right toward KANTI */}
+          <div
+            className={`hidden xl:block flex-1 transition-[transform,opacity,filter] duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] origin-right will-change-transform ${
+              navExpanded
+                ? "opacity-100 scale-x-100 blur-0"
+                : "opacity-0 scale-x-0 blur-[2px]"
+            }`}
+            style={{ transformOrigin: "right center" }}
+          >
+            <nav
+              className={`flex items-center justify-end gap-6 rounded-full pl-7 pr-2 py-2 transition-all duration-500 ${bubbleClass}`}
+            >
             {navLinks.map((link) =>
               link.children ? (
                 <div
@@ -129,7 +146,7 @@ export default function Header() {
             )}
             <Link
               to="/contact"
-              className={`ml-2 px-5 py-2 text-[13px] font-medium tracking-wide ${
+              className={`ml-2 px-5 py-2 rounded-full text-[13px] font-medium tracking-wide ${
                 useDarkGlass
                   ? "btn-glass text-white"
                   : "btn-primary-glass"
@@ -137,12 +154,13 @@ export default function Header() {
             >
               Prendre rendez-vous
             </Link>
-          </nav>
+            </nav>
+          </div>
 
-          {/* Mobile burger */}
+          {/* Mobile burger bubble */}
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className={`xl:hidden flex flex-col gap-1.5 p-2 relative z-[60] ${textColor}`}
+            className={`xl:hidden flex flex-col gap-1.5 rounded-full p-3.5 relative z-[60] transition-all duration-500 ${bubbleClass} ${textColor}`}
             aria-label="Menu"
           >
             <span
