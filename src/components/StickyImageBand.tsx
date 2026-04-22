@@ -27,7 +27,7 @@ export default function StickyImageBand({
   });
 
   const scale = useTransform(scrollYProgress, [0, 1], reduce ? [1, 1] : [1.15, 1]);
-  const y = useTransform(scrollYProgress, [0, 1], reduce ? [0, 0] : ["-6%", "6%"]);
+  const y = useTransform(scrollYProgress, [0, 1], reduce ? ["0%", "0%"] : ["-6%", "6%"]);
   const captionY = useTransform(scrollYProgress, [0, 1], reduce ? [0, 0] : [40, -40]);
   const captionOpacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0, 1, 1, 0]);
 
