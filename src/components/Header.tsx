@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 
 const navLinks = [
   { label: "Le Cabinet", href: "/cabinet" },
@@ -25,6 +26,7 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [navExpanded, setNavExpanded] = useState(false);
+  const [hoveredKey, setHoveredKey] = useState<string | null>(null);
   const location = useLocation();
   const isHome = location.pathname === "/";
 
@@ -56,6 +58,10 @@ export default function Header() {
   const textMuted = useDarkGlass ? "text-white/75" : "text-foreground/70";
 
   const bubbleClass = useDarkGlass ? "glass-dark" : scrolled ? "glass-strong" : "glass";
+  // Bubble (hover pill) — same visual family as the KANTI bubble
+  const hoverPillClass = useDarkGlass
+    ? "bg-white/12 backdrop-blur-md ring-1 ring-white/15"
+    : "bg-white/70 backdrop-blur-md ring-1 ring-foreground/10 shadow-[0_4px_20px_-8px_hsl(var(--foreground)/0.15)]";
 
   return (
     <header
@@ -86,24 +92,40 @@ export default function Header() {
             style={{ transformOrigin: "right center" }}
           >
             <nav
-              className={`flex items-center justify-end gap-6 rounded-full pl-7 pr-2 py-2 transition-all duration-500 ${bubbleClass}`}
+              onMouseLeave={() => {
+                /* keep last hovered item — do not clear */
+              }}
+              className={`flex items-center justify-end gap-1 rounded-full pl-3 pr-2 py-2 transition-all duration-500 ${bubbleClass}`}
             >
             {navLinks.map((link) =>
               link.children ? (
                 <div
                   key={link.label}
                   className="relative"
-                  onMouseEnter={() => setDropdownOpen(true)}
+                  onMouseEnter={() => {
+                    setDropdownOpen(true);
+                    setHoveredKey(link.label);
+                  }}
                   onMouseLeave={() => setDropdownOpen(false)}
                 >
                   <button
                     aria-haspopup="menu"
                     aria-expanded={dropdownOpen}
-                    className={`text-[13px] font-medium tracking-wide ${textMuted} hover:${textColor.replace(
-                      "text-",
-                      "text-"
-                    )} transition-colors duration-300 flex items-center gap-1.5`}
+                    className={`relative px-4 py-1.5 rounded-full text-[13px] font-medium tracking-wide ${textMuted} transition-colors duration-300 flex items-center gap-1.5`}
                   >
+                    <AnimatePresence>
+                      {hoveredKey === link.label && (
+                        <motion.span
+                          layoutId="nav-hover-bubble"
+                          aria-hidden
+                          className={`absolute inset-0 -z-10 rounded-full ${hoverPillClass}`}
+                          transition={{ type: "spring", stiffness: 380, damping: 32, mass: 0.7 }}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                        />
+                      )}
+                    </AnimatePresence>
                     {link.label}
                     <svg
                       className={`w-3 h-3 transition-transform duration-300 ${
@@ -141,8 +163,22 @@ export default function Header() {
                 <Link
                   key={link.href}
                   to={link.href}
-                  className={`text-[13px] font-medium tracking-wide ${textMuted} hover:opacity-100 transition-opacity duration-300 link-underline`}
+                  onMouseEnter={() => setHoveredKey(link.href)}
+                  className={`relative px-4 py-1.5 rounded-full text-[13px] font-medium tracking-wide ${textMuted} hover:opacity-100 transition-colors duration-300`}
                 >
+                  <AnimatePresence>
+                    {hoveredKey === link.href && (
+                      <motion.span
+                        layoutId="nav-hover-bubble"
+                        aria-hidden
+                        className={`absolute inset-0 -z-10 rounded-full ${hoverPillClass}`}
+                        transition={{ type: "spring", stiffness: 380, damping: 32, mass: 0.7 }}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                      />
+                    )}
+                  </AnimatePresence>
                   {link.label}
                 </Link>
               )
