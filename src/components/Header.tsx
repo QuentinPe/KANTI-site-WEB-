@@ -140,20 +140,40 @@ export default function Header() {
                     </svg>
                   </button>
                   <div
-                    className={`absolute top-full left-1/2 -translate-x-1/2 pt-4 transition-all duration-400 ${
+                    className={`absolute top-full left-0 pt-4 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
                       dropdownOpen
                         ? "opacity-100 translate-y-0 pointer-events-auto"
-                        : "opacity-0 -translate-y-2 pointer-events-none"
+                        : "opacity-0 -translate-y-3 pointer-events-none"
                     }`}
                   >
-                    <div className="glass-strong rounded-2xl py-2 min-w-[260px] overflow-hidden">
-                      {link.children.map((child) => (
+                    <div className="glass-strong rounded-2xl p-2 min-w-[300px] overflow-hidden ring-1 ring-foreground/5 shadow-[0_20px_60px_-20px_hsl(var(--foreground)/0.25)]">
+                      <div className="px-4 pt-2 pb-3 mb-1 border-b border-foreground/[0.06]">
+                        <p className="text-[10px] tracking-[0.28em] uppercase font-medium text-foreground/45">
+                          Nos expertises
+                        </p>
+                      </div>
+                      {link.children.map((child, idx) => (
                         <Link
                           key={child.href}
                           to={child.href}
-                          className="block px-5 py-3 text-[13px] text-foreground/75 hover:text-foreground hover:bg-white/40 transition-colors duration-200"
+                          style={{ transitionDelay: dropdownOpen ? `${idx * 40}ms` : "0ms" }}
+                          className={`group flex items-center justify-between gap-4 px-4 py-3 rounded-xl text-[13px] font-medium text-foreground/75 hover:text-foreground hover:bg-foreground/[0.04] transition-all duration-300 ${
+                            dropdownOpen ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-1"
+                          }`}
                         >
-                          {child.label}
+                          <span className="flex items-center gap-3">
+                            <span className="w-1 h-1 rounded-full bg-foreground/25 group-hover:bg-foreground/70 group-hover:scale-150 transition-all duration-300" />
+                            {child.label}
+                          </span>
+                          <svg
+                            className="w-3.5 h-3.5 text-foreground/30 -translate-x-1 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={1.6}
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                          </svg>
                         </Link>
                       ))}
                     </div>
