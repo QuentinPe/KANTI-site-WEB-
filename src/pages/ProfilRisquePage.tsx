@@ -12,6 +12,11 @@ import {
   type SriProfile,
   type RiskSection,
 } from "@/data/profilRisqueQuestions";
+import {
+  CORMORANT_REG_B64,
+  CORMORANT_BOLD_B64,
+  COVER_BUILDING_B64,
+} from "@/assets/pdf-assets";
 
 type Phase = "intro" | "quiz" | "result";
 
