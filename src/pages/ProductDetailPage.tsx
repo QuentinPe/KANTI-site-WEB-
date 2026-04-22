@@ -233,27 +233,39 @@ export default function ProductDetailPage() {
 
             {/* RISQUES */}
             <Block id="risques" eyebrow="05 — Risques" title="Matrice probabilité × impact">
-              <div className="overflow-x-auto rounded-[var(--radius)] border border-foreground/8">
-                <table className="w-full text-left text-sm">
-                  <thead className="bg-foreground/[0.03]">
-                    <tr className="text-[11px] tracking-[0.18em] uppercase text-foreground/55">
-                      <th className="px-4 py-3 font-medium">Risque</th>
-                      <th className="px-4 py-3 font-medium">Probabilité</th>
-                      <th className="px-4 py-3 font-medium">Impact</th>
-                      <th className="px-4 py-3 font-medium">Atténuation</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-foreground/5">
-                    {analysis.risks.map((r) => (
-                      <tr key={r.label} className="text-foreground/80">
-                        <td className="px-4 py-3 font-medium text-foreground">{r.label}</td>
-                        <td className="px-4 py-3"><RiskBadge level={r.likelihood} /></td>
-                        <td className="px-4 py-3"><RiskBadge level={r.impact} /></td>
-                        <td className="px-4 py-3 text-[13.5px] font-light">{r.mitigation}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <p className="text-foreground/65 text-[14px] font-light mb-6 max-w-2xl">
+                Cliquez sur un risque pour ouvrir sa fiche détaillée : probabilité, impact chiffré,
+                scénarios déclencheurs, signaux à surveiller et mesures d'atténuation opérationnelles.
+              </p>
+
+              <RiskMatrix risks={analysis.risks} onSelect={setOpenRisk} />
+
+              <div className="mt-8 grid sm:grid-cols-2 gap-3">
+                {analysis.risks.map((r) => (
+                  <button
+                    key={r.label}
+                    type="button"
+                    onClick={() => setOpenRisk(r)}
+                    className="group text-left p-4 rounded-[var(--radius)] border border-foreground/10 hover:border-[hsl(var(--gold))]/50 hover:bg-foreground/[0.02] transition-all"
+                  >
+                    <div className="flex items-start justify-between gap-3 mb-2">
+                      <p className="text-[14.5px] font-medium text-foreground group-hover:text-[hsl(var(--gold))] transition-colors">
+                        {r.label}
+                      </p>
+                      <span className={`shrink-0 w-7 h-7 rounded-full text-[11px] font-semibold flex items-center justify-center ${heatClasses(riskScore(r))}`}>
+                        {riskScore(r)}
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5 mb-2">
+                      <RiskBadge level={r.likelihood} />
+                      <RiskBadge level={r.impact} />
+                    </div>
+                    <p className="text-[12.5px] text-foreground/55 font-light line-clamp-2">{r.mitigation}</p>
+                    <p className="mt-2 text-[11px] text-[hsl(var(--electric))] opacity-0 group-hover:opacity-100 transition-opacity">
+                      Ouvrir la fiche →
+                    </p>
+                  </button>
+                ))}
               </div>
             </Block>
 
