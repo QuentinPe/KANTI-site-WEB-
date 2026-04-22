@@ -27,29 +27,33 @@ export default function CreditSimulator() {
 
   return (
     <SimulatorShell
-      eyebrow="Simulateur · Crédit"
+      eyebrow="Financement & crédit"
+      index="02"
       title="Calculez votre capacité d'emprunt"
       subtitle="Estimez votre mensualité et le coût total de votre financement immobilier."
     >
-      <div className="grid lg:grid-cols-5 gap-8 lg:gap-12 items-start">
-        <div className="lg:col-span-2 space-y-6">
+      <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 items-start">
+        <div className="lg:col-span-5 space-y-8">
           <GlassSlider label="Montant emprunté" value={`${(montant / 1000).toFixed(0)}k €`} min={50000} max={2000000} step={10000} current={montant} onChange={setMontant} />
           <GlassSlider label="Taux d'intérêt" value={`${taux.toFixed(1)} %`} min={1} max={6} step={0.1} current={taux} onChange={setTaux} />
           <GlassSlider label="Durée" value={`${duree} ans`} min={5} max={30} step={1} current={duree} onChange={setDuree} />
 
-          <div className="grid grid-cols-2 gap-3 pt-4 border-t border-foreground/10">
-            <div>
-              <div className="text-[9px] uppercase tracking-[0.2em] text-foreground/45 mb-1">Mensualité</div>
-              <div className="font-heading font-light text-xl md:text-2xl tracking-tight text-[hsl(var(--accent))]">{mensualite.toLocaleString()} €</div>
+          <div className="grid grid-cols-2 gap-6 pt-8 border-t border-foreground/10">
+            <div className="space-y-2">
+              <div className="text-[9px] uppercase tracking-[0.28em] text-foreground/45">Mensualité</div>
+              <div className="font-heading font-extralight text-3xl md:text-4xl tracking-[-0.02em] tabular-nums text-[hsl(var(--accent))]">{mensualite.toLocaleString()} €</div>
             </div>
-            <div>
-              <div className="text-[9px] uppercase tracking-[0.2em] text-foreground/45 mb-1">Coût du crédit</div>
-              <div className="font-heading font-light text-xl md:text-2xl tracking-tight text-foreground">{(coutTotal / 1000).toFixed(0)}k €</div>
+            <div className="space-y-2">
+              <div className="text-[9px] uppercase tracking-[0.28em] text-foreground/45">Coût du crédit</div>
+              <div className="font-heading font-extralight text-3xl md:text-4xl tracking-[-0.02em] tabular-nums text-foreground">{(coutTotal / 1000).toFixed(0)}k €</div>
             </div>
           </div>
         </div>
 
-        <div className="lg:col-span-3 h-[280px] md:h-[340px]">
+        <div className="lg:col-span-7 h-[300px] md:h-[380px] relative">
+          <div className="absolute -top-3 left-0 text-[10px] uppercase tracking-[0.28em] text-foreground/45">
+            Capital restant dû
+          </div>
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
               <CartesianGrid stroke="hsl(var(--foreground) / 0.06)" vertical={false} />
