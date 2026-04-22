@@ -154,7 +154,7 @@
     left: -10%;
     width: 50vw;
     height: 50vw;
-    background: radial-gradient(circle, hsl(38 35% 70% / 0.10) 0%, transparent 60%);
+    background: radial-gradient(circle, hsl(218 35% 55% / 0.08) 0%, transparent 60%);
     pointer-events: none;
     z-index: 0;
     filter: blur(60px);
