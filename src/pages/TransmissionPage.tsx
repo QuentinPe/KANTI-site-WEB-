@@ -49,11 +49,12 @@ export default function TransmissionPage() {
 
       {/* Simulator */}
       <section className="section-padding">
-        <div className="max-w-6xl mx-auto reveal">
+        <div className="max-w-7xl mx-auto reveal">
+          <div className="mb-10 md:mb-14 flex items-center gap-4">
+            <span className="text-[10px] tracking-[0.32em] uppercase text-foreground/55 font-medium">Simulez</span>
+            <div className="h-px flex-1 bg-foreground/10" />
+          </div>
           <TransmissionSimulator />
-          <p className="text-[11px] text-foreground/45 mt-6 text-center">
-            Estimation indicative. Les droits réels dépendent de la composition du patrimoine et des dispositions déjà en place.
-          </p>
         </div>
       </section>
 
@@ -67,8 +68,8 @@ export default function TransmissionPage() {
       <PageCTA
         title="Anticipez votre transmission"
         subtitle="Un premier échange pour évaluer votre situation successorale et identifier les actions à engager."
-        eyebrow="Transmission"
-        index="06"
+        eyebrow="Héritage & famille"
+        index="04"
         secondaryText="Demander un bilan patrimonial"
         secondaryHref="/bilan-patrimonial-bordeaux"
       />

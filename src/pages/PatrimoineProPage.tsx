@@ -48,7 +48,11 @@ export default function PatrimoineProPage() {
 
       {/* Simulator */}
       <section className="section-padding">
-        <div className="max-w-6xl mx-auto reveal">
+        <div className="max-w-7xl mx-auto reveal">
+          <div className="mb-10 md:mb-14 flex items-center gap-4">
+            <span className="text-[10px] tracking-[0.32em] uppercase text-foreground/55 font-medium">Simulez</span>
+            <div className="h-px flex-1 bg-foreground/10" />
+          </div>
           <PatrimoineProSimulator />
         </div>
       </section>
@@ -63,7 +67,7 @@ export default function PatrimoineProPage() {
       <PageCTA
         title="Dirigeants, parlons stratégie"
         subtitle="Un premier échange confidentiel pour analyser votre situation et identifier les arbitrages prioritaires."
-        eyebrow="Patrimoine du dirigeant"
+        eyebrow="Dirigeants & associés"
         index="05"
         secondaryText="Cas clients dirigeants"
         secondaryHref="/cas-clients"
