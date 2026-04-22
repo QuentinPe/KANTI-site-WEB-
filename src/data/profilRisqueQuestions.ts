@@ -361,8 +361,8 @@ export const RISK_QUESTIONS: RiskQuestion[] = [
 
 export interface SriProfile {
   sri: number; // 1 → 7
-  /** Score continu (1.00 → 7.00) avant arrondi */
-  sriPrecise: number;
+  /** Score continu (1.00 → 7.00) avant arrondi (calculé dynamiquement) */
+  sriPrecise?: number;
   label: string;
   shortLabel: string;
   description: string;
