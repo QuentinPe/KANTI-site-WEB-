@@ -747,7 +747,108 @@ function generatePdf(
   doc.text("un conseil personnalisé au sens AMF.", sigX, H - 38, { align: "center" });
 
   // ══════════════════════════════════════════════════════
-  // PAGE 2 — SYNTHÈSE
+  // PAGE 2 — NOTRE DÉMARCHE (storytelling éditorial)
+  // ══════════════════════════════════════════════════════
+  doc.addPage();
+  drawPageHeader("Notre démarche", "00");
+  let yS = 150;
+
+  // Citation d'ouverture
+  setText(NAVY);
+  doc.setFont(SERIF, "normal");
+  doc.setFontSize(20);
+  const opener = doc.splitTextToSize(
+    "« Investir n'est pas un pari. C'est un alignement — entre votre histoire, vos objectifs et le temps dont vous disposez. »",
+    CW - 40,
+  );
+  doc.text(opener, M, yS);
+  yS += opener.length * 24 + 8;
+  setDraw(ACCENT);
+  doc.setLineWidth(1);
+  doc.line(M, yS, M + 36, yS);
+  yS += 24;
+
+  // Paragraphe d'ouverture
+  setText(INK);
+  doc.setFont(SANS, "normal");
+  doc.setFontSize(10.5);
+  const story1 = doc.splitTextToSize(
+    "Avant de parler de produits, de fiscalité ou de performance, KANTI prend le temps de vous écouter. Ce questionnaire est la première pierre d'un dialogue : il transforme une notion abstraite — votre tolérance au risque — en un repère clair, partagé, et opposable. C'est aussi une exigence réglementaire, posée par l'Autorité des Marchés Financiers pour protéger l'épargnant.",
+    CW,
+  );
+  doc.text(story1, M, yS);
+  yS += story1.length * 14 + 22;
+
+  // 3 piliers de la démarche
+  yS = sectionLabel(yS, "Trois dimensions, une lecture cohérente");
+  const pillars = [
+    {
+      n: "I",
+      t: "Votre projet",
+      d: "Horizon, objectif principal, capacité à immobiliser une partie de votre épargne sans en compromettre votre quotidien.",
+    },
+    {
+      n: "II",
+      t: "Vos repères",
+      d: "Connaissance des classes d'actifs, expérience passée, compréhension des mécanismes de rendement et de perte.",
+    },
+    {
+      n: "III",
+      t: "Votre tempérament",
+      d: "Réaction émotionnelle face à une baisse, arbitrage instinctif entre sécurité et performance, seuil d'inconfort.",
+    },
+  ];
+  const pillarH = 92;
+  pillars.forEach((p, i) => {
+    const py = yS + i * (pillarH + 12);
+    setFill(WHITE);
+    doc.roundedRect(M, py, CW, pillarH, 8, 8, "F");
+    setDraw(HAIR);
+    doc.setLineWidth(0.5);
+    doc.roundedRect(M, py, CW, pillarH, 8, 8, "S");
+    setFill(ACCENT);
+    doc.rect(M, py, 3, pillarH, "F");
+    // Numéro romain
+    setText(ACCENT);
+    doc.setFont(SERIF, "bold");
+    doc.setFontSize(28);
+    doc.text(p.n, M + 22, py + 50);
+    // Titre
+    setText(NAVY);
+    doc.setFont(SERIF, "bold");
+    doc.setFontSize(16);
+    doc.text(p.t, M + 70, py + 34);
+    // Description
+    setText(INK);
+    doc.setFont(SANS, "normal");
+    doc.setFontSize(9.5);
+    const dlines = doc.splitTextToSize(p.d, CW - 90);
+    doc.text(dlines, M + 70, py + 54);
+  });
+  yS += pillars.length * (pillarH + 12) + 14;
+
+  // Note méthodologique
+  setFill(PAPER_DEEP);
+  doc.roundedRect(M, yS, CW, 64, 8, 8, "F");
+  setFill(GOLD);
+  doc.rect(M, yS, 3, 64, "F");
+  setText(NAVY);
+  doc.setFont(SANS, "bold");
+  doc.setFontSize(8);
+  doc.setCharSpace(1.5);
+  doc.text("MÉTHODOLOGIE", M + 18, yS + 20);
+  doc.setCharSpace(0);
+  setText(INK);
+  doc.setFont(SANS, "normal");
+  doc.setFontSize(9);
+  const meth = doc.splitTextToSize(
+    "Vos réponses sont pondérées sur l'échelle PRIIPs (1 → 7) reconnue à l'échelle européenne. Le score décimal final reflète la nuance de votre profil — au-delà du simple palier entier.",
+    CW - 40,
+  );
+  doc.text(meth, M + 18, yS + 36);
+
+  // ══════════════════════════════════════════════════════
+  // PAGE 3 — SYNTHÈSE
   // ══════════════════════════════════════════════════════
   doc.addPage();
   drawPageHeader("Synthèse de votre profil", "01");
