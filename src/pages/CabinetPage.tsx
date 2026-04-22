@@ -3,6 +3,12 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PageHero from "@/components/PageHero";
 import PageCTA from "@/components/PageCTA";
+import CinematicGallery from "@/components/CinematicGallery";
+import VirtualTourFAB from "@/components/VirtualTourFAB";
+import bureau1 from "@/assets/cabinet-bureaux-1.jpg";
+import bureau2 from "@/assets/cabinet-bureaux-2.jpg";
+import bureau3 from "@/assets/cabinet-bureaux-3.jpg";
+import bureau4 from "@/assets/cabinet-bureaux-4.jpg";
 
 export default function CabinetPage() {
   useScrollReveal();
@@ -82,6 +88,43 @@ export default function CabinetPage() {
         </div>
       </section>
 
+      {/* Cinematic immersion in our offices */}
+      <CinematicGallery
+        eyebrow="Nos bureaux à Bordeaux"
+        title="Entrez dans l'atelier patrimonial"
+        intro="Quatre espaces pensés pour la confidentialité, le travail collectif et la rencontre. Défilez pour explorer."
+        slides={[
+          {
+            image: bureau1,
+            alt: "Espace de travail collaboratif KANTI sous charpente",
+            eyebrow: "Espace collaboratif",
+            title: "Sous les charpentes, là où les idées se croisent.",
+            caption: "Plateau ouvert, lumière zénithale et phone-box pour les appels confidentiels.",
+          },
+          {
+            image: bureau2,
+            alt: "Hall d'entrée vitré du cabinet KANTI",
+            eyebrow: "Accueil",
+            title: "Une entrée discrète, un seuil qui invite à la confidence.",
+            caption: "Verrières noires, bois clair et plantes : l'élégance discrète qui caractérise nos rendez-vous.",
+          },
+          {
+            image: bureau3,
+            alt: "Salle de réunion premium avec luminaires Vertigo",
+            eyebrow: "Salle de réunion",
+            title: "Pour les décisions qui pèsent, un cadre à la hauteur.",
+            caption: "Salle de comité dédiée aux audits patrimoniaux, transmissions et réunions familiales.",
+          },
+          {
+            image: bureau4,
+            alt: "Bureau individuel avec station de travail double",
+            eyebrow: "Bureau d'analyse",
+            title: "Là où votre dossier est étudié — ligne par ligne.",
+            caption: "Stations de travail dédiées à l'ingénierie patrimoniale et à l'analyse fiscale.",
+          },
+        ]}
+      />
+
       <PageCTA
         title="Rencontrons-nous"
         subtitle="Un premier échange de 30 minutes pour parler de votre situation et voir comment nous pouvons vous aider."
@@ -91,6 +134,9 @@ export default function CabinetPage() {
         secondaryHref="/notre-methode"
       />
       <Footer />
+
+      {/* Floating 360° virtual tour CTA */}
+      <VirtualTourFAB href="https://adnfamily.com/studio/mind/adn/bureaux.html" />
     </>
   );
 }
