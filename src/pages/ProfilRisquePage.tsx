@@ -578,7 +578,10 @@ function generatePdf(
   const sriPrecise = profile.sriPrecise ?? profile.sri;
 
   // ── Photo pleine hauteur à droite (bâtiment haussmannien) ──
-  const photoW = 250;
+  // Largeur réduite pour laisser respirer le bloc éditorial à gauche
+  const photoW = 200;
+  const leftW = W - photoW;            // largeur de la zone éditoriale
+  const leftInner = leftW - M - 28;    // largeur utile pour le texte (marge droite anti-débord)
   try {
     doc.addImage(COVER_BUILDING_B64, "JPEG", W - photoW, 0, photoW, H);
   } catch {
@@ -587,13 +590,13 @@ function generatePdf(
   }
   // Voile navy translucide sur la photo
   setFill(NAVY);
-  doc.setGState(new (doc as any).GState({ opacity: 0.42 }));
+  doc.setGState(new (doc as any).GState({ opacity: 0.5 }));
   doc.rect(W - photoW, 0, photoW, H, "F");
   doc.setGState(new (doc as any).GState({ opacity: 1 }));
 
   // Fond papier à gauche
   setFill(PAPER);
-  doc.rect(0, 0, W - photoW, H, "F");
+  doc.rect(0, 0, leftW, H, "F");
 
   // Filet doré vertical entre les deux zones
   setDraw(ACCENT);
@@ -621,31 +624,31 @@ function generatePdf(
   // Eyebrow
   setText(ACCENT);
   doc.setFont(SANS, "bold");
-  doc.setFontSize(7.5);
-  doc.setCharSpace(2.2);
+  doc.setFontSize(7);
+  doc.setCharSpace(2);
   doc.text("RAPPORT CONFIDENTIEL  ·  AUTO-ÉVALUATION AMF", M, 170);
   doc.setCharSpace(0);
 
-  // Titre éditorial — Cormorant Garamond
+  // Titre éditorial — Cormorant Garamond (taille adaptée pour ne pas déborder)
   setText(NAVY);
   doc.setFont(SERIF, "normal");
-  doc.setFontSize(58);
-  doc.text("Profil", M, 240);
-  doc.text("d'investisseur.", M, 296);
+  doc.setFontSize(50);
+  doc.text("Profil", M, 232);
+  doc.text("d'investisseur.", M, 282);
 
   // Sous-titre
   doc.setFont(SANS, "normal");
-  doc.setFontSize(10.5);
+  doc.setFontSize(10);
   setText(NAVY_SOFT);
   const intro = doc.splitTextToSize(
     "Évaluation personnalisée de votre tolérance au risque, conforme aux exigences de l'Autorité des Marchés Financiers (DDA / MIF II).",
-    W - photoW - M - 24,
+    leftInner,
   );
-  doc.text(intro, M, 332);
+  doc.text(intro, M, 322);
 
   // Carte profil
-  const cardY = 410;
-  const cardW = W - photoW - M - 24;
+  const cardY = 400;
+  const cardW = leftInner;
   setFill(WHITE);
   doc.roundedRect(M, cardY, cardW, 170, 12, 12, "F");
   setDraw(HAIR);
@@ -674,8 +677,10 @@ function generatePdf(
 
   setText(NAVY);
   doc.setFont(SERIF, "normal");
-  doc.setFontSize(20);
-  doc.text(profile.label, M + 22, cardY + 122);
+  // Label peut être long — on contraint à la largeur intérieure de la carte
+  doc.setFontSize(18);
+  const labelLines = doc.splitTextToSize(profile.label, cardW - 44);
+  doc.text(labelLines[0], M + 22, cardY + 122);
   setText(ACCENT);
   doc.setFont(SANS, "bold");
   doc.setFontSize(8);
@@ -685,13 +690,17 @@ function generatePdf(
 
   setText(MUTED);
   doc.setFont(SANS, "normal");
-  doc.setFontSize(8.5);
-  doc.text(`Indicateur synthétique de risque (échelle PRIIPs 1 → 7)`, M + 22, cardY + 156);
+  doc.setFontSize(8);
+  const sriLineLines = doc.splitTextToSize(
+    "Indicateur synthétique de risque (échelle PRIIPs 1 → 7)",
+    cardW - 44,
+  );
+  doc.text(sriLineLines[0], M + 22, cardY + 156);
 
   // Méta + footer couverture
   setDraw(HAIR);
   doc.setLineWidth(0.4);
-  doc.line(M, H - 90, W - photoW - 24, H - 90);
+  doc.line(M, H - 90, M + leftInner, H - 90);
 
   setText(NAVY);
   doc.setFont(SANS, "bold");
@@ -706,12 +715,17 @@ function generatePdf(
   setText(NAVY_SOFT);
   doc.setFont(SANS, "normal");
   doc.setFontSize(7);
-  doc.text(`${KANTI_INFO.address}  ·  ${KANTI_INFO.email}`, M, H - 30);
+  // Découpe sur 2 lignes si nécessaire pour éviter tout débord
+  const contactLines = doc.splitTextToSize(
+    `${KANTI_INFO.address}  ·  ${KANTI_INFO.email}`,
+    leftInner,
+  );
+  doc.text(contactLines, M, H - 30);
 
   // ── Zone droite (sur la photo) : signature ─────────
   setText(WHITE);
   doc.setFont(SERIF, "normal");
-  doc.setFontSize(13);
+  doc.setFontSize(11);
   const sigX = W - photoW / 2;
   doc.text("« La sérénité patrimoniale", sigX, H / 2 - 20, { align: "center" });
   doc.text("se construit sur la mesure. »", sigX, H / 2, { align: "center" });
