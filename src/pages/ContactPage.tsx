@@ -44,25 +44,17 @@ const faqItems = [
   },
 ];
 
-const profils = [
-  {
-    tag: "Particulier",
-    title: "Vous êtes un particulier",
-    text: "Patrimoine financier, immobilier, préparation de la retraite, transmission familiale, optimisation fiscale.",
-    image: contactMeeting,
-  },
-  {
-    tag: "Dirigeant",
-    title: "Vous êtes chef d'entreprise",
-    text: "Rémunération, trésorerie, holding, prévoyance, cession, transmission d'entreprise, épargne salariale.",
-    image: contactAdvisors,
-  },
-  {
-    tag: "Immobilier",
-    title: "Vous avez un projet immobilier",
-    text: "Financement, investissement locatif, SCI, résidence principale, arbitrage entre achat et location.",
-    image: contactBordeaux,
-  },
+const reassurances = [
+  { icon: Clock3, title: "30 minutes", text: "Un échange court, ciblé, qui respecte votre temps." },
+  { icon: ShieldCheck, title: "Gratuit & confidentiel", text: "Sans engagement, aucune recommandation produit." },
+  { icon: Calendar, title: "Sous 24h ouvrées", text: "Nous vous rappelons rapidement pour caler le créneau." },
+  { icon: Sparkles, title: "Conseil indépendant", text: "Aucun produit maison, aucun quota commercial." },
+];
+
+const etapes = [
+  { n: "01", title: "Vous prenez contact", text: "Quelques informations sur votre situation via le formulaire." },
+  { n: "02", title: "Nous vous rappelons", text: "Un conseiller vous contacte sous 24h ouvrées pour fixer le rendez-vous." },
+  { n: "03", title: "Premier échange", text: "30 minutes en cabinet ou en visio, sans engagement." },
 ];
 
 export default function ContactPage() {
