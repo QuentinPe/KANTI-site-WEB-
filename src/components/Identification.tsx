@@ -76,7 +76,7 @@ export default function Identification() {
       <div className="sticky top-0 h-screen overflow-hidden flex flex-col">
         {/* Header bar */}
         <div className="relative z-20 pt-20 md:pt-24 pb-10 md:pb-14 px-6 md:px-12 lg:px-16">
-          <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+          <div className="max-w-6xl mx-auto">
             <div className="max-w-2xl">
               <div className="electric-line mb-4" />
               <p className="text-[11px] tracking-[0.3em] uppercase text-foreground/50 mb-4 font-medium">
@@ -97,17 +97,6 @@ export default function Identification() {
                 </span>
               </h2>
             </div>
-
-            {/* Counter */}
-            <div className="flex items-center gap-4 shrink-0">
-              <span className="font-heading text-5xl md:text-6xl font-light text-foreground tabular-nums leading-none">
-                {String(activeIndex).padStart(2, "0")}
-              </span>
-              <span className="text-foreground/30 text-sm">/</span>
-              <span className="text-foreground/40 text-sm tabular-nums">
-                {String(problematics.length).padStart(2, "0")}
-              </span>
-            </div>
           </div>
         </div>
 
@@ -121,6 +110,12 @@ export default function Identification() {
           <div className="max-w-6xl mx-auto flex items-center gap-6">
             <span className="text-[10px] tracking-[0.3em] uppercase text-foreground/40 font-medium whitespace-nowrap">
               Scrollez pour faire tourner
+            </span>
+            {/* Discreet counter */}
+            <span className="text-[10px] tracking-[0.25em] tabular-nums text-foreground/45 font-medium whitespace-nowrap">
+              {String(activeIndex).padStart(2, "0")}
+              <span className="text-foreground/25 mx-1">/</span>
+              {String(problematics.length).padStart(2, "0")}
             </span>
             <div className="relative h-px flex-1 bg-foreground/10 overflow-hidden">
               <motion.div
