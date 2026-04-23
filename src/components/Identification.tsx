@@ -170,18 +170,6 @@ function CircularCarousel({
         height: radius * 2,
       }}
     >
-      {/* Soft halo behind the wheel */}
-      <div
-        aria-hidden
-        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full"
-        style={{
-          width: radius * 2.2,
-          height: radius * 2.2,
-          background:
-            "radial-gradient(closest-side, hsl(var(--accent) / 0.08), transparent 70%)",
-        }}
-      />
-
       {/* Faint guide circle */}
       <div
         aria-hidden
