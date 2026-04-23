@@ -73,7 +73,7 @@ export default function SplitText({
         /^\s+$/.test(tok) ? (
           <span key={i}>{tok}</span>
         ) : (
-          <span key={i} style={{ display: "inline-block", overflow: "hidden" }}>
+          <span key={i} style={{ display: "inline-block", overflow: "hidden", paddingBottom: "0.15em", marginBottom: "-0.15em" }}>
             <motion.span
               variants={item}
               className={itemClassName}

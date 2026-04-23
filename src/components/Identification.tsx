@@ -67,7 +67,7 @@ export default function Identification() {
     <section
       id="problematiques"
       ref={containerRef}
-      className="relative texture-paper"
+      className="relative texture-paper mb-24 md:mb-32"
       // Tall section so we have scroll distance to translate the horizontal track
       style={{ height: reduce ? "auto" : "420vh" }}
       aria-label="Vos enjeux patrimoniaux"
@@ -86,7 +86,7 @@ export default function Identification() {
                 <SplitText text="Vous vous reconnaissez" by="word" stagger={0.07} />
                 <br />
                 <SplitText
-                  text="dans l'une de ces situations ?"
+                  text={"dans l'une de ces situations\u00A0?"}
                   by="word"
                   stagger={0.05}
                   delay={0.25}
