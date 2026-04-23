@@ -39,9 +39,9 @@ export default function HeroSticky() {
       if (video.duration && Number.isFinite(video.duration)) {
         const current = video.currentTime;
         const delta = targetTime - current;
-        // Smooth lerp toward target for fluidity
-        if (Math.abs(delta) > 0.01) {
-          video.currentTime = current + delta * 0.25;
+        // Smooth lerp toward target for fluidity (lower = smoother)
+        if (Math.abs(delta) > 0.005) {
+          video.currentTime = current + delta * 0.12;
         }
       }
       raf = requestAnimationFrame(tick);
