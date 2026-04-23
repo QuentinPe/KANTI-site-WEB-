@@ -259,7 +259,7 @@ export default function CTAFinal() {
             </aside>
           </div>
         </motion.div>
-      </ScrollVideo>
+      </div>
     </section>
   );
 }
