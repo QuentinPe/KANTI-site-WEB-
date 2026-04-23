@@ -80,7 +80,7 @@ export default function HeroSticky() {
       ref={sectionRef}
       id="hero"
       className="relative"
-      style={{ height: "350vh" }}
+      style={{ height: "550vh" }}
     >
       <div className="sticky top-0 h-screen w-full overflow-hidden flex items-center">
         {/* Scroll-driven video */}
