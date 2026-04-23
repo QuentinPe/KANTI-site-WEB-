@@ -1,6 +1,8 @@
 import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
+import SplitText from "./motion/SplitText";
+import AmbientParticles from "./motion/AmbientParticles";
 
 export default function CTAFinal() {
   const ref = useRef<HTMLElement>(null);
@@ -45,6 +47,10 @@ export default function CTAFinal() {
             "radial-gradient(ellipse at 30% 30%, hsl(210 100% 60% / 0.22) 0%, transparent 60%), radial-gradient(ellipse at 80% 70%, hsl(38 35% 60% / 0.12) 0%, transparent 60%)",
         }}
       />
+      {/* Drifting ambient particles */}
+      <div aria-hidden className="absolute inset-0 -z-10 overflow-hidden">
+        <AmbientParticles count={14} color="rgba(180, 210, 255, 0.55)" speed={0.18} />
+      </div>
 
       <div className="relative max-w-6xl mx-auto px-6 lg:px-12 py-32 md:py-40 lg:py-48 grid lg:grid-cols-12 gap-12 items-end">
         <div className="lg:col-span-7">
@@ -57,16 +63,17 @@ export default function CTAFinal() {
           >
             Premier rendez-vous · Bordeaux
           </motion.p>
-          <motion.h2
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            className="font-heading font-light tracking-tight leading-[1] text-5xl md:text-6xl lg:text-7xl xl:text-[5.25rem] mb-10 max-w-3xl"
-          >
-            Parlons de votre <br />
-            <span className="italic text-white/85">patrimoine.</span>
-          </motion.h2>
+          <h2 className="font-heading font-light tracking-tight leading-[1] text-5xl md:text-6xl lg:text-7xl xl:text-[5.25rem] mb-10 max-w-3xl">
+            <SplitText text="Parlons de votre" by="char" stagger={0.025} y={32} />
+            <br />
+            <SplitText
+              text="patrimoine."
+              by="char"
+              stagger={0.025}
+              delay={0.5}
+              itemClassName="italic text-white/85"
+            />
+          </h2>
           <motion.p
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -86,7 +93,7 @@ export default function CTAFinal() {
             <Link
               to="/contact"
               data-magnetic
-              className="group inline-flex items-center gap-3 pl-8 pr-3 py-3 rounded-full bg-white text-[hsl(var(--navy-deep))] text-sm font-medium tracking-wide reflection-sweep shadow-2xl hover:-translate-y-0.5 transition-transform duration-300"
+              className="group relative inline-flex items-center gap-3 pl-8 pr-3 py-3 rounded-full bg-white text-[hsl(var(--navy-deep))] text-sm font-medium tracking-wide reflection-sweep shadow-2xl hover:-translate-y-0.5 transition-transform duration-300 before:content-[''] before:absolute before:inset-0 before:rounded-full before:ring-2 before:ring-white/40 before:animate-[pulse_4s_ease-in-out_infinite] before:pointer-events-none"
             >
               <span>Prendre rendez-vous</span>
               <span className="w-10 h-10 rounded-full bg-[hsl(var(--navy-deep))] text-white flex items-center justify-center transition-transform duration-300 group-hover:translate-x-0.5">
