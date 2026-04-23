@@ -255,7 +255,7 @@ function CircleCard({
             }
       }
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      className={`relative glass-card rounded-[1.5rem] p-6 md:p-7 overflow-hidden w-[260px] md:w-[300px] flex flex-col transition-shadow duration-500 ${
+      className={`relative glass-card rounded-[1.75rem] p-7 md:p-9 overflow-hidden w-[300px] md:w-[360px] lg:w-[400px] flex flex-col transition-shadow duration-500 ${
         isActive ? "shadow-[0_30px_80px_-20px_hsl(var(--accent)/0.35)]" : "shadow-none"
       }`}
     >
