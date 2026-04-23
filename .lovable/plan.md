@@ -1,90 +1,64 @@
 
 
-# Plan — Niveau "Immersive Garden" appliqué à la gestion de patrimoine
+# Plan — Effet "Plâtre vivant" révélé au curseur
 
-L'objectif : pousser les sections intermédiaires (entre le hero et le CTA final, déjà forts) au même niveau cinématique. Pas de gadget — chaque effet sert le message patrimonial : précision, durée, structure.
+Inspiré de l'image : une texture sculpturale (plâtre/argile en très bas contraste) qui se révèle uniquement **autour du curseur** dans les espaces vides entre les sections de la page d'accueil. Discret, premium, organique — dans la même veine "Immersive Garden" que le reste du site.
 
-## Principes directeurs (identité IG x Kanti)
+## Concept visuel
 
-- **Scroll = narration** : chaque section raconte un chapitre, le scroll en est le réalisateur.
-- **Typographie kinétique** mais sobre : révélations mot-à-mot ou par fragments, jamais clinquantes.
-- **Profondeur** : couches de parallaxe, grain subtil, bruit lumineux, halos navy.
-- **Transitions inter-sections** : fondus orchestrés, pas de "cuts" secs.
-- **WebGL léger** uniquement là où ça compte (1 shader hero-like ré-utilisable).
-- **Curseur enrichi** : labels contextuels au survol (ex: "Découvrir" sur les cartes).
-- **Sound design** : OFF par défaut, toggle discret en bas (optionnel — phase 2).
+Une couche **fixed full-page** placée **derrière** le contenu (z-index négatif ou très bas), totalement invisible par défaut, qui ne se révèle que dans un **rayon de 240–300px autour du curseur** via un masque radial. Le contenu (cartes, sections glass) reste opaque et masque naturellement la texture — l'effet n'apparaît donc que dans les "respirations" entre les sections.
 
-## Refontes section par section
+```text
+┌─────────────────────────────┐
+│  [Section opaque — cache]   │
+│                             │
+│   ░░ texture plâtre ░░      │  ← visible uniquement
+│   ░░  (autour curseur) ░░   │     dans les zones vides
+│                             │
+│  [Section opaque — cache]   │
+└─────────────────────────────┘
+```
 
-### 1. Identification — "Vos enjeux" → **Mur de questions kinétique**
-- Remplacer la grille statique par une **grille magnétique** : chaque carte se révèle avec un délai en cascade, s'incline légèrement vers le curseur (effet 3D tilt subtil, max 4°).
-- Les numéros (01–06) deviennent **géants en filigrane** derrière chaque titre, coupés par le bord de la carte.
-- Ligne séparatrice qui se trace en SVG quand la carte entre dans le viewport.
-- Hover : carte se soulève + glow navy diffus + le mot-clé central (ex. "Optimiser") se souligne en italique.
+## Composant à créer
 
-### 2. Promesse — **Phrase qui se compose au scroll**
-- Garder le fond image parallaxe, mais transformer la phrase en **kinetic typography pilotée par le scroll** : chaque fragment ("indépendant", "globale", "dans la durée") apparaît avec un blur→sharp + déplacement vertical micro.
-- Les mots emphasés en italique reçoivent un **dégradé animé** (lumière qui balaye de gauche à droite, 1 fois).
-- Image de droite : ajouter une **distorsion WebGL très légère** (shader displacement à base de bruit) — donne l'impression d'une fenêtre vivante.
-- Citation finale qui se révèle ligne par ligne avec un ratio cinéma (clip-path).
+**`src/components/motion/PlasterReveal.tsx`**
+- `<div fixed inset-0>` avec image de texture en background (l'upload de l'utilisateur).
+- Suit la position du curseur via `mousemove` + spring (lerp doux, ~0.08) pour un déplacement organique.
+- Masque appliqué via `mask-image: radial-gradient(circle 280px at X Y, black 0%, transparent 70%)`.
+- Opacité globale max **~0.35** pour rester très discret (texture déjà claire dans l'image).
+- Désactivé sous `prefers-reduced-motion`, sur touch (`hover: none`), et < 768px (fallback : caché).
+- z-index : `-1` (derrière le contenu) ou `0` selon la stratégie d'empilement.
 
-### 3. About — **Compteurs orchestrés + portrait éditorial**
-- Garder les count-ups mais les **synchroniser** : déclenchement séquentiel (15 ans → 500+ → 98%), chaque compteur précédé d'un trait qui se trace.
-- Ajouter à droite (sous les chiffres) une **vignette image éditoriale** du cabinet avec masque circulaire qui s'ouvre au scroll.
-- Le H2 se révèle mot par mot (split text), l'italique "sur votre patrimoine" arrive 200ms plus tard avec un effet swap.
+## Intégration
 
-### 4. ExpertisesPinned — **Galerie scrollytelling enrichie**
-La structure pinned est déjà bien. On ajoute :
-- **Zoom-in cinématique** sur l'image active (échelle 1.05 → 1.0 sur 600ms au lieu de 0.42).
-- **Mask reveal** entre deux images consécutives : transition par wipe diagonal au lieu de fade.
-- Numéro géant transparent **"01/06"** en filigrane derrière la carte, qui défile en mode tachymètre.
-- Les bullets de la timeline gauche émettent un **halo bleu pulsant** quand actifs.
-- Bouton "Découvrir" : effet **magnetic + label curseur** "→ Voir".
+1. **Asset** : copier l'image fournie vers `src/assets/plaster-texture.jpg` (ou `.webp` si on optimise) — désaturée, légèrement assombrie pour éviter trop de blanc qui "explose" sur fond clair.
+2. **Index.tsx** : monter `<PlasterReveal />` une seule fois, juste après `<Header />`, en `fixed inset-0 pointer-events-none -z-0`.
+3. **Sections** : s'assurer que les sections principales gardent un `bg-background` ou `section-glass` opaque (déjà le cas) — c'est ce qui fait que la texture n'apparaît QUE dans les marges/respirations.
+4. **Variantes possibles** :
+   - **Mode A (retenu)** : texture plâtre directe (image fournie).
+   - **Mode B (alternatif)** : SVG turbulence + displacement pour un rendu encore plus discret, sans dépendance image. Garder en réserve si l'image rend trop "marqué".
 
-### 5. MethodePinned — **Timeline ascendante avec lumière volumétrique**
-Déjà très bonne. Ajouts :
-- La **ligne verticale qui se remplit** devient un **trait lumineux qui pulse** à chaque étape franchie.
-- Numéro géant ghost (déjà présent) animé : **léger flottement** (y: ±4px, 6s loop).
-- Ajouter un **halo bleu volumétrique** derrière la carte active (radial gradient animé).
-- Transition entre étapes : **morph crossfade** au lieu de exit/enter (les 2 cartes se chevauchent 200ms).
+## Réglages fins (à ajuster après preview)
 
-### 6. HomeCasClients — **Cartes "dossiers ouverts" cinématiques**
-- Refonte visuelle : chaque carte ressemble à une **fiche cliente épurée** (texture papier subtile, en-tête typé "DOSSIER N°").
-- Au scroll : les 3 cartes arrivent **en éventail** (légères rotations -2°/0°/+2° + translation Y décalée).
-- Hover : la carte se redresse à 0°, les 2 autres reculent légèrement (effet focus).
-- Ajouter un **petit chiffre clé** par carte (ex. "Économie fiscale estimée : 42 K€/an") pour ancrer la démonstration.
+| Paramètre | Valeur initiale |
+|---|---|
+| Rayon révélation | 280px |
+| Falloff (transparent à) | 70% |
+| Opacité globale | 0.32 |
+| Spring damping | 18 |
+| Spring stiffness | 90 |
+| Mix-blend-mode | `multiply` ou `soft-light` (test) |
 
-### 7. CTAFinal — **Déjà fort**, micro-ajouts
-- Garder tel quel sur le fond. Ajouter :
-- **Particules navy très subtiles** (10–15 points) qui dérivent lentement sur le visuel de fond.
-- Le H2 "Parlons de votre patrimoine" passe en **split-letter reveal** (chaque lettre 30ms decalage).
-- Le bouton blanc reçoit un **ring glow** pulsant lent (4s loop) pour attirer l'œil sans agresser.
+## Détails techniques
 
-## Briques techniques transverses (créées une fois, réutilisées partout)
+- **Performance** : `transform: translate3d` sur le masque, pas de re-render React (manipulation directe du style via ref).
+- **Accessibilité** : `aria-hidden`, désactivé en reduced-motion.
+- **Responsive** : caché sous 768px (un curseur tactile n'a pas de sens ici).
+- **z-index strategy** : la couche est en `-z-10` par rapport au `<main>`, mais le `<main>` doit avoir un `bg-background` global déjà en place. Si le body est transparent, on passe la couche en `z-0` derrière les sections opaques (à confirmer sur preview).
 
-| Brique | Fichier | Usage |
-|---|---|---|
-| `<SplitText />` | `src/components/motion/SplitText.tsx` | Reveal mot-à-mot ou lettre-à-lettre |
-| `<MagneticCard />` | `src/components/motion/MagneticCard.tsx` | Tilt 3D au survol (Identification, CasClients) |
-| `<NoiseGrain />` | `src/components/motion/NoiseGrain.tsx` | Overlay grain SVG (Promesse, Methode) |
-| `<AmbientParticles />` | `src/components/motion/AmbientParticles.tsx` | Particules dérivantes Canvas (CTAFinal) |
-| `<MaskReveal />` | `src/components/motion/MaskReveal.tsx` | Wipe transitions (Expertises, About) |
-| Hook `useMagneticCursor` | `src/hooks/useMagneticCursor.ts` | Étend `PremiumCursor` avec labels contextuels |
+## Hors scope (pour plus tard si tu valides l'effet)
 
-Performance : tout désactivé sous `prefers-reduced-motion` et au-dessous de 768px (fallback statique propre).
-
-## Phasage proposé
-
-1. **Phase 1 — Briques + Identification + Promesse** (haute valeur immédiate, sections les plus vues).
-2. **Phase 2 — About + ExpertisesPinned + MethodePinned** (cœur du parcours).
-3. **Phase 3 — HomeCasClients + polish CTAFinal** (avant-conversion).
-
-Chaque phase est livrable indépendamment et publiable.
-
-## Hors scope (à valider plus tard si tu veux)
-
-- Page-transitions globales (route morph)
-- Page de chargement signature avec compteur
-- Sound design (toggle discret)
-- Curseur custom enrichi avec labels FR ("Voir", "Lire", "Contacter")
+- Variantes par section (texture différente entre Hero et CasClients).
+- Parallaxe lente de la texture au scroll (drift vertical de 5%).
+- Couplage avec `PremiumCursor` pour un curseur qui "creuse" la matière.
 
