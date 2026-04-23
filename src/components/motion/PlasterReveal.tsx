@@ -21,9 +21,9 @@ type Props = {
  */
 export default function PlasterReveal({
   radius = 280,
-  opacity = 0.55,
+  opacity = 0.22,
   lerp = 0.08,
-  blendMode = "multiply",
+  blendMode = "overlay",
 }: Props) {
   const layerRef = useRef<HTMLDivElement>(null);
 
@@ -89,7 +89,7 @@ export default function PlasterReveal({
     <div
       ref={layerRef}
       aria-hidden
-      className="pointer-events-none fixed inset-0 z-0 transition-opacity duration-500"
+      className="pointer-events-none fixed inset-0 z-[60] transition-opacity duration-500"
       style={{
         backgroundImage: `url(${marbleTexture})`,
         backgroundSize: "720px 720px",
