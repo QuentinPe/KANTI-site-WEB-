@@ -152,9 +152,9 @@ function CircularCarousel({
   useEffect(() => {
     const update = () => {
       const w = window.innerWidth;
-      if (w < 640) setRadius(220);
-      else if (w < 1024) setRadius(320);
-      else setRadius(420);
+      if (w < 640) setRadius(260);
+      else if (w < 1024) setRadius(380);
+      else setRadius(520);
     };
     update();
     window.addEventListener("resize", update);
