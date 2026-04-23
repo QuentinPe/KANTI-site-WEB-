@@ -1,33 +1,172 @@
 import { Link } from "react-router-dom";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
 import Hero from "./Hero";
 
-const VIDEO_SRC = "/video/hero-office-dolly.mp4";
 const POSTER_SRC = "/video/hero-office-poster.jpg";
+const FRAME_COUNT = 120;
+const frameSrc = (i: number) =>
+  `/video/frames/frame-${String(i).padStart(3, "0")}.jpg`;
 
 export default function HeroSticky() {
   const sectionRef = useRef<HTMLElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const framesRef = useRef<HTMLImageElement[]>([]);
+  const currentFrameRef = useRef(0);
+  const targetFrameRef = useRef(0);
   const reduce = useReducedMotion();
   const isMobile = useIsMobile();
   const [ready, setReady] = useState(false);
+  const [loadedCount, setLoadedCount] = useState(0);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start start", "end end"],
   });
 
-  // Cinematic motion driven by scroll on the OVERLAY (not the video).
-  // This works in production — we no longer rely on seeking the video,
-  // because the Lovable CDN does not return HTTP 206 Partial Content
-  // on .mp4 files served from /public, which breaks scrub-by-currentTime.
   const titleOpacity = useTransform(scrollYProgress, [0, 0.7, 0.95], [1, 0.85, 0]);
-  const titleY = useTransform(scrollYProgress, [0, 1], reduce ? [0, 0] : [0, -80]);
-  const videoScale = useTransform(scrollYProgress, [0, 1], reduce ? [1, 1] : [1, 1.08]);
-  const videoBlur = useTransform(scrollYProgress, [0.85, 1], [0, 6]);
-  const videoFilter = useTransform(videoBlur, (b) => `blur(${b}px)`);
+  const titleY = useTransform(scrollYProgress, [0, 1], reduce ? [0, 0] : [0, -60]);
+
+  // Preload all frames as <img> elements + drive canvas from scroll
+  useEffect(() => {
+    if (isMobile || reduce) return;
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const images: HTMLImageElement[] = new Array(FRAME_COUNT);
+    let loaded = 0;
+    let firstReady = false;
+
+    const sizeCanvas = () => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      canvas.style.width = `${w}px`;
+      canvas.style.height = `${h}px`;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+
+    const drawFrame = (index: number) => {
+      const img = images[index];
+      if (!img || !img.complete || img.naturalWidth === 0) return;
+      const cw = canvas.clientWidth;
+      const ch = canvas.clientHeight;
+      // object-fit: cover
+      const ir = img.naturalWidth / img.naturalHeight;
+      const cr = cw / ch;
+      let dw = cw;
+      let dh = ch;
+      let dx = 0;
+      let dy = 0;
+      if (ir > cr) {
+        dh = ch;
+        dw = ch * ir;
+        dx = (cw - dw) / 2;
+      } else {
+        dw = cw;
+        dh = cw / ir;
+        dy = (ch - dh) / 2;
+      }
+      ctx.clearRect(0, 0, cw, ch);
+      ctx.drawImage(img, dx, dy, dw, dh);
+    };
+
+    sizeCanvas();
+    const onResize = () => {
+      sizeCanvas();
+      drawFrame(currentFrameRef.current);
+    };
+    window.addEventListener("resize", onResize);
+
+    // Prioritize the first frame, then load the rest progressively
+    const loadOne = (i: number, priority: boolean) =>
+      new Promise<void>((resolve) => {
+        const img = new Image();
+        if (priority) {
+          // hint browser
+          img.decoding = "sync";
+          (img as HTMLImageElement & { fetchPriority?: string }).fetchPriority = "high";
+        } else {
+          img.decoding = "async";
+        }
+        img.onload = () => {
+          images[i] = img;
+          loaded += 1;
+          setLoadedCount(loaded);
+          if (!firstReady && i === 0) {
+            firstReady = true;
+            setReady(true);
+            drawFrame(0);
+          }
+          resolve();
+        };
+        img.onerror = () => {
+          loaded += 1;
+          setLoadedCount(loaded);
+          resolve();
+        };
+        img.src = frameSrc(i + 1);
+      });
+
+    // Load frame 0 first (blocks "ready"), then everything else in parallel
+    (async () => {
+      await loadOne(0, true);
+      // fire-and-forget the rest
+      for (let i = 1; i < FRAME_COUNT; i++) {
+        loadOne(i, false);
+      }
+    })();
+
+    // RAF loop — lerp current frame towards target for smooth scrubbing
+    let raf = 0;
+    const tick = () => {
+      const target = targetFrameRef.current;
+      const current = currentFrameRef.current;
+      const delta = target - current;
+      if (Math.abs(delta) > 0.01) {
+        currentFrameRef.current = current + delta * 0.18;
+        const idx = Math.round(currentFrameRef.current);
+        // Find nearest available frame if the exact one isn't loaded yet
+        let drawIdx = idx;
+        if (!images[drawIdx]) {
+          for (let off = 1; off < FRAME_COUNT; off++) {
+            if (images[idx - off]) {
+              drawIdx = idx - off;
+              break;
+            }
+            if (images[idx + off]) {
+              drawIdx = idx + off;
+              break;
+            }
+          }
+        }
+        drawFrame(drawIdx);
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+
+    const unsub = scrollYProgress.on("change", (p) => {
+      targetFrameRef.current = Math.max(
+        0,
+        Math.min(FRAME_COUNT - 1, p * (FRAME_COUNT - 1))
+      );
+    });
+
+    framesRef.current = images;
+
+    return () => {
+      cancelAnimationFrame(raf);
+      unsub();
+      window.removeEventListener("resize", onResize);
+    };
+  }, [isMobile, reduce, scrollYProgress]);
 
   // Fallback: mobile or reduced-motion → original static Hero
   if (isMobile || reduce) {
@@ -39,28 +178,17 @@ export default function HeroSticky() {
       ref={sectionRef}
       id="hero"
       className="relative"
-      style={{ height: "350vh" }}
+      style={{ height: "550vh" }}
     >
       <div className="sticky top-0 h-screen w-full overflow-hidden flex items-center">
-        {/* Auto-playing looped video — works on every CDN (no Range requests needed) */}
-        <motion.video
-          ref={videoRef}
-          src={VIDEO_SRC}
-          poster={POSTER_SRC}
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
-          disablePictureInPicture
-          className="absolute inset-0 w-full h-full object-cover will-change-transform"
-          style={{ filter: videoFilter, scale: videoScale }}
+        {/* Scroll-driven canvas — frames are individual JPEGs, works on any CDN */}
+        <canvas
+          ref={canvasRef}
+          className="absolute inset-0 w-full h-full"
           aria-hidden="true"
-          onLoadedData={() => setReady(true)}
-          onCanPlay={() => setReady(true)}
         />
 
-        {/* Poster fallback while video buffers */}
+        {/* Poster fallback while the first frame loads */}
         {!ready && (
           <div
             className="absolute inset-0 bg-cover bg-center"
