@@ -1,6 +1,6 @@
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import Header from "@/components/Header";
-import Hero from "@/components/Hero";
+import HeroSticky from "@/components/HeroSticky";
 import Seo, { localBusinessJsonLd, organizationJsonLd } from "@/components/Seo";
 import Identification from "@/components/Identification";
 import Promesse from "@/components/Promesse";
@@ -30,7 +30,7 @@ const Index = () => {
       <ScrollProgressRail />
       <Header />
       <main id="main">
-        <Hero />
+        <HeroSticky />
       <Identification />
       <Promesse />
       <About />
