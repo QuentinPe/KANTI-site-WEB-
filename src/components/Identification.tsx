@@ -120,7 +120,6 @@ export default function Identification() {
                 key={p.n}
                 item={p}
                 index={i}
-                total={problematics.length}
                 reduce={!!reduce}
               />
             ))}
