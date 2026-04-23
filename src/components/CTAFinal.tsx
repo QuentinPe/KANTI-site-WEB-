@@ -1,35 +1,170 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
+import { useIsMobile } from "@/hooks/use-mobile";
 import SplitText from "./motion/SplitText";
 import AmbientParticles from "./motion/AmbientParticles";
-import ctaVideoAsset from "@/assets/cta-mountain-lake.mp4.asset.json";
-import ctaPoster from "@/assets/cta-mountain-lake.jpg";
-import ScrollVideo from "./motion/ScrollVideo";
+
+const POSTER_SRC = "/video/cta-mountain-poster.jpg";
+const FRAME_COUNT = 121;
+const pickFrameDir = () => {
+  if (typeof window === "undefined") return "cta-frames-1280";
+  const dpr = window.devicePixelRatio || 1;
+  const effectiveWidth = window.innerWidth * dpr;
+  return effectiveWidth >= 1600 ? "cta-frames-2560" : "cta-frames-1280";
+};
+const frameSrc = (dir: string, i: number) =>
+  `/video/${dir}/frame-${String(i).padStart(3, "0")}.webp`;
 
 export default function CTAFinal() {
   const ref = useRef<HTMLElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const currentFrameRef = useRef(0);
+  const targetFrameRef = useRef(0);
+  const reduce = useReducedMotion();
+  const isMobile = useIsMobile();
+  const [ready, setReady] = useState(false);
+
   const { scrollYProgress } = useScroll({
     target: ref,
-    offset: ["start end", "end start"],
+    offset: ["start start", "end end"],
   });
   const overlayOpacity = useTransform(scrollYProgress, [0, 0.5, 1], [0.55, 0.45, 0.85]);
-  // Reveal text gradually as user scrolls through the pinned video
   const contentOpacity = useTransform(scrollYProgress, [0.15, 0.4, 0.85, 1], [0, 1, 1, 0.6]);
   const contentY = useTransform(scrollYProgress, [0.15, 0.4], [40, 0]);
+
+  // Preload frames as <img> elements + drive a canvas from scroll
+  useEffect(() => {
+    if (isMobile || reduce) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const images: HTMLImageElement[] = new Array(FRAME_COUNT);
+    let firstReady = false;
+    const dir = pickFrameDir();
+
+    const sizeCanvas = () => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      canvas.style.width = `${w}px`;
+      canvas.style.height = `${h}px`;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+
+    const drawFrame = (index: number) => {
+      const img = images[index];
+      if (!img || !img.complete || img.naturalWidth === 0) return;
+      const cw = canvas.clientWidth;
+      const ch = canvas.clientHeight;
+      const ir = img.naturalWidth / img.naturalHeight;
+      const cr = cw / ch;
+      let dw = cw;
+      let dh = ch;
+      let dx = 0;
+      let dy = 0;
+      if (ir > cr) {
+        dh = ch;
+        dw = ch * ir;
+        dx = (cw - dw) / 2;
+      } else {
+        dw = cw;
+        dh = cw / ir;
+        dy = (ch - dh) / 2;
+      }
+      ctx.clearRect(0, 0, cw, ch);
+      ctx.drawImage(img, dx, dy, dw, dh);
+    };
+
+    sizeCanvas();
+    const onResize = () => {
+      sizeCanvas();
+      drawFrame(currentFrameRef.current);
+    };
+    window.addEventListener("resize", onResize);
+
+    const loadOne = (i: number, priority: boolean) =>
+      new Promise<void>((resolve) => {
+        const img = new Image();
+        if (priority) {
+          img.decoding = "sync";
+          (img as HTMLImageElement & { fetchPriority?: string }).fetchPriority = "high";
+        } else {
+          img.decoding = "async";
+        }
+        img.onload = () => {
+          images[i] = img;
+          if (!firstReady && i === 0) {
+            firstReady = true;
+            setReady(true);
+            drawFrame(0);
+          }
+          resolve();
+        };
+        img.onerror = () => resolve();
+        img.src = frameSrc(dir, i + 1);
+      });
+
+    (async () => {
+      await loadOne(0, true);
+      for (let i = 1; i < FRAME_COUNT; i++) loadOne(i, false);
+    })();
+
+    let raf = 0;
+    const tick = () => {
+      const target = targetFrameRef.current;
+      const current = currentFrameRef.current;
+      const delta = target - current;
+      if (Math.abs(delta) > 0.01) {
+        currentFrameRef.current = current + delta * 0.18;
+        const idx = Math.round(currentFrameRef.current);
+        let drawIdx = idx;
+        if (!images[drawIdx]) {
+          for (let off = 1; off < FRAME_COUNT; off++) {
+            if (images[idx - off]) { drawIdx = idx - off; break; }
+            if (images[idx + off]) { drawIdx = idx + off; break; }
+          }
+        }
+        drawFrame(drawIdx);
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+
+    const unsub = scrollYProgress.on("change", (p) => {
+      targetFrameRef.current = Math.max(0, Math.min(FRAME_COUNT - 1, p * (FRAME_COUNT - 1)));
+    });
+
+    return () => {
+      cancelAnimationFrame(raf);
+      unsub();
+      window.removeEventListener("resize", onResize);
+    };
+  }, [isMobile, reduce, scrollYProgress]);
 
   return (
     <section
       id="contact"
       ref={ref}
       className="relative isolate text-white"
+      style={{ height: isMobile || reduce ? undefined : "320vh" }}
     >
-      {/* Pinned scroll-driven video background — frame-by-frame parallax */}
-      <ScrollVideo
-        src={ctaVideoAsset.url}
-        poster={ctaPoster}
-        className="h-[220vh]"
-      >
+      <div className="sticky top-0 h-screen w-full overflow-hidden">
+        <canvas
+          ref={canvasRef}
+          className="absolute inset-0 w-full h-full"
+          aria-hidden="true"
+        />
+        {!ready && (
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url(${POSTER_SRC})` }}
+          />
+        )}
         {/* Dark gradient overlay */}
         <motion.div
           aria-hidden
