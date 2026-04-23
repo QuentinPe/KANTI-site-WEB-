@@ -1,5 +1,7 @@
 import { useRef } from "react";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
+import MagneticCard from "./motion/MagneticCard";
+import SplitText from "./motion/SplitText";
 
 const problematics = [
   {
@@ -44,8 +46,15 @@ export default function Identification() {
             Vos enjeux
           </p>
           <h2 className="text-4xl md:text-6xl font-heading font-light text-foreground mb-6 leading-[1.1] tracking-tight">
-            Vous vous reconnaissez<br />
-            <span className="italic text-foreground/70">dans l'une de ces situations ?</span>
+            <SplitText text="Vous vous reconnaissez" by="word" stagger={0.07} />
+            <br />
+            <SplitText
+              text="dans l'une de ces situations ?"
+              by="word"
+              stagger={0.05}
+              delay={0.25}
+              itemClassName="italic text-foreground/70"
+            />
           </h2>
           <p className="text-foreground/60 text-lg leading-relaxed font-light">
             Chaque parcours patrimonial commence par une question concrète. Nous partons toujours de la vôtre.
@@ -83,20 +92,61 @@ function ProblemCard({
     <motion.article
       ref={ref}
       style={{ y, opacity, transitionDelay: `${index * 40}ms` }}
-      className="group glass-card rounded-[1.5rem] p-7 md:p-8 reflection-sweep relative overflow-hidden hover:-translate-y-1 transition-transform duration-500"
+      className=""
     >
-      <div className="flex items-start justify-between mb-8">
-        <span className="text-[10px] font-medium tracking-[0.3em] uppercase text-foreground/35">
+      <MagneticCard
+        intensity={4}
+        glow="var(--accent)"
+        className="group glass-card rounded-[1.5rem] p-7 md:p-8 reflection-sweep relative overflow-hidden transition-shadow duration-500 hover:shadow-[0_30px_80px_-20px_hsl(var(--accent)/0.25)]"
+      >
+        {/* Ghost number — large, in background, clipped by card */}
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -bottom-6 -right-2 font-heading font-light leading-none select-none text-[8rem] md:text-[10rem] text-foreground/[0.04] tracking-tighter"
+        >
           {item.n}
         </span>
-        <span className="w-8 h-[1px] bg-foreground/20 mt-2 transition-all duration-500 group-hover:w-12 group-hover:bg-[hsl(var(--accent))]" />
-      </div>
-      <h3 className="font-heading text-2xl md:text-[1.7rem] font-light text-foreground tracking-tight mb-4 leading-[1.2]">
-        {item.title}
-      </h3>
-      <p className="text-foreground/60 text-[15px] leading-relaxed font-light">
-        {item.line}
-      </p>
+
+        <div className="relative flex items-start justify-between mb-8">
+          <span className="text-[10px] font-medium tracking-[0.3em] uppercase text-foreground/35">
+            {item.n}
+          </span>
+          {/* SVG line that traces in on view */}
+          <svg
+            className="mt-2"
+            width="48"
+            height="2"
+            viewBox="0 0 48 2"
+            fill="none"
+            aria-hidden
+          >
+            <motion.line
+              x1="0"
+              y1="1"
+              x2="48"
+              y2="1"
+              stroke="currentColor"
+              strokeWidth="1"
+              className="text-foreground/25 group-hover:text-[hsl(var(--accent))] transition-colors duration-500"
+              initial={{ pathLength: 0 }}
+              whileInView={{ pathLength: 1 }}
+              viewport={{ once: true, margin: "-10%" }}
+              transition={{ duration: 0.9, delay: 0.2 + index * 0.05, ease: [0.22, 1, 0.36, 1] }}
+            />
+          </svg>
+        </div>
+        <h3 className="relative font-heading text-2xl md:text-[1.7rem] font-light text-foreground tracking-tight mb-4 leading-[1.2]">
+          <span className="group-hover:[&>em]:not-italic">
+            <span className="italic font-normal text-foreground/95">
+              {item.title.split(" ")[0]}
+            </span>
+            <span> {item.title.split(" ").slice(1).join(" ")}</span>
+          </span>
+        </h3>
+        <p className="relative text-foreground/60 text-[15px] leading-relaxed font-light">
+          {item.line}
+        </p>
+      </MagneticCard>
     </motion.article>
   );
 }
