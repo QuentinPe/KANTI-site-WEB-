@@ -168,9 +168,9 @@ function CircularCarousel({
     <div
       className="absolute left-1/2 -translate-x-1/2 pointer-events-none"
       style={{
-        // Lift the circle up: top edge sits above the stage's vertical center,
-        // so the active card lands higher in the viewport.
-        top: "38%",
+        // Position so active card (top of wheel) sits comfortably below the title
+        // without being clipped by the sticky header.
+        top: "55%",
         width: radius * 2,
         height: radius * 2,
       }}
