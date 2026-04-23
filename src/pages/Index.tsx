@@ -16,7 +16,6 @@ import HomeFAQ from "@/components/HomeFAQ";
 import CTAFinal from "@/components/CTAFinal";
 import Footer from "@/components/Footer";
 import ScrollProgressRail from "@/components/ScrollProgressRail";
-import PlasterReveal from "@/components/motion/PlasterReveal";
 
 const Index = () => {
   useScrollReveal();
@@ -29,7 +28,6 @@ const Index = () => {
         jsonLd={[organizationJsonLd, localBusinessJsonLd]}
       />
       <ScrollProgressRail />
-      <PlasterReveal />
       <Header />
       <main id="main">
         <HeroSticky />
