@@ -67,7 +67,7 @@ export default function Identification() {
     <section
       id="problematiques"
       ref={containerRef}
-      className="relative texture-paper"
+      className="relative texture-paper mb-24 md:mb-32"
       // Tall section so we have scroll distance to translate the horizontal track
       style={{ height: reduce ? "auto" : "420vh" }}
       aria-label="Vos enjeux patrimoniaux"
