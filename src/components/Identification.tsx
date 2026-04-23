@@ -52,7 +52,7 @@ export default function Identification() {
 
   // Total rotation across the scroll (one full turn through the 6 cards)
   const rotationRaw = useTransform(scrollYProgress, [0, 1], reduce ? [0, 0] : [0, 360]);
-  const rotation = useSpring(rotationRaw, { damping: 30, stiffness: 80, mass: 0.5 });
+  const rotation = useSpring(rotationRaw, { damping: 50, stiffness: 35, mass: 1.2 });
 
   // Active index synced with rotation
   const [activeIndex, setActiveIndex] = useState(1);
