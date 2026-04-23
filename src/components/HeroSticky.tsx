@@ -10,7 +10,6 @@ const POSTER_SRC = "/video/hero-office-poster.jpg";
 export default function HeroSticky() {
   const sectionRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const orbRef = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion();
   const isMobile = useIsMobile();
   const [ready, setReady] = useState(false);
@@ -70,18 +69,6 @@ export default function HeroSticky() {
       video.removeEventListener("canplaythrough", onReady);
     };
   }, [isMobile, reduce, scrollYProgress]);
-
-  // Cursor-tracked reflection (preserved from Hero)
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (!orbRef.current) return;
-      const x = (e.clientX / window.innerWidth) * 100;
-      const y = (e.clientY / window.innerHeight) * 100;
-      orbRef.current.style.background = `radial-gradient(circle at ${x}% ${y}%, hsl(210 100% 60% / 0.18) 0%, transparent 50%)`;
-    };
-    window.addEventListener("mousemove", handler);
-    return () => window.removeEventListener("mousemove", handler);
-  }, []);
 
   // Fallback: mobile or reduced-motion → original static Hero
   if (isMobile || reduce) {
