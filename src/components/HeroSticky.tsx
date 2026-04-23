@@ -130,6 +130,21 @@ export default function HeroSticky() {
         {/* Cursor-tracked light */}
         <div ref={orbRef} className="absolute inset-0 pointer-events-none transition-all duration-700" />
 
+        {/* Subtle blurred veil behind the editorial copy for legibility */}
+        <div
+          className="absolute inset-y-0 left-0 w-full md:w-2/3 pointer-events-none"
+          style={{
+            background:
+              "linear-gradient(90deg, hsl(224 60% 7% / 0.55) 0%, hsl(224 60% 7% / 0.35) 55%, transparent 100%)",
+            backdropFilter: "blur(4px)",
+            WebkitBackdropFilter: "blur(4px)",
+            maskImage:
+              "linear-gradient(90deg, black 0%, black 55%, transparent 100%)",
+            WebkitMaskImage:
+              "linear-gradient(90deg, black 0%, black 55%, transparent 100%)",
+          }}
+        />
+
         {/* Floating ambient orbs */}
         <div
           className="absolute top-[15%] right-[10%] w-[400px] h-[400px] rounded-full pointer-events-none float-soft"
