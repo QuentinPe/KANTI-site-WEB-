@@ -23,13 +23,12 @@ export default function CTAFinal() {
       id="contact"
       ref={ref}
       className="relative isolate text-white"
-      style={{ minHeight: "260vh" }}
     >
       {/* Pinned scroll-driven video background — frame-by-frame parallax */}
       <ScrollVideo
         src={ctaVideoAsset.url}
         poster={ctaPoster}
-        className="absolute inset-0"
+        className="h-[220vh]"
       >
         {/* Dark gradient overlay */}
         <motion.div
