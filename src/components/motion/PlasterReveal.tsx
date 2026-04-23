@@ -20,8 +20,8 @@ type Props = {
  * Disabled on touch devices, sub-768px viewports, and prefers-reduced-motion.
  */
 export default function PlasterReveal({
-  radius = 280,
-  opacity = 0.22,
+  radius = 380,
+  opacity = 0.55,
   lerp = 0.08,
   blendMode = "overlay",
 }: Props) {
