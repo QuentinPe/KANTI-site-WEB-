@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
@@ -8,6 +8,7 @@ import { useLenis } from "@/hooks/useLenis";
 import PremiumCursor from "@/components/PremiumCursor";
 import CookieBanner from "@/components/CookieBanner";
 import SkipToContent from "@/components/SkipToContent";
+import PlasterReveal from "@/components/motion/PlasterReveal";
 import Index from "./pages/Index.tsx";
 import CabinetPage from "./pages/CabinetPage.tsx";
 import GestionPatrimonialePage from "./pages/GestionPatrimonialePage.tsx";
@@ -35,6 +36,28 @@ import ProfilRisquePage from "./pages/ProfilRisquePage.tsx";
 
 const queryClient = new QueryClient();
 
+/** Routes considérées comme "pages principales" (effet marbre actif).
+ *  Les sous-pages (produits, simulateurs, légales, merci, etc.) en sont exclues. */
+const MARBLE_ROUTES = new Set([
+  "/",
+  "/cabinet",
+  "/gestion-patrimoniale",
+  "/fiscalite",
+  "/patrimoine-professionnel",
+  "/financement",
+  "/actualites",
+  "/contact",
+  "/notre-methode",
+  "/cas-clients",
+  "/faq-patrimoniale",
+]);
+
+const MarbleOnMainRoutes = () => {
+  const { pathname } = useLocation();
+  if (!MARBLE_ROUTES.has(pathname)) return null;
+  return <PlasterReveal />;
+};
+
 const AppShell = () => {
   useLenis();
   return (
@@ -44,6 +67,7 @@ const AppShell = () => {
       <Sonner />
       <PremiumCursor />
       <BrowserRouter>
+        <MarbleOnMainRoutes />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/cabinet" element={<CabinetPage />} />
