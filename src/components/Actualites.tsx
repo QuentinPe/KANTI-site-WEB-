@@ -86,32 +86,32 @@ export default function Actualites() {
             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
             className="lg:col-span-7 group relative rounded-[2rem] overflow-hidden glass-dark cursor-pointer"
           >
-            <div className="relative aspect-[16/10] lg:aspect-[16/11] overflow-hidden">
+            <div className="relative aspect-[16/10] overflow-hidden">
               <div
                 className="absolute inset-0 bg-cover bg-center transition-transform duration-[1100ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.06]"
                 style={{ backgroundImage: `url(${featured.image})` }}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[hsl(var(--navy-deep))]/95 via-[hsl(var(--navy-deep))]/40 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[hsl(var(--navy-deep))]/70 via-[hsl(var(--navy-deep))]/15 to-transparent" />
               <span className="absolute top-6 left-6 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/15 backdrop-blur-md text-[10px] tracking-[0.3em] uppercase text-white font-medium">
                 À la une · {featured.tag}
               </span>
-              <div className="absolute bottom-0 inset-x-0 p-8 lg:p-10">
-                <p className="text-[10px] tracking-[0.3em] uppercase text-white/60 mb-4 font-medium">
-                  {featured.date} · {featured.readingTime}
-                </p>
-                <h3 className="font-heading text-2xl md:text-3xl lg:text-4xl font-light text-white mb-4 leading-[1.1] tracking-tight max-w-2xl group-hover:text-[hsl(var(--electric-soft))] transition-colors duration-500">
-                  {featured.title}
-                </h3>
-                <p className="text-white/70 text-[15px] leading-relaxed font-light max-w-2xl mb-5">
-                  {featured.excerpt}
-                </p>
-                <span className="inline-flex items-center gap-2 text-sm text-white tracking-wide">
-                  Lire l'analyse
-                  <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                  </svg>
-                </span>
-              </div>
+            </div>
+            <div className="p-8 lg:p-10">
+              <p className="text-[10px] tracking-[0.3em] uppercase text-white/60 mb-4 font-medium">
+                {featured.date} · {featured.readingTime}
+              </p>
+              <h3 className="font-heading text-2xl md:text-3xl lg:text-4xl font-light text-white mb-4 leading-[1.1] tracking-tight max-w-2xl group-hover:text-[hsl(var(--electric-soft))] transition-colors duration-500">
+                {featured.title}
+              </h3>
+              <p className="text-white/70 text-[15px] leading-relaxed font-light max-w-2xl mb-5">
+                {featured.excerpt}
+              </p>
+              <span className="inline-flex items-center gap-2 text-sm text-white tracking-wide">
+                Lire l'analyse
+                <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                </svg>
+              </span>
             </div>
           </motion.article>
 
