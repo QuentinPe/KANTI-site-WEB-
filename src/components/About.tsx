@@ -1,7 +1,10 @@
 import { Link } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
+import SplitText from "./motion/SplitText";
+import MaskReveal from "./motion/MaskReveal";
 
-function useCountUp(target: number, suffix = "", duration = 2000) {
+function useCountUp(target: number, suffix = "", duration = 2000, delay = 0) {
   const [value, setValue] = useState("0");
   const ref = useRef<HTMLDivElement>(null);
   const hasAnimated = useRef(false);
@@ -13,9 +16,13 @@ function useCountUp(target: number, suffix = "", duration = 2000) {
       ([entry]) => {
         if (entry.isIntersecting && !hasAnimated.current) {
           hasAnimated.current = true;
-          const start = performance.now();
+          const startAt = performance.now() + delay;
           const animate = (now: number) => {
-            const progress = Math.min((now - start) / duration, 1);
+            if (now < startAt) {
+              requestAnimationFrame(animate);
+              return;
+            }
+            const progress = Math.min((now - startAt) / duration, 1);
             const eased = 1 - Math.pow(1 - progress, 3);
             const current = Math.round(eased * target);
             setValue(current + suffix);
@@ -28,15 +35,19 @@ function useCountUp(target: number, suffix = "", duration = 2000) {
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, [target, suffix, duration]);
+  }, [target, suffix, duration, delay]);
 
   return { ref, value };
 }
 
+const EDITORIAL_IMAGE =
+  "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80";
+
 export default function About() {
-  const years = useCountUp(15, " ans");
-  const clients = useCountUp(500, "+");
-  const fidelity = useCountUp(98, " %");
+  const reduce = useReducedMotion();
+  const years = useCountUp(15, " ans", 1800, 0);
+  const clients = useCountUp(500, "+", 2000, 350);
+  const fidelity = useCountUp(98, " %", 1800, 700);
 
   return (
     <section id="about" className="section-padding texture-paper relative overflow-hidden">
@@ -48,8 +59,15 @@ export default function About() {
               Le cabinet
             </p>
             <h2 className="text-4xl md:text-5xl font-heading font-light text-foreground leading-[1.1] mb-8 tracking-tight">
-              Un regard global<br />
-              <span className="italic text-foreground/70">sur votre patrimoine</span>
+              <SplitText text="Un regard global" by="word" stagger={0.07} />
+              <br />
+              <SplitText
+                text="sur votre patrimoine"
+                by="word"
+                stagger={0.05}
+                delay={0.25}
+                itemClassName="italic text-foreground/70"
+              />
             </h2>
             <p className="text-foreground/65 leading-relaxed mb-5 text-[17px] font-light">
               La plupart des conseils patrimoniaux partent d'un produit. Chez KANTI, nous partons de vous : votre situation familiale, vos revenus, votre fiscalité, vos projets, vos inquiétudes. Ensuite seulement, nous cherchons les bonnes réponses.
@@ -68,38 +86,76 @@ export default function About() {
             </Link>
           </div>
 
-          <div className="lg:col-span-2 reveal reveal-delay-2">
-            <div className="glass-float p-8 md:p-10 space-y-8">
-              <div ref={years.ref}>
-                <p className="text-4xl font-heading font-light text-foreground tracking-tight">
-                  {years.value}
-                </p>
-                <p className="text-sm text-foreground/55 mt-1 font-light">
-                  d'exercice à Bordeaux
-                </p>
-              </div>
+          <div className="lg:col-span-2 reveal reveal-delay-2 space-y-8">
+            <div className="glass-float p-8 md:p-10 space-y-8 relative overflow-hidden">
+              <Stat
+                refEl={years.ref}
+                value={years.value}
+                label="d'exercice à Bordeaux"
+                delay={0}
+                reduce={!!reduce}
+              />
               <div className="separator-fine" />
-              <div ref={clients.ref}>
-                <p className="text-4xl font-heading font-light text-foreground tracking-tight">
-                  {clients.value}
-                </p>
-                <p className="text-sm text-foreground/55 mt-1 font-light">
-                  familles et dirigeants accompagnés
-                </p>
-              </div>
+              <Stat
+                refEl={clients.ref}
+                value={clients.value}
+                label="familles et dirigeants accompagnés"
+                delay={0.35}
+                reduce={!!reduce}
+              />
               <div className="separator-fine" />
-              <div ref={fidelity.ref}>
-                <p className="text-4xl font-heading font-light text-foreground tracking-tight">
-                  {fidelity.value}
-                </p>
-                <p className="text-sm text-foreground/55 mt-1 font-light">
-                  de clients fidèles chaque année
-                </p>
-              </div>
+              <Stat
+                refEl={fidelity.ref}
+                value={fidelity.value}
+                label="de clients fidèles chaque année"
+                delay={0.7}
+                reduce={!!reduce}
+              />
             </div>
+
+            {/* Editorial vignette — circular mask reveal */}
+            <MaskReveal direction="up" duration={1.3} delay={0.5} className="relative">
+              <div
+                className="aspect-[4/5] rounded-[1.75rem] bg-cover bg-center shadow-[0_30px_80px_-20px_hsl(var(--navy)/0.25)]"
+                style={{ backgroundImage: `url(${EDITORIAL_IMAGE})` }}
+                aria-hidden
+              />
+            </MaskReveal>
           </div>
         </div>
       </div>
     </section>
+  );
+}
+
+function Stat({
+  refEl,
+  value,
+  label,
+  delay,
+  reduce,
+}: {
+  refEl: React.RefObject<HTMLDivElement>;
+  value: string;
+  label: string;
+  delay: number;
+  reduce: boolean;
+}) {
+  return (
+    <div ref={refEl} className="relative pl-5">
+      {/* Traced vertical line accent */}
+      <motion.span
+        aria-hidden
+        className="absolute left-0 top-1 bottom-1 w-px bg-[hsl(var(--accent))] origin-top"
+        initial={{ scaleY: reduce ? 1 : 0 }}
+        whileInView={{ scaleY: 1 }}
+        viewport={{ once: true, margin: "-20%" }}
+        transition={{ duration: 0.9, delay, ease: [0.22, 1, 0.36, 1] }}
+      />
+      <p className="text-4xl font-heading font-light text-foreground tracking-tight">
+        {value}
+      </p>
+      <p className="text-sm text-foreground/55 mt-1 font-light">{label}</p>
+    </div>
   );
 }

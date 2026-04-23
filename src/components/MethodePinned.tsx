@@ -2,6 +2,7 @@ import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { usePinnedSectionProgress } from "@/hooks/usePinnedSectionProgress";
+import SplitText from "./motion/SplitText";
 
 const steps = [
   {
@@ -118,8 +119,14 @@ export default function MethodePinned() {
               <div className="electric-line mb-5" style={{ background: "linear-gradient(90deg, hsl(210 100% 70%), hsl(210 100% 70% / 0.2))" }} />
               <p className="text-[11px] tracking-[0.3em] uppercase text-white/50 mb-5 font-medium">Méthode</p>
               <h2 className="text-5xl lg:text-6xl font-heading font-light mb-8 tracking-tight leading-[1.05]">
-                Comment nous<br />
-                <span className="italic text-white/75">travaillons</span>
+                <SplitText text="Comment nous" by="word" stagger={0.07} />
+                <br />
+                <SplitText
+                  text="travaillons"
+                  by="word"
+                  delay={0.3}
+                  itemClassName="italic text-white/75"
+                />
               </h2>
               <p className="text-white/60 text-base lg:text-lg font-light max-w-md leading-relaxed mb-10">
                 Pas de formule standard, mais un processus clair, reproductible, qui respecte votre temps et vos priorités.
@@ -131,7 +138,13 @@ export default function MethodePinned() {
                   <motion.div
                     animate={{ height: `${progress * 100}%` }}
                     transition={{ duration: 0.18, ease: "linear" }}
-                    className="w-full bg-gradient-to-b from-[hsl(var(--electric-soft))] via-[hsl(var(--electric))] to-[hsl(var(--electric))/0.4]"
+                    className="w-full bg-gradient-to-b from-[hsl(var(--electric-soft))] via-[hsl(var(--electric))] to-[hsl(var(--electric))/0.4] shadow-[0_0_12px_hsl(var(--electric)/0.7)]"
+                  />
+                  {/* Pulsing glow at the leading tip */}
+                  <motion.div
+                    animate={{ top: `${progress * 100}%` }}
+                    transition={{ duration: 0.18, ease: "linear" }}
+                    className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-[hsl(var(--electric-soft))] animate-[pulse_2s_ease-in-out_infinite] shadow-[0_0_18px_4px_hsl(var(--electric)/0.7)]"
                   />
                 </div>
                 <ol className="space-y-3.5">
@@ -160,7 +173,21 @@ export default function MethodePinned() {
 
             {/* Right : active step card with editorial image + text */}
             <div className="col-span-7 relative h-[540px]">
-              <AnimatePresence mode="wait">
+              {/* Volumetric halo behind active card */}
+              <motion.div
+                key={`halo-${activeStep.number}`}
+                aria-hidden
+                className="absolute -inset-12 pointer-events-none"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.8 }}
+                style={{
+                  background:
+                    "radial-gradient(ellipse at center, hsl(210 100% 60% / 0.18) 0%, transparent 60%)",
+                  filter: "blur(40px)",
+                }}
+              />
+              <AnimatePresence mode="popLayout">
                 <StepCard key={activeStep.number} step={activeStep} index={activeIndex} />
               </AnimatePresence>
             </div>
@@ -208,20 +235,20 @@ function StepCard({
 
   return (
     <motion.article
-      initial={reduce ? { opacity: 0, y: 0, scale: 1 } : { opacity: 0, y: 36, scale: 0.98 }}
+      initial={reduce ? { opacity: 0 } : { opacity: 0, y: 24, scale: 0.985 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={reduce ? { opacity: 0, y: 0, scale: 1 } : { opacity: 0, y: -24, scale: 0.985 }}
-      transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+      exit={reduce ? { opacity: 0 } : { opacity: 0, y: -16, scale: 0.99 }}
+      transition={{ duration: 0.62, ease: [0.22, 1, 0.36, 1] }}
       style={{ zIndex: index }}
       className="absolute inset-0 glass-dark rounded-[2rem] overflow-hidden flex flex-col"
     >
       {/* Editorial image */}
       <div className="relative h-[55%] overflow-hidden">
         <motion.div
-          initial={reduce ? { scale: 1 } : { scale: 1.08 }}
+          initial={reduce ? { scale: 1 } : { scale: 1.12 }}
           animate={{ scale: 1 }}
-          exit={reduce ? { scale: 1 } : { scale: 1.03 }}
-          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+          exit={reduce ? { scale: 1 } : { scale: 1.04 }}
+          transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
           style={{ backgroundImage: `url(${step.image})` }}
           className="absolute inset-0 bg-cover bg-center will-change-transform"
         />
@@ -236,14 +263,16 @@ function StepCard({
 
       {/* Text */}
       <div className="relative z-10 p-8 lg:p-10 flex-1 flex flex-col justify-center">
-        {/* Giant ghost number */}
-        <span
+        {/* Giant ghost number — gentle floating */}
+        <motion.span
           aria-hidden
-          className="absolute -top-10 -right-2 font-heading font-light text-white/[0.04] select-none pointer-events-none leading-none"
+          animate={reduce ? {} : { y: [0, -4, 0, 4, 0] }}
+          transition={{ duration: 6, ease: "easeInOut", repeat: Infinity }}
+          className="absolute -top-10 -right-2 font-heading font-light text-white/[0.05] select-none pointer-events-none leading-none"
           style={{ fontSize: "clamp(8rem, 16vw, 16rem)" }}
         >
           {step.number}
-        </span>
+        </motion.span>
         <h3 className="font-heading text-3xl lg:text-[2.4rem] font-light text-white tracking-tight leading-[1.1] mb-4 max-w-lg">
           {step.title}
         </h3>

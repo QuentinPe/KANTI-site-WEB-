@@ -2,6 +2,7 @@ import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { usePinnedSectionProgress } from "@/hooks/usePinnedSectionProgress";
+import SplitText from "./motion/SplitText";
 
 const expertises = [
   {
@@ -142,8 +143,14 @@ function ExpertisesPinnedDesktop() {
                 Nos expertises
               </p>
               <h2 className="text-4xl lg:text-5xl xl:text-6xl font-heading font-light text-foreground mb-6 leading-[1.05] tracking-tight">
-                Ce que nous faisons,<br />
-                <span className="italic text-foreground/70">concrètement</span>
+                <SplitText text="Ce que nous faisons," by="word" stagger={0.06} />
+                <br />
+                <SplitText
+                  text="concrètement"
+                  by="word"
+                  delay={0.3}
+                  itemClassName="italic text-foreground/70"
+                />
               </h2>
               <p className="text-foreground/60 text-base lg:text-lg font-light max-w-md leading-relaxed mb-10">
                 Chaque domaine est traité en lien avec les autres. C'est cette approche transversale qui fait la différence.
@@ -192,8 +199,14 @@ function ExpertiseRow({
       className="relative flex items-baseline gap-4 py-1"
     >
       <motion.span
-        animate={{ scale: active ? 1.25 : 0.78, opacity: active ? 1 : 0.45 }}
-        transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+        animate={{
+          scale: active ? 1.25 : 0.78,
+          opacity: active ? 1 : 0.45,
+          boxShadow: active
+            ? "0 0 0 6px hsl(var(--accent) / 0.15), 0 0 18px 2px hsl(var(--accent) / 0.55)"
+            : "0 0 0 0 hsl(var(--accent) / 0)",
+        }}
+        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
         className="absolute -left-[28px] top-[10px] w-2 h-2 rounded-full bg-[hsl(var(--accent))] origin-center"
       />
       <span className="text-[11px] font-medium tracking-[0.25em] uppercase text-foreground/45 w-8">
@@ -217,20 +230,28 @@ function ExpertiseCard({
 
   return (
     <motion.article
-      initial={reduce ? { opacity: 0, y: 0, scale: 1 } : { opacity: 0, y: 36, scale: 0.98 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={reduce ? { opacity: 0, y: 0, scale: 1 } : { opacity: 0, y: -24, scale: 0.985 }}
-      transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+      initial={
+        reduce
+          ? { opacity: 0, clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)" }
+          : { opacity: 0, clipPath: "polygon(0 0, 0 0, 0 100%, 0 100%)" }
+      }
+      animate={{ opacity: 1, clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)" }}
+      exit={
+        reduce
+          ? { opacity: 0 }
+          : { opacity: 0, clipPath: "polygon(100% 0, 100% 0, 100% 100%, 100% 100%)" }
+      }
+      transition={{ duration: 0.7, ease: [0.77, 0, 0.18, 1] }}
       style={{ zIndex: index }}
       className="absolute inset-0 glass-card rounded-[2rem] overflow-hidden flex flex-col"
     >
       {/* Image — top 60% */}
       <div className="relative h-[58%] overflow-hidden">
         <motion.div
-          initial={reduce ? { scale: 1 } : { scale: 1.06 }}
+          initial={reduce ? { scale: 1 } : { scale: 1.12 }}
           animate={{ scale: 1 }}
-          exit={reduce ? { scale: 1 } : { scale: 1.03 }}
-          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+          exit={reduce ? { scale: 1 } : { scale: 1.04 }}
+          transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
           style={{ backgroundImage: `url(${item.image})` }}
           className="absolute inset-0 bg-cover bg-center will-change-transform"
         />
@@ -245,6 +266,17 @@ function ExpertiseCard({
 
       {/* Content */}
       <div className="relative z-10 p-8 lg:p-10 flex-1 flex flex-col justify-between">
+        {/* Tachymeter ghost number */}
+        <motion.span
+          key={`ghost-${item.title}`}
+          aria-hidden
+          initial={reduce ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className="pointer-events-none absolute -bottom-6 -right-2 font-heading font-light leading-none select-none text-[8rem] lg:text-[10rem] text-foreground/[0.045] tracking-tighter"
+        >
+          {String(index + 1).padStart(2, "0")}
+        </motion.span>
         <div>
           <p className="text-[10px] tracking-[0.3em] uppercase text-foreground/50 font-medium mb-3">
             {item.tag}
@@ -258,11 +290,11 @@ function ExpertiseCard({
           <p className="text-foreground/85 text-[15px] font-normal max-w-lg">{item.benefit}</p>
         </div>
 
-        <div className="mt-6 flex justify-end">
+        <div className="mt-6 flex justify-end relative">
           <Link
             to={item.href}
             data-magnetic
-            className="group inline-flex items-center gap-2 px-6 py-3 rounded-full bg-foreground text-background text-sm font-medium tracking-wide reflection-sweep hover:shadow-2xl transition-all duration-300 hover:-translate-y-0.5"
+            className="group inline-flex items-center gap-2 px-6 py-3 rounded-full bg-foreground text-background text-sm font-medium tracking-wide reflection-sweep hover:shadow-[0_20px_50px_-10px_hsl(var(--accent)/0.45)] transition-all duration-300 hover:-translate-y-0.5"
           >
             Découvrir l'expertise
             <svg
