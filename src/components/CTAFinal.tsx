@@ -3,6 +3,9 @@ import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import SplitText from "./motion/SplitText";
 import AmbientParticles from "./motion/AmbientParticles";
+import ctaVideoAsset from "@/assets/cta-mountain-lake.mp4.asset.json";
+import ctaPoster from "@/assets/cta-mountain-lake.jpg";
+import ScrollVideo from "./motion/ScrollVideo";
 
 export default function CTAFinal() {
   const ref = useRef<HTMLElement>(null);
@@ -11,46 +14,38 @@ export default function CTAFinal() {
     target: ref,
     offset: ["start end", "end start"],
   });
-  const bgY = useTransform(scrollYProgress, [0, 1], reduce ? ["0%", "0%"] : ["-12%", "12%"]);
-  const bgScale = useTransform(scrollYProgress, [0, 1], reduce ? [1, 1] : [1.15, 1]);
   const overlayOpacity = useTransform(scrollYProgress, [0, 0.5, 1], [0.7, 0.55, 0.75]);
 
   return (
     <section
       id="contact"
       ref={ref}
-      className="relative isolate overflow-hidden text-white"
+      className="relative isolate text-white"
     >
-      {/* Background image with parallax */}
-      <motion.div
-        style={{ y: bgY, scale: bgScale }}
-        className="absolute inset-0 -z-10 will-change-transform"
+      {/* Pinned scroll-driven video background — frame-by-frame parallax */}
+      <ScrollVideo
+        src={ctaVideoAsset.url}
+        poster={ctaPoster}
+        className="absolute inset-0 -z-10"
       >
+        {/* Dark overlay over the pinned video */}
+        <motion.div
+          aria-hidden
+          style={{ opacity: overlayOpacity }}
+          className="absolute inset-0 bg-gradient-to-b from-[hsl(var(--navy-deep))]/80 via-[hsl(var(--navy-deep))]/55 to-[hsl(var(--navy-deep))]/95"
+        />
         <div
-          className="absolute inset-0 bg-cover bg-center"
+          aria-hidden
+          className="absolute inset-0"
           style={{
-            backgroundImage:
-              "url(https://images.unsplash.com/photo-1542856391-010fb87dcfed?auto=format&fit=crop&w=2400&q=80)",
+            background:
+              "radial-gradient(ellipse at 30% 30%, hsl(210 100% 60% / 0.22) 0%, transparent 60%), radial-gradient(ellipse at 80% 70%, hsl(38 35% 60% / 0.12) 0%, transparent 60%)",
           }}
         />
-      </motion.div>
-      <motion.div
-        aria-hidden
-        style={{ opacity: overlayOpacity }}
-        className="absolute inset-0 -z-10 bg-gradient-to-b from-[hsl(var(--navy-deep))]/85 via-[hsl(var(--navy-deep))]/65 to-[hsl(var(--navy-deep))]/95"
-      />
-      <div
-        aria-hidden
-        className="absolute inset-0 -z-10"
-        style={{
-          background:
-            "radial-gradient(ellipse at 30% 30%, hsl(210 100% 60% / 0.22) 0%, transparent 60%), radial-gradient(ellipse at 80% 70%, hsl(38 35% 60% / 0.12) 0%, transparent 60%)",
-        }}
-      />
-      {/* Drifting ambient particles */}
-      <div aria-hidden className="absolute inset-0 -z-10 overflow-hidden">
-        <AmbientParticles count={14} color="rgba(180, 210, 255, 0.55)" speed={0.18} />
-      </div>
+        <div aria-hidden className="absolute inset-0 overflow-hidden pointer-events-none">
+          <AmbientParticles count={14} color="rgba(180, 210, 255, 0.55)" speed={0.18} />
+        </div>
+      </ScrollVideo>
 
       <div className="relative max-w-6xl mx-auto px-6 lg:px-12 py-32 md:py-40 lg:py-48 grid lg:grid-cols-12 gap-12 items-end">
         <div className="lg:col-span-7">
