@@ -21,7 +21,7 @@ type Props = {
  */
 export default function PlasterReveal({
   radius = 280,
-  opacity = 0.32,
+  opacity = 0.55,
   lerp = 0.08,
   blendMode = "multiply",
 }: Props) {
