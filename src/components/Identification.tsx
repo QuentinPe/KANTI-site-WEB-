@@ -111,8 +111,8 @@ export default function Identification() {
           </div>
         </div>
 
-        {/* Circular carousel stage */}
-        <div className="flex-1 relative flex items-center justify-center" style={{ perspective: "1600px" }}>
+        {/* Circular carousel stage — wheel pushed down so active card sits at top center */}
+        <div className="flex-1 relative overflow-hidden" style={{ perspective: "1600px" }}>
           <CircularCarousel rotation={rotation} activeIndex={activeIndex} reduce={!!reduce} />
         </div>
 
@@ -165,11 +165,19 @@ function CircularCarousel({
   const counter = useTransform(rotation, (v) => -v);
 
   return (
-    <div className="relative w-full h-full flex items-center justify-center">
+    <div
+      className="absolute left-1/2 -translate-x-1/2 pointer-events-none"
+      style={{
+        // Top of the circle = vertical center of the available area
+        top: `calc(50% - ${0}px)`,
+        width: radius * 2,
+        height: radius * 2,
+      }}
+    >
       {/* Soft halo behind the wheel */}
       <div
         aria-hidden
-        className="absolute rounded-full pointer-events-none"
+        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full"
         style={{
           width: radius * 2.2,
           height: radius * 2.2,
@@ -181,14 +189,14 @@ function CircularCarousel({
       {/* Faint guide circle */}
       <div
         aria-hidden
-        className="absolute rounded-full border border-foreground/5 pointer-events-none"
+        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-foreground/5"
         style={{ width: radius * 2, height: radius * 2 }}
       />
 
       {/* Rotating wheel */}
       <motion.div
         style={{ rotate: rotation, transformStyle: "preserve-3d" }}
-        className="relative"
+        className="absolute left-1/2 top-1/2 pointer-events-auto"
       >
         {problematics.map((item, i) => {
           const angle = (360 / problematics.length) * i;
@@ -221,11 +229,10 @@ function CircularCarousel({
         })}
       </motion.div>
 
-      {/* Center spotlight indicator at top of circle */}
+      {/* Spotlight indicator at top of circle (where active card sits) */}
       <div
         aria-hidden
-        className="absolute pointer-events-none"
-        style={{ top: `calc(50% - ${radius}px - 28px)` }}
+        className="absolute left-1/2 -translate-x-1/2 -top-7"
       >
         <div className="w-2 h-2 rounded-full bg-[hsl(var(--accent))] shadow-[0_0_20px_hsl(var(--accent))]" />
       </div>
