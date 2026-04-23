@@ -135,7 +135,7 @@ export default function HeroSticky() {
             >
               <span className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse" />
               <p className="text-[11px] tracking-[0.2em] uppercase text-white/85 font-medium">
-                KANTI · Cabinet indépendant · Bordeaux
+                KANTI · Cabinet · Bordeaux
               </p>
             </div>
 
@@ -207,7 +207,6 @@ export default function HeroSticky() {
           className="absolute bottom-8 left-1/2 -translate-x-1/2"
         >
           <div className="flex flex-col items-center gap-2">
-            <span className="text-[10px] tracking-[0.3em] uppercase text-white/50">Entrez dans le cabinet</span>
             <div className="w-[1px] h-10 bg-gradient-to-b from-white/50 to-transparent" />
           </div>
         </motion.div>
