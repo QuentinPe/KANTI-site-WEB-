@@ -41,9 +41,9 @@ const Index = () => {
       <HomeCasClients />
       <HomeProfilRisque />
       <Equipe />
-      <Confiance />
       <Actualites />
       <HomeFAQ />
+      <Confiance />
       <CTAFinal />
       </main>
       <Footer />
