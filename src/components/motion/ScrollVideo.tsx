@@ -63,7 +63,6 @@ export default function ScrollVideo({ src, poster, className = "", children }: P
           muted
           playsInline
           preload="auto"
-          // @ts-expect-error — non-standard but harmless attribute
           disablePictureInPicture
           className="absolute inset-0 w-full h-full object-cover"
         />
