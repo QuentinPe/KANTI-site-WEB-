@@ -168,7 +168,7 @@ function ProblemCard({
       viewport={{ once: true, margin: "-10%" }}
       transition={{ duration: 0.9, delay: 0.05 + index * 0.06, ease: [0.22, 1, 0.36, 1] }}
       whileHover={reduce ? {} : { y: -8, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } }}
-      className="group/card relative glass-card rounded-[1.5rem] p-8 md:p-10 overflow-hidden shrink-0 w-[78vw] sm:w-[60vw] md:w-[420px] lg:w-[460px] h-[60vh] max-h-[520px] flex flex-col transition-shadow duration-500 hover:shadow-[0_30px_80px_-20px_hsl(var(--accent)/0.25)]"
+      className="group/card relative glass-card rounded-[1.5rem] p-7 md:p-9 overflow-hidden shrink-0 w-[78vw] sm:w-[60vw] md:w-[400px] lg:w-[440px] h-auto max-h-[78%] flex flex-col transition-shadow duration-500 hover:shadow-[0_30px_80px_-20px_hsl(var(--accent)/0.25)]"
     >
       {/* Ghost number */}
       <span
