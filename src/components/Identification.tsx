@@ -75,7 +75,7 @@ export default function Identification() {
       {/* Sticky stage */}
       <div className="sticky top-0 h-screen overflow-hidden flex flex-col">
         {/* Header bar */}
-        <div className="relative z-20 pt-24 md:pt-28 pb-16 md:pb-24 px-6 md:px-12 lg:px-16">
+        <div className="relative z-20 pt-20 md:pt-24 pb-10 md:pb-14 px-6 md:px-12 lg:px-16">
           <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:items-end md:justify-between gap-6">
             <div className="max-w-2xl">
               <div className="electric-line mb-4" />
@@ -152,9 +152,9 @@ function CircularCarousel({
   useEffect(() => {
     const update = () => {
       const w = window.innerWidth;
-      if (w < 640) setRadius(220);
-      else if (w < 1024) setRadius(320);
-      else setRadius(420);
+      if (w < 640) setRadius(260);
+      else if (w < 1024) setRadius(380);
+      else setRadius(520);
     };
     update();
     window.addEventListener("resize", update);
@@ -168,9 +168,9 @@ function CircularCarousel({
     <div
       className="absolute left-1/2 -translate-x-1/2 pointer-events-none"
       style={{
-        // Container top = vertical center of stage. Wheel center sits at top + radius,
-        // so the TOP of the wheel (active card) lands exactly at the stage's vertical center.
-        top: "50%",
+        // Lift the circle up: top edge sits above the stage's vertical center,
+        // so the active card lands higher in the viewport.
+        top: "38%",
         width: radius * 2,
         height: radius * 2,
       }}
@@ -230,13 +230,6 @@ function CircularCarousel({
         })}
       </motion.div>
 
-      {/* Spotlight indicator at top of circle (where active card sits) */}
-      <div
-        aria-hidden
-        className="absolute left-1/2 -translate-x-1/2 -top-7"
-      >
-        <div className="w-2 h-2 rounded-full bg-[hsl(var(--accent))] shadow-[0_0_20px_hsl(var(--accent))]" />
-      </div>
     </div>
   );
 }
@@ -262,7 +255,7 @@ function CircleCard({
             }
       }
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      className={`relative glass-card rounded-[1.5rem] p-6 md:p-7 overflow-hidden w-[260px] md:w-[300px] flex flex-col transition-shadow duration-500 ${
+      className={`relative glass-card rounded-[1.75rem] p-7 md:p-9 overflow-hidden w-[300px] md:w-[360px] lg:w-[400px] flex flex-col transition-shadow duration-500 ${
         isActive ? "shadow-[0_30px_80px_-20px_hsl(var(--accent)/0.35)]" : "shadow-none"
       }`}
     >
