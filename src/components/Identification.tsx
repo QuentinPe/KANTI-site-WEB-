@@ -250,8 +250,10 @@ function CircleCard({
             }
       }
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      className={`relative glass-card rounded-[1.75rem] p-7 md:p-9 overflow-hidden w-[300px] md:w-[360px] lg:w-[400px] flex flex-col transition-shadow duration-500 ${
-        isActive ? "shadow-[0_30px_80px_-20px_hsl(var(--accent)/0.35)]" : "shadow-none"
+      className={`relative rounded-[1.75rem] p-7 md:p-9 overflow-hidden w-[300px] md:w-[360px] lg:w-[400px] flex flex-col bg-card border border-foreground/10 transition-shadow duration-500 ${
+        isActive
+          ? "shadow-[0_30px_80px_-20px_hsl(var(--foreground)/0.18)]"
+          : "shadow-[0_10px_30px_-12px_hsl(var(--foreground)/0.08)]"
       }`}
     >
       {/* Ghost number */}
