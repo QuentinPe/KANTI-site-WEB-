@@ -47,6 +47,7 @@ export default function HeroSticky() {
     const images: HTMLImageElement[] = new Array(FRAME_COUNT);
     let loaded = 0;
     let firstReady = false;
+    const dir = pickFrameDir();
 
     const sizeCanvas = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -118,7 +119,7 @@ export default function HeroSticky() {
           setLoadedCount(loaded);
           resolve();
         };
-        img.src = frameSrc(i + 1);
+        img.src = frameSrc(dir, i + 1);
       });
 
     // Load frame 0 first (blocks "ready"), then everything else in parallel
