@@ -86,7 +86,7 @@ export default function Identification() {
                 <SplitText text="Vous vous reconnaissez" by="word" stagger={0.07} />
                 <br />
                 <SplitText
-                  text="dans l'une de ces situations ?"
+                  text={"dans l'une de ces situations\u00A0?"}
                   by="word"
                   stagger={0.05}
                   delay={0.25}
