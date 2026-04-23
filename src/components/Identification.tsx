@@ -69,13 +69,13 @@ export default function Identification() {
       id="problematiques"
       ref={containerRef}
       className="relative texture-paper mb-24 md:mb-32"
-      style={{ height: reduce ? "auto" : "500vh" }}
+      style={{ height: reduce ? "auto" : "850vh" }}
       aria-label="Vos enjeux patrimoniaux"
     >
       {/* Sticky stage */}
       <div className="sticky top-0 h-screen overflow-hidden flex flex-col">
         {/* Header bar */}
-        <div className="relative z-20 pt-24 md:pt-28 pb-4 px-6 md:px-12 lg:px-16">
+        <div className="relative z-20 pt-24 md:pt-28 pb-16 md:pb-24 px-6 md:px-12 lg:px-16">
           <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:items-end md:justify-between gap-6">
             <div className="max-w-2xl">
               <div className="electric-line mb-4" />
