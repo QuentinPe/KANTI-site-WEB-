@@ -170,18 +170,6 @@ function CircularCarousel({
         height: radius * 2,
       }}
     >
-      {/* Soft halo behind the wheel */}
-      <div
-        aria-hidden
-        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full"
-        style={{
-          width: radius * 2.2,
-          height: radius * 2.2,
-          background:
-            "radial-gradient(closest-side, hsl(var(--accent) / 0.08), transparent 70%)",
-        }}
-      />
-
       {/* Faint guide circle */}
       <div
         aria-hidden
@@ -250,8 +238,10 @@ function CircleCard({
             }
       }
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      className={`relative glass-card rounded-[1.75rem] p-7 md:p-9 overflow-hidden w-[300px] md:w-[360px] lg:w-[400px] flex flex-col transition-shadow duration-500 ${
-        isActive ? "shadow-[0_30px_80px_-20px_hsl(var(--accent)/0.35)]" : "shadow-none"
+      className={`relative rounded-[1.75rem] p-7 md:p-9 overflow-hidden w-[300px] md:w-[360px] lg:w-[400px] flex flex-col bg-card border border-foreground/10 transition-shadow duration-500 ${
+        isActive
+          ? "shadow-[0_30px_80px_-20px_hsl(var(--foreground)/0.18)]"
+          : "shadow-[0_10px_30px_-12px_hsl(var(--foreground)/0.08)]"
       }`}
     >
       {/* Ghost number */}

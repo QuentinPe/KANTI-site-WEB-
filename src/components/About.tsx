@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import SplitText from "./motion/SplitText";
-import MaskReveal from "./motion/MaskReveal";
 
 function useCountUp(target: number, suffix = "", duration = 2000, delay = 0) {
   const [value, setValue] = useState("0");
@@ -39,9 +38,6 @@ function useCountUp(target: number, suffix = "", duration = 2000, delay = 0) {
 
   return { ref, value };
 }
-
-const EDITORIAL_IMAGE =
-  "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80";
 
 export default function About() {
   const reduce = useReducedMotion();
@@ -112,15 +108,6 @@ export default function About() {
                 reduce={!!reduce}
               />
             </div>
-
-            {/* Editorial vignette — circular mask reveal */}
-            <MaskReveal direction="up" duration={1.3} delay={0.5} className="relative">
-              <div
-                className="aspect-[4/5] rounded-[1.75rem] bg-cover bg-center shadow-[0_30px_80px_-20px_hsl(var(--navy)/0.25)]"
-                style={{ backgroundImage: `url(${EDITORIAL_IMAGE})` }}
-                aria-hidden
-              />
-            </MaskReveal>
           </div>
         </div>
       </div>
