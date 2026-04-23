@@ -118,7 +118,7 @@ export default function MethodePinned() {
             <div className="col-span-5">
               <div className="electric-line mb-5" style={{ background: "linear-gradient(90deg, hsl(210 100% 70%), hsl(210 100% 70% / 0.2))" }} />
               <p className="text-[11px] tracking-[0.3em] uppercase text-white/50 mb-5 font-medium">Méthode</p>
-              <h2 className="text-5xl lg:text-6xl font-heading font-light mb-8 tracking-tight leading-[1.05]">
+              <h2 className="text-4xl lg:text-5xl font-heading font-light mb-6 tracking-tight leading-[1.05]">
                 <SplitText text="Comment nous" by="word" stagger={0.07} />
                 <br />
                 <SplitText
@@ -128,7 +128,7 @@ export default function MethodePinned() {
                   itemClassName="italic text-white/75"
                 />
               </h2>
-              <p className="text-white/60 text-base lg:text-lg font-light max-w-md leading-relaxed mb-10">
+              <p className="text-white/60 text-sm lg:text-base font-light max-w-md leading-relaxed mb-6">
                 Pas de formule standard, mais un processus clair, reproductible, qui respecte votre temps et vos priorités.
               </p>
 
@@ -147,7 +147,7 @@ export default function MethodePinned() {
                     className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-[hsl(var(--electric-soft))] animate-[pulse_2s_ease-in-out_infinite] shadow-[0_0_18px_4px_hsl(var(--electric)/0.7)]"
                   />
                 </div>
-                <ol className="space-y-3.5">
+                <ol className="space-y-2.5">
                   {steps.map((s, i) => (
                     <StepRow
                       key={s.number}
@@ -162,7 +162,7 @@ export default function MethodePinned() {
               <Link
                 to="/notre-methode"
                 data-magnetic
-                className="mt-10 inline-flex items-center gap-2 px-6 py-3 btn-glass text-white text-sm tracking-wide"
+                className="mt-6 inline-flex items-center gap-2 px-6 py-3 btn-glass text-white text-sm tracking-wide whitespace-nowrap leading-none"
               >
                 Découvrir notre méthode en détail
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
