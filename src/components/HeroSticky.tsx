@@ -5,9 +5,16 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import Hero from "./Hero";
 
 const POSTER_SRC = "/video/hero-office-poster.jpg";
-const FRAME_COUNT = 120;
-const frameSrc = (i: number) =>
-  `/video/frames/frame-${String(i).padStart(3, "0")}.jpg`;
+const FRAME_COUNT = 192;
+// Pick the right resolution per device — saves ~4 MB on small screens.
+const pickFrameDir = () => {
+  if (typeof window === "undefined") return "frames-1280";
+  const dpr = window.devicePixelRatio || 1;
+  const effectiveWidth = window.innerWidth * dpr;
+  return effectiveWidth >= 1600 ? "frames-1920" : "frames-1280";
+};
+const frameSrc = (dir: string, i: number) =>
+  `/video/${dir}/frame-${String(i).padStart(3, "0")}.jpg`;
 
 export default function HeroSticky() {
   const sectionRef = useRef<HTMLElement>(null);
