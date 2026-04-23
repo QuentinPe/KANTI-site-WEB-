@@ -1,4 +1,5 @@
-import { motion, useReducedMotion } from "framer-motion";
+import { useRef } from "react";
+import { motion, useReducedMotion, useScroll, useTransform, useSpring } from "framer-motion";
 import SplitText from "./motion/SplitText";
 
 const problematics = [
@@ -42,57 +43,112 @@ const problematics = [
 
 export default function Identification() {
   const reduce = useReducedMotion();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end end"],
+  });
+
+  // Translate horizontally: from 0 to -(trackWidth - viewportWidth)
+  // We approximate via vw: 6 cards * (card width + gap) ≈ ~ 6 * 30rem
+  // Use percentage based on track width via CSS calc inside component.
+  const xRaw = useTransform(scrollYProgress, [0, 1], reduce ? ["0%", "0%"] : ["0%", "-72%"]);
+  const x = useSpring(xRaw, { damping: 28, stiffness: 90, mass: 0.6 });
+
+  // Active index for the counter (01 / 06)
+  const activeIndex = useTransform(scrollYProgress, (v) =>
+    Math.min(problematics.length, Math.max(1, Math.ceil(v * problematics.length) || 1))
+  );
+  const progressScaleX = useTransform(scrollYProgress, [0, 1], [0, 1]);
+
   return (
-    <section id="problematiques" className="section-padding texture-paper relative overflow-hidden">
-      <div className="max-w-6xl mx-auto relative z-10">
-        <div className="max-w-3xl mb-12 md:mb-16 px-6 md:px-0">
-          <div className="electric-line mb-5" />
-          <p className="text-[11px] tracking-[0.3em] uppercase text-foreground/50 mb-5 font-medium">
-            Vos enjeux
-          </p>
-          <h2 className="text-4xl md:text-6xl font-heading font-light text-foreground mb-6 leading-[1.1] tracking-tight">
-            <SplitText text="Vous vous reconnaissez" by="word" stagger={0.07} />
-            <br />
-            <SplitText
-              text="dans l'une de ces situations ?"
-              by="word"
-              stagger={0.05}
-              delay={0.25}
-              itemClassName="italic text-foreground/70"
-            />
-          </h2>
-          <p className="text-foreground/60 text-lg leading-relaxed font-light">
-            Chaque parcours patrimonial commence par une question concrète. Nous partons toujours de la vôtre.
-          </p>
+    <section
+      id="problematiques"
+      ref={containerRef}
+      className="relative texture-paper"
+      // Tall section so we have scroll distance to translate the horizontal track
+      style={{ height: reduce ? "auto" : "420vh" }}
+      aria-label="Vos enjeux patrimoniaux"
+    >
+      {/* Sticky stage */}
+      <div className="sticky top-0 h-screen overflow-hidden flex flex-col">
+        {/* Header bar */}
+        <div className="relative z-20 pt-24 md:pt-28 pb-6 md:pb-8 px-6 md:px-12 lg:px-16">
+          <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+            <div className="max-w-2xl">
+              <div className="electric-line mb-4" />
+              <p className="text-[11px] tracking-[0.3em] uppercase text-foreground/50 mb-4 font-medium">
+                Vos enjeux
+              </p>
+              <h2 className="text-3xl md:text-5xl font-heading font-light text-foreground leading-[1.1] tracking-tight">
+                <SplitText text="Vous vous reconnaissez" by="word" stagger={0.07} />
+                <br />
+                <SplitText
+                  text="dans l'une de ces situations ?"
+                  by="word"
+                  stagger={0.05}
+                  delay={0.25}
+                  itemClassName="italic text-foreground/70"
+                />
+              </h2>
+            </div>
+
+            {/* Counter */}
+            <div className="flex items-center gap-4 shrink-0">
+              <motion.span className="font-heading text-5xl md:text-6xl font-light text-foreground tabular-nums leading-none">
+                {activeIndex}
+              </motion.span>
+              <span className="text-foreground/30 text-sm">/</span>
+              <span className="text-foreground/40 text-sm tabular-nums">
+                {String(problematics.length).padStart(2, "0")}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Horizontal track */}
+        <div className="flex-1 relative flex items-center">
+          <motion.div
+            ref={trackRef}
+            style={{ x }}
+            className="flex gap-6 md:gap-8 pl-6 md:pl-12 lg:pl-16 pr-[20vw] will-change-transform"
+          >
+            {problematics.map((p, i) => (
+              <ProblemCard
+                key={p.n}
+                item={p}
+                index={i}
+                total={problematics.length}
+                reduce={!!reduce}
+              />
+            ))}
+          </motion.div>
+
+          {/* Edge fades */}
+          <div className="pointer-events-none absolute inset-y-0 left-0 w-16 md:w-32 bg-gradient-to-r from-background to-transparent z-10" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-16 md:w-32 bg-gradient-to-l from-background to-transparent z-10" />
+        </div>
+
+        {/* Bottom progress bar + hint */}
+        <div className="relative z-20 pb-10 md:pb-12 px-6 md:px-12 lg:px-16">
+          <div className="max-w-6xl mx-auto flex items-center gap-6">
+            <span className="text-[10px] tracking-[0.3em] uppercase text-foreground/40 font-medium whitespace-nowrap">
+              Scrollez pour explorer
+            </span>
+            <div className="relative h-px flex-1 bg-foreground/10 overflow-hidden">
+              <motion.div
+                style={{ scaleX: progressScaleX, transformOrigin: "0% 50%" }}
+                className="absolute inset-0 bg-foreground"
+              />
+            </div>
+            <svg className="w-5 h-5 text-foreground/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+            </svg>
+          </div>
         </div>
       </div>
-
-      {/* Invisible carousel — horizontal scroll, no scrollbar, drag & swipe */}
-      <div
-        className="relative -mx-6 md:mx-0 overflow-x-auto overflow-y-hidden scrollbar-none cursor-grab active:cursor-grabbing"
-        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-        aria-label="Liste de situations patrimoniales — défilement horizontal"
-      >
-        <style>{`.scrollbar-none::-webkit-scrollbar{display:none}`}</style>
-        <ul className="flex gap-5 md:gap-6 px-6 md:px-[max(1.5rem,calc((100vw-72rem)/2))] py-6 snap-x snap-mandatory">
-          {problematics.map((p, i) => (
-            <li
-              key={p.n}
-              className="snap-start shrink-0 w-[80vw] sm:w-[55vw] md:w-[360px] lg:w-[380px]"
-            >
-              <ProblemCard item={p} index={i} reduce={!!reduce} />
-            </li>
-          ))}
-        </ul>
-        {/* edge fades */}
-        <div className="pointer-events-none absolute inset-y-0 left-0 w-12 md:w-24 bg-gradient-to-r from-background to-transparent" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-12 md:w-24 bg-gradient-to-l from-background to-transparent" />
-      </div>
-
-      {/* Subtle hint */}
-      <p className="max-w-6xl mx-auto px-6 md:px-0 mt-6 text-[11px] tracking-[0.25em] uppercase text-foreground/35 font-medium">
-        ← Faites défiler pour explorer →
-      </p>
     </section>
   );
 }
