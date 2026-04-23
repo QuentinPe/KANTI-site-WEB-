@@ -93,7 +93,7 @@ export default function HeroSticky() {
       ref={sectionRef}
       id="hero"
       className="relative"
-      style={{ height: "200vh" }}
+      style={{ height: "350vh" }}
     >
       <div className="sticky top-0 h-screen w-full overflow-hidden flex items-center">
         {/* Scroll-driven video */}
@@ -118,46 +118,21 @@ export default function HeroSticky() {
           />
         )}
 
-        {/* Dark editorial overlay */}
+        {/* Subtle dark gradient — only at top & bottom for legibility, preserves video colors */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
             background:
-              "linear-gradient(180deg, hsl(224 60% 7% / 0.78) 0%, hsl(222 50% 11% / 0.65) 50%, hsl(220 40% 18% / 0.85) 100%)",
+              "linear-gradient(180deg, hsl(224 60% 5% / 0.55) 0%, transparent 25%, transparent 70%, hsl(224 60% 5% / 0.65) 100%)",
           }}
         />
 
-        {/* Cursor-tracked light */}
-        <div ref={orbRef} className="absolute inset-0 pointer-events-none transition-all duration-700" />
-
-        {/* Subtle blurred veil behind the editorial copy for legibility */}
+        {/* Soft readability shade behind the left text column only */}
         <div
-          className="absolute inset-y-0 left-0 w-full md:w-2/3 pointer-events-none"
+          className="absolute inset-y-0 left-0 w-full md:w-1/2 pointer-events-none"
           style={{
             background:
-              "linear-gradient(90deg, hsl(224 60% 7% / 0.55) 0%, hsl(224 60% 7% / 0.35) 55%, transparent 100%)",
-            backdropFilter: "blur(4px)",
-            WebkitBackdropFilter: "blur(4px)",
-            maskImage:
-              "linear-gradient(90deg, black 0%, black 55%, transparent 100%)",
-            WebkitMaskImage:
-              "linear-gradient(90deg, black 0%, black 55%, transparent 100%)",
-          }}
-        />
-
-        {/* Floating ambient orbs */}
-        <div
-          className="absolute top-[15%] right-[10%] w-[400px] h-[400px] rounded-full pointer-events-none float-soft"
-          style={{
-            background: "radial-gradient(circle, hsl(210 100% 60% / 0.22) 0%, transparent 70%)",
-            filter: "blur(40px)",
-          }}
-        />
-        <div
-          className="absolute bottom-[20%] left-[5%] w-[300px] h-[300px] rounded-full pointer-events-none float-slow"
-          style={{
-            background: "radial-gradient(circle, hsl(38 35% 60% / 0.18) 0%, transparent 70%)",
-            filter: "blur(50px)",
+              "linear-gradient(90deg, hsl(224 60% 5% / 0.45) 0%, transparent 100%)",
           }}
         />
 
