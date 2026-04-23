@@ -5,7 +5,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import Hero from "./Hero";
 
 const POSTER_SRC = "/video/hero-office-poster.jpg";
-const FRAME_COUNT = 240;
+const FRAME_COUNT = 121;
 // Pick the right resolution per device — keeps small screens light.
 const pickFrameDir = () => {
   if (typeof window === "undefined") return "frames-1280";
