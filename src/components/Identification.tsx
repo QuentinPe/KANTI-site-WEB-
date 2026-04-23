@@ -75,7 +75,7 @@ export default function Identification() {
       {/* Sticky stage */}
       <div className="sticky top-0 h-screen overflow-hidden flex flex-col">
         {/* Header bar */}
-        <div className="relative z-20 pt-24 md:pt-28 pb-16 md:pb-24 px-6 md:px-12 lg:px-16">
+        <div className="relative z-20 pt-20 md:pt-24 pb-10 md:pb-14 px-6 md:px-12 lg:px-16">
           <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:items-end md:justify-between gap-6">
             <div className="max-w-2xl">
               <div className="electric-line mb-4" />
@@ -168,9 +168,9 @@ function CircularCarousel({
     <div
       className="absolute left-1/2 -translate-x-1/2 pointer-events-none"
       style={{
-        // Container top = vertical center of stage. Wheel center sits at top + radius,
-        // so the TOP of the wheel (active card) lands exactly at the stage's vertical center.
-        top: "50%",
+        // Lift the circle up: top edge sits above the stage's vertical center,
+        // so the active card lands higher in the viewport.
+        top: "38%",
         width: radius * 2,
         height: radius * 2,
       }}
