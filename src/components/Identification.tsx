@@ -1,6 +1,4 @@
-import { useRef } from "react";
-import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
-import MagneticCard from "./motion/MagneticCard";
+import { motion, useReducedMotion } from "framer-motion";
 import SplitText from "./motion/SplitText";
 
 const problematics = [
@@ -8,39 +6,46 @@ const problematics = [
     n: "01",
     title: "Optimiser mon épargne",
     line: "Faire travailler un capital qui dort, sans prendre de risque mal calibré.",
+    tag: "Épargne",
   },
   {
     n: "02",
     title: "Structurer mon patrimoine",
     line: "Mettre de la cohérence entre l'immobilier, le financier et le professionnel.",
+    tag: "Stratégie globale",
   },
   {
     n: "03",
     title: "Préparer ma retraite",
     line: "Construire des revenus complémentaires solides et fiscalement maîtrisés.",
+    tag: "Retraite",
   },
   {
     n: "04",
     title: "Réduire ma pression fiscale",
     line: "Identifier les marges de manœuvre réelles, pas les niches risquées.",
+    tag: "Fiscalité",
   },
   {
     n: "05",
     title: "Financer un projet",
     line: "Obtenir un crédit aux meilleures conditions et au bon montage.",
+    tag: "Financement",
   },
   {
     n: "06",
     title: "Préparer la transmission",
     line: "Anticiper la fiscalité et protéger ceux qui comptent.",
+    tag: "Transmission",
   },
 ];
 
 export default function Identification() {
+  const reduce = useReducedMotion();
   return (
     <section id="problematiques" className="section-padding texture-paper relative overflow-hidden">
       <div className="max-w-6xl mx-auto relative z-10">
-        <div className="max-w-3xl mb-16 md:mb-20">
+        <div className="max-w-3xl mb-12 md:mb-16 px-6 md:px-0">
           <div className="electric-line mb-5" />
           <p className="text-[11px] tracking-[0.3em] uppercase text-foreground/50 mb-5 font-medium">
             Vos enjeux
@@ -60,13 +65,34 @@ export default function Identification() {
             Chaque parcours patrimonial commence par une question concrète. Nous partons toujours de la vôtre.
           </p>
         </div>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
-          {problematics.map((p, i) => (
-            <ProblemCard key={p.n} item={p} index={i} />
-          ))}
-        </div>
       </div>
+
+      {/* Invisible carousel — horizontal scroll, no scrollbar, drag & swipe */}
+      <div
+        className="relative -mx-6 md:mx-0 overflow-x-auto overflow-y-hidden scrollbar-none cursor-grab active:cursor-grabbing"
+        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+        aria-label="Liste de situations patrimoniales — défilement horizontal"
+      >
+        <style>{`.scrollbar-none::-webkit-scrollbar{display:none}`}</style>
+        <ul className="flex gap-5 md:gap-6 px-6 md:px-[max(1.5rem,calc((100vw-72rem)/2))] py-6 snap-x snap-mandatory">
+          {problematics.map((p, i) => (
+            <li
+              key={p.n}
+              className="snap-start shrink-0 w-[80vw] sm:w-[55vw] md:w-[360px] lg:w-[380px]"
+            >
+              <ProblemCard item={p} index={i} reduce={!!reduce} />
+            </li>
+          ))}
+        </ul>
+        {/* edge fades */}
+        <div className="pointer-events-none absolute inset-y-0 left-0 w-12 md:w-24 bg-gradient-to-r from-background to-transparent" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-12 md:w-24 bg-gradient-to-l from-background to-transparent" />
+      </div>
+
+      {/* Subtle hint */}
+      <p className="max-w-6xl mx-auto px-6 md:px-0 mt-6 text-[11px] tracking-[0.25em] uppercase text-foreground/35 font-medium">
+        ← Faites défiler pour explorer →
+      </p>
     </section>
   );
 }
@@ -74,79 +100,70 @@ export default function Identification() {
 function ProblemCard({
   item,
   index,
+  reduce,
 }: {
   item: (typeof problematics)[number];
   index: number;
+  reduce: boolean;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const reduce = useReducedMotion();
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start 90%", "end 60%"],
-  });
-
-  const y = useTransform(scrollYProgress, [0, 1], reduce ? [0, 0] : [40, 0]);
-  const opacity = useTransform(scrollYProgress, [0, 0.6], [0, 1]);
+  // Fan rotation across the row of 6 cards (-2.5 → +2.5)
+  const baseRot = ((index - (problematics.length - 1) / 2) / ((problematics.length - 1) / 2)) * 2.5;
 
   return (
     <motion.article
-      ref={ref}
-      style={{ y, opacity, transitionDelay: `${index * 40}ms` }}
-      className=""
+      initial={
+        reduce
+          ? { opacity: 0 }
+          : { opacity: 0, y: 50, rotate: baseRot - 1 }
+      }
+      whileInView={{ opacity: 1, y: 0, rotate: baseRot }}
+      viewport={{ once: true, margin: "-10%" }}
+      transition={{
+        duration: 0.9,
+        delay: 0.05 + index * 0.08,
+        ease: [0.22, 1, 0.36, 1],
+      }}
+      whileHover={
+        reduce
+          ? {}
+          : {
+              rotate: 0,
+              y: -8,
+              transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
+            }
+      }
+      className="group/card relative glass-card rounded-[1.5rem] p-7 md:p-8 overflow-hidden h-full transition-shadow duration-500 hover:shadow-[0_30px_80px_-20px_hsl(var(--accent)/0.25)] [transform-style:preserve-3d]"
     >
-      <MagneticCard
-        intensity={4}
-        glow="var(--accent)"
-        className="group glass-card rounded-[1.5rem] p-7 md:p-8 reflection-sweep relative overflow-hidden transition-shadow duration-500 hover:shadow-[0_30px_80px_-20px_hsl(var(--accent)/0.25)]"
+      {/* Ghost number */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute -bottom-6 -right-2 font-heading font-light leading-none select-none text-[8rem] md:text-[10rem] text-foreground/[0.04] tracking-tighter"
       >
-        {/* Ghost number — large, in background, clipped by card */}
-        <span
-          aria-hidden
-          className="pointer-events-none absolute -bottom-6 -right-2 font-heading font-light leading-none select-none text-[8rem] md:text-[10rem] text-foreground/[0.04] tracking-tighter"
-        >
-          {item.n}
-        </span>
+        {item.n}
+      </span>
 
-        <div className="relative flex items-start justify-between mb-8">
-          <span className="text-[10px] font-medium tracking-[0.3em] uppercase text-foreground/35">
-            {item.n}
-          </span>
-          {/* SVG line that traces in on view */}
-          <svg
-            className="mt-2"
-            width="48"
-            height="2"
-            viewBox="0 0 48 2"
-            fill="none"
-            aria-hidden
-          >
-            <motion.line
-              x1="0"
-              y1="1"
-              x2="48"
-              y2="1"
-              stroke="currentColor"
-              strokeWidth="1"
-              className="text-foreground/25 group-hover:text-[hsl(var(--accent))] transition-colors duration-500"
-              initial={{ pathLength: 0 }}
-              whileInView={{ pathLength: 1 }}
-              viewport={{ once: true, margin: "-10%" }}
-              transition={{ duration: 0.9, delay: 0.2 + index * 0.05, ease: [0.22, 1, 0.36, 1] }}
-            />
-          </svg>
-        </div>
-        <h3 className="relative font-heading text-2xl md:text-[1.7rem] font-light text-foreground tracking-tight mb-4 leading-[1.2]">
-          <span className="group-hover:[&>em]:not-italic">
-            <span className="italic font-normal text-foreground/95">
-              {item.title.split(" ")[0]}
-            </span>
-            <span> {item.title.split(" ").slice(1).join(" ")}</span>
-          </span>
-        </h3>
-        <p className="relative text-foreground/60 text-[15px] leading-relaxed font-light">
-          {item.line}
+      {/* Header — dossier style */}
+      <div className="relative flex items-center justify-between mb-4">
+        <p className="text-[10px] tracking-[0.3em] uppercase text-foreground/45 font-medium">
+          Enjeu N°{item.n}
         </p>
-      </MagneticCard>
+        <span className="text-[9px] tracking-[0.25em] uppercase text-[hsl(var(--electric))] font-medium px-2 py-0.5 rounded-full border border-[hsl(var(--electric))/0.3]">
+          {item.tag}
+        </span>
+      </div>
+
+      <h3 className="relative font-heading text-2xl md:text-[1.7rem] font-light text-foreground tracking-tight mb-4 leading-[1.2]">
+        <span className="italic font-normal text-foreground/95">
+          {item.title.split(" ")[0]}
+        </span>
+        <span> {item.title.split(" ").slice(1).join(" ")}</span>
+      </h3>
+
+      <div className="separator-fine my-4" />
+
+      <p className="relative text-foreground/65 text-sm leading-relaxed font-light">
+        {item.line}
+      </p>
     </motion.article>
   );
 }
