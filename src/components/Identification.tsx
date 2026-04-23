@@ -168,8 +168,9 @@ function CircularCarousel({
     <div
       className="absolute left-1/2 -translate-x-1/2 pointer-events-none"
       style={{
-        // Top of the circle = vertical center of the available area
-        top: `calc(50% - ${0}px)`,
+        // Container top = vertical center of stage. Wheel center sits at top + radius,
+        // so the TOP of the wheel (active card) lands exactly at the stage's vertical center.
+        top: "50%",
         width: radius * 2,
         height: radius * 2,
       }}
