@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
 import Hero from "./Hero";
@@ -19,89 +19,15 @@ export default function HeroSticky() {
     offset: ["start start", "end end"],
   });
 
-  // Title fades out as we approach the end of the traveling
+  // Cinematic motion driven by scroll on the OVERLAY (not the video).
+  // This works in production — we no longer rely on seeking the video,
+  // because the Lovable CDN does not return HTTP 206 Partial Content
+  // on .mp4 files served from /public, which breaks scrub-by-currentTime.
   const titleOpacity = useTransform(scrollYProgress, [0, 0.7, 0.95], [1, 0.85, 0]);
-  const titleY = useTransform(scrollYProgress, [0, 1], reduce ? [0, 0] : [0, -60]);
+  const titleY = useTransform(scrollYProgress, [0, 1], reduce ? [0, 0] : [0, -80]);
+  const videoScale = useTransform(scrollYProgress, [0, 1], reduce ? [1, 1] : [1, 1.08]);
   const videoBlur = useTransform(scrollYProgress, [0.85, 1], [0, 6]);
   const videoFilter = useTransform(videoBlur, (b) => `blur(${b}px)`);
-
-  // Drive video.currentTime from scroll progress
-  useEffect(() => {
-    if (isMobile || reduce) return;
-    const video = videoRef.current;
-    if (!video) return;
-
-    let raf = 0;
-    let targetTime = 0;
-    let readyFired = false;
-
-    const tick = () => {
-      if (video.duration && Number.isFinite(video.duration)) {
-        const current = video.currentTime;
-        const delta = targetTime - current;
-        // Heavy lerp — gives a cinematic, weighty scrub feel
-        if (Math.abs(delta) > 0.002) {
-          video.currentTime = current + delta * 0.06;
-        }
-      }
-      raf = requestAnimationFrame(tick);
-    };
-
-    const unsub = scrollYProgress.on("change", (p) => {
-      if (!video.duration || !Number.isFinite(video.duration)) return;
-      targetTime = Math.max(0, Math.min(video.duration - 0.05, p * video.duration));
-    });
-
-    const onReady = () => {
-      if (readyFired) return;
-      readyFired = true;
-      setReady(true);
-      try {
-        // Safari/iOS unlock: must call play() once before seeking works reliably
-        const p = video.play();
-        if (p && typeof p.then === "function") {
-          p.then(() => video.pause()).catch(() => video.pause());
-        } else {
-          video.pause();
-        }
-      } catch {
-        video.pause();
-      }
-      raf = requestAnimationFrame(tick);
-    };
-
-    // Listen to several events — canplaythrough often never fires on slow CDNs
-    if (video.readyState >= 2) {
-      onReady();
-    } else {
-      video.addEventListener("loadeddata", onReady, { once: true });
-      video.addEventListener("loadedmetadata", onReady, { once: true });
-      video.addEventListener("canplay", onReady, { once: true });
-      video.addEventListener("canplaythrough", onReady, { once: true });
-    }
-
-    // Force the browser to start fetching even if preload is ignored
-    try {
-      video.load();
-    } catch {
-      /* noop */
-    }
-
-    // Safety net: after 4s, mark ready anyway so the scrub loop starts
-    const failsafe = window.setTimeout(() => {
-      if (!readyFired) onReady();
-    }, 4000);
-
-    return () => {
-      cancelAnimationFrame(raf);
-      unsub();
-      window.clearTimeout(failsafe);
-      video.removeEventListener("loadeddata", onReady);
-      video.removeEventListener("loadedmetadata", onReady);
-      video.removeEventListener("canplay", onReady);
-      video.removeEventListener("canplaythrough", onReady);
-    };
-  }, [isMobile, reduce, scrollYProgress]);
 
   // Fallback: mobile or reduced-motion → original static Hero
   if (isMobile || reduce) {
@@ -113,21 +39,25 @@ export default function HeroSticky() {
       ref={sectionRef}
       id="hero"
       className="relative"
-      style={{ height: "550vh" }}
+      style={{ height: "350vh" }}
     >
       <div className="sticky top-0 h-screen w-full overflow-hidden flex items-center">
-        {/* Scroll-driven video */}
+        {/* Auto-playing looped video — works on every CDN (no Range requests needed) */}
         <motion.video
           ref={videoRef}
           src={VIDEO_SRC}
           poster={POSTER_SRC}
+          autoPlay
           muted
+          loop
           playsInline
           preload="auto"
           disablePictureInPicture
           className="absolute inset-0 w-full h-full object-cover will-change-transform"
-          style={{ filter: videoFilter }}
+          style={{ filter: videoFilter, scale: videoScale }}
           aria-hidden="true"
+          onLoadedData={() => setReady(true)}
+          onCanPlay={() => setReady(true)}
         />
 
         {/* Poster fallback while video buffers */}
