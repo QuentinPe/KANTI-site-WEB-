@@ -47,6 +47,14 @@ export default function PlasterReveal({
     let raf = 0;
     let visible = false;
 
+    // On homepage, hide the effect over the first section (hero).
+    const isHome = () => window.location.pathname === "/";
+    const getHeroBottom = () => {
+      const hero = document.querySelector("#main > section:first-child") as HTMLElement | null;
+      if (!hero) return 0;
+      return hero.getBoundingClientRect().bottom;
+    };
+
     const setMask = (x: number, y: number) => {
       const mask = `radial-gradient(circle ${radius}px at ${x}px ${y}px, hsl(0 0% 0% / 1) 0%, hsl(0 0% 0% / 0) 70%)`;
       layer.style.webkitMaskImage = mask;
@@ -63,6 +71,14 @@ export default function PlasterReveal({
     const onMove = (e: MouseEvent) => {
       targetX = e.clientX;
       targetY = e.clientY;
+      const inHeroOnHome = isHome() && e.clientY < getHeroBottom();
+      if (inHeroOnHome) {
+        if (visible) {
+          layer.style.opacity = "0";
+          visible = false;
+        }
+        return;
+      }
       if (!visible) {
         layer.style.opacity = String(opacity);
         visible = true;
