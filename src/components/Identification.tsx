@@ -230,13 +230,6 @@ function CircularCarousel({
         })}
       </motion.div>
 
-      {/* Spotlight indicator at top of circle (where active card sits) */}
-      <div
-        aria-hidden
-        className="absolute left-1/2 -translate-x-1/2 -top-7"
-      >
-        <div className="w-2 h-2 rounded-full bg-[hsl(var(--accent))] shadow-[0_0_20px_hsl(var(--accent))]" />
-      </div>
     </div>
   );
 }
