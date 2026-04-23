@@ -104,7 +104,6 @@ export default function HeroSticky() {
           muted
           playsInline
           preload="auto"
-          // @ts-expect-error — non-standard but useful on iOS
           disablePictureInPicture
           className="absolute inset-0 w-full h-full object-cover will-change-transform"
           style={{ filter: videoFilter }}
