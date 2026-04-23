@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import plasterTexture from "@/assets/plaster-texture.jpg";
+import marbleTexture from "@/assets/marble-texture.jpg";
 
 type Props = {
   /** Reveal radius in pixels */
@@ -91,8 +91,8 @@ export default function PlasterReveal({
       aria-hidden
       className="pointer-events-none fixed inset-0 z-0 transition-opacity duration-500"
       style={{
-        backgroundImage: `url(${plasterTexture})`,
-        backgroundSize: "640px 640px",
+        backgroundImage: `url(${marbleTexture})`,
+        backgroundSize: "720px 720px",
         backgroundRepeat: "repeat",
         mixBlendMode: blendMode,
         opacity: 0,
