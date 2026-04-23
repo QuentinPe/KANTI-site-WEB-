@@ -33,6 +33,7 @@ export default function HeroSticky() {
 
     let raf = 0;
     let targetTime = 0;
+    let readyFired = false;
 
     const tick = () => {
       if (video.duration && Number.isFinite(video.duration)) {
@@ -52,20 +53,52 @@ export default function HeroSticky() {
     });
 
     const onReady = () => {
+      if (readyFired) return;
+      readyFired = true;
       setReady(true);
-      video.pause();
+      try {
+        // Safari/iOS unlock: must call play() once before seeking works reliably
+        const p = video.play();
+        if (p && typeof p.then === "function") {
+          p.then(() => video.pause()).catch(() => video.pause());
+        } else {
+          video.pause();
+        }
+      } catch {
+        video.pause();
+      }
       raf = requestAnimationFrame(tick);
     };
 
-    if (video.readyState >= 3) {
+    // Listen to several events — canplaythrough often never fires on slow CDNs
+    if (video.readyState >= 2) {
       onReady();
     } else {
+      video.addEventListener("loadeddata", onReady, { once: true });
+      video.addEventListener("loadedmetadata", onReady, { once: true });
+      video.addEventListener("canplay", onReady, { once: true });
       video.addEventListener("canplaythrough", onReady, { once: true });
     }
+
+    // Force the browser to start fetching even if preload is ignored
+    try {
+      video.load();
+    } catch {
+      /* noop */
+    }
+
+    // Safety net: after 4s, mark ready anyway so the scrub loop starts
+    const failsafe = window.setTimeout(() => {
+      if (!readyFired) onReady();
+    }, 4000);
 
     return () => {
       cancelAnimationFrame(raf);
       unsub();
+      window.clearTimeout(failsafe);
+      video.removeEventListener("loadeddata", onReady);
+      video.removeEventListener("loadedmetadata", onReady);
+      video.removeEventListener("canplay", onReady);
       video.removeEventListener("canplaythrough", onReady);
     };
   }, [isMobile, reduce, scrollYProgress]);
