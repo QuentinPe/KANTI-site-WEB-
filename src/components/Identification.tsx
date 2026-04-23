@@ -161,38 +161,19 @@ function ProblemCard({
   index: number;
   reduce: boolean;
 }) {
-  // Fan rotation across the row of 6 cards (-2.5 → +2.5)
-  const baseRot = ((index - (problematics.length - 1) / 2) / ((problematics.length - 1) / 2)) * 2.5;
-
   return (
     <motion.article
-      initial={
-        reduce
-          ? { opacity: 0 }
-          : { opacity: 0, y: 50, rotate: baseRot - 1 }
-      }
-      whileInView={{ opacity: 1, y: 0, rotate: baseRot }}
+      initial={reduce ? { opacity: 0 } : { opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-10%" }}
-      transition={{
-        duration: 0.9,
-        delay: 0.05 + index * 0.08,
-        ease: [0.22, 1, 0.36, 1],
-      }}
-      whileHover={
-        reduce
-          ? {}
-          : {
-              rotate: 0,
-              y: -8,
-              transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
-            }
-      }
-      className="group/card relative glass-card rounded-[1.5rem] p-7 md:p-8 overflow-hidden h-full transition-shadow duration-500 hover:shadow-[0_30px_80px_-20px_hsl(var(--accent)/0.25)] [transform-style:preserve-3d]"
+      transition={{ duration: 0.9, delay: 0.05 + index * 0.06, ease: [0.22, 1, 0.36, 1] }}
+      whileHover={reduce ? {} : { y: -8, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } }}
+      className="group/card relative glass-card rounded-[1.5rem] p-8 md:p-10 overflow-hidden shrink-0 w-[78vw] sm:w-[60vw] md:w-[420px] lg:w-[460px] h-[60vh] max-h-[520px] flex flex-col transition-shadow duration-500 hover:shadow-[0_30px_80px_-20px_hsl(var(--accent)/0.25)]"
     >
       {/* Ghost number */}
       <span
         aria-hidden
-        className="pointer-events-none absolute -bottom-6 -right-2 font-heading font-light leading-none select-none text-[8rem] md:text-[10rem] text-foreground/[0.04] tracking-tighter"
+        className="pointer-events-none absolute -bottom-10 -right-4 font-heading font-light leading-none select-none text-[12rem] md:text-[16rem] text-foreground/[0.05] tracking-tighter"
       >
         {item.n}
       </span>
@@ -216,9 +197,17 @@ function ProblemCard({
 
       <div className="separator-fine my-4" />
 
-      <p className="relative text-foreground/65 text-sm leading-relaxed font-light">
+      <p className="relative text-foreground/65 text-base leading-relaxed font-light">
         {item.line}
       </p>
+
+      {/* Bottom-right arrow accent */}
+      <div className="relative mt-auto pt-6 flex items-center gap-2 text-foreground/40 group-hover/card:text-[hsl(var(--accent))] transition-colors duration-500">
+        <span className="text-[10px] tracking-[0.3em] uppercase font-medium">En parler</span>
+        <svg className="w-4 h-4 transition-transform duration-500 group-hover/card:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+        </svg>
+      </div>
     </motion.article>
   );
 }
