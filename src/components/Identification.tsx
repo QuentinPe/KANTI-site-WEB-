@@ -111,8 +111,8 @@ export default function Identification() {
           </div>
         </div>
 
-        {/* Circular carousel stage — wheel pushed down so active card sits at top center */}
-        <div className="flex-1 relative overflow-hidden" style={{ perspective: "1600px" }}>
+        {/* Circular carousel stage — overflow visible so active card isn't clipped at top */}
+        <div className="flex-1 relative" style={{ perspective: "1600px" }}>
           <CircularCarousel rotation={rotation} activeIndex={activeIndex} reduce={!!reduce} />
         </div>
 
