@@ -183,7 +183,7 @@ function CircularCarousel({
         className="absolute left-1/2 top-1/2 pointer-events-auto"
       >
         {problematics.map((item, i) => {
-          const angle = -(360 / problematics.length) * i;
+          const angle = (360 / problematics.length) * i;
           const rad = (angle * Math.PI) / 180;
           const x = Math.sin(rad) * radius;
           const y = -Math.cos(rad) * radius;
