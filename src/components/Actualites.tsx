@@ -1,5 +1,63 @@
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
+import { useRef } from "react";
+
+/**
+ * Card wrapper that highlights (white glow + scale) when it crosses the
+ * vertical center of the viewport. Pure scroll-driven, no JS scroll listener.
+ */
+function SpotlightCard({
+  children,
+  className = "",
+  delay = 0,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  delay?: number;
+}) {
+  const ref = useRef<HTMLElement>(null);
+  const reduce = useReducedMotion();
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    // 0 when card bottom enters viewport bottom, 1 when card top exits viewport top
+    offset: ["start end", "end start"],
+  });
+
+  // Peak highlight when the card sits in the middle (~0.5 progress)
+  const highlight = useTransform(scrollYProgress, [0.25, 0.5, 0.75], [0, 1, 0]);
+  const scale = useTransform(highlight, [0, 1], [1, 1.015]);
+  const borderOpacity = useTransform(highlight, [0, 1], [0.08, 0.55]);
+  const glowOpacity = useTransform(highlight, [0, 1], [0, 0.85]);
+
+  return (
+    <motion.article
+      ref={ref}
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-60px" }}
+      transition={{ duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] }}
+      style={
+        reduce
+          ? undefined
+          : {
+              scale,
+              borderColor: useTransform(
+                borderOpacity,
+                (o) => `hsl(0 0% 100% / ${o})`,
+              ),
+              boxShadow: useTransform(
+                glowOpacity,
+                (o) =>
+                  `0 0 0 1px hsl(0 0% 100% / ${o * 0.4}), 0 30px 80px -20px hsl(0 0% 100% / ${o * 0.25})`,
+              ),
+            }
+      }
+      className={`relative border border-white/10 ${className}`}
+    >
+      {children}
+    </motion.article>
+  );
+}
 
 const featured = {
   date: "Avril 2026",
@@ -79,13 +137,7 @@ export default function Actualites() {
 
         <div className="grid lg:grid-cols-12 gap-6 lg:gap-8">
           {/* Featured */}
-          <motion.article
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            className="lg:col-span-7 group relative rounded-[2rem] overflow-hidden glass-dark cursor-pointer"
-          >
+          <SpotlightCard className="lg:col-span-7 group rounded-[2rem] overflow-hidden glass-dark cursor-pointer">
             <div className="relative aspect-[16/10] overflow-hidden">
               <div
                 className="absolute inset-0 bg-cover bg-center transition-transform duration-[1100ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.06]"
@@ -113,18 +165,15 @@ export default function Actualites() {
                 </svg>
               </span>
             </div>
-          </motion.article>
+          </SpotlightCard>
 
           {/* Side stack */}
           <div className="lg:col-span-5 flex flex-col gap-6 lg:gap-7">
             {articles.map((a, i) => (
-              <motion.article
+              <SpotlightCard
                 key={a.title}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-60px" }}
-                transition={{ duration: 0.5, delay: 0.1 + i * 0.08, ease: [0.22, 1, 0.36, 1] }}
-                className="group relative flex gap-5 p-5 rounded-[1.5rem] glass-dark cursor-pointer hover:border-white/15 transition-all duration-500"
+                delay={0.1 + i * 0.08}
+                className="group flex gap-5 p-5 rounded-[1.5rem] glass-dark cursor-pointer transition-colors duration-500"
               >
                 <div
                   className="relative w-28 lg:w-32 aspect-square flex-shrink-0 rounded-xl bg-cover bg-center overflow-hidden"
@@ -143,7 +192,7 @@ export default function Actualites() {
                     {a.excerpt}
                   </p>
                 </div>
-              </motion.article>
+              </SpotlightCard>
             ))}
           </div>
         </div>
