@@ -169,6 +169,11 @@
 @layer utilities {
   .text-balance { text-wrap: balance; }
   .text-pretty { text-wrap: pretty; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  .section-padding-mobile {
+    @apply px-6 py-20;
+  }
 }
 
 @layer components {
