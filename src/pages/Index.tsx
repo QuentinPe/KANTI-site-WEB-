@@ -17,9 +17,12 @@ import CTAFinal from "@/components/CTAFinal";
 import Footer from "@/components/Footer";
 import ScrollProgressRail from "@/components/ScrollProgressRail";
 import PlasterReveal from "@/components/motion/PlasterReveal";
+import HomeMobile from "@/components/mobile/HomeMobile";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const Index = () => {
   useScrollReveal();
+  const isMobile = useIsMobile();
 
   return (
     <>
@@ -28,25 +31,31 @@ const Index = () => {
         description="KANTI accompagne particuliers, dirigeants et familles dans la structuration, l'optimisation fiscale et la transmission de leur patrimoine. Conseil patrimonial indépendant à Bordeaux."
         jsonLd={[organizationJsonLd, localBusinessJsonLd]}
       />
-      <ScrollProgressRail />
-      <PlasterReveal />
-      <Header />
-      <main id="main">
-        <HeroSticky />
-      <Identification />
-      <Promesse />
-      <About />
-      <ExpertisesPinned />
-      <MethodePinned />
-      <HomeCasClients />
-      <HomeProfilRisque />
-      <Equipe />
-      <Actualites />
-      <HomeFAQ />
-      <Confiance />
-      <CTAFinal />
-      </main>
-      <Footer />
+      {isMobile ? (
+        <HomeMobile />
+      ) : (
+        <>
+          <ScrollProgressRail />
+          <PlasterReveal />
+          <Header />
+          <main id="main">
+            <HeroSticky />
+            <Identification />
+            <Promesse />
+            <About />
+            <ExpertisesPinned />
+            <MethodePinned />
+            <HomeCasClients />
+            <HomeProfilRisque />
+            <Equipe />
+            <Actualites />
+            <HomeFAQ />
+            <Confiance />
+            <CTAFinal />
+          </main>
+          <Footer />
+        </>
+      )}
     </>
   );
 };
