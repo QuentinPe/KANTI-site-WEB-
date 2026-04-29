@@ -1,64 +1,113 @@
 
+# Mobile-first premium redesign
 
-# Plan — Effet "Plâtre vivant" révélé au curseur
+The current site adapts the desktop layout to small screens. This plan rebuilds the mobile experience as a first-class design — not a shrunken desktop. Each section gets a dedicated mobile composition, with editorial spacing, generous tap targets, lighter motion, and a frictionless conversion path.
 
-Inspiré de l'image : une texture sculpturale (plâtre/argile en très bas contraste) qui se révèle uniquement **autour du curseur** dans les espaces vides entre les sections de la page d'accueil. Discret, premium, organique — dans la même veine "Immersive Garden" que le reste du site.
+The desktop experience is preserved untouched; mobile renders a separate component tree below the `md` breakpoint (≤767 px).
 
-## Concept visuel
+---
 
-Une couche **fixed full-page** placée **derrière** le contenu (z-index négatif ou très bas), totalement invisible par défaut, qui ne se révèle que dans un **rayon de 240–300px autour du curseur** via un masque radial. Le contenu (cartes, sections glass) reste opaque et masque naturellement la texture — l'effet n'apparaît donc que dans les "respirations" entre les sections.
+## Design principles applied to every section
 
+- Single column, 24 px gutters, 12 px baseline rhythm
+- Body 16–17 px, line-height 1.55 ; titles in `font-heading` light, 32–40 px max
+- Tap targets ≥ 48 px, minimum 12 px between any two
+- Max 1 image per fold, lazy + `decoding="async"`, no scroll-driven canvas on mobile
+- Reveals limited to a single fade+rise (12 px, 500 ms) — no plaster, no split-text-by-char on mobile
+- Shorter copy: a hero sub-line capped at ~110 chars, body paragraphs ≤ 3 lines
+- Trust signals condensed to a horizontal scroll-snap row (ORIAS · CNCGP · 15 ans · 500 familles)
+
+---
+
+## New / rewritten components
+
+### 1. `MobileHeader` (new, replaces `Header` below md)
+- Slim top bar: KANTI wordmark left, single icon button right opening a full-screen sheet
+- Sheet: large 22 px links, expertises as an accordion, primary CTA pinned at the bottom safe-area
+- No nav-unfurl animation, no hover-bubble layoutId logic on touch
+
+### 2. `MobileStickyCTA` (new)
+- Appears after hero exits viewport, hides on scroll-down, reveals on scroll-up
+- Bottom safe-area pill: "Prendre rendez-vous" (primary) + phone icon (tel:)
+- Discreet: 56 px tall, soft glass, dismissible per session
+
+### 3. `HeroMobile` (new, replaces `HeroSticky`/`Hero` below md)
+- Static optimised JPEG (no 121-frame canvas)
+- Eyebrow chip · H1 (4 lines max) · 2-line lede · single full-width primary CTA · ghost secondary
+- Trust row scroll-snaps horizontally
+- Removes cursor-tracked orb, ambient blobs, animated gradient text on mobile
+
+### 4. `IdentificationMobile` (new)
+- Replaces the rotating wheel (heavy, hard on touch)
+- Vertical 01 → 06 timeline with sticky number, 1 card per step, swipe optional via scroll-snap
+
+### 5. `ExpertisesMobile` (new, replaces `ExpertisesPinned`)
+- Removes pinned horizontal scroll
+- Native vertical stack of 4 large cards (image top, title, 2-line summary, "Découvrir" link)
+- One card per fold, scroll-snap-y for an editorial pacing
+
+### 6. `MethodeMobile` (new, replaces `MethodePinned`)
+- 4-step vertical journey, large step number, short title, 2-line description
+- Sticky CTA at the end of the section
+
+### 7. `ActualitesMobile` (new)
+- Featured article full-width, then horizontal scroll-snap carousel of side articles
+- Removes the scroll-driven spotlight glow on mobile
+
+### 8. `CTAFinalMobile` (new, replaces canvas version)
+- Static dark JPEG poster, no 121-frame scrubbing
+- Title · short copy · primary CTA · contact card collapsed into a clean list
+- Section height = auto (drops the `320vh` pin)
+
+### 9. Lighter passes on existing sections
+- `Promesse`, `About`, `HomeCasClients`, `HomeProfilRisque`, `Equipe`, `Confiance`, `HomeFAQ`: tighten mobile padding, enlarge tap targets, reduce font sizes, single column, remove decorative blobs
+
+### 10. Section reordering on mobile (conversion-focused)
 ```text
-┌─────────────────────────────┐
-│  [Section opaque — cache]   │
-│                             │
-│   ░░ texture plâtre ░░      │  ← visible uniquement
-│   ░░  (autour curseur) ░░   │     dans les zones vides
-│                             │
-│  [Section opaque — cache]   │
-└─────────────────────────────┘
+Hero
+Identification (problem)
+Promesse (answer)
+Expertises (what we do)
+Methode (how)
+Confiance (proof: ORIAS/CNCGP/chiffres)
+HomeCasClients (social proof)
+Equipe (human)
+Actualites
+HomeFAQ
+CTAFinal
 ```
+About moves into Equipe on mobile to reduce length.
 
-## Composant à créer
+---
 
-**`src/components/motion/PlasterReveal.tsx`**
-- `<div fixed inset-0>` avec image de texture en background (l'upload de l'utilisateur).
-- Suit la position du curseur via `mousemove` + spring (lerp doux, ~0.08) pour un déplacement organique.
-- Masque appliqué via `mask-image: radial-gradient(circle 280px at X Y, black 0%, transparent 70%)`.
-- Opacité globale max **~0.35** pour rester très discret (texture déjà claire dans l'image).
-- Désactivé sous `prefers-reduced-motion`, sur touch (`hover: none`), et < 768px (fallback : caché).
-- z-index : `-1` (derrière le contenu) ou `0` selon la stratégie d'empilement.
+## Routing logic
 
-## Intégration
+`Index.tsx` uses `useIsMobile()` to render either the desktop tree (unchanged) or the new `<HomeMobile />` tree. Each new mobile component lives in `src/components/mobile/`. No desktop component is modified except for minor tailwind class additions where shared.
 
-1. **Asset** : copier l'image fournie vers `src/assets/plaster-texture.jpg` (ou `.webp` si on optimise) — désaturée, légèrement assombrie pour éviter trop de blanc qui "explose" sur fond clair.
-2. **Index.tsx** : monter `<PlasterReveal />` une seule fois, juste après `<Header />`, en `fixed inset-0 pointer-events-none -z-0`.
-3. **Sections** : s'assurer que les sections principales gardent un `bg-background` ou `section-glass` opaque (déjà le cas) — c'est ce qui fait que la texture n'apparaît QUE dans les marges/respirations.
-4. **Variantes possibles** :
-   - **Mode A (retenu)** : texture plâtre directe (image fournie).
-   - **Mode B (alternatif)** : SVG turbulence + displacement pour un rendu encore plus discret, sans dépendance image. Garder en réserve si l'image rend trop "marqué".
+---
 
-## Réglages fins (à ajuster après preview)
+## Performance
 
-| Paramètre | Valeur initiale |
-|---|---|
-| Rayon révélation | 280px |
-| Falloff (transparent à) | 70% |
-| Opacité globale | 0.32 |
-| Spring damping | 18 |
-| Spring stiffness | 90 |
-| Mix-blend-mode | `multiply` ou `soft-light` (test) |
+- No frame sequences on mobile (`HeroSticky` and `CTAFinal` already gate on `useIsMobile`, but the mobile fallback still ships heavy `Hero`. The new `HeroMobile` ships ~1 image)
+- `PremiumCursor`, `ScrollProgressRail`, `PlasterReveal`, `AmbientParticles` disabled on mobile
+- Lenis smooth scroll kept but with `lerp` softened on touch
 
-## Détails techniques
+---
 
-- **Performance** : `transform: translate3d` sur le masque, pas de re-render React (manipulation directe du style via ref).
-- **Accessibilité** : `aria-hidden`, désactivé en reduced-motion.
-- **Responsive** : caché sous 768px (un curseur tactile n'a pas de sens ici).
-- **z-index strategy** : la couche est en `-z-10` par rapport au `<main>`, mais le `<main>` doit avoir un `bg-background` global déjà en place. Si le body est transparent, on passe la couche en `z-0` derrière les sections opaques (à confirmer sur preview).
+## Out of scope
 
-## Hors scope (pour plus tard si tu valides l'effet)
+- Desktop layout changes
+- Copywriting beyond shortening — French tone preserved
+- New pages (only `/` is rebuilt; inner pages get a follow-up pass if approved)
 
-- Variantes par section (texture différente entre Hero et CasClients).
-- Parallaxe lente de la texture au scroll (drift vertical de 5%).
-- Couplage avec `PremiumCursor` pour un curseur qui "creuse" la matière.
+---
 
+## Deliverable order
+
+1. Mobile header + sticky CTA + routing switch in `Index.tsx`
+2. `HeroMobile`
+3. Identification, Expertises, Methode mobile rewrites
+4. Actualites + CTAFinal mobile rewrites
+5. Polish pass on remaining sections (Promesse, About, Confiance, FAQ, Equipe, CasClients)
+
+After approval I'll implement steps 1–5 in one build pass.
