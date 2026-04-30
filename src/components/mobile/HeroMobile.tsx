@@ -1,5 +1,8 @@
 import { Link } from "react-router-dom";
-import heroImage from "@/assets/mobile-hero.jpg";
+
+// Reuse the SAME visual as the desktop hero (poster of the office video sequence)
+// → ensures perfect brand consistency between desktop and mobile.
+const HERO_IMAGE = "/video/hero-office-poster.jpg";
 
 const trust = [
   { k: "ORIAS", v: "Inscrit & vérifié" },
@@ -15,7 +18,7 @@ export default function HeroMobile() {
       className="relative min-h-[100svh] flex flex-col text-white overflow-hidden"
     >
       <img
-        src={heroImage}
+        src={HERO_IMAGE}
         alt=""
         aria-hidden
         fetchPriority="high"
