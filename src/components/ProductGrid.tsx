@@ -7,6 +7,7 @@ interface ProductGridProps {
   intro?: string;
   categorySlug: string;
   products: Product[];
+  hideLinks?: boolean;
 }
 
 /**
@@ -19,6 +20,7 @@ export default function ProductGrid({
   intro,
   categorySlug,
   products,
+  hideLinks = false,
 }: ProductGridProps) {
   return (
     <section className="section-padding section-glass relative">
@@ -53,6 +55,7 @@ export default function ProductGrid({
                 fiscality={p.fiscality}
                 horizon={p.horizon}
                 href={`/${categorySlug}/${p.slug}`}
+                hideLink={hideLinks}
               />
             </div>
           ))}

@@ -25,7 +25,7 @@ export default function ExpertiseShowcase({
   pillars,
 }: ExpertiseShowcaseProps) {
   return (
-    <section className="section-padding bg-background relative overflow-hidden">
+    <section className="section-padding bg-background relative">
       <div className="max-w-7xl mx-auto">
         <div className="grid lg:grid-cols-12 gap-8 md:gap-10 lg:gap-16 items-start">
           {/* Image column */}

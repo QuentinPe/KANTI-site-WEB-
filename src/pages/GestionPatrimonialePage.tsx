@@ -3,7 +3,6 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PageHero from "@/components/PageHero";
 import PageCTA from "@/components/PageCTA";
-import EpargneSimulator from "@/components/simulators/EpargneSimulator";
 import ExpertiseShowcase from "@/components/ExpertiseShowcase";
 import ProductGrid from "@/components/ProductGrid";
 import StickyImageBand from "@/components/StickyImageBand";
@@ -52,23 +51,13 @@ export default function GestionPatrimonialePage() {
         caption="Aucun produit maison, aucun quota — chaque support sélectionné après analyse comparative."
       />
 
-      {/* Simulator section */}
-      <section className="section-padding">
-        <div className="max-w-7xl mx-auto reveal">
-          <div className="mb-10 md:mb-14 flex items-center gap-4">
-            <span className="text-[10px] tracking-[0.32em] uppercase text-foreground/55 font-medium">Simulez</span>
-            <div className="h-px flex-1 bg-foreground/10" />
-          </div>
-          <EpargneSimulator />
-        </div>
-      </section>
-
       <ProductGrid
         eyebrow="Solutions & enveloppes"
         title="Les outils que nous mobilisons"
         intro="Chaque solution est sélectionnée et calibrée selon votre profil. Survolez une carte pour explorer les conditions, la fiscalité et l'horizon recommandé."
         categorySlug={category.slug}
         products={category.products}
+        hideLinks
       />
       <PageCTA
         title="Faisons le point sur votre épargne"
