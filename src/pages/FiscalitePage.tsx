@@ -3,7 +3,6 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PageHero from "@/components/PageHero";
 import PageCTA from "@/components/PageCTA";
-import FiscaliteSimulator from "@/components/simulators/FiscaliteSimulator";
 import ExpertiseShowcase from "@/components/ExpertiseShowcase";
 import ProductGrid from "@/components/ProductGrid";
 import StickyImageBand from "@/components/StickyImageBand";
@@ -52,23 +51,13 @@ export default function FiscalitePage() {
         caption="Une optimisation fiscale durable repose sur la méthode, jamais sur le produit."
       />
 
-      {/* Simulator */}
-      <section className="section-padding">
-        <div className="max-w-7xl mx-auto reveal">
-          <div className="mb-10 md:mb-14 flex items-center gap-4">
-            <span className="text-[10px] tracking-[0.32em] uppercase text-foreground/55 font-medium">Simulez</span>
-            <div className="h-px flex-1 bg-foreground/10" />
-          </div>
-          <FiscaliteSimulator />
-        </div>
-      </section>
-
       <ProductGrid
         eyebrow="Leviers fiscaux"
         title="Les leviers que nous activons"
         intro="Chaque levier est étudié à la lumière de votre TMI, votre patrimoine et vos projets. Survolez pour découvrir le détail."
         categorySlug={category.slug}
         products={category.products}
+        hideLinks
       />
       <PageCTA
         title="Faisons le point sur votre fiscalité"

@@ -3,7 +3,6 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PageHero from "@/components/PageHero";
 import PageCTA from "@/components/PageCTA";
-import PatrimoineProSimulator from "@/components/simulators/PatrimoineProSimulator";
 import ExpertiseShowcase from "@/components/ExpertiseShowcase";
 import ProductGrid from "@/components/ProductGrid";
 import StickyImageBand from "@/components/StickyImageBand";
@@ -52,23 +51,13 @@ export default function PatrimoineProPage() {
         caption="Patrimoine privé et professionnel sont indissociables. Nous les traitons ensemble."
       />
 
-      {/* Simulator */}
-      <section className="section-padding">
-        <div className="max-w-7xl mx-auto reveal">
-          <div className="mb-10 md:mb-14 flex items-center gap-4">
-            <span className="text-[10px] tracking-[0.32em] uppercase text-foreground/55 font-medium">Simulez</span>
-            <div className="h-px flex-1 bg-foreground/10" />
-          </div>
-          <PatrimoineProSimulator />
-        </div>
-      </section>
-
       <ProductGrid
         eyebrow="Solutions dirigeants"
         title="Les leviers que nous activons pour vous"
         intro="Rémunération, holding, prévoyance, cession : chaque décision impacte simultanément votre entreprise et votre patrimoine privé."
         categorySlug={category.slug}
         products={category.products}
+        hideLinks
       />
       <PageCTA
         title="Dirigeants, parlons stratégie"
