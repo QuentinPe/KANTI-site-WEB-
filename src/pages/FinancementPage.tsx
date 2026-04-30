@@ -3,7 +3,6 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PageHero from "@/components/PageHero";
 import PageCTA from "@/components/PageCTA";
-import CreditSimulator from "@/components/simulators/CreditSimulator";
 import ExpertiseShowcase from "@/components/ExpertiseShowcase";
 import ProductGrid from "@/components/ProductGrid";
 import StickyImageBand from "@/components/StickyImageBand";
@@ -52,23 +51,13 @@ export default function FinancementPage() {
         caption="Le crédit n'est pas qu'une question de taux. C'est un outil patrimonial."
       />
 
-      {/* Simulator */}
-      <section className="section-padding">
-        <div className="max-w-7xl mx-auto reveal">
-          <div className="mb-10 md:mb-14 flex items-center gap-4">
-            <span className="text-[10px] tracking-[0.32em] uppercase text-foreground/55 font-medium">Simulez</span>
-            <div className="h-px flex-1 bg-foreground/10" />
-          </div>
-          <CreditSimulator />
-        </div>
-      </section>
-
       <ProductGrid
         eyebrow="Solutions de financement"
         title="Les financements que nous structurons"
         intro="De la résidence principale au crédit lombard, chaque montage est négocié et adapté à votre stratégie patrimoniale."
         categorySlug={category.slug}
         products={category.products}
+        hideLinks
       />
       <PageCTA
         title="Parlons de votre projet de financement"
