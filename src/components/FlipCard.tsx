@@ -10,6 +10,7 @@ export interface FlipCardProps {
   fiscality: string;
   horizon?: string;
   href: string;
+  hideLink?: boolean;
 }
 
 /**
@@ -27,6 +28,7 @@ export default function FlipCard({
   fiscality,
   horizon,
   href,
+  hideLink = false,
 }: FlipCardProps) {
   const [flipped, setFlipped] = useState(false);
 
@@ -135,26 +137,28 @@ export default function FlipCard({
             </div>
           </div>
 
-          <Link
-            to={href}
-            onClick={(e) => e.stopPropagation()}
-            className="mt-5 inline-flex items-center gap-2 text-[12.5px] font-medium text-foreground hover:text-[hsl(var(--electric))] transition-colors self-start link-underline"
-          >
-            Approfondir cette solution
-            <svg
-              className="w-3.5 h-3.5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={1.5}
+          {!hideLink && (
+            <Link
+              to={href}
+              onClick={(e) => e.stopPropagation()}
+              className="mt-5 inline-flex items-center gap-2 text-[12.5px] font-medium text-foreground hover:text-[hsl(var(--electric))] transition-colors self-start link-underline"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
-              />
-            </svg>
-          </Link>
+              Approfondir cette solution
+              <svg
+                className="w-3.5 h-3.5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={1.5}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+                />
+              </svg>
+            </Link>
+          )}
         </div>
       </div>
     </div>
