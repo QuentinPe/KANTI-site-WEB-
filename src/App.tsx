@@ -8,6 +8,7 @@ import { useLenis } from "@/hooks/useLenis";
 import PremiumCursor from "@/components/PremiumCursor";
 import CookieBanner from "@/components/CookieBanner";
 import SkipToContent from "@/components/SkipToContent";
+import MobileChrome from "@/components/mobile/MobileChrome";
 import Index from "./pages/Index.tsx";
 import CabinetPage from "./pages/CabinetPage.tsx";
 import GestionPatrimonialePage from "./pages/GestionPatrimonialePage.tsx";
@@ -44,6 +45,7 @@ const AppShell = () => {
       <Sonner />
       <PremiumCursor />
       <BrowserRouter>
+        <MobileChrome />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/cabinet" element={<CabinetPage />} />
