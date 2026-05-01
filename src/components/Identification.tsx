@@ -43,9 +43,6 @@ const problematics = [
 export default function Identification() {
   const reduce = useReducedMotion();
 
-export default function Identification() {
-  const reduce = useReducedMotion();
-
   return (
     <section
       id="problematiques"
