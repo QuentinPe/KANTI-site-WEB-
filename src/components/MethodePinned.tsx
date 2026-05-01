@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { usePinnedSectionProgress } from "@/hooks/usePinnedSectionProgress";
 import SplitText from "./motion/SplitText";
+import NoiseGrain from "./motion/NoiseGrain";
 
 const steps = [
   {
@@ -11,7 +12,7 @@ const steps = [
     description:
       "Un premier rendez-vous de 30 minutes pour comprendre votre situation, vos projets et vos préoccupations. Gratuit et sans engagement.",
     image:
-      "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=1600&q=80",
+      "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=2000&q=80",
   },
   {
     number: "02",
@@ -19,7 +20,7 @@ const steps = [
     description:
       "Audit complet de votre patrimoine : actifs, passifs, fiscalité, prévoyance, régimes matrimoniaux. Nous regardons tout, sans angle mort.",
     image:
-      "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=1600&q=80",
+      "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=2000&q=80",
   },
   {
     number: "03",
@@ -27,7 +28,7 @@ const steps = [
     description:
       "Nous formalisons ensemble vos priorités : revenus, retraite, transmission, fiscalité, projets de vie. Une carte claire avant toute décision.",
     image:
-      "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1600&q=80",
+      "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=2000&q=80",
   },
   {
     number: "04",
@@ -35,15 +36,15 @@ const steps = [
     description:
       "Une lettre de recommandations structurée, avec simulations chiffrées et scénarios comparés. Vous gardez la main, nous éclairons les choix.",
     image:
-      "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=1600&q=80",
+      "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=2000&q=80",
   },
   {
     number: "05",
     title: "Mise en œuvre",
     description:
-      "Sélection des meilleurs contrats et supports du marché, ouverture des comptes, coordination avec vos autres conseils (notaire, expert-comptable, avocat).",
+      "Sélection des meilleurs contrats et supports du marché, ouverture des comptes, coordination avec vos autres conseils — notaire, expert-comptable, avocat.",
     image:
-      "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=1600&q=80",
+      "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=2000&q=80",
   },
   {
     number: "06",
@@ -51,23 +52,42 @@ const steps = [
     description:
       "Un rendez-vous annuel de bilan, des alertes en cas de changement législatif, un interlocuteur disponible toute l'année. La relation s'inscrit dans la durée.",
     image:
-      "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1600&q=80",
+      "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=2000&q=80",
   },
 ];
 
 export default function MethodePinned() {
   const ref = useRef<HTMLDivElement>(null);
-  const { activeIndex, progress } = usePinnedSectionProgress(ref, steps.length);
+  const { activeIndex, progress, stepProgress } = usePinnedSectionProgress(
+    ref,
+    steps.length,
+  );
   const activeStep = steps[activeIndex];
+  const reduce = useReducedMotion();
+
+  const scrollToStep = (i: number) => {
+    const el = ref.current;
+    if (!el) return;
+    const travel = el.offsetHeight - window.innerHeight;
+    const target =
+      el.getBoundingClientRect().top +
+      window.scrollY +
+      (i / steps.length) * travel +
+      travel * 0.02;
+    window.scrollTo({ top: target, behavior: "smooth" });
+  };
 
   return (
     <section id="methode" className="relative">
-      {/* Mobile fallback : simple stack */}
-      <div className="md:hidden section-padding">
+      {/* ===== MOBILE FALLBACK (unchanged simple stack) ===== */}
+      <div className="md:hidden section-padding bg-[hsl(var(--navy-deep))] text-white">
         <div className="max-w-2xl mx-auto">
-          <p className="text-[11px] tracking-[0.3em] uppercase text-white/50 mb-5 font-medium">Méthode</p>
+          <p className="text-[11px] tracking-[0.3em] uppercase text-white/50 mb-5 font-medium">
+            Méthode
+          </p>
           <h2 className="text-4xl font-heading font-light mb-12 tracking-tight leading-[1.1]">
-            Comment nous<br />
+            Comment nous
+            <br />
             <span className="italic text-white/75">travaillons</span>
           </h2>
           <ol className="space-y-8">
@@ -79,10 +99,14 @@ export default function MethodePinned() {
                 />
                 <div className="p-6">
                   <div className="flex items-baseline gap-4 mb-3">
-                    <span className="text-2xl font-heading font-light text-[hsl(var(--electric-soft))]">{s.number}</span>
+                    <span className="text-2xl font-heading font-light text-[hsl(var(--electric-soft))]">
+                      {s.number}
+                    </span>
                     <h3 className="font-heading text-xl text-white">{s.title}</h3>
                   </div>
-                  <p className="text-white/60 text-sm leading-relaxed">{s.description}</p>
+                  <p className="text-white/60 text-sm leading-relaxed">
+                    {s.description}
+                  </p>
                 </div>
               </li>
             ))}
@@ -90,196 +114,298 @@ export default function MethodePinned() {
         </div>
       </div>
 
-      {/* Desktop : pinned storytelling */}
+      {/* ===== DESKTOP : IMMERSIVE CINEMA ===== */}
       <div
         ref={ref}
-        className="hidden md:block relative text-primary-foreground"
-        style={{ height: `${100 + steps.length * 68}vh`, background: "var(--gradient-hero)" }}
+        className="hidden md:block relative text-white"
+        style={{
+          height: `${100 + steps.length * 90}vh`,
+          background: "hsl(var(--navy-deep))",
+        }}
       >
-        <div className="sticky top-0 h-screen flex items-center overflow-hidden">
-          {/* Ambient orbs */}
-          <div
-            className="absolute top-[10%] right-[10%] w-[480px] h-[480px] rounded-full pointer-events-none"
+        {/* Top mask reveal — black curtain that drops as we enter the section */}
+        <div
+          aria-hidden
+          className="sticky top-0 h-0 z-30 pointer-events-none"
+        />
+
+        <div className="sticky top-0 h-screen w-full overflow-hidden">
+          {/* ── Background image stack with crossfade + ken-burns ── */}
+          <div className="absolute inset-0">
+            <AnimatePresence mode="sync">
+              <motion.div
+                key={`bg-${activeStep.number}`}
+                aria-hidden
+                initial={reduce ? { opacity: 0 } : { opacity: 0, scale: 1.08 }}
+                animate={
+                  reduce
+                    ? { opacity: 1 }
+                    : {
+                        opacity: 1,
+                        scale: 1.18,
+                        x: ["0%", "-2%"],
+                        y: ["0%", "1.5%"],
+                      }
+                }
+                exit={{ opacity: 0 }}
+                transition={{
+                  opacity: { duration: 1.4, ease: [0.22, 1, 0.36, 1] },
+                  scale: { duration: 14, ease: "linear" },
+                  x: { duration: 14, ease: "linear" },
+                  y: { duration: 14, ease: "linear" },
+                }}
+                className="absolute inset-0 will-change-transform"
+                style={{
+                  backgroundImage: `url(${activeStep.image})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                }}
+              />
+            </AnimatePresence>
+
+            {/* Cinematic gradient overlays */}
+            <div
+              aria-hidden
+              className="absolute inset-0"
+              style={{
+                background:
+                  "linear-gradient(180deg, hsl(var(--navy-deep) / 0.55) 0%, hsl(var(--navy-deep) / 0.78) 45%, hsl(var(--navy-deep) / 0.95) 100%)",
+              }}
+            />
+            {/* Vignette */}
+            <div
+              aria-hidden
+              className="absolute inset-0"
+              style={{
+                background:
+                  "radial-gradient(ellipse at center, transparent 35%, hsl(var(--navy-deep) / 0.85) 100%)",
+              }}
+            />
+          </div>
+
+          {/* Pulsing electric halo behind the giant number */}
+          <motion.div
+            aria-hidden
+            className="absolute left-[-8%] top-1/2 -translate-y-1/2 w-[55vw] h-[55vw] rounded-full pointer-events-none"
+            animate={
+              reduce
+                ? {}
+                : { opacity: [0.35, 0.55, 0.35], scale: [1, 1.06, 1] }
+            }
+            transition={{ duration: 6, ease: "easeInOut", repeat: Infinity }}
             style={{
-              background: "radial-gradient(circle, hsl(210 100% 60% / 0.18) 0%, transparent 70%)",
+              background:
+                "radial-gradient(circle, hsl(210 100% 60% / 0.22) 0%, transparent 60%)",
               filter: "blur(60px)",
             }}
           />
-          <div
-            className="absolute bottom-[10%] left-[5%] w-[380px] h-[380px] rounded-full pointer-events-none"
-            style={{
-              background: "radial-gradient(circle, hsl(38 35% 60% / 0.10) 0%, transparent 70%)",
-              filter: "blur(70px)",
-            }}
-          />
 
-          <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-12 w-full grid grid-cols-12 gap-8 items-center">
-            {/* Left : intro + active step text */}
-            <div className="col-span-5">
-              <div className="electric-line mb-5" style={{ background: "linear-gradient(90deg, hsl(210 100% 70%), hsl(210 100% 70% / 0.2))" }} />
-              <p className="text-[11px] tracking-[0.3em] uppercase text-white/50 mb-5 font-medium">Méthode</p>
-              <h2 className="text-4xl lg:text-5xl font-heading font-light mb-6 tracking-tight leading-[1.05]">
-                <SplitText text="Comment nous" by="word" stagger={0.07} />
-                <br />
+          {/* Film grain overlay */}
+          <NoiseGrain opacity={0.07} blendMode="overlay" />
+
+          {/* ── Top bar : cinema counter ── */}
+          <div className="absolute top-8 left-0 right-0 z-20 px-12 lg:px-20 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <span className="block w-1.5 h-1.5 rounded-full bg-[hsl(var(--electric-soft))] animate-pulse shadow-[0_0_10px_hsl(var(--electric))]" />
+              <p className="text-[10px] tracking-[0.4em] uppercase text-white/55 font-medium">
+                Méthode · Notre processus
+              </p>
+            </div>
+            <div className="flex items-center gap-4">
+              <span className="font-mono text-[11px] tracking-[0.25em] text-white/70 tabular-nums">
+                {activeStep.number} / {String(steps.length).padStart(2, "0")}
+              </span>
+              <div className="w-24 h-px bg-white/15 overflow-hidden">
+                <motion.div
+                  animate={{ width: `${stepProgress * 100}%` }}
+                  transition={{ duration: 0.18, ease: "linear" }}
+                  className="h-full bg-[hsl(var(--electric-soft))] shadow-[0_0_8px_hsl(var(--electric))]"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* ── Giant ghost number ── */}
+          <motion.span
+            key={`num-${activeStep.number}`}
+            aria-hidden
+            initial={reduce ? { opacity: 0 } : { opacity: 0, x: -40 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+            className="absolute left-[-2vw] top-1/2 -translate-y-1/2 font-heading font-light text-white/[0.06] select-none pointer-events-none leading-none tracking-tighter z-10"
+            style={{ fontSize: "clamp(18rem, 28vw, 32rem)" }}
+          >
+            {activeStep.number}
+          </motion.span>
+
+          {/* ── Center editorial content ── */}
+          <div className="relative z-20 h-full flex items-center justify-center px-12 lg:px-20">
+            <div className="max-w-3xl text-center">
+              <motion.div
+                key={`tag-${activeStep.number}`}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+                className="inline-flex items-center gap-3 px-4 py-1.5 rounded-full border border-white/15 bg-white/5 backdrop-blur-md mb-8"
+              >
+                <span className="text-[10px] tracking-[0.35em] uppercase text-[hsl(var(--electric-soft))] font-medium">
+                  Étape {activeStep.number}
+                </span>
+                <span className="block w-1 h-1 rounded-full bg-white/40" />
+                <span className="text-[10px] tracking-[0.25em] uppercase text-white/60 font-medium">
+                  {activeIndex === 0
+                    ? "Premier contact"
+                    : activeIndex === steps.length - 1
+                      ? "Dans la durée"
+                      : "Construction"}
+                </span>
+              </motion.div>
+
+              <h2
+                key={`title-${activeStep.number}`}
+                className="font-heading font-light tracking-tight leading-[1.02] mb-8 text-white"
+                style={{ fontSize: "clamp(3rem, 6vw, 5.5rem)" }}
+              >
                 <SplitText
-                  text="travaillons"
+                  text={activeStep.title}
                   by="word"
-                  delay={0.3}
-                  itemClassName="italic text-white/75"
+                  stagger={0.08}
+                  duration={0.85}
+                  itemClassName="italic text-white"
                 />
               </h2>
-              <p className="text-white/60 text-sm lg:text-base font-light max-w-md leading-relaxed mb-6">
-                Pas de formule standard, mais un processus clair, reproductible, qui respecte votre temps et vos priorités.
-              </p>
 
-              {/* Vertical timeline with progressive fill */}
-              <div className="relative pl-8">
-                <div className="absolute left-1.5 top-2 bottom-2 w-px bg-white/10 overflow-hidden">
-                  <motion.div
-                    animate={{ height: `${progress * 100}%` }}
-                    transition={{ duration: 0.18, ease: "linear" }}
-                    className="w-full bg-gradient-to-b from-[hsl(var(--electric-soft))] via-[hsl(var(--electric))] to-[hsl(var(--electric))/0.4] shadow-[0_0_12px_hsl(var(--electric)/0.7)]"
-                  />
-                  {/* Pulsing glow at the leading tip */}
-                  <motion.div
-                    animate={{ top: `${progress * 100}%` }}
-                    transition={{ duration: 0.18, ease: "linear" }}
-                    className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-[hsl(var(--electric-soft))] animate-[pulse_2s_ease-in-out_infinite] shadow-[0_0_18px_4px_hsl(var(--electric)/0.7)]"
-                  />
-                </div>
-                <ol className="space-y-2.5">
-                  {steps.map((s, i) => (
-                    <StepRow
-                      key={s.number}
-                      number={s.number}
-                      title={s.title}
-                      active={i === activeIndex}
+              <motion.p
+                key={`desc-${activeStep.number}`}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.7, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                className="text-white/75 text-lg lg:text-xl leading-relaxed font-light max-w-2xl mx-auto"
+              >
+                {activeStep.description}
+              </motion.p>
+
+              {activeIndex === steps.length - 1 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.6 }}
+                  className="mt-12"
+                >
+                  <Link
+                    to="/contact"
+                    data-magnetic
+                    className="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-white text-[hsl(var(--navy-deep))] text-sm font-medium tracking-wide hover:bg-white/90 transition-colors shadow-[0_20px_60px_-15px_hsl(var(--electric)/0.5)]"
+                  >
+                    Démarrer la conversation
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={1.6}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+                      />
+                    </svg>
+                  </Link>
+                </motion.div>
+              )}
+            </div>
+          </div>
+
+          {/* ── Bottom horizontal timeline ── */}
+          <div className="absolute bottom-10 left-0 right-0 z-20 px-12 lg:px-20">
+            <div className="max-w-5xl mx-auto">
+              {/* Active step label */}
+              <div className="flex items-end justify-between mb-4">
+                <motion.p
+                  key={`label-${activeStep.number}`}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                  className="text-[11px] tracking-[0.3em] uppercase text-white/60 font-medium"
+                >
+                  En cours · <span className="text-white">{activeStep.title}</span>
+                </motion.p>
+                <Link
+                  to="/notre-methode"
+                  className="text-[11px] tracking-[0.25em] uppercase text-white/55 hover:text-white transition-colors font-medium inline-flex items-center gap-2"
+                >
+                  Voir la méthode complète
+                  <svg
+                    className="w-3 h-3"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={1.5}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
                     />
-                  ))}
-                </ol>
+                  </svg>
+                </Link>
               </div>
 
-              <Link
-                to="/notre-methode"
-                data-magnetic
-                className="mt-6 inline-flex items-center gap-2 px-6 py-3 btn-glass text-white text-sm tracking-wide whitespace-nowrap leading-none"
-              >
-                Découvrir notre méthode en détail
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                </svg>
-              </Link>
-            </div>
-
-            {/* Right : active step card with editorial image + text */}
-            <div className="col-span-7 relative h-[540px]">
-              {/* Volumetric halo behind active card */}
-              <motion.div
-                key={`halo-${activeStep.number}`}
-                aria-hidden
-                className="absolute -inset-12 pointer-events-none"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.8 }}
-                style={{
-                  background:
-                    "radial-gradient(ellipse at center, hsl(210 100% 60% / 0.18) 0%, transparent 60%)",
-                  filter: "blur(40px)",
-                }}
-              />
-              <AnimatePresence mode="popLayout">
-                <StepCard key={activeStep.number} step={activeStep} index={activeIndex} />
-              </AnimatePresence>
+              {/* Timeline rail */}
+              <div className="relative h-px bg-white/10">
+                <motion.div
+                  animate={{ width: `${progress * 100}%` }}
+                  transition={{ duration: 0.18, ease: "linear" }}
+                  className="absolute top-0 left-0 h-px bg-gradient-to-r from-[hsl(var(--electric-soft))] to-[hsl(var(--electric))] shadow-[0_0_12px_hsl(var(--electric)/0.7)]"
+                />
+                <div className="absolute inset-0 flex justify-between items-center -translate-y-1/2">
+                  {steps.map((s, i) => {
+                    const isActive = i === activeIndex;
+                    const isPassed = i < activeIndex;
+                    return (
+                      <button
+                        key={s.number}
+                        type="button"
+                        onClick={() => scrollToStep(i)}
+                        aria-label={`Aller à l'étape ${s.number} — ${s.title}`}
+                        aria-current={isActive ? "step" : undefined}
+                        className="group relative flex flex-col items-center cursor-pointer focus:outline-none"
+                      >
+                        <motion.span
+                          animate={{
+                            scale: isActive ? 1.6 : 1,
+                            backgroundColor: isActive || isPassed
+                              ? "hsl(var(--electric-soft))"
+                              : "hsl(0 0% 100% / 0.3)",
+                          }}
+                          transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                          className="block w-2 h-2 rounded-full"
+                          style={{
+                            boxShadow: isActive
+                              ? "0 0 16px hsl(var(--electric) / 0.9)"
+                              : undefined,
+                          }}
+                        />
+                        <span
+                          className={`absolute top-5 font-mono text-[10px] tabular-nums tracking-[0.2em] transition-colors ${
+                            isActive ? "text-white" : "text-white/35 group-hover:text-white/70"
+                          }`}
+                        >
+                          {s.number}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </section>
-  );
-}
-
-function StepRow({
-  number,
-  title,
-  active,
-}: {
-  number: string;
-  title: string;
-  active: boolean;
-}) {
-  return (
-    <motion.li
-      animate={{ opacity: active ? 1 : 0.42, x: active ? 0 : -6 }}
-      transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-      className="relative flex items-baseline gap-4 text-white"
-    >
-      <motion.span
-        animate={{ scale: active ? 1.4 : 0.82, opacity: active ? 1 : 0.5 }}
-        transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-        className="absolute -left-[30px] top-[10px] w-2.5 h-2.5 rounded-full bg-[hsl(var(--electric-soft))] origin-center shadow-[0_0_12px_hsl(var(--electric)/0.6)]"
-      />
-      <span className="text-sm font-heading font-light text-[hsl(var(--electric-soft))] w-8">{number}</span>
-      <span className="text-base lg:text-lg font-light tracking-wide">{title}</span>
-    </motion.li>
-  );
-}
-
-function StepCard({
-  step,
-  index,
-}: {
-  step: (typeof steps)[number];
-  index: number;
-}) {
-  const reduce = useReducedMotion();
-
-  return (
-    <motion.article
-      initial={reduce ? { opacity: 0 } : { opacity: 0, y: 24, scale: 0.985 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={reduce ? { opacity: 0 } : { opacity: 0, y: -16, scale: 0.99 }}
-      transition={{ duration: 0.62, ease: [0.22, 1, 0.36, 1] }}
-      style={{ zIndex: index }}
-      className="absolute inset-0 glass-dark rounded-[2rem] overflow-hidden flex flex-col"
-    >
-      {/* Editorial image */}
-      <div className="relative h-[55%] overflow-hidden">
-        <motion.div
-          initial={reduce ? { scale: 1 } : { scale: 1.12 }}
-          animate={{ scale: 1 }}
-          exit={reduce ? { scale: 1 } : { scale: 1.04 }}
-          transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-          style={{ backgroundImage: `url(${step.image})` }}
-          className="absolute inset-0 bg-cover bg-center will-change-transform"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-[hsl(var(--navy-deep))/0.85] via-[hsl(var(--navy-deep))/0.2] to-transparent" />
-        <span
-          aria-hidden
-          className="absolute top-5 left-6 text-[10px] font-medium tracking-[0.3em] uppercase text-white/85 px-3 py-1 rounded-full bg-black/30 backdrop-blur-md"
-        >
-          Étape {step.number}
-        </span>
-      </div>
-
-      {/* Text */}
-      <div className="relative z-10 p-8 lg:p-10 flex-1 flex flex-col justify-center">
-        {/* Giant ghost number — gentle floating */}
-        <motion.span
-          aria-hidden
-          animate={reduce ? {} : { y: [0, -4, 0, 4, 0] }}
-          transition={{ duration: 6, ease: "easeInOut", repeat: Infinity }}
-          className="absolute -top-10 -right-2 font-heading font-light text-white/[0.05] select-none pointer-events-none leading-none"
-          style={{ fontSize: "clamp(8rem, 16vw, 16rem)" }}
-        >
-          {step.number}
-        </motion.span>
-        <h3 className="font-heading text-3xl lg:text-[2.4rem] font-light text-white tracking-tight leading-[1.1] mb-4 max-w-lg">
-          {step.title}
-        </h3>
-        <p className="text-white/70 text-[15px] lg:text-base leading-relaxed font-light max-w-lg">
-          {step.description}
-        </p>
-      </div>
-    </motion.article>
   );
 }

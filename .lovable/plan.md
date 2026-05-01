@@ -1,113 +1,79 @@
+## Objectif
 
-# Mobile-first premium redesign
+Transformer `MethodePinned` en une expérience **immersive cinématographique** qui tranche radicalement avec la section "Vos enjeux" qui la précède (grille éditoriale claire, statique, sur fond papier). Le contraste visuel et sensoriel doit être immédiat dès l'entrée dans la section.
 
-The current site adapts the desktop layout to small screens. This plan rebuilds the mobile experience as a first-class design — not a shrunken desktop. Each section gets a dedicated mobile composition, with editorial spacing, generous tap targets, lighter motion, and a frictionless conversion path.
+## Contraste à créer avec la section précédente
 
-The desktop experience is preserved untouched; mobile renders a separate component tree below the `md` breakpoint (≤767 px).
+| Section précédente (Vos enjeux) | Nouvelle Méthode |
+|---|---|
+| Fond clair (texture papier) | Fond noir profond, immersif |
+| Cartes statiques en grille | Plein écran, narration cinématique |
+| Lecture libre, scan rapide | Voyage guidé, étape par étape |
+| Pas de média | Image plein-cadre + parallax |
+| Typo discrète | Typo monumentale, numéros XXL |
 
----
+## Concept : "Le studio" — narration plein-écran
 
-## Design principles applied to every section
+Refonte complète de `src/components/MethodePinned.tsx` (desktop uniquement, le mobile `MethodeMobile.tsx` reste inchangé).
 
-- Single column, 24 px gutters, 12 px baseline rhythm
-- Body 16–17 px, line-height 1.55 ; titles in `font-heading` light, 32–40 px max
-- Tap targets ≥ 48 px, minimum 12 px between any two
-- Max 1 image per fold, lazy + `decoding="async"`, no scroll-driven canvas on mobile
-- Reveals limited to a single fade+rise (12 px, 500 ms) — no plaster, no split-text-by-char on mobile
-- Shorter copy: a hero sub-line capped at ~110 chars, body paragraphs ≤ 3 lines
-- Trust signals condensed to a horizontal scroll-snap row (ORIAS · CNCGP · 15 ans · 500 familles)
+### 1. Transition d'entrée immersive
+- Une bande noire qui **se déploie depuis le haut** quand la section entre dans le viewport (clip-path mask reveal), créant une rupture nette avec le fond clair de la section précédente.
+- Ambiance : grain léger animé, halo bleu électrique pulsant en arrière-plan, particules subtiles.
 
----
-
-## New / rewritten components
-
-### 1. `MobileHeader` (new, replaces `Header` below md)
-- Slim top bar: KANTI wordmark left, single icon button right opening a full-screen sheet
-- Sheet: large 22 px links, expertises as an accordion, primary CTA pinned at the bottom safe-area
-- No nav-unfurl animation, no hover-bubble layoutId logic on touch
-
-### 2. `MobileStickyCTA` (new)
-- Appears after hero exits viewport, hides on scroll-down, reveals on scroll-up
-- Bottom safe-area pill: "Prendre rendez-vous" (primary) + phone icon (tel:)
-- Discreet: 56 px tall, soft glass, dismissible per session
-
-### 3. `HeroMobile` (new, replaces `HeroSticky`/`Hero` below md)
-- Static optimised JPEG (no 121-frame canvas)
-- Eyebrow chip · H1 (4 lines max) · 2-line lede · single full-width primary CTA · ghost secondary
-- Trust row scroll-snaps horizontally
-- Removes cursor-tracked orb, ambient blobs, animated gradient text on mobile
-
-### 4. `IdentificationMobile` (new)
-- Replaces the rotating wheel (heavy, hard on touch)
-- Vertical 01 → 06 timeline with sticky number, 1 card per step, swipe optional via scroll-snap
-
-### 5. `ExpertisesMobile` (new, replaces `ExpertisesPinned`)
-- Removes pinned horizontal scroll
-- Native vertical stack of 4 large cards (image top, title, 2-line summary, "Découvrir" link)
-- One card per fold, scroll-snap-y for an editorial pacing
-
-### 6. `MethodeMobile` (new, replaces `MethodePinned`)
-- 4-step vertical journey, large step number, short title, 2-line description
-- Sticky CTA at the end of the section
-
-### 7. `ActualitesMobile` (new)
-- Featured article full-width, then horizontal scroll-snap carousel of side articles
-- Removes the scroll-driven spotlight glow on mobile
-
-### 8. `CTAFinalMobile` (new, replaces canvas version)
-- Static dark JPEG poster, no 121-frame scrubbing
-- Title · short copy · primary CTA · contact card collapsed into a clean list
-- Section height = auto (drops the `320vh` pin)
-
-### 9. Lighter passes on existing sections
-- `Promesse`, `About`, `HomeCasClients`, `HomeProfilRisque`, `Equipe`, `Confiance`, `HomeFAQ`: tighten mobile padding, enlarge tap targets, reduce font sizes, single column, remove decorative blobs
-
-### 10. Section reordering on mobile (conversion-focused)
+### 2. Layout pinned plein-écran (au lieu du split 5/7 actuel)
 ```text
-Hero
-Identification (problem)
-Promesse (answer)
-Expertises (what we do)
-Methode (how)
-Confiance (proof: ORIAS/CNCGP/chiffres)
-HomeCasClients (social proof)
-Equipe (human)
-Actualites
-HomeFAQ
-CTAFinal
+┌─────────────────────────────────────────────┐
+│  [chiffre géant 01]      ÉTAPE 01 / 06     │
+│                                             │
+│   IMAGE PLEIN CADRE EN ARRIÈRE-PLAN        │
+│   (parallax, ken-burns lent, vignette)     │
+│                                             │
+│              Découverte                     │
+│   Un premier rendez-vous de 30 minutes...   │
+│                                             │
+│  ●─●─○─○─○─○   ← timeline horizontale     │
+└─────────────────────────────────────────────┘
 ```
-About moves into Equipe on mobile to reduce length.
+- L'image occupe 100vw × 100vh en arrière-plan, avec un fort gradient sombre par-dessus pour la lisibilité.
+- Effet **ken-burns** lent (zoom + pan) sur l'image active.
+- À chaque changement d'étape : **crossfade cinéma** entre les deux images (1.2s, ease cinematic), comme un fondu enchaîné.
 
----
+### 3. Typographie monumentale
+- **Numéro géant** ("01", "02"...) en filigrane, taille `clamp(18rem, 28vw, 32rem)`, ultra-light, opacité ~6 %, qui glisse en parallax à contre-sens du scroll.
+- Titre étape en `clamp(3rem, 6vw, 5.5rem)`, font-light italic, avec animation `SplitText` à chaque changement.
+- Description en colonne étroite (max-w-md), centrée ou alignée à gauche selon parité d'étape (alternance gauche/droite/centré pour rythmer).
 
-## Routing logic
+### 4. Timeline horizontale en bas (au lieu de verticale à gauche)
+- Une fine ligne horizontale en bas du viewport avec 6 points.
+- Le point actif grossit, glow électrique, label "Étape 01 — Découverte".
+- Trait de progression qui se remplit de gauche à droite.
+- Cliquable pour sauter à une étape (scroll vers la fenêtre correspondante).
 
-`Index.tsx` uses `useIsMobile()` to render either the desktop tree (unchanged) or the new `<HomeMobile />` tree. Each new mobile component lives in `src/components/mobile/`. No desktop component is modified except for minor tailwind class additions where shared.
+### 5. Compteur cinéma en haut
+- Petit overlay top-right : `01 / 06` en mono, façon générique de film, avec une petite barre de progression linéaire de l'étape en cours (basée sur `stepProgress` du hook existant).
 
----
+### 6. Effets sensoriels
+- **Grain animé** subtil (réutiliser `NoiseGrain` existant) en overlay full-screen pour la texture cinéma.
+- **Halo électrique** qui pulse derrière le numéro géant, couleur `--electric`.
+- **Vignette** radiale sombre sur les bords pour concentrer le regard.
+- Léger **parallax inversé** entre image (descend) et texte (monte) pendant `stepProgress`.
 
-## Performance
+### 7. Sortie immersive
+- Une dernière sous-section après l'étape 06 : un écran "fin de méthode" plein noir avec le CTA `Démarrer la conversation` centré, en gros, magnétique. La section se "referme" avant de laisser place à la suivante.
 
-- No frame sequences on mobile (`HeroSticky` and `CTAFinal` already gate on `useIsMobile`, but the mobile fallback still ships heavy `Hero`. The new `HeroMobile` ships ~1 image)
-- `PremiumCursor`, `ScrollProgressRail`, `PlasterReveal`, `AmbientParticles` disabled on mobile
-- Lenis smooth scroll kept but with `lerp` softened on touch
+## Détails techniques
 
----
+- **Fichier modifié** : `src/components/MethodePinned.tsx` uniquement.
+- **Hook réutilisé** : `usePinnedSectionProgress` (déjà en place, parfait pour activeIndex + stepProgress).
+- **Hauteur de section** : passer de `100 + steps * 68 vh` à `100 + steps * 90 vh` pour donner plus d'air à chaque étape (lecture cinéma plus lente).
+- **Composants réutilisés** : `SplitText`, `NoiseGrain`, `MaskReveal` (pour l'entrée), `MagneticCard` (pour le CTA final).
+- **Images** : conserver les 6 URLs Unsplash existantes ou en proposer de plus cinématographiques (intérieurs feutrés, mains/écriture, vue Bordeaux). À confirmer si vous souhaitez que je propose un nouveau set.
+- **Mobile** : `MethodeMobile.tsx` n'est pas touché (la version mobile actuelle est déjà très lisible et adaptée au scroll fluide).
+- **Performance** : `will-change: transform` sur l'image active uniquement, `AnimatePresence mode="wait"` pour le crossfade, `loading="eager"` sur la première image, `loading="lazy"` sur les suivantes.
+- **Accessibilité** : respect de `useReducedMotion` (désactive ken-burns, parallax et crossfades — passe en simple fade), timeline cliquable au clavier, `aria-current="step"` sur l'étape active.
 
-## Out of scope
-
-- Desktop layout changes
-- Copywriting beyond shortening — French tone preserved
-- New pages (only `/` is rebuilt; inner pages get a follow-up pass if approved)
-
----
-
-## Deliverable order
-
-1. Mobile header + sticky CTA + routing switch in `Index.tsx`
-2. `HeroMobile`
-3. Identification, Expertises, Methode mobile rewrites
-4. Actualites + CTAFinal mobile rewrites
-5. Polish pass on remaining sections (Promesse, About, Confiance, FAQ, Equipe, CasClients)
-
-After approval I'll implement steps 1–5 in one build pass.
+## Ce qui ne change pas
+- Le contenu des 6 étapes (textes inchangés).
+- La version mobile.
+- Le lien vers `/notre-methode`.
+- L'id `#methode` (ancres préservées).
