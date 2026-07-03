@@ -75,7 +75,7 @@ export default function HomeCasClients() {
                         transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
                       }
                 }
-                className="group/card relative glass-card p-7 overflow-hidden transition-shadow duration-500 hover:shadow-[0_30px_80px_-20px_hsl(var(--accent)/0.25)] [transform-style:preserve-3d] group-hover/fan:[&:not(:hover)]:opacity-60 group-hover/fan:[&:not(:hover)]:scale-[0.97]"
+                className="group/card relative glass-card p-7 overflow-hidden transition-shadow duration-500 hover:shadow-[0_30px_80px_-20px_hsl(222_50%_11%/0.15)] [transform-style:preserve-3d] group-hover/fan:[&:not(:hover)]:opacity-60 group-hover/fan:[&:not(:hover)]:scale-[0.97]"
               >
                 {/* Ghost dossier number */}
                 <span
@@ -89,11 +89,11 @@ export default function HomeCasClients() {
                   <p className="text-[10px] tracking-[0.3em] uppercase text-foreground/45 font-medium">
                     Dossier N°{String(i + 1).padStart(2, "0")}
                   </p>
-                  <span className="text-[9px] tracking-[0.25em] uppercase text-[hsl(var(--electric))] font-medium px-2 py-0.5 rounded-full border border-[hsl(var(--electric))/0.3]">
+                  <span className="text-[9px] tracking-[0.25em] uppercase text-foreground/60 font-medium px-2 py-0.5 rounded-full border border-foreground/20">
                     Anonymisé
                   </span>
                 </div>
-                <p className="relative text-[hsl(var(--electric))] text-[13px] tracking-wide font-medium mb-4">
+                <p className="relative text-foreground/80 text-[13px] tracking-wide font-medium mb-4">
                   {c.profil}
                 </p>
                 <p className="relative text-foreground/65 text-sm leading-relaxed mb-4 font-light">
@@ -103,7 +103,7 @@ export default function HomeCasClients() {
                 <p className="relative text-foreground/85 text-sm leading-relaxed mb-5">
                   {c.axes}
                 </p>
-                <p className="relative text-[12px] font-medium tracking-wide text-foreground border-l-2 border-[hsl(var(--accent))] pl-3 italic">
+                <p className="relative text-[12px] font-medium tracking-wide text-foreground border-l-2 border-foreground/30 pl-3 italic">
                   {c.chiffre}
                 </p>
               </motion.article>
