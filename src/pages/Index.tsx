@@ -47,7 +47,6 @@ const Index = () => {
             <Equipe />
             <Actualites />
             <HomeFAQ />
-            <HomeFAQ />
             <CTAFinal />
           </main>
           <Footer />
