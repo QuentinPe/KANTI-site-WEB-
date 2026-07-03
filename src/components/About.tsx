@@ -41,8 +41,8 @@ function useCountUp(target: number, suffix = "", duration = 2000, delay = 0) {
 
 export default function About() {
   const reduce = useReducedMotion();
-  const years = useCountUp(15, " ans", 1800, 0);
-  const clients = useCountUp(500, "+", 2000, 350);
+  const years = "Depuis 2020";
+  const clients = useCountUp(250, "+", 2000, 350);
   const fidelity = useCountUp(98, " %", 1800, 700);
 
   return (
@@ -84,13 +84,20 @@ export default function About() {
 
           <div className="lg:col-span-2 reveal reveal-delay-2 space-y-8">
             <div className="glass-float p-8 md:p-10 space-y-8 relative overflow-hidden">
-              <Stat
-                refEl={years.ref}
-                value={years.value}
-                label="d'exercice à Biarritz"
-                delay={0}
-                reduce={!!reduce}
-              />
+              <div className="relative pl-5">
+                <motion.span
+                  aria-hidden
+                  className="absolute left-0 top-1 bottom-1 w-px bg-[hsl(var(--accent))] origin-top"
+                  initial={{ scaleY: reduce ? 1 : 0 }}
+                  whileInView={{ scaleY: 1 }}
+                  viewport={{ once: true, margin: "-20%" }}
+                  transition={{ duration: 0.9, delay: 0, ease: [0.22, 1, 0.36, 1] }}
+                />
+                <p className="text-4xl font-heading font-light text-foreground tracking-tight">
+                  {years}
+                </p>
+                <p className="text-sm text-foreground/55 mt-1 font-light">d'exercice à Bordeaux</p>
+              </div>
               <div className="separator-fine" />
               <Stat
                 refEl={clients.ref}
