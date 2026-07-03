@@ -15,10 +15,10 @@ export default function Footer() {
               height={52}
             />
             <p className="text-sm leading-relaxed max-w-md mb-5 text-white/55 font-light">
-              Cabinet indépendant de conseil en gestion de patrimoine à Biarritz. Nous accompagnons les particuliers et les dirigeants dans la structuration, l'optimisation fiscale et la transmission de leur patrimoine.
+              Cabinet indépendant de conseil en gestion de patrimoine à Bordeaux. Nous accompagnons les particuliers et les dirigeants dans la structuration, l'optimisation fiscale et la transmission de leur patrimoine.
             </p>
             <div className="text-xs text-white/40 space-y-1 font-light">
-              <p>9 Rue de la Négresse, 64200 Biarritz</p>
+              <p>12 rue Ferrere, 33000 Bordeaux</p>
               <p>06 63 32 48 09, kanti@adnfamily.com</p>
             </div>
           </div>

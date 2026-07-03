@@ -28,7 +28,7 @@ type AnswerValue = number | string;
 const KANTI_INFO = {
   name: "KANTI",
   baseline: "Cabinet de gestion de patrimoine indépendant",
-  address: "9 Rue de la Négresse, 64200 Biarritz",
+  address: "12 rue Ferrere, 33000 Bordeaux",
   phone: "06 63 32 48 09",
   email: "kanti@adnfamily.com",
   legal:

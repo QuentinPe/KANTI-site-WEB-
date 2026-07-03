@@ -23,7 +23,7 @@ export default function Contact() {
             <div className="space-y-3 text-sm text-foreground/65 font-light">
               <p className="flex items-center gap-3">
                 <span className="w-1 h-1 rounded-full bg-[hsl(var(--electric))]" />
-                9 Rue de la Négresse, 64200 Biarritz
+                12 rue Ferrere, 33000 Bordeaux
               </p>
               <p className="flex items-center gap-3">
                 <span className="w-1 h-1 rounded-full bg-[hsl(var(--electric))]" />

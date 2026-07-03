@@ -38,7 +38,7 @@ export default function PolitiqueConfidentialitePage() {
               </p>
               <ul>
                 <li><strong>KANTI</strong>, SAS au capital de 10 000 €</li>
-                <li>9 Rue de la Négresse, 64200 Biarritz</li>
+                <li>12 rue Ferrere, 33000 Bordeaux</li>
                 <li>Téléphone : 06 63 32 48 09, Courriel : <a href="mailto:kanti@adnfamily.com">kanti@adnfamily.com</a></li>
               </ul>
             </>

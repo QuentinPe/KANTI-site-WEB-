@@ -73,16 +73,16 @@ export const organizationJsonLd = {
   "@type": "FinancialService",
   name: "KANTI",
   description:
-    "Cabinet indépendant de conseil en gestion de patrimoine à Biarritz.",
+    "Cabinet indépendant de conseil en gestion de patrimoine à Bordeaux.",
   url: SITE_URL,
   telephone: "+33-6-63-32-48-09",
   email: "kanti@adnfamily.com",
   priceRange: "€€€",
   address: {
     "@type": "PostalAddress",
-    streetAddress: "9 Rue de la Négresse",
-    addressLocality: "Biarritz",
-    postalCode: "64200",
+    streetAddress: "12 rue Ferrere",
+    addressLocality: "Bordeaux",
+    postalCode: "33000",
     addressCountry: "FR",
   },
   areaServed: {
@@ -102,15 +102,15 @@ export const localBusinessJsonLd = {
   telephone: "+33-6-63-32-48-09",
   address: {
     "@type": "PostalAddress",
-    streetAddress: "9 Rue de la Négresse",
-    addressLocality: "Biarritz",
-    postalCode: "64200",
+    streetAddress: "12 rue Ferrere",
+    addressLocality: "Bordeaux",
+    postalCode: "33000",
     addressCountry: "FR",
   },
   geo: {
     "@type": "GeoCoordinates",
-    latitude: 43.4718,
-    longitude: -1.5606,
+    latitude: 44.8378,
+    longitude: -0.5792,
   },
   openingHoursSpecification: [
     {

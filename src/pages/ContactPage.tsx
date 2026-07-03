@@ -91,8 +91,8 @@ export default function ContactPage() {
   return (
     <>
       <Seo
-        title="Contact, Prendre rendez-vous avec un conseiller patrimonial à Biarritz"
-        description="Premier échange de 30 minutes gratuit et sans engagement avec un conseiller KANTI. Cabinet indépendant à Biarritz, réponse sous 24h ouvrées."
+        title="Contact, Prendre rendez-vous avec un conseiller patrimonial à Bordeaux"
+        description="Premier échange de 30 minutes gratuit et sans engagement avec un conseiller KANTI. Cabinet indépendant à Bordeaux, réponse sous 24h ouvrées."
         jsonLd={[
           localBusinessJsonLd,
           breadcrumbJsonLd([
@@ -331,7 +331,7 @@ export default function ContactPage() {
                 <div className="space-y-2.5 text-sm text-foreground/70 font-light">
                   <p className="flex items-start gap-3">
                     <MapPin className="w-3.5 h-3.5 mt-1 text-foreground/40 flex-shrink-0" />
-                    9 Rue de la Négresse, 64200 Biarritz
+                    12 rue Ferrere, 33000 Bordeaux
                   </p>
                   <p className="flex items-center gap-3">
                     <Phone className="w-3.5 h-3.5 text-foreground/40 flex-shrink-0" />

@@ -33,7 +33,7 @@ export default function EquipeMobile() {
       <div className="max-w-md mx-auto">
         <div className="electric-line mb-4" />
         <p className="text-[10px] tracking-[0.32em] uppercase text-foreground/50 mb-3 font-medium">
-          L'équipe · Biarritz
+          L'équipe · Bordeaux
         </p>
         <h2 className="font-heading text-[32px] font-light text-foreground tracking-tight leading-[1.1] mb-3">
           Trois associés,

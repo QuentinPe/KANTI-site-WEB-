@@ -61,7 +61,7 @@ export default function ReclamationsPage() {
                 réclamations du cabinet, par courrier ou par courriel.
               </p>
               <ul>
-                <li><strong>Par courrier</strong> : KANTI, Service Réclamations, 9 Rue de la Négresse, 64200 Biarritz</li>
+                <li><strong>Par courrier</strong> : KANTI, Service Réclamations, 12 rue Ferrere, 33000 Bordeaux</li>
                 <li><strong>Par courriel</strong> : <a href="mailto:kanti@adnfamily.com">kanti@adnfamily.com</a></li>
               </ul>
               <p>

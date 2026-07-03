@@ -31,7 +31,7 @@ export default function CTAFinalMobile() {
       >
         <div className="max-w-md mx-auto">
           <p className="text-[10px] tracking-[0.32em] uppercase text-white/55 mb-5 font-medium">
-            Premier rendez-vous · Biarritz
+            Premier rendez-vous · Bordeaux
           </p>
           <h2 className="font-heading text-[36px] font-light leading-[1.05] tracking-tight mb-5">
             Parlons de votre
@@ -39,7 +39,7 @@ export default function CTAFinalMobile() {
             <span className="italic text-white/85">patrimoine.</span>
           </h2>
           <p className="text-white/70 text-[15.5px] leading-relaxed font-light mb-8 max-w-[34ch]">
-            30 minutes en visio ou dans nos bureaux du Rue de la Négresse.
+            30 minutes en visio ou dans nos bureaux du 12 rue Ferrere.
             Gratuit, confidentiel, sans engagement.
           </p>
 
@@ -77,9 +77,9 @@ export default function CTAFinalMobile() {
             </p>
             <ul className="space-y-3 text-white/85 text-[14.5px] font-light">
               <li>
-                9 Rue de la Négresse
+                12 rue Ferrere
                 <br />
-                <span className="text-white/55 text-[13px]">64200 Biarritz</span>
+                <span className="text-white/55 text-[13px]">33000 Bordeaux</span>
               </li>
               <li>
                 <a

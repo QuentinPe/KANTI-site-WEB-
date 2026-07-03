@@ -64,12 +64,12 @@ export default function BilanPatrimonialPage() {
       <Header />
       <PageHero
         title="Bilan patrimonial"
-        highlight="à Biarritz"
+        highlight="à Bordeaux"
         subtitle="Un diagnostic complet de votre situation patrimoniale : actifs, passifs, fiscalité, prévoyance, régimes matrimoniaux. Pour y voir clair avant de décider."
         breadcrumb="Bilan patrimonial"
         eyebrow="Diagnostic global"
         image={heroImg}
-        imageAlt="Bilan patrimonial à Biarritz, KANTI"
+        imageAlt="Bilan patrimonial à Bordeaux, KANTI"
         stats={[
           { value: "360°", label: "Vision patrimoniale" },
           { value: "3 sem.", label: "Durée moyenne" },
@@ -255,7 +255,7 @@ export default function BilanPatrimonialPage() {
           <div className="mt-10 inline-flex items-center gap-4">
             <div className="h-px w-10 bg-foreground/30" />
             <p className="text-[11px] uppercase tracking-[0.28em] text-foreground/55 font-medium">
-              Cabinet KANTI · Biarritz
+              Cabinet KANTI · Bordeaux
             </p>
             <div className="h-px w-10 bg-foreground/30" />
           </div>

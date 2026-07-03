@@ -239,7 +239,7 @@ export default function HeroSticky() {
             >
               <span className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse" />
               <p className="text-[11px] tracking-[0.2em] uppercase text-white/85 font-medium">
-                KANTI · Cabinet · Biarritz
+                KANTI · Cabinet · Bordeaux
               </p>
             </div>
 
@@ -266,7 +266,7 @@ export default function HeroSticky() {
               }}
             >
               Nous accompagnons les particuliers, les dirigeants et les familles dans la
-              structuration, l'optimisation et la transmission de leur patrimoine. À Biarritz,
+              structuration, l'optimisation et la transmission de leur patrimoine. À Bordeaux,
               depuis plus de quinze ans.
             </p>
 
