@@ -15,7 +15,6 @@ import Actualites from "@/components/Actualites";
 import HomeFAQ from "@/components/HomeFAQ";
 import CTAFinal from "@/components/CTAFinal";
 import Footer from "@/components/Footer";
-import ScrollProgressRail from "@/components/ScrollProgressRail";
 import PlasterReveal from "@/components/motion/PlasterReveal";
 import HomeMobile from "@/components/mobile/HomeMobile";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -35,7 +34,6 @@ const Index = () => {
         <HomeMobile />
       ) : (
         <>
-          <ScrollProgressRail />
           <PlasterReveal />
           <Header />
           <main id="main">
