@@ -72,15 +72,56 @@ export default function About() {
             <p className="text-foreground/65 leading-relaxed mb-10 text-[17px] font-light">
               Cabinet indépendant inscrit à l'ORIAS et adhérent de la CNCEF, nous ne dépendons d'aucun réseau bancaire ni d'aucun groupe financier. Cette liberté nous permet de travailler exclusivement dans votre intérêt, et de vous le démontrer, année après année.
             </p>
-            <Link
-              to="/cabinet"
-              className="inline-flex items-center gap-2 text-sm font-medium text-foreground link-underline pb-1"
-            >
-              En savoir plus sur le cabinet
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-              </svg>
-            </Link>
+            <div className="flex flex-wrap items-center gap-4 mt-2">
+              <Link
+                to="/cabinet"
+                className="inline-flex items-center gap-2 text-sm font-medium text-foreground link-underline pb-1"
+              >
+                En savoir plus sur le cabinet
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                </svg>
+              </Link>
+              <a
+                href={derAsset.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-magnetic
+                className="group relative inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium text-foreground transition-all duration-500 hover:-translate-y-0.5"
+                style={{
+                  background:
+                    "linear-gradient(135deg, hsl(var(--foreground) / 0.08) 0%, hsl(var(--foreground) / 0.03) 100%)",
+                  backdropFilter: "blur(16px) saturate(140%)",
+                  WebkitBackdropFilter: "blur(16px) saturate(140%)",
+                  boxShadow:
+                    "inset 0 1px 0 hsl(var(--foreground) / 0.12), inset 0 -1px 0 hsl(var(--foreground) / 0.04), 0 8px 24px -10px hsl(var(--foreground) / 0.2)",
+                  border: "1px solid hsl(var(--foreground) / 0.12)",
+                }}
+              >
+                <span
+                  aria-hidden
+                  className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                  style={{
+                    background:
+                      "linear-gradient(120deg, transparent 20%, hsl(var(--foreground) / 0.1) 50%, transparent 80%)",
+                  }}
+                />
+                <svg
+                  className="w-4 h-4 relative z-10"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={1.6}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16"
+                  />
+                </svg>
+                <span className="relative z-10">Télécharger notre DER</span>
+              </a>
+            </div>
           </div>
 
           <div className="lg:col-span-2 reveal reveal-delay-2 space-y-8">
