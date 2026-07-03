@@ -225,7 +225,7 @@ export default function HeroSticky() {
         {/* Editorial content */}
         <motion.div
           style={{ opacity: titleOpacity, y: titleY }}
-          className="relative z-10 max-w-6xl mx-auto px-6 py-32 w-full will-change-transform"
+          className="relative z-10 max-w-6xl mx-auto px-6 pt-44 pb-32 w-full will-change-transform"
         >
           <div className="max-w-3xl">
             <div
