@@ -1279,14 +1279,19 @@ function generatePdf(
     doc.setLineWidth(0.4);
     doc.line(M, H - 78, W - M, H - 78);
 
-    setText(NAVY);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(8);
-    doc.text("KANTI", M, H - 62);
+    // Logo KANTI (navy) sur fond blanc
+    try {
+      doc.addImage(LOGO_KANTI_DARK_B64, "PNG", M, H - 72, 42, 13);
+    } catch {
+      setText(NAVY);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8);
+      doc.text("KANTI", M, H - 62);
+    }
     setText(MUTED);
     doc.setFont("helvetica", "normal");
     doc.setFontSize(7.5);
-    doc.text(KANTI_INFO.address, M, H - 50);
+    doc.text(KANTI_INFO.address, M + 50, H - 62);
     doc.text(`${KANTI_INFO.phone}  ·  ${KANTI_INFO.email}`, M, H - 38);
 
     // Pagination élégante
@@ -1317,12 +1322,17 @@ function generatePdf(
     // Bandeau supérieur très fin
     setFill(NAVY);
     doc.rect(0, 0, W, 32, "F");
-    setText(WHITE);
-    doc.setFont(SANS, "bold");
-    doc.setFontSize(10);
-    doc.setCharSpace(4);
-    doc.text("KANTI", M, 21);
-    doc.setCharSpace(0);
+    // Logo KANTI (variante blanche) sur bandeau navy
+    try {
+      doc.addImage(LOGO_KANTI_WHITE_B64, "PNG", M, 8, 55, 17);
+    } catch {
+      setText(WHITE);
+      doc.setFont(SANS, "bold");
+      doc.setFontSize(10);
+      doc.setCharSpace(4);
+      doc.text("KANTI", M, 21);
+      doc.setCharSpace(0);
+    }
     doc.setFont(SANS, "normal");
     doc.setFontSize(7.5);
     setText([180, 195, 220]);
