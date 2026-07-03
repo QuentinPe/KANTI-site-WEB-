@@ -9,7 +9,7 @@ export default function TrustBand() {
               KANTI — ORIAS n° 00 000 000
             </span>
             <span className="hidden sm:inline text-foreground/15">·</span>
-            <span>Membre CNCGP</span>
+            <span>Adhérent CNCEF</span>
             <span className="hidden sm:inline text-foreground/15">·</span>
             <span>Supervision AMF / ACPR</span>
             <span className="hidden sm:inline text-foreground/15">·</span>

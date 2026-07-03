@@ -21,7 +21,7 @@ const faqs = [
   },
   {
     q: "Êtes-vous tenus au secret professionnel ?",
-    a: "Oui, en tant que CIF supervisé par l'AMF et membre de la CNCGP, nous sommes soumis à un strict devoir de confidentialité et à un code de déontologie. Aucune information ne sort du cabinet sans votre accord explicite.",
+    a: "Oui, en tant que CIF supervisé par l'AMF et adhérent de la CNCEF, nous sommes soumis à un strict devoir de confidentialité et à un code de déontologie. Aucune information ne sort du cabinet sans votre accord explicite.",
   },
 ];
 

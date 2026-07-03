@@ -30,7 +30,7 @@ const KANTI_INFO = {
   phone: "06 63 32 48 09",
   email: "kanti@adnfamily.com",
   legal:
-    "KANTI — CIF inscrit auprès de l'AMF, membre de la CNCGP. Le présent document est un outil pédagogique d'auto-évaluation et ne constitue pas une recommandation personnalisée d'investissement au sens de l'article L.541-1 du Code monétaire et financier.",
+    "KANTI — CIF inscrit auprès de l'AMF, adhérent de la CNCEF. Le présent document est un outil pédagogique d'auto-évaluation et ne constitue pas une recommandation personnalisée d'investissement au sens de l'article L.541-1 du Code monétaire et financier.",
 };
 
 export default function ProfilRisquePage() {

@@ -99,7 +99,7 @@ export default function Promesse() {
             transition={{ duration: 1.4, delay: 0.9, ease: [0.77, 0, 0.18, 1] }}
             className="mt-12 text-white/65 text-lg leading-relaxed font-light max-w-xl"
           >
-            Inscrits à l'ORIAS et membres de la CNCGP, nous travaillons sans lien
+            Inscrits à l'ORIAS et adhérents de la CNCEF, nous travaillons sans lien
             capitalistique avec aucune banque ni assureur. Votre intérêt est notre
             seule boussole — et nous nous tenons à vos côtés sur dix, vingt, trente ans.
           </motion.p>

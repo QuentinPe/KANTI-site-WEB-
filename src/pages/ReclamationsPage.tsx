@@ -6,7 +6,7 @@ export default function ReclamationsPage() {
       eyebrow="Relation client"
       title="Réclamations &"
       highlight="médiation"
-      subtitle="Procédure de traitement des réclamations et voies de recours en cas de désaccord, conformément aux exigences de l'AMF, de l'ACPR et de la CNCGP."
+      subtitle="Procédure de traitement des réclamations et voies de recours en cas de désaccord, conformément aux exigences de l'AMF, de l'ACPR et de la CNCEF."
       breadcrumb="Réclamations"
       updatedAt="Avril 2026"
       relatedLinks={[
@@ -114,7 +114,7 @@ export default function ReclamationsPage() {
                   <a href="https://www.mediation-assurance.org" target="_blank" rel="noreferrer">www.mediation-assurance.org</a>.
                 </li>
                 <li>
-                  <strong>Médiateur de l'ANACOFI</strong> ou de la <strong>CNCGP</strong> — pour les
+                  <strong>Médiateur de l'ANACOFI</strong> ou de la <strong>CNCEF</strong> — pour les
                   litiges entrant dans le champ du conseil en gestion de patrimoine non couvert par
                   les médiateurs précédents.
                 </li>

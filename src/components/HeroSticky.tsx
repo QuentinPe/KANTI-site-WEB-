@@ -302,7 +302,7 @@ export default function HeroSticky() {
             >
               {[
                 { k: "ORIAS", v: "Inscrit & vérifié" },
-                { k: "CNCGP", v: "Membre certifié" },
+                { k: "CNCEF", v: "Membre certifié" },
                 { k: "15+ ans", v: "d'expertise" },
                 { k: "500+", v: "familles accompagnées" },
               ].map((item) => (

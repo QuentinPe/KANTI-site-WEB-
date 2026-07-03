@@ -21,7 +21,7 @@ export default function PromesseMobile() {
           <span className="italic font-normal">dans la durée</span>.
         </h2>
         <p className="mt-8 text-white/65 text-[15.5px] leading-relaxed font-light">
-          Inscrits à l'ORIAS et membres de la CNCGP, sans lien capitalistique
+          Inscrits à l'ORIAS et adhérents de la CNCEF, sans lien capitalistique
           avec aucune banque ni assureur. Votre intérêt est notre seule
           boussole.
         </p>

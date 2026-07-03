@@ -644,7 +644,7 @@ export default function CasClientsPage() {
                     de mission préalable et à une analyse personnalisée. Les
                     performances passées ne sont pas un indicateur fiable des
                     performances futures. Données conformes aux exigences
-                    AMF et CNCGP.
+                    AMF et CNCEF.
                   </p>
                 </div>
               </div>

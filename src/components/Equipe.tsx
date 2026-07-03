@@ -9,7 +9,7 @@ const team = [
     bio: "Ancien directeur de clientèle privée en banque, Alexandre a fondé le cabinet après 12 ans passés à structurer des patrimoines familiaux et professionnels. Il intervient sur les dossiers complexes : holding, cession, transmission internationale.",
     image:
       "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=900&q=80",
-    credentials: ["12 ans · Banque privée", "Master Gestion de Patrimoine", "Membre CNCGP"],
+    credentials: ["12 ans · Banque privée", "Master Gestion de Patrimoine", "Adhérent CNCEF"],
   },
   {
     name: "Claire Lefèvre",
