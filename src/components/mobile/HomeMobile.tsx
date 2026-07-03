@@ -5,7 +5,7 @@ import IdentificationMobile from "./IdentificationMobile";
 import PromesseMobile from "./PromesseMobile";
 import ExpertisesMobile from "./ExpertisesMobile";
 import MethodeMobile from "./MethodeMobile";
-import ConfianceMobile from "./ConfianceMobile";
+import EquipeMobile from "./EquipeMobile";
 import HomeCasClientsMobile from "./HomeCasClientsMobile";
 import EquipeMobile from "./EquipeMobile";
 import ActualitesMobile from "./ActualitesMobile";
@@ -23,7 +23,7 @@ export default function HomeMobile() {
         <PromesseMobile />
         <ExpertisesMobile />
         <MethodeMobile />
-        <ConfianceMobile />
+        <HomeCasClientsMobile />
         <HomeCasClientsMobile />
         <EquipeMobile />
         <ActualitesMobile />
