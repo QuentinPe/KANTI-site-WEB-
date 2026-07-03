@@ -27,7 +27,7 @@ import casImmobilier from "@/assets/cas-immobilier.jpg";
 import casExpatrie from "@/assets/cas-expatrie.jpg";
 
 /* ------------------------------------------------------------------ */
-/*  Données — cas clients structurés                                  */
+/*  Données, cas clients structurés                                  */
 /* ------------------------------------------------------------------ */
 
 type Category =
@@ -103,7 +103,7 @@ const casClients: CasClient[] = [
     verbatim: {
       quote:
         "J'avais l'impression d'être bien suivi par ma banque. En réalité, je laissais filer chaque année l'équivalent du salaire net mensuel d'un cadre.",
-      author: "Cadre dirigeant, 48 ans — secteur industriel",
+      author: "Cadre dirigeant, 48 ans, secteur industriel",
     },
   },
   {
@@ -170,7 +170,7 @@ const casClients: CasClient[] = [
     verbatim: {
       quote:
         "Je pensais m'occuper de mon patrimoine après la cession. KANTI m'a démontré que c'était trois ans avant qu'il fallait commencer.",
-      author: "Dirigeant SARL, 52 ans — services B2B",
+      author: "Dirigeant SARL, 52 ans, services B2B",
     },
   },
   {
@@ -226,7 +226,7 @@ const casClients: CasClient[] = [
       "Constitution d'un portefeuille financier diversifié",
     ],
     resultat:
-      "Bascule progressive vers une structure plus simple à transmettre, fiscalement allégée, et un patrimoine financier représentant désormais 28 % du total — concentration ramenée sous le seuil critique.",
+      "Bascule progressive vers une structure plus simple à transmettre, fiscalement allégée, et un patrimoine financier représentant désormais 28 % du total, concentration ramenée sous le seuil critique.",
     kpis: [
       { label: "Pression fiscale", value: "−22 pts", icon: TrendingDown },
       { label: "Diversification", value: "+28 %", icon: TrendingUp },
@@ -498,7 +498,7 @@ function VerbatimBlock({
           {verbatim.quote}
         </p>
         <figcaption className="mt-5 text-[11px] tracking-[0.25em] uppercase text-foreground/45 font-medium">
-          — {verbatim.author}
+, {verbatim.author}
         </figcaption>
       </blockquote>
     </motion.figure>
@@ -536,7 +536,7 @@ export default function CasClientsPage() {
   return (
     <>
       <Seo
-        title="Cas clients — études patrimoniales anonymisées | KANTI"
+        title="Cas clients, études patrimoniales anonymisées | KANTI"
         description="Six études de cas patrimoniales : cadre dirigeant, couple, chef d'entreprise, profession libérale, investisseur immobilier, expatrié. Contexte, diagnostic, stratégie et résultats chiffrés."
         jsonLd={breadcrumbJsonLd([
           { name: "Accueil", url: "/" },

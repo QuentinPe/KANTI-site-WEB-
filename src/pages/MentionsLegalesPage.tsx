@@ -62,21 +62,21 @@ export default function MentionsLegalesPage() {
               </p>
               <ul>
                 <li>
-                  <strong>Conseiller en Investissements Financiers (CIF)</strong> — sous le contrôle
-                  de l'Autorité des Marchés Financiers (AMF), 17 place de la Bourse — 75082 Paris
+                  <strong>Conseiller en Investissements Financiers (CIF)</strong>, sous le contrôle
+                  de l'Autorité des Marchés Financiers (AMF), 17 place de la Bourse, 75082 Paris
                   Cedex 02.
                 </li>
                 <li>
-                  <strong>Courtier d'assurance (IAS)</strong> — sous le contrôle de l'Autorité de
-                  Contrôle Prudentiel et de Résolution (ACPR), 4 place de Budapest — CS 92459 —
+                  <strong>Courtier d'assurance (IAS)</strong>, sous le contrôle de l'Autorité de
+                  Contrôle Prudentiel et de Résolution (ACPR), 4 place de Budapest, CS 92459 -
                   75436 Paris Cedex 09.
                 </li>
                 <li>
                   <strong>Courtier en opérations de banque et services de paiement
-                  (IOBSP)</strong> — sous le contrôle de l'ACPR.
+                  (IOBSP)</strong>, sous le contrôle de l'ACPR.
                 </li>
                 <li>
-                  <strong>Activité de transaction immobilière</strong> — Carte professionnelle
+                  <strong>Activité de transaction immobilière</strong>, Carte professionnelle
                   «&nbsp;Transactions immobilières&nbsp;» n° <strong>CPI33012020000045313</strong>,
                   délivrée par la CCI de Bordeaux-Gironde. Ne peut recevoir aucun fonds, effet ou
                   valeur.
@@ -84,9 +84,9 @@ export default function MentionsLegalesPage() {
               </ul>
               <p>
                 KANTI est adhérent de <strong>La Compagnie CIF</strong> et de <strong>La Compagnie
-                IOBSP</strong> (8 Rue Godot de Mauroy — 75009 Paris) sous le numéro
+                IOBSP</strong> (8 Rue Godot de Mauroy, 75009 Paris) sous le numéro
                 <strong> F002635</strong>, ainsi que de la <strong>CNCEF Assurance</strong>
-                (103 Boulevard Haussmann — 75008 Paris) sous le numéro <strong>25/860422</strong>.
+                (103 Boulevard Haussmann, 75008 Paris) sous le numéro <strong>25/860422</strong>.
                 Ces associations sont agréées par l'Autorité des Marchés Financiers et par
                 l'Autorité de Contrôle Prudentiel et de Résolution. Les activités d'IAS et d'IOBSP
                 sont contrôlables par l'ACPR.
@@ -111,7 +111,7 @@ export default function MentionsLegalesPage() {
               </p>
               <ul>
                 <li>
-                  Assureur : <strong>MMA IARD Assurances Mutuelles / MMA IARD</strong> — 160 rue
+                  Assureur : <strong>MMA IARD Assurances Mutuelles / MMA IARD</strong>, 160 rue
                   Henri Champion, 72030 Le Mans Cedex 9
                 </li>
                 <li>Police d'assurance n° <strong>112&nbsp;786&nbsp;342</strong></li>

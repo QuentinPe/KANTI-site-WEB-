@@ -10,7 +10,7 @@ const STREETVIEW_URL =
 // Satellite 3D embed (tilt + rotation) centered on 9 Rue de la Négresse
 const EMBED_URL =
   "https://www.google.com/maps/embed?pb=!4v1729600000000!6m8!1m7!1sCAoSLEFGMVFpcE5fZmFrZQ!2m2!1d43.4718!2d-1.5606!3f0!4f45!5f0.7820865974627469";
-// Fallback simpler embed (place mode) — guaranteed to work
+// Fallback simpler embed (place mode), guaranteed to work
 const EMBED_URL_FALLBACK =
   "https://maps.google.com/maps?q=9+Rue+de+la+Negresse+64200+Biarritz&t=k&z=18&ie=UTF8&iwloc=&output=embed";
 
@@ -29,7 +29,7 @@ export default function CabinetMap3D() {
 
       <div className="relative max-w-6xl mx-auto">
         <div className="grid lg:grid-cols-5 gap-12 lg:gap-16 items-center">
-          {/* Left column — editorial */}
+          {/* Left column, editorial */}
           <div className="lg:col-span-2 reveal">
             <p className="text-[13px] tracking-widest uppercase text-gold mb-4">
               Notre adresse
@@ -60,7 +60,7 @@ export default function CabinetMap3D() {
               </li>
               <li className="flex items-start gap-3">
                 <span className="w-1 h-1 rounded-full bg-gold mt-2 shrink-0" />
-                Accès direct depuis l'A63 — sortie Biarritz
+                Accès direct depuis l'A63, sortie Biarritz
               </li>
             </ul>
 
@@ -80,7 +80,7 @@ export default function CabinetMap3D() {
             </div>
           </div>
 
-          {/* Right column — interactive 3D map */}
+          {/* Right column, interactive 3D map */}
           <div className="lg:col-span-3 reveal reveal-delay-2">
             <div className="relative group">
               {/* Gold halo */}
@@ -89,7 +89,7 @@ export default function CabinetMap3D() {
               <div className="relative rounded-lg overflow-hidden border border-gold/30 shadow-2xl bg-primary">
                 <div className="aspect-[16/10] w-full">
                   <iframe
-                    title="Plan 3D du cabinet KANTI — 9 Rue de la Négresse, 64200 Biarritz"
+                    title="Plan 3D du cabinet KANTI, 9 Rue de la Négresse, 64200 Biarritz"
                     src={EMBED_URL_FALLBACK}
                     className="w-full h-full border-0"
                     loading="lazy"
@@ -105,13 +105,13 @@ export default function CabinetMap3D() {
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-gold" />
                   </span>
                   <span className="text-[11px] tracking-widest uppercase text-primary-foreground">
-                    Vue satellite — interactive
+                    Vue satellite, interactive
                   </span>
                 </div>
               </div>
 
               <p className="text-xs text-gray-text mt-3 text-center italic">
-                Carte interactive — zoomez, faites pivoter, explorez le quartier.
+                Carte interactive, zoomez, faites pivoter, explorez le quartier.
               </p>
             </div>
           </div>

@@ -24,7 +24,7 @@ interface CinematicGalleryProps {
 }
 
 /**
- * Cinematic sticky-scroll gallery — full-screen photos that cross-fade
+ * Cinematic sticky-scroll gallery, full-screen photos that cross-fade
  * with parallax zoom as the user scrolls. Inspired by editorial film reveals.
  */
 export default function CinematicGallery({ eyebrow, title, intro, slides }: CinematicGalleryProps) {

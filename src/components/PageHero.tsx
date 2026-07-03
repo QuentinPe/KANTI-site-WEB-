@@ -21,7 +21,7 @@ export default function PageHero({
 }: PageHeroProps) {
   const orbRef = useRef<HTMLDivElement>(null);
 
-  // Cursor-tracked blue light reflection — same as homepage Hero
+  // Cursor-tracked blue light reflection, same as homepage Hero
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (!orbRef.current) return;
@@ -38,7 +38,7 @@ export default function PageHero({
       {/* Cursor-tracked reflection */}
       <div ref={orbRef} aria-hidden className="absolute inset-0 pointer-events-none transition-all duration-700" />
 
-      {/* Floating ambient blue halos — aligned with homepage Hero */}
+      {/* Floating ambient blue halos, aligned with homepage Hero */}
       <div
         className="absolute top-[15%] right-[10%] w-[400px] h-[400px] rounded-full pointer-events-none float-soft"
         style={{

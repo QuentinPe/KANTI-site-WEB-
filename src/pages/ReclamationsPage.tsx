@@ -40,7 +40,7 @@ export default function ReclamationsPage() {
         },
         {
           id: "interlocuteur",
-          title: "Étape 1 — Votre interlocuteur habituel",
+          title: "Étape 1, Votre interlocuteur habituel",
           content: (
             <p>
               Nous vous invitons, dans un premier temps, à prendre contact avec votre conseiller
@@ -52,7 +52,7 @@ export default function ReclamationsPage() {
         },
         {
           id: "service",
-          title: "Étape 2 — Service réclamations",
+          title: "Étape 2, Service réclamations",
           content: (
             <>
               <p>
@@ -61,7 +61,7 @@ export default function ReclamationsPage() {
                 réclamations du cabinet, par courrier ou par courriel.
               </p>
               <ul>
-                <li><strong>Par courrier</strong> : KANTI — Service Réclamations — 9 Rue de la Négresse, 64200 Biarritz</li>
+                <li><strong>Par courrier</strong> : KANTI, Service Réclamations, 9 Rue de la Négresse, 64200 Biarritz</li>
                 <li><strong>Par courriel</strong> : <a href="mailto:kanti@adnfamily.com">kanti@adnfamily.com</a></li>
               </ul>
               <p>
@@ -91,7 +91,7 @@ export default function ReclamationsPage() {
         },
         {
           id: "mediation",
-          title: "Étape 3 — Médiation",
+          title: "Étape 3, Médiation",
           content: (
             <>
               <p>
@@ -101,25 +101,25 @@ export default function ReclamationsPage() {
               </p>
               <ul>
                 <li>
-                  <strong>Médiateur de l'AMF</strong> — pour les litiges relatifs aux instruments
+                  <strong>Médiateur de l'AMF</strong>, pour les litiges relatifs aux instruments
                   financiers et au conseil en investissements financiers.<br />
-                  Autorité des Marchés Financiers — Médiateur — 17 place de la Bourse — 75082 Paris
-                  Cedex 02 —{" "}
+                  Autorité des Marchés Financiers, Médiateur, 17 place de la Bourse, 75082 Paris
+                  Cedex 02 -{" "}
                   <a href="https://www.amf-france.org" target="_blank" rel="noreferrer">www.amf-france.org</a>.
                 </li>
                 <li>
-                  <strong>Médiateur de l'Assurance</strong> — pour les litiges relatifs aux contrats
+                  <strong>Médiateur de l'Assurance</strong>, pour les litiges relatifs aux contrats
                   d'assurance.<br />
-                  La Médiation de l'Assurance — TSA 50110 — 75441 Paris Cedex 09 —{" "}
+                  La Médiation de l'Assurance, TSA 50110, 75441 Paris Cedex 09 -{" "}
                   <a href="https://www.mediation-assurance.org" target="_blank" rel="noreferrer">www.mediation-assurance.org</a>.
                 </li>
                 <li>
-                  <strong>Médiateur de l'ANACOFI</strong> ou de la <strong>CNCEF</strong> — pour les
+                  <strong>Médiateur de l'ANACOFI</strong> ou de la <strong>CNCEF</strong>, pour les
                   litiges entrant dans le champ du conseil en gestion de patrimoine non couvert par
                   les médiateurs précédents.
                 </li>
                 <li>
-                  <strong>Médiation de la consommation</strong> — pour tout litige relevant du Code
+                  <strong>Médiation de la consommation</strong>, pour tout litige relevant du Code
                   de la consommation, conformément aux articles L.611-1 et suivants.
                 </li>
               </ul>
@@ -149,7 +149,7 @@ export default function ReclamationsPage() {
             <p>
               Pour toute réclamation portant spécifiquement sur le traitement de vos données
               personnelles, vous pouvez contacter notre délégué à la protection des données à{" "}
-              <a href="mailto:kanti@adnfamily.com">kanti@adnfamily.com</a> ou saisir directement la CNIL —{" "}
+              <a href="mailto:kanti@adnfamily.com">kanti@adnfamily.com</a> ou saisir directement la CNIL -{" "}
               <a href="https://www.cnil.fr" target="_blank" rel="noreferrer">www.cnil.fr</a>.
             </p>
           ),

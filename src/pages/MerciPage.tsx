@@ -17,7 +17,7 @@ export default function MerciPage() {
   return (
     <>
       <Seo
-        title="Merci — votre demande est bien arrivée"
+        title="Merci, votre demande est bien arrivée"
         description="Nous accusons réception de votre demande. Un conseiller KANTI vous recontacte sous 24 heures ouvrées."
         noindex
       />

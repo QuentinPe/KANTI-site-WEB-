@@ -3,7 +3,7 @@
  * Read independently from productsCatalog so we don't break the FlipCards typing.
  * Each entry mirrors a CGP / asset-management research note structure :
  *   - executive summary
- *   - mechanics + actors flow diagram (data only — rendered as SVG in the page)
+ *   - mechanics + actors flow diagram (data only, rendered as SVG in the page)
  *   - quantitative key indicators
  *   - structured risk matrix (likelihood × impact)
  *   - performance & costs breakdown
@@ -49,7 +49,7 @@ export function enrichRisk(r: RiskItem): Required<Pick<RiskItem,
     ...r,
     description:
       r.description ??
-      `${r.label} — risque ${score >= 6 ? "prioritaire" : score >= 3 ? "à surveiller" : "secondaire"} dans ce dispositif. Combinaison probabilité ${r.likelihood.toLowerCase()} × impact ${r.impact.toLowerCase()}.`,
+      `${r.label}, risque ${score >= 6 ? "prioritaire" : score >= 3 ? "à surveiller" : "secondaire"} dans ce dispositif. Combinaison probabilité ${r.likelihood.toLowerCase()} × impact ${r.impact.toLowerCase()}.`,
     probabilityPct: r.probabilityPct ?? probDefaults[r.likelihood],
     financialImpact: r.financialImpact ?? impactDefaults[r.impact],
     scenarios: r.scenarios ?? [
@@ -183,7 +183,7 @@ const fallback = (title: string): ProductAnalysis => ({
     "Relire la clause bénéficiaire / les statuts au moins tous les 2 ans.",
   ],
   caseStudy: {
-    profile: "Cas illustratif — ne constitue pas un conseil personnalisé.",
+    profile: "Cas illustratif, ne constitue pas un conseil personnalisé.",
     hypothesis: ["Capital initial : 200 000 €", "Horizon : 10 ans", "Fiscalité : TMI 41 %"],
     outcome: ["Valeur projetée nette de frais et fiscalité communiquée en bilan détaillé.", "Stratégie d'arbitrage et de sortie documentée."],
   },
@@ -218,7 +218,7 @@ const data: AnalysisMap = {
         "Souscription auprès d'un assureur (de droit français ou luxembourgeois).",
         "Versements libres ou programmés sur fonds en euros et / ou unités de compte.",
         "Allocation pilotée ou conseillée, avec arbitrages sans frottement fiscal interne.",
-        "Avance possible (prêt de l'assureur) sans déblocage — préserve l'antériorité fiscale.",
+        "Avance possible (prêt de l'assureur) sans déblocage, préserve l'antériorité fiscale.",
         "Au rachat : fiscalité avantageuse après 8 ans (abattement 4 600 € / 9 200 €).",
         "Au décès : capital transmis hors succession dans la limite de 152 500 € par bénéficiaire (versements avant 70 ans).",
       ],
@@ -309,7 +309,7 @@ const data: AnalysisMap = {
             "Mauvaise gestion ALM révélée lors d'un choc de taux.",
           ],
           leadingIndicators: [
-            "Ratio Solvabilité II (publié annuellement) — alerte si < 150 %.",
+            "Ratio Solvabilité II (publié annuellement), alerte si < 150 %.",
             "Notation S&P / Moody's / Fitch (alerte si < A-).",
           ],
           mitigations: [
@@ -351,7 +351,7 @@ const data: AnalysisMap = {
           description:
             "Une clause non mise à jour (divorce, décès d'un bénéficiaire, naissance) peut détourner le capital ou faire perdre l'avantage successoral.",
           probabilityPct: "≈ 60 % des contrats > 10 ans présentent une clause non revue (étude FFA)",
-          financialImpact: "Perte de l'abattement de 152 500 € par bénéficiaire — fiscalité à 20 ou 31,25 %.",
+          financialImpact: "Perte de l'abattement de 152 500 € par bénéficiaire, fiscalité à 20 ou 31,25 %.",
           scenarios: [
             "Divorce sans modification de la clause au profit du conjoint.",
             "Bénéficiaire décédé avant le souscripteur, sans représentation.",
@@ -371,7 +371,7 @@ const data: AnalysisMap = {
       performance: [
         "Fonds en euros : 2,5 – 3,5 % nets de frais en 2024 (variable selon l'assureur).",
         "UC actions Monde long terme : 6 – 8 % bruts annualisés (référence MSCI World).",
-        "Performance contrat = allocation × qualité des UC × frais — les trois leviers se pilotent.",
+        "Performance contrat = allocation × qualité des UC × frais, les trois leviers se pilotent.",
       ],
       costs: [
         { label: "Frais d'entrée", value: "0 % (négociés)" },
@@ -381,7 +381,7 @@ const data: AnalysisMap = {
       ],
       vigilance: [
         "Vérifier la solidité de l'assureur (ratio Solvabilité II > 200 %).",
-        "Comparer les frais réels (TER) — un écart de 0,5 % capitalisé sur 20 ans = -10 % sur le capital final.",
+        "Comparer les frais réels (TER), un écart de 0,5 % capitalisé sur 20 ans = -10 % sur le capital final.",
         "Réviser la clause bénéficiaire à chaque événement familial (naissance, divorce, décès).",
         "Attention aux versements après 70 ans : régime art. 757 B (abattement global 30 500 €).",
       ],
@@ -402,7 +402,7 @@ const data: AnalysisMap = {
       faq: [
         { q: "Le fonds en euros est-il encore intéressant ?", a: "Oui, en complément d'UC : il sécurise la poche défensive et permet l'arbitrage sans frottement. Les nouveaux fonds (immobilier, dette privée) relèvent les rendements." },
         { q: "Contrat français ou luxembourgeois ?", a: "Le Luxembourg apporte le triangle de sécurité, l'accès à des FAS / FID sur mesure et la portabilité internationale. Pertinent au-delà de 250 k€." },
-        { q: "Peut-on perdre du capital ?", a: "Oui sur les UC — pas sur le fonds en euros (garantie de l'assureur, hors faillite). D'où l'importance de l'allocation." },
+        { q: "Peut-on perdre du capital ?", a: "Oui sur les UC, pas sur le fonds en euros (garantie de l'assureur, hors faillite). D'où l'importance de l'allocation." },
         { q: "Comment optimiser la transmission ?", a: "Versements avant 70 ans, clause bénéficiaire démembrée (conjoint usufruitier / enfants nus-propriétaires), répartition multi-contrats." },
       ],
       whenItFits: [
@@ -426,9 +426,9 @@ const data: AnalysisMap = {
         "Le PER est l'outil central de préparation de la retraite depuis la loi PACTE (2019). Sa puissance vient d'un effet ciseau fiscal : déduction à l'entrée à votre TMI haute, imposition à la sortie à une TMI souvent plus basse. La pertinence se mesure quasi exclusivement à l'écart TMI entrée / TMI sortie.",
       mechanics: [
         "Versements volontaires déductibles du revenu imposable (plafond annuel).",
-        "Capital investi en fonds €, UC, immobilier — gestion pilotée par défaut.",
+        "Capital investi en fonds €, UC, immobilier, gestion pilotée par défaut.",
         "Blocage jusqu'à la retraite (sauf cas d'achat de résidence principale & accidents de la vie).",
-        "Sortie en capital, en rente viagère ou en mix — fiscalité dépendante du choix.",
+        "Sortie en capital, en rente viagère ou en mix, fiscalité dépendante du choix.",
         "Transmission : hors succession avant 70 ans (régime art. 990 I).",
       ],
       actors: [
@@ -495,7 +495,7 @@ const data: AnalysisMap = {
           mitigation: "Limiter à la part de l'épargne réellement long terme.",
           description:
             "Le PER est bloqué jusqu'à la retraite, sauf 6 cas dérogatoires (achat RP, invalidité, décès conjoint, surendettement, fin de droits chômage, cessation activité non salariée).",
-          probabilityPct: "Certaine — c'est la nature du produit",
+          probabilityPct: "Certaine, c'est la nature du produit",
           financialImpact: "Indisponibilité totale du capital pendant 10 à 30 ans.",
           scenarios: ["Besoin imprévu de trésorerie sans cas dérogatoire applicable."],
           leadingIndicators: ["Ratio épargne disponible / épargne bloquée < 30 %."],
@@ -514,7 +514,7 @@ const data: AnalysisMap = {
           description:
             "Le PER est jeune (2019) : son cadre fiscal pourrait évoluer. L'antériorité fiscale des versements déjà effectués reste néanmoins acquise.",
           probabilityPct: "Ajustement marginal ≈ 1 fois tous les 4 ans",
-          financialImpact: "Variable — généralement marginal sur les versements déjà capitalisés.",
+          financialImpact: "Variable, généralement marginal sur les versements déjà capitalisés.",
           scenarios: ["Plafonnement de la déduction.", "Modification du régime de sortie en capital."],
           leadingIndicators: ["Projets de loi de finances annuels."],
           mitigations: [
@@ -537,7 +537,7 @@ const data: AnalysisMap = {
       vigilance: [
         "Ne pas verser au-delà de la déduction utile (au-delà, vous perdez l'arbitrage fiscal).",
         "Anticiper la sortie : un capital sorti d'un coup peut faire bondir la TMI.",
-        "Contrôler le mode de gestion par défaut (souvent prudent — peut être inadapté à un horizon long).",
+        "Contrôler le mode de gestion par défaut (souvent prudent, peut être inadapté à un horizon long).",
       ],
       caseStudy: {
         profile: "Cadre dirigeant 48 ans, TMI 45 %, retraite à 64 ans.",

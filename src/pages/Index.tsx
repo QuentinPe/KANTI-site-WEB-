@@ -27,7 +27,7 @@ const Index = () => {
   return (
     <>
       <Seo
-        title="KANTI — Cabinet de gestion de patrimoine indépendant à Biarritz"
+        title="KANTI, Cabinet de gestion de patrimoine indépendant à Biarritz"
         description="KANTI accompagne particuliers, dirigeants et familles dans la structuration, l'optimisation fiscale et la transmission de leur patrimoine. Conseil patrimonial indépendant à Biarritz."
         jsonLd={[organizationJsonLd, localBusinessJsonLd]}
       />

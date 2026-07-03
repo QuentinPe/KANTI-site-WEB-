@@ -8,11 +8,11 @@ export interface Product {
   slug: string;
   tag: string;
   title: string;
-  pitch: string;            // recto — 1 line
-  forWhom: string;          // verso — pour qui
-  benefits: string[];       // verso — bullets
-  fiscality: string;        // verso — fiscalité résumée
-  horizon?: string;         // verso — horizon recommandé
+  pitch: string;            // recto, 1 line
+  forWhom: string;          // verso, pour qui
+  benefits: string[];       // verso, bullets
+  fiscality: string;        // verso, fiscalité résumée
+  horizon?: string;         // verso, horizon recommandé
 }
 
 export interface ExpertiseCategory {

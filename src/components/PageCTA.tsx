@@ -98,7 +98,7 @@ export default function PageCTA({
             <div className={`mt-12 flex flex-wrap gap-x-8 gap-y-3 text-[11px] tracking-[0.18em] uppercase ${fgMuted}`}>
               <span className="inline-flex items-center gap-2">
                 <span className={`w-1 h-1 rounded-full ${isNavy ? "bg-white/40" : "bg-foreground/40"}`} />
-                30 min — sans engagement
+                30 min, sans engagement
               </span>
               <span className="inline-flex items-center gap-2">
                 <span className={`w-1 h-1 rounded-full ${isNavy ? "bg-white/40" : "bg-foreground/40"}`} />

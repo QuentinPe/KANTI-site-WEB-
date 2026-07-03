@@ -28,7 +28,7 @@ const faqItems = [
   },
   {
     q: "Combien coûte un accompagnement patrimonial ?",
-    a: "Nos honoraires dépendent de la complexité de votre situation. Ils vous sont communiqués de façon transparente avant toute mission. Nous pouvons travailler en honoraires de conseil ou en commissions sur les produits souscrits — vous choisissez.",
+    a: "Nos honoraires dépendent de la complexité de votre situation. Ils vous sont communiqués de façon transparente avant toute mission. Nous pouvons travailler en honoraires de conseil ou en commissions sur les produits souscrits, vous choisissez.",
   },
   {
     q: "Quels documents apporter au premier rendez-vous ?",
@@ -81,7 +81,7 @@ export default function ContactPage() {
       return;
     }
     setStatus("loading");
-    // Mock front-only — log pour brancher le back ultérieurement
+    // Mock front-only, log pour brancher le back ultérieurement
     console.info("[KANTI mock] Contact submission:", parsed.data);
     await new Promise((r) => setTimeout(r, 1100));
     setStatus("idle");
@@ -91,7 +91,7 @@ export default function ContactPage() {
   return (
     <>
       <Seo
-        title="Contact — Prendre rendez-vous avec un conseiller patrimonial à Biarritz"
+        title="Contact, Prendre rendez-vous avec un conseiller patrimonial à Biarritz"
         description="Premier échange de 30 minutes gratuit et sans engagement avec un conseiller KANTI. Cabinet indépendant à Biarritz, réponse sous 24h ouvrées."
         jsonLd={[
           localBusinessJsonLd,
@@ -110,7 +110,7 @@ export default function ContactPage() {
         breadcrumb="Cabinet · Contact"
       />
 
-      {/* Reassurance bar — pousse à la prise de rendez-vous */}
+      {/* Reassurance bar, pousse à la prise de rendez-vous */}
       <section className="section-padding texture-paper relative overflow-hidden">
         <div className="max-w-6xl mx-auto relative z-10">
           <div className="mb-12 reveal max-w-2xl">

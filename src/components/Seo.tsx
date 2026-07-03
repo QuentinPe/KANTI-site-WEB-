@@ -16,7 +16,7 @@ interface SeoProps {
 }
 
 /**
- * Centralised SEO component — sets title, meta description, Open Graph,
+ * Centralised SEO component, sets title, meta description, Open Graph,
  * Twitter cards, canonical, and optional JSON-LD structured data.
  */
 export default function Seo({
@@ -29,7 +29,7 @@ export default function Seo({
 }: SeoProps) {
   const { pathname } = useLocation();
   const url = canonical ?? `${SITE_URL}${pathname}`;
-  const fullTitle = title.includes("KANTI") ? title : `${title} — KANTI`;
+  const fullTitle = title.includes("KANTI") ? title : `${title}, KANTI`;
   const ldArray = Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [];
 
   return (
@@ -96,7 +96,7 @@ export const localBusinessJsonLd = {
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
   "@id": `${SITE_URL}#cabinet`,
-  name: "KANTI — Cabinet de gestion de patrimoine",
+  name: "KANTI, Cabinet de gestion de patrimoine",
   image: DEFAULT_OG,
   url: SITE_URL,
   telephone: "+33-6-63-32-48-09",

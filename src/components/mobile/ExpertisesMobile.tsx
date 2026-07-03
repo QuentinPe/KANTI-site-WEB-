@@ -4,7 +4,7 @@ const items = [
   {
     tag: "Épargne",
     title: "Gestion patrimoniale",
-    desc: "Allocation, assurance-vie, PER, SCPI — une stratégie d'épargne qui dure.",
+    desc: "Allocation, assurance-vie, PER, SCPI, une stratégie d'épargne qui dure.",
     href: "/gestion-patrimoniale",
     image:
       "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=900&q=70",
@@ -12,7 +12,7 @@ const items = [
   {
     tag: "Fiscalité",
     title: "Fiscalité du patrimoine",
-    desc: "Audit, IFI, revenus fonciers — réduire votre pression fiscale sans risques inutiles.",
+    desc: "Audit, IFI, revenus fonciers, réduire votre pression fiscale sans risques inutiles.",
     href: "/fiscalite",
     image:
       "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=900&q=70",
@@ -36,7 +36,7 @@ const items = [
   {
     tag: "Succession",
     title: "Transmission",
-    desc: "Donation, démembrement, Dutreil — anticiper pour protéger ceux qui comptent.",
+    desc: "Donation, démembrement, Dutreil, anticiper pour protéger ceux qui comptent.",
     href: "/transmission-patrimoine-famille",
     image:
       "https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=900&q=70",
@@ -44,7 +44,7 @@ const items = [
   {
     tag: "Immobilier",
     title: "Immobilier patrimonial",
-    desc: "Résidence, locatif, SCI, nue-propriété — pensé dans une logique globale.",
+    desc: "Résidence, locatif, SCI, nue-propriété, pensé dans une logique globale.",
     href: "/patrimoine-immobilier-strategie",
     image:
       "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=900&q=70",

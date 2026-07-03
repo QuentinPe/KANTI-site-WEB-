@@ -60,7 +60,7 @@ export default function Header() {
   const textMuted = useDarkGlass ? "text-white/75" : "text-foreground/70";
 
   const bubbleClass = useDarkGlass ? "glass-dark" : scrolled ? "glass-strong" : "glass";
-  // Bubble (hover pill) — same visual family as the KANTI bubble
+  // Bubble (hover pill), same visual family as the KANTI bubble
   const hoverPillClass = useDarkGlass
     ? "bg-white/12 backdrop-blur-md ring-1 ring-white/15"
     : "bg-white/70 backdrop-blur-md ring-1 ring-foreground/10 shadow-[0_4px_20px_-8px_hsl(var(--foreground)/0.15)]";
@@ -74,10 +74,10 @@ export default function Header() {
     >
       <div className="px-4 md:px-6 max-w-[1400px] mx-auto">
         <div className="flex items-center justify-between gap-3">
-          {/* KANTI bubble — anchor on the left */}
+          {/* KANTI bubble, anchor on the left */}
           <Link
             to="/"
-            aria-label="KANTI — Accueil"
+            aria-label="KANTI, Accueil"
             className={`relative z-[2] flex items-center rounded-full px-6 md:px-7 py-3 transition-all duration-500 ${bubbleClass} ${textColor} hover:opacity-95`}
           >
             <img
@@ -89,7 +89,7 @@ export default function Header() {
             />
           </Link>
 
-          {/* Desktop nav bubble — unfurls horizontally from the right toward KANTI */}
+          {/* Desktop nav bubble, unfurls horizontally from the right toward KANTI */}
           <div
             className={`hidden xl:block flex-1 transition-[transform,opacity,filter] duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] origin-right will-change-transform ${
               navExpanded
@@ -100,7 +100,7 @@ export default function Header() {
           >
             <nav
               onMouseLeave={() => {
-                /* keep last hovered item — do not clear */
+                /* keep last hovered item, do not clear */
               }}
               className={`flex items-center justify-end gap-1 rounded-full pl-3 pr-2 py-2 transition-all duration-500 ${bubbleClass}`}
             >

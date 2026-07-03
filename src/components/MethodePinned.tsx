@@ -42,7 +42,7 @@ const steps = [
     number: "05",
     title: "Mise en œuvre",
     description:
-      "Sélection des meilleurs contrats et supports du marché, ouverture des comptes, coordination avec vos autres conseils — notaire, expert-comptable, avocat.",
+      "Sélection des meilleurs contrats et supports du marché, ouverture des comptes, coordination avec vos autres conseils, notaire, expert-comptable, avocat.",
     image:
       "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=2000&q=80",
   },
@@ -123,7 +123,7 @@ export default function MethodePinned() {
           background: "hsl(var(--navy-deep))",
         }}
       >
-        {/* Top mask reveal — black curtain that drops as we enter the section */}
+        {/* Top mask reveal, black curtain that drops as we enter the section */}
         <div
           aria-hidden
           className="sticky top-0 h-0 z-30 pointer-events-none"
@@ -371,7 +371,7 @@ export default function MethodePinned() {
                         key={s.number}
                         type="button"
                         onClick={() => scrollToStep(i)}
-                        aria-label={`Aller à l'étape ${s.number} — ${s.title}`}
+                        aria-label={`Aller à l'étape ${s.number}, ${s.title}`}
                         aria-current={isActive ? "step" : undefined}
                         className="group relative flex flex-col items-center cursor-pointer focus:outline-none"
                       >

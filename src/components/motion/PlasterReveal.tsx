@@ -14,7 +14,7 @@ type Props = {
 
 /**
  * Subtle full-page texture layer revealed only around the cursor via a radial
- * mask. Sits behind the main content so opaque sections naturally hide it —
+ * mask. Sits behind the main content so opaque sections naturally hide it -
  * the texture only appears in the empty "breaths" between sections.
  *
  * Disabled on touch devices, sub-768px viewports, and prefers-reduced-motion.

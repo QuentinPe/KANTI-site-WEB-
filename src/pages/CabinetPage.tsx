@@ -117,7 +117,7 @@ export default function CabinetPage() {
             image: bureau4,
             alt: "Bureau individuel avec station de travail double",
             eyebrow: "Bureau d'analyse",
-            title: "Là où votre dossier est étudié — ligne par ligne.",
+            title: "Là où votre dossier est étudié, ligne par ligne.",
             caption: "Stations de travail dédiées à l'ingénierie patrimoniale et à l'analyse fiscale.",
           },
         ]}
@@ -127,14 +127,14 @@ export default function CabinetPage() {
       <section className="section-ivory py-24 md:py-32">
         <div className="max-w-3xl mx-auto px-6 text-center reveal">
           <p className="text-[13px] tracking-[0.3em] uppercase text-gold mb-6">
-            — Du dedans au dehors —
+, Du dedans au dehors -
           </p>
           <h2 className="font-heading text-2xl md:text-3xl lg:text-4xl text-primary leading-tight mb-6">
             Un écrin discret, au cœur d'un quartier d'exception.
           </h2>
           <p className="text-base md:text-lg text-gray-text leading-relaxed">
             Derrière nos portes, l'atmosphère feutrée d'un cabinet de conseil.
-            Devant nos fenêtres, l'élégance bordelaise du Triangle d'Or —
+            Devant nos fenêtres, l'élégance bordelaise du Triangle d'Or -
             ses façades classées, ses adresses choisies, son tempo paisible.
           </p>
           <div className="mt-10 mx-auto w-px h-16 bg-gradient-to-b from-gold/60 to-transparent" />

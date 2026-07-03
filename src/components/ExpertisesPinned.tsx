@@ -9,7 +9,7 @@ const expertises = [
     tag: "Épargne & placements",
     title: "Gestion patrimoniale",
     description:
-      "Allocation d'actifs, assurance-vie, PER, compte-titres, SCPI — une stratégie d'épargne construite pour durer.",
+      "Allocation d'actifs, assurance-vie, PER, compte-titres, SCPI, une stratégie d'épargne construite pour durer.",
     benefit: "Faire travailler votre capital en cohérence avec vos projets de vie.",
     href: "/gestion-patrimoniale",
     image:
@@ -19,7 +19,7 @@ const expertises = [
     tag: "Fiscalité",
     title: "Fiscalité du patrimoine",
     description:
-      "Audit fiscal, IFI, revenus fonciers, structuration — réduire votre pression fiscale sans prendre de risques inutiles.",
+      "Audit fiscal, IFI, revenus fonciers, structuration, réduire votre pression fiscale sans prendre de risques inutiles.",
     benefit: "Identifier vos marges de manœuvre fiscales réelles.",
     href: "/fiscalite",
     image:
@@ -49,7 +49,7 @@ const expertises = [
     tag: "Succession",
     title: "Transmission & prévoyance",
     description:
-      "Donation, démembrement, assurance-vie, pacte Dutreil — anticiper pour protéger ceux qui comptent.",
+      "Donation, démembrement, assurance-vie, pacte Dutreil, anticiper pour protéger ceux qui comptent.",
     benefit: "Préparer la transmission en maîtrisant la fiscalité.",
     href: "/transmission-patrimoine-famille",
     image:
@@ -59,7 +59,7 @@ const expertises = [
     tag: "Immobilier",
     title: "Immobilier patrimonial",
     description:
-      "Résidence principale, locatif, SCI, nue-propriété — chaque investissement pensé dans une logique globale.",
+      "Résidence principale, locatif, SCI, nue-propriété, chaque investissement pensé dans une logique globale.",
     benefit: "Structurer vos actifs immobiliers intelligemment.",
     href: "/patrimoine-immobilier-strategie",
     image:
@@ -70,7 +70,7 @@ const expertises = [
 export default function ExpertisesPinned() {
   return (
     <>
-      {/* Mobile fallback — stacked cards */}
+      {/* Mobile fallback, stacked cards */}
       <section
         id="expertises-mobile"
         className="md:hidden section-glass texture-paper section-padding"
@@ -117,7 +117,7 @@ export default function ExpertisesPinned() {
         </div>
       </section>
 
-      {/* Desktop — pinned scrollytelling */}
+      {/* Desktop, pinned scrollytelling */}
       <ExpertisesPinnedDesktop />
     </>
   );
@@ -136,7 +136,7 @@ function ExpertisesPinnedDesktop() {
       <div ref={ref} className="relative" style={{ height: `${100 + expertises.length * 70}vh` }}>
         <div className="sticky top-0 h-screen flex items-center overflow-hidden">
           <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-12 w-full grid grid-cols-12 gap-10 items-center">
-            {/* Left — sticky text + index list */}
+            {/* Left, sticky text + index list */}
             <div className="col-span-5">
               <div className="electric-line mb-5" />
               <p className="text-[11px] tracking-[0.3em] uppercase text-foreground/50 mb-5 font-medium">
@@ -170,7 +170,7 @@ function ExpertisesPinnedDesktop() {
               </ol>
             </div>
 
-            {/* Right — active expertise card with image */}
+            {/* Right, active expertise card with image */}
             <div className="col-span-7 relative h-[560px]">
               <AnimatePresence mode="wait">
                 <ExpertiseCard key={activeItem.title} item={activeItem} index={activeIndex} />
@@ -245,7 +245,7 @@ function ExpertiseCard({
       style={{ zIndex: index }}
       className="absolute inset-0 glass-card rounded-[2rem] overflow-hidden flex flex-col"
     >
-      {/* Image — top 60% */}
+      {/* Image, top 60% */}
       <div className="relative h-[58%] overflow-hidden">
         <motion.div
           initial={reduce ? { scale: 1 } : { scale: 1.12 }}

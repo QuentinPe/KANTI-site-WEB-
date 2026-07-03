@@ -6,7 +6,7 @@ import Hero from "./Hero";
 
 const POSTER_SRC = "/video/hero-office-poster.jpg";
 const FRAME_COUNT = 121;
-// Pick the right resolution per device — keeps small screens light.
+// Pick the right resolution per device, keeps small screens light.
 const pickFrameDir = () => {
   if (typeof window === "undefined") return "frames-1280";
   const dpr = window.devicePixelRatio || 1;
@@ -131,7 +131,7 @@ export default function HeroSticky() {
       }
     })();
 
-    // RAF loop — lerp current frame towards target for smooth scrubbing
+    // RAF loop, lerp current frame towards target for smooth scrubbing
     let raf = 0;
     const tick = () => {
       const target = targetFrameRef.current;
@@ -189,7 +189,7 @@ export default function HeroSticky() {
       style={{ height: "550vh" }}
     >
       <div className="sticky top-0 h-screen w-full overflow-hidden flex items-center">
-        {/* Scroll-driven canvas — frames are individual JPEGs, works on any CDN */}
+        {/* Scroll-driven canvas, frames are individual JPEGs, works on any CDN */}
         <canvas
           ref={canvasRef}
           className="absolute inset-0 w-full h-full"
@@ -204,7 +204,7 @@ export default function HeroSticky() {
           />
         )}
 
-        {/* Subtle dark gradient — only at top & bottom for legibility, preserves video colors */}
+        {/* Subtle dark gradient, only at top & bottom for legibility, preserves video colors */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
@@ -213,7 +213,7 @@ export default function HeroSticky() {
           }}
         />
 
-        {/* Radial reading scrim — protects only the text column, leaves video vivid on the right */}
+        {/* Radial reading scrim, protects only the text column, leaves video vivid on the right */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{

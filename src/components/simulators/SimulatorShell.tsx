@@ -12,12 +12,12 @@ interface SimulatorShellProps {
 /**
  * Editorial shell for expertise simulators.
  * Magazine-like header with hairlines, numbered eyebrow,
- * generous typography. No heavy card — sits inline like a feature spread.
+ * generous typography. No heavy card, sits inline like a feature spread.
  */
 export default function SimulatorShell({ eyebrow = "Simulateur", index = "01", title, subtitle, children, disclaimer }: SimulatorShellProps) {
   return (
     <div className="relative w-full">
-      {/* Subtle ambient glow — restrained */}
+      {/* Subtle ambient glow, restrained */}
       <div aria-hidden className="pointer-events-none absolute -top-32 right-0 w-[40rem] h-[40rem] rounded-full bg-[hsl(var(--accent)/0.06)] blur-[120px]" />
 
       {/* Editorial header: number, eyebrow, oversized title */}
@@ -46,7 +46,7 @@ export default function SimulatorShell({ eyebrow = "Simulateur", index = "01", t
       {/* Hairline divider */}
       <div aria-hidden className="separator-fine mb-10 md:mb-14" />
 
-      {/* Working area — open, no heavy card */}
+      {/* Working area, open, no heavy card */}
       <div className="relative">
         {children}
       </div>

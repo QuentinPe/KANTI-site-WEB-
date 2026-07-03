@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useEffect, useRef } from "react";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 
-// Premium editorial photography — Biarritz architectural / interior light
+// Premium editorial photography, Biarritz architectural / interior light
 const HERO_IMAGE =
   "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=2400&q=80";
 
@@ -16,7 +16,7 @@ export default function Hero() {
     offset: ["start start", "end start"],
   });
 
-  // Hero compaction on scroll — content lifts and fades while image scales subtly
+  // Hero compaction on scroll, content lifts and fades while image scales subtly
   const contentY = useTransform(scrollYProgress, [0, 1], reduce ? [0, 0] : [0, -80]);
   const contentOpacity = useTransform(scrollYProgress, [0, 0.6, 1], [1, 0.6, 0]);
   const imageScale = useTransform(scrollYProgress, [0, 1], reduce ? [1, 1] : [1.05, 1.18]);
