@@ -203,11 +203,11 @@ function ExpertiseRow({
           scale: active ? 1.25 : 0.78,
           opacity: active ? 1 : 0.45,
           boxShadow: active
-            ? "0 0 0 6px hsl(var(--accent) / 0.15), 0 0 18px 2px hsl(var(--accent) / 0.55)"
-            : "0 0 0 0 hsl(var(--accent) / 0)",
+            ? "0 0 0 6px hsl(0 0% 100% / 0.12), 0 0 18px 2px hsl(0 0% 100% / 0.35)"
+            : "0 0 0 0 hsl(0 0% 100% / 0)",
         }}
         transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-        className="absolute -left-[28px] top-[10px] w-2 h-2 rounded-full bg-[hsl(var(--accent))] origin-center"
+        className="absolute -left-[28px] top-[10px] w-2 h-2 rounded-full bg-foreground/70 origin-center"
       />
       <span className="text-[11px] font-medium tracking-[0.25em] uppercase text-foreground/45 w-8">
         {number}
@@ -294,7 +294,7 @@ function ExpertiseCard({
           <Link
             to={item.href}
             data-magnetic
-            className="group inline-flex items-center gap-2 px-6 py-3 rounded-full bg-foreground text-background text-sm font-medium tracking-wide reflection-sweep hover:shadow-[0_20px_50px_-10px_hsl(var(--accent)/0.45)] transition-all duration-300 hover:-translate-y-0.5"
+            className="group inline-flex items-center gap-2 px-6 py-3 rounded-full bg-foreground text-background text-sm font-medium tracking-wide reflection-sweep hover:shadow-[0_20px_50px_-10px_hsl(222_50%_11%/0.25)] transition-all duration-300 hover:-translate-y-0.5"
           >
             Découvrir l'expertise
             <svg
