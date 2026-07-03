@@ -1135,7 +1135,6 @@ function generatePdf(
   });
   y += Math.ceil(kpis.length / 2) * (kpiH + 14) + 24;
 
-  y = ensureSpace(y, 110, () => { doc.addPage(); drawPageHeader("Votre positionnement", "02"); return 158; });
   y = sectionLabel(y, "Ce que cela signifie pour vous");
 
   const cumLower = distribution.filter((d) => d.sri < profile.sri).reduce((s, d) => s + d.pct, 0);
