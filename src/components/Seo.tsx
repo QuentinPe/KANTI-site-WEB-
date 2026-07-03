@@ -75,14 +75,14 @@ export const organizationJsonLd = {
   description:
     "Cabinet indépendant de conseil en gestion de patrimoine à Biarritz.",
   url: SITE_URL,
-  telephone: "+33-5-56-00-00-00",
+  telephone: "+33-6-63-32-48-09",
   email: "kanti@adnfamily.com",
   priceRange: "€€€",
   address: {
     "@type": "PostalAddress",
     streetAddress: "9 Rue de la Négresse",
     addressLocality: "Biarritz",
-    postalCode: "33000",
+    postalCode: "64200",
     addressCountry: "FR",
   },
   areaServed: {
@@ -99,18 +99,18 @@ export const localBusinessJsonLd = {
   name: "KANTI — Cabinet de gestion de patrimoine",
   image: DEFAULT_OG,
   url: SITE_URL,
-  telephone: "+33-5-56-00-00-00",
+  telephone: "+33-6-63-32-48-09",
   address: {
     "@type": "PostalAddress",
     streetAddress: "9 Rue de la Négresse",
     addressLocality: "Biarritz",
-    postalCode: "33000",
+    postalCode: "64200",
     addressCountry: "FR",
   },
   geo: {
     "@type": "GeoCoordinates",
-    latitude: 44.8421,
-    longitude: -0.5760,
+    latitude: 43.4718,
+    longitude: -1.5606,
   },
   openingHoursSpecification: [
     {
