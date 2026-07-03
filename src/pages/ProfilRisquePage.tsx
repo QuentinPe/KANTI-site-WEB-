@@ -350,13 +350,48 @@ function ResultView({
   const handleDownload = () => generatePdf(profile, answers);
   const handleSend = () => {
     // Future intégration : envoi vers une edge function / mailer KANTI.
-    // Pour l'instant on confirme le téléchargement et on ouvre un mailto.
+    // Pour l'instant on génère le PDF et on ouvre un mailto pré-rempli.
     generatePdf(profile, answers);
     const subject = encodeURIComponent(
-      `Profil de risque, SRI ${profile.sri}/7 (${profile.shortLabel})`,
+      `Profil investisseur, SRI ${profile.sri}/7 (${profile.shortLabel}) — demande d'échange`,
     );
     const body = encodeURIComponent(
-      "Bonjour,\n\nVeuillez trouver ci-joint ma fiche profil de risque générée sur le site KANTI.\n\nCordialement.",
+      [
+        "Bonjour,",
+        "",
+        `Je viens de réaliser le questionnaire profil investisseur sur le site KANTI. Vous trouverez ci-joint la fiche PDF générée automatiquement (SRI ${profile.sri}/7 — ${profile.shortLabel}, score précis ${(profile.sriPrecise ?? profile.sri).toFixed(2)}/7).`,
+        "",
+        "Afin que notre premier échange soit le plus utile possible, voici quelques éléments complémentaires que je peux vous partager (merci de compléter, supprimer ou préciser librement) :",
+        "",
+        "— Informations de contact —",
+        "• Nom / Prénom :",
+        "• Téléphone :",
+        "• Ville de résidence :",
+        "• Situation familiale (célibataire, marié·e, PACS, enfants…) :",
+        "• Profession / statut (salarié, TNS, dirigeant, retraité…) :",
+        "",
+        "— Ma situation patrimoniale —",
+        "• Revenus annuels nets du foyer :",
+        "• Tranche marginale d'imposition (TMI) estimée :",
+        "• Épargne disponible (livrets, comptes) :",
+        "• Placements financiers actuels (assurance-vie, PEA, PER, CTO, SCPI…) :",
+        "• Immobilier détenu (résidence principale, locatif, SCI…) :",
+        "• Crédits en cours (montant, durée restante) :",
+        "",
+        "— Mes objectifs & mon projet —",
+        "• Objectif prioritaire (préparer la retraite, transmettre, investir, réduire mes impôts, générer des revenus…) :",
+        "• Horizon d'investissement envisagé :",
+        "• Montant que je souhaite mobiliser (capital et/ou versement mensuel) :",
+        "• Sujets sur lesquels j'aimerais être accompagné·e en priorité :",
+        "",
+        "— Organisation du rendez-vous —",
+        "• Format souhaité (visio, téléphone, cabinet Bordeaux) :",
+        "• Créneaux de disponibilité dans les 15 prochains jours :",
+        "",
+        "Je reste à votre disposition pour tout complément avant notre échange.",
+        "",
+        "Bien cordialement,",
+      ].join("\n"),
     );
     window.location.href = `mailto:${KANTI_INFO.email}?subject=${subject}&body=${body}`;
   };
