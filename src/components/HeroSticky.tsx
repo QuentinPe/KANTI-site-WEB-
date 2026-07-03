@@ -266,7 +266,7 @@ export default function HeroSticky() {
               }}
             >
               Nous accompagnons les particuliers, les dirigeants et les familles dans la
-              structuration, l'optimisation et la transmission de leur patrimoine. À Bordeaux,
+              structuration, l'optimisation et la transmission de leur patrimoine. À Biarritz,
               depuis plus de quinze ans.
             </p>
 

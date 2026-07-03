@@ -12,7 +12,7 @@ const EMBED_URL =
   "https://www.google.com/maps/embed?pb=!4v1729600000000!6m8!1m7!1sCAoSLEFGMVFpcE5fZmFrZQ!2m2!1d44.8438!2d-0.5762!3f0!4f45!5f0.7820865974627469";
 // Fallback simpler embed (place mode) — guaranteed to work
 const EMBED_URL_FALLBACK =
-  "https://maps.google.com/maps?q=12+rue+Ferrere+33000+Bordeaux&t=k&z=18&ie=UTF8&iwloc=&output=embed";
+  "https://maps.google.com/maps?q=9+Rue+de+la+Negresse+64200+Biarritz&t=k&z=18&ie=UTF8&iwloc=&output=embed";
 
 export default function CabinetMap3D() {
   return (

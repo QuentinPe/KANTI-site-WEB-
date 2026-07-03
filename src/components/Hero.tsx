@@ -107,7 +107,7 @@ export default function Hero() {
             style={{ animation: "fade-in-up 1s cubic-bezier(0.22, 1, 0.36, 1) 0.7s forwards" }}
           >
             Nous accompagnons les particuliers, les dirigeants et les familles dans la
-            structuration, l'optimisation et la transmission de leur patrimoine. À Bordeaux,
+            structuration, l'optimisation et la transmission de leur patrimoine. À Biarritz,
             depuis plus de quinze ans.
           </p>
 
