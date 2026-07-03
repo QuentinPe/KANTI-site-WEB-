@@ -25,10 +25,10 @@ export default function MentionsLegalesPage() {
                 Sociétés de Bordeaux sous le numéro 000 000 000.
               </p>
               <ul>
-                <li>Siège social : 12 Cours de l'Intendance, 33000 Bordeaux</li>
+                <li>Siège social : 9 Rue de la Négresse, 64200 Biarritz</li>
                 <li>Numéro de TVA intracommunautaire : FR 00 000000000</li>
-                <li>Téléphone : 05 56 00 00 00</li>
-                <li>Courriel : contact@kanti.fr</li>
+                <li>Téléphone : 06 63 32 48 09</li>
+                <li>Courriel : kanti@adnfamily.com</li>
                 <li>Directeur de la publication : le Président de KANTI</li>
               </ul>
             </>
@@ -161,7 +161,7 @@ export default function MentionsLegalesPage() {
             <p>
               Le présent site et les présentes mentions légales sont régis par le droit français.
               Tout litige relatif à leur interprétation ou à leur exécution relève de la
-              compétence exclusive des tribunaux de Bordeaux, sous réserve des dispositions légales
+              compétence exclusive des tribunaux de Bayonne, sous réserve des dispositions légales
               impératives applicables.
             </p>
           ),

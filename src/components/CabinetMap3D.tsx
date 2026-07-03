@@ -1,7 +1,7 @@
 import { MapPin, Navigation, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const ADDRESS = "12 rue Ferrère, 33000 Bordeaux";
+const ADDRESS = "12 rue Ferrère, 64200 Biarritz";
 const DIRECTIONS_URL =
   "https://www.google.com/maps/dir/?api=1&destination=" +
   encodeURIComponent(ADDRESS);
@@ -44,7 +44,7 @@ export default function CabinetMap3D() {
                 <span>
                   12 rue Ferrère
                   <br />
-                  33000 Bordeaux
+                  64200 Biarritz
                 </span>
               </p>
             </div>
@@ -89,7 +89,7 @@ export default function CabinetMap3D() {
               <div className="relative rounded-lg overflow-hidden border border-gold/30 shadow-2xl bg-primary">
                 <div className="aspect-[16/10] w-full">
                   <iframe
-                    title="Plan 3D du cabinet KANTI — 12 rue Ferrère, 33000 Bordeaux"
+                    title="Plan 3D du cabinet KANTI — 12 rue Ferrère, 64200 Biarritz"
                     src={EMBED_URL_FALLBACK}
                     className="w-full h-full border-0"
                     loading="lazy"

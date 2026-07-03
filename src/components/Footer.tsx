@@ -13,8 +13,8 @@ export default function Footer() {
               Cabinet indépendant de conseil en gestion de patrimoine à Bordeaux. Nous accompagnons les particuliers et les dirigeants dans la structuration, l'optimisation fiscale et la transmission de leur patrimoine.
             </p>
             <div className="text-xs text-white/40 space-y-1 font-light">
-              <p>12 Cours de l'Intendance — 33000 Bordeaux</p>
-              <p>05 56 00 00 00 — contact@kanti.fr</p>
+              <p>9 Rue de la Négresse — 64200 Biarritz</p>
+              <p>06 63 32 48 09 — kanti@adnfamily.com</p>
             </div>
           </div>
           <div>
@@ -50,7 +50,7 @@ export default function Footer() {
 
         <div className="text-[11px] leading-relaxed mb-6 text-white/55 font-light">
           <p>
-            KANTI — SAS au capital de 10 000 € — RCS Bordeaux 000 000 000 — Siège social : 12 Cours de l'Intendance, 33000 Bordeaux.
+            KANTI — SAS au capital de 10 000 € — RCS Bayonne 878 821 818 — Siège social : 9 Rue de la Négresse, 64200 Biarritz.
             Conseiller en Investissements Financiers (CIF) enregistré à l'ORIAS sous le n° 00 000 000. Membre de la Chambre Nationale des Conseils en Gestion de Patrimoine (CNCGP), association agréée par l'Autorité des Marchés Financiers (AMF).
             Courtier en assurances (COA) — Courtier en opérations de banque et services de paiement (COBSP). Activité de transaction immobilière — Carte professionnelle n° CPI 0000 0000 000 000 000 délivrée par la CCI de Bordeaux.
             Responsabilité civile professionnelle et garantie financière conformes aux articles L.541-3 et L.512-6 du Code monétaire et financier.

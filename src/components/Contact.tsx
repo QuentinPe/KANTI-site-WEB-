@@ -23,15 +23,15 @@ export default function Contact() {
             <div className="space-y-3 text-sm text-foreground/65 font-light">
               <p className="flex items-center gap-3">
                 <span className="w-1 h-1 rounded-full bg-[hsl(var(--electric))]" />
-                12 Cours de l'Intendance, 33000 Bordeaux
+                9 Rue de la Négresse, 64200 Biarritz
               </p>
               <p className="flex items-center gap-3">
                 <span className="w-1 h-1 rounded-full bg-[hsl(var(--electric))]" />
-                05 56 00 00 00
+                06 63 32 48 09
               </p>
               <p className="flex items-center gap-3">
                 <span className="w-1 h-1 rounded-full bg-[hsl(var(--electric))]" />
-                contact@kanti.fr
+                kanti@adnfamily.com
               </p>
               <p className="text-foreground/40 pt-3 text-xs">
                 Du lundi au vendredi, 9h–18h — Sur rendez-vous

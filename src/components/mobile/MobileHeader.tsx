@@ -194,19 +194,19 @@ export default function MobileHeader() {
                   Cabinet
                 </p>
                 <p className="text-white/65 text-[14px] font-light leading-relaxed">
-                  12 Cours de l'Intendance · 33000 Bordeaux
+                  9 Rue de la Négresse · 64200 Biarritz
                 </p>
                 <a
-                  href="tel:+33556000000"
+                  href="tel:+33663324809"
                   className="block mt-2 text-white/85 text-[14px] font-light"
                 >
-                  05 56 00 00 00
+                  06 63 32 48 09
                 </a>
                 <a
-                  href="mailto:contact@kanti.fr"
+                  href="mailto:kanti@adnfamily.com"
                   className="block mt-1 text-white/85 text-[14px] font-light"
                 >
-                  contact@kanti.fr
+                  kanti@adnfamily.com
                 </a>
               </div>
             </div>

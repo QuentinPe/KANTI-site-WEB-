@@ -76,11 +76,11 @@ export const organizationJsonLd = {
     "Cabinet indépendant de conseil en gestion de patrimoine à Bordeaux.",
   url: SITE_URL,
   telephone: "+33-5-56-00-00-00",
-  email: "contact@kanti.fr",
+  email: "kanti@adnfamily.com",
   priceRange: "€€€",
   address: {
     "@type": "PostalAddress",
-    streetAddress: "12 Cours de l'Intendance",
+    streetAddress: "9 Rue de la Négresse",
     addressLocality: "Bordeaux",
     postalCode: "33000",
     addressCountry: "FR",
@@ -102,7 +102,7 @@ export const localBusinessJsonLd = {
   telephone: "+33-5-56-00-00-00",
   address: {
     "@type": "PostalAddress",
-    streetAddress: "12 Cours de l'Intendance",
+    streetAddress: "9 Rue de la Négresse",
     addressLocality: "Bordeaux",
     postalCode: "33000",
     addressCountry: "FR",
