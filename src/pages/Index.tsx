@@ -13,7 +13,6 @@ import Equipe from "@/components/Equipe";
 import CTAFinal from "@/components/CTAFinal";
 import Actualites from "@/components/Actualites";
 import HomeFAQ from "@/components/HomeFAQ";
-import CTAFinal from "@/components/CTAFinal";
 import Footer from "@/components/Footer";
 import PlasterReveal from "@/components/motion/PlasterReveal";
 import HomeMobile from "@/components/mobile/HomeMobile";
