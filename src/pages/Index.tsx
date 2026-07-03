@@ -10,10 +10,9 @@ import MethodePinned from "@/components/MethodePinned";
 import HomeCasClients from "@/components/HomeCasClients";
 import HomeProfilRisque from "@/components/HomeProfilRisque";
 import Equipe from "@/components/Equipe";
-import Confiance from "@/components/Confiance";
+import CTAFinal from "@/components/CTAFinal";
 import Actualites from "@/components/Actualites";
 import HomeFAQ from "@/components/HomeFAQ";
-import CTAFinal from "@/components/CTAFinal";
 import Footer from "@/components/Footer";
 import PlasterReveal from "@/components/motion/PlasterReveal";
 import HomeMobile from "@/components/mobile/HomeMobile";
@@ -48,7 +47,6 @@ const Index = () => {
             <Equipe />
             <Actualites />
             <HomeFAQ />
-            <Confiance />
             <CTAFinal />
           </main>
           <Footer />
