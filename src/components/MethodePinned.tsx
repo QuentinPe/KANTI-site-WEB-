@@ -17,48 +17,42 @@ const steps = [
     title: "Découverte",
     description:
       "Un premier rendez-vous de 30 minutes pour comprendre votre situation, vos projets et vos préoccupations. Gratuit et sans engagement.",
-    image:
-      "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=2000&q=80",
+    image: step1Img.url,
   },
   {
     number: "02",
     title: "Bilan patrimonial",
     description:
       "Audit complet de votre patrimoine : actifs, passifs, fiscalité, prévoyance, régimes matrimoniaux. Nous regardons tout, sans angle mort.",
-    image:
-      "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=2000&q=80",
+    image: step2Img.url,
   },
   {
     number: "03",
     title: "Objectifs",
     description:
       "Nous formalisons ensemble vos priorités : revenus, retraite, transmission, fiscalité, projets de vie. Une carte claire avant toute décision.",
-    image:
-      "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=2000&q=80",
+    image: step3Img.url,
   },
   {
     number: "04",
     title: "Préconisations",
     description:
       "Une lettre de recommandations structurée, avec simulations chiffrées et scénarios comparés. Vous gardez la main, nous éclairons les choix.",
-    image:
-      "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=2000&q=80",
+    image: step4Img.url,
   },
   {
     number: "05",
     title: "Mise en œuvre",
     description:
       "Sélection des meilleurs contrats et supports du marché, ouverture des comptes, coordination avec vos autres conseils, notaire, expert-comptable, avocat.",
-    image:
-      "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=2000&q=80",
+    image: step5Img.url,
   },
   {
     number: "06",
     title: "Suivi annuel",
     description:
       "Un rendez-vous annuel de bilan, des alertes en cas de changement législatif, un interlocuteur disponible toute l'année. La relation s'inscrit dans la durée.",
-    image:
-      "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=2000&q=80",
+    image: step6Img.url,
   },
 ];
 
