@@ -87,7 +87,7 @@ export default function About() {
               <div className="relative pl-5">
                 <motion.span
                   aria-hidden
-                  className="absolute left-0 top-1 bottom-1 w-px bg-[hsl(var(--accent))] origin-top"
+                  className="absolute left-0 top-1 bottom-1 w-px bg-foreground/25 origin-top"
                   initial={{ scaleY: reduce ? 1 : 0 }}
                   whileInView={{ scaleY: 1 }}
                   viewport={{ once: true, margin: "-20%" }}
@@ -140,7 +140,7 @@ function Stat({
       {/* Traced vertical line accent */}
       <motion.span
         aria-hidden
-        className="absolute left-0 top-1 bottom-1 w-px bg-[hsl(var(--accent))] origin-top"
+        className="absolute left-0 top-1 bottom-1 w-px bg-foreground/25 origin-top"
         initial={{ scaleY: reduce ? 1 : 0 }}
         whileInView={{ scaleY: 1 }}
         viewport={{ once: true, margin: "-20%" }}
