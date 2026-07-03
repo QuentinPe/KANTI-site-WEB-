@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import SplitText from "./motion/SplitText";
+import derAsset from "@/assets/der-kanti-2026.pdf.asset.json";
 
 function useCountUp(target: number, suffix = "", duration = 2000, delay = 0) {
   const [value, setValue] = useState("0");
