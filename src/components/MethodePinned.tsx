@@ -4,6 +4,12 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { usePinnedSectionProgress } from "@/hooks/usePinnedSectionProgress";
 import SplitText from "./motion/SplitText";
 import NoiseGrain from "./motion/NoiseGrain";
+import step1Img from "@/assets/process-step-01.jpg.asset.json";
+import step2Img from "@/assets/process-step-02.jpg.asset.json";
+import step3Img from "@/assets/process-step-03.jpg.asset.json";
+import step4Img from "@/assets/process-step-04.jpg.asset.json";
+import step5Img from "@/assets/process-step-05.jpg.asset.json";
+import step6Img from "@/assets/process-step-06.jpg.asset.json";
 
 const steps = [
   {
