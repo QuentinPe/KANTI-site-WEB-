@@ -28,7 +28,7 @@ export default function Hero() {
       if (!orbRef.current) return;
       const x = (e.clientX / window.innerWidth) * 100;
       const y = (e.clientY / window.innerHeight) * 100;
-      orbRef.current.style.background = `radial-gradient(circle at ${x}% ${y}%, hsl(210 100% 60% / 0.18) 0%, transparent 50%)`;
+      orbRef.current.style.background = `radial-gradient(circle at ${x}% ${y}%, hsl(0 0% 100% / 0.10) 0%, transparent 50%)`;
     };
     window.addEventListener("mousemove", handler);
     return () => window.removeEventListener("mousemove", handler);
@@ -64,14 +64,14 @@ export default function Hero() {
       <div
         className="absolute top-[15%] right-[10%] w-[400px] h-[400px] rounded-full pointer-events-none float-soft"
         style={{
-          background: "radial-gradient(circle, hsl(210 100% 60% / 0.25) 0%, transparent 70%)",
+          background: "radial-gradient(circle, hsl(0 0% 100% / 0.12) 0%, transparent 70%)",
           filter: "blur(40px)",
         }}
       />
       <div
         className="absolute bottom-[20%] left-[5%] w-[300px] h-[300px] rounded-full pointer-events-none float-slow"
         style={{
-          background: "radial-gradient(circle, hsl(38 35% 60% / 0.18) 0%, transparent 70%)",
+          background: "radial-gradient(circle, hsl(0 0% 100% / 0.08) 0%, transparent 70%)",
           filter: "blur(50px)",
         }}
       />
