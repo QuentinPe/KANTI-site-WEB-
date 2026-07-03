@@ -52,7 +52,7 @@ export default function Confiance() {
           <ul className="lg:col-span-5 reveal space-y-2.5 border-l border-foreground/10 pl-6">
             {guarantees.map((g) => (
               <li key={g} className="flex items-start gap-3 text-[14px] text-foreground/65 font-light leading-relaxed">
-                <svg className="w-4 h-4 mt-0.5 flex-shrink-0 text-[hsl(var(--electric))]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8}>
+                <svg className="w-4 h-4 mt-0.5 flex-shrink-0 text-foreground/50" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
                 {g}
@@ -83,7 +83,7 @@ export default function Confiance() {
               <p className="text-foreground/55 text-[13px] leading-relaxed font-light">
                 {b.body}
               </p>
-              <div className="absolute bottom-0 left-7 right-7 h-px bg-gradient-to-r from-transparent via-[hsl(var(--electric))/0.35] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="absolute bottom-0 left-7 right-7 h-px bg-gradient-to-r from-transparent via-foreground/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             </motion.article>
           ))}
         </div>
