@@ -937,7 +937,7 @@ function generatePdf(
   y += lead.length * 13 + 24;
 
   // Panneau score
-  const panelH = 190;
+  const panelH = 158;
   setFill(NAVY);
   doc.roundedRect(M, y, CW, panelH, 12, 12, "F");
   setFill(ACCENT);
@@ -945,35 +945,35 @@ function generatePdf(
 
   setText(WHITE);
   doc.setFont(SERIF, "bold");
-  doc.setFontSize(82);
-  doc.text(scoreStr, M + 36, y + 116);
+  doc.setFontSize(72);
+  doc.text(scoreStr, M + 36, y + 100);
   const bigW = doc.getTextWidth(scoreStr);
   doc.setFont(SANS, "normal");
   doc.setFontSize(18);
   setText([170, 190, 220]);
-  doc.text("/ 7", M + 36 + bigW + 10, y + 116);
+  doc.text("/ 7", M + 36 + bigW + 10, y + 100);
   setText([150, 170, 200]);
   doc.setFont(SANS, "bold");
   doc.setFontSize(7.5);
-  doc.text(`SRI ARRONDI  ${profile.sri}`, M + 36, y + 138);
+  doc.text(`SRI ARRONDI  ${profile.sri}`, M + 36, y + 122);
 
   setText([170, 190, 220]);
   doc.setFont(SANS, "bold");
   doc.setFontSize(8);
-  doc.text("PROFIL D'INVESTISSEUR", M + 210, y + 40);
+  doc.text("PROFIL D'INVESTISSEUR", M + 210, y + 34);
   setText(WHITE);
   doc.setFont(SERIF, "bold");
-  doc.setFontSize(22);
+  doc.setFontSize(20);
   const labelMaxW = CW - 210 - 36;
   const labelLines2 = doc.splitTextToSize(profile.label, labelMaxW);
-  doc.text(labelLines2[0], M + 210, y + 66);
+  doc.text(labelLines2[0], M + 210, y + 58);
   setText([180, 200, 230]);
   doc.setFont(SANS, "normal");
-  doc.setFontSize(9.5);
-  doc.text(profile.shortLabel.toUpperCase(), M + 210, y + 86);
+  doc.setFontSize(9);
+  doc.text(profile.shortLabel.toUpperCase(), M + 210, y + 76);
 
   // Jauge
-  const gaugeY = y + 138;
+  const gaugeY = y + 116;
   const gaugeX = M + 210;
   const gaugeW = CW - 210 - 36;
   const segW = gaugeW / 7;
@@ -993,19 +993,18 @@ function generatePdf(
   doc.text("SÉCURITAIRE", gaugeX, gaugeY + 30);
   doc.text("OFFENSIF", gaugeX + gaugeW, gaugeY + 30, { align: "right" });
 
-  y += panelH + 30;
+  y += panelH + 22;
 
   y = sectionLabel(y, "Lecture du profil");
   setText(INK);
   doc.setFont(SANS, "normal");
-  doc.setFontSize(10.5);
+  doc.setFontSize(10);
   const desc = doc.splitTextToSize(profile.description, CW);
   doc.text(desc, M, y);
-  y += desc.length * 14 + 22;
+  y += desc.length * 13 + 16;
 
   const colW = (CW - 20) / 2;
-  const colH = 210;
-  y = ensureSpace(y, colH + 20, () => { doc.addPage(); drawPageHeader("Synthèse de votre profil", "01"); return 158; });
+  const colH = 175;
   drawTwoColCards(
     y,
     { title: "Recommandations", items: profile.recommendations, accent: ACCENT },
