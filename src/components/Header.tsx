@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import logoDark from "@/assets/logo-kanti-dark.png.asset.json";
+import logoWhite from "@/assets/logo-kanti-white.png.asset.json";
 
 const navLinks = [
   { label: "Le Cabinet", href: "/cabinet" },
@@ -78,9 +80,13 @@ export default function Header() {
             aria-label="KANTI — Accueil"
             className={`relative z-[2] flex items-center rounded-full px-6 md:px-7 py-3 transition-all duration-500 ${bubbleClass} ${textColor} hover:opacity-95`}
           >
-            <span className="font-heading text-xl md:text-2xl font-semibold tracking-[0.18em]">
-              KANTI
-            </span>
+            <img
+              src={useDarkGlass ? logoWhite.url : logoDark.url}
+              alt="KANTI"
+              className="h-6 md:h-7 w-auto"
+              width={140}
+              height={40}
+            />
           </Link>
 
           {/* Desktop nav bubble — unfurls horizontally from the right toward KANTI */}
