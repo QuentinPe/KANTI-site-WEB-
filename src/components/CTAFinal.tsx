@@ -191,7 +191,7 @@ export default function CTAFinal() {
           <div className="relative w-full pointer-events-auto max-w-6xl mx-auto px-6 lg:px-12 pb-20 md:pb-28 grid lg:grid-cols-12 gap-12 items-end">
             <div className="lg:col-span-7">
               <p className="text-[11px] tracking-[0.35em] uppercase text-white/55 mb-6 font-medium">
-                Premier rendez-vous · Bordeaux
+                Premier rendez-vous · Biarritz
               </p>
               <h2 className="font-heading font-light tracking-tight leading-[1] text-5xl md:text-6xl lg:text-7xl xl:text-[5.25rem] mb-10 max-w-3xl">
                 <SplitText text="Parlons de votre" by="char" stagger={0.025} y={32} />

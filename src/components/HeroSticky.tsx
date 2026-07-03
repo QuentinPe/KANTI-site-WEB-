@@ -239,7 +239,7 @@ export default function HeroSticky() {
             >
               <span className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse" />
               <p className="text-[11px] tracking-[0.2em] uppercase text-white/85 font-medium">
-                KANTI · Cabinet · Bordeaux
+                KANTI · Cabinet · Biarritz
               </p>
             </div>
 

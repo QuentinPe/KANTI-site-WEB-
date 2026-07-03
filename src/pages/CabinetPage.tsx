@@ -19,7 +19,7 @@ export default function CabinetPage() {
       <Header />
       <PageHero
         title="Le Cabinet"
-        subtitle="KANTI est un cabinet indépendant de conseil en gestion de patrimoine, installé à Bordeaux. Nous intervenons auprès de particuliers, de familles et de dirigeants d'entreprise."
+        subtitle="KANTI est un cabinet indépendant de conseil en gestion de patrimoine, installé à Biarritz. Nous intervenons auprès de particuliers, de familles et de dirigeants d'entreprise."
         breadcrumb="Le Cabinet"
       />
 
@@ -38,14 +38,14 @@ export default function CabinetPage() {
                 Depuis plus de quinze ans, nous accompagnons nos clients dans la durée. Pas de produit maison, pas de quota commercial, pas de pression de réseau. Chaque recommandation est le fruit d'une analyse objective de votre situation, en architecture ouverte.
               </p>
               <p className="text-gray-text leading-relaxed">
-                Installés au cœur de Bordeaux, nous travaillons en étroite coordination avec les notaires, avocats fiscalistes et experts-comptables de nos clients. Cette approche pluridisciplinaire garantit une vision patrimoniale cohérente et complète.
+                Installés au cœur de Biarritz, nous travaillons en étroite coordination avec les notaires, avocats fiscalistes et experts-comptables de nos clients. Cette approche pluridisciplinaire garantit une vision patrimoniale cohérente et complète.
               </p>
             </div>
             <div className="lg:col-span-2 reveal reveal-delay-2">
               <div className="border-l-2 border-gold/40 pl-8 space-y-8">
                 <div>
                   <p className="text-2xl font-heading font-semibold text-primary">2009</p>
-                  <p className="text-sm text-gray-text mt-1">Création du cabinet à Bordeaux</p>
+                  <p className="text-sm text-gray-text mt-1">Création du cabinet à Biarritz</p>
                 </div>
                 <div>
                   <p className="text-2xl font-heading font-semibold text-primary">3 associés</p>

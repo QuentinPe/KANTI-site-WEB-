@@ -31,7 +31,7 @@ export default function CTAFinalMobile() {
       >
         <div className="max-w-md mx-auto">
           <p className="text-[10px] tracking-[0.32em] uppercase text-white/55 mb-5 font-medium">
-            Premier rendez-vous · Bordeaux
+            Premier rendez-vous · Biarritz
           </p>
           <h2 className="font-heading text-[36px] font-light leading-[1.05] tracking-tight mb-5">
             Parlons de votre

@@ -91,8 +91,8 @@ export default function ContactPage() {
   return (
     <>
       <Seo
-        title="Contact — Prendre rendez-vous avec un conseiller patrimonial à Bordeaux"
-        description="Premier échange de 30 minutes gratuit et sans engagement avec un conseiller KANTI. Cabinet indépendant à Bordeaux, réponse sous 24h ouvrées."
+        title="Contact — Prendre rendez-vous avec un conseiller patrimonial à Biarritz"
+        description="Premier échange de 30 minutes gratuit et sans engagement avec un conseiller KANTI. Cabinet indépendant à Biarritz, réponse sous 24h ouvrées."
         jsonLd={[
           localBusinessJsonLd,
           breadcrumbJsonLd([

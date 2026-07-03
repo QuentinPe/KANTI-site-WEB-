@@ -18,7 +18,7 @@ const team = [
     bio: "Diplômée du Master Gestion de Patrimoine de Clermont-Ferrand, Claire est spécialisée en optimisation fiscale et structuration successorale. Elle coordonne les dossiers impliquant notaires et avocats fiscalistes.",
     image:
       "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=900&q=80",
-    credentials: ["Master fiscalité patrimoniale", "Réseau notarial Bordeaux", "Carte T immobilier"],
+    credentials: ["Master fiscalité patrimoniale", "Réseau notarial Pays basque", "Carte T immobilier"],
   },
   {
     name: "Thomas Bernier",
@@ -46,7 +46,7 @@ export default function Equipe() {
         <div className="mb-20 reveal max-w-2xl">
           <div className="electric-line mb-5" />
           <p className="text-[11px] tracking-[0.3em] uppercase text-foreground/50 mb-5 font-medium">
-            L'équipe · Bordeaux
+            L'équipe · Biarritz
           </p>
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-heading font-light text-foreground mb-6 tracking-tight leading-[1.05]">
             Trois associés,<br />

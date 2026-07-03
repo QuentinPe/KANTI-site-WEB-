@@ -7,7 +7,7 @@ const HERO_IMAGE = "/video/hero-office-poster.jpg";
 const trust = [
   { k: "ORIAS", v: "Inscrit & vérifié" },
   { k: "CNCGP", v: "Membre certifié" },
-  { k: "15 ans", v: "à Bordeaux" },
+  { k: "15 ans", v: "à Biarritz" },
   { k: "500+", v: "familles" },
 ];
 
@@ -44,7 +44,7 @@ export default function HeroMobile() {
         <span className="inline-flex w-fit items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md ring-1 ring-white/15 mb-6">
           <span className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--electric-soft))]" />
           <span className="text-[10px] tracking-[0.28em] uppercase text-white/85 font-medium">
-            Cabinet · Bordeaux
+            Cabinet · Biarritz
           </span>
         </span>
 

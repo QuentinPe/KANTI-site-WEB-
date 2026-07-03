@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useEffect, useRef } from "react";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 
-// Premium editorial photography — Bordeaux architectural / interior light
+// Premium editorial photography — Biarritz architectural / interior light
 const HERO_IMAGE =
   "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=2400&q=80";
 
@@ -87,7 +87,7 @@ export default function Hero() {
           >
             <span className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse" />
             <p className="text-[11px] tracking-[0.2em] uppercase text-white/85 font-medium">
-              KANTI · Cabinet indépendant · Bordeaux
+              KANTI · Cabinet indépendant · Biarritz
             </p>
           </div>
 

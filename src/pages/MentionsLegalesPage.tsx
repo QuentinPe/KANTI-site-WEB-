@@ -22,7 +22,7 @@ export default function MentionsLegalesPage() {
               <p>
                 Le présent site est édité par <strong>KANTI</strong>, société par actions simplifiée
                 (SAS) au capital social de 10 000 €, immatriculée au Registre du Commerce et des
-                Sociétés de Bordeaux sous le numéro 000 000 000.
+                Sociétés de Bayonne sous le numéro 000 000 000.
               </p>
               <ul>
                 <li>Siège social : 9 Rue de la Négresse, 64200 Biarritz</li>

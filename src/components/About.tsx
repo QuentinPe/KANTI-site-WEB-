@@ -87,7 +87,7 @@ export default function About() {
               <Stat
                 refEl={years.ref}
                 value={years.value}
-                label="d'exercice à Bordeaux"
+                label="d'exercice à Biarritz"
                 delay={0}
                 reduce={!!reduce}
               />

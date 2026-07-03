@@ -73,7 +73,7 @@ export const organizationJsonLd = {
   "@type": "FinancialService",
   name: "KANTI",
   description:
-    "Cabinet indépendant de conseil en gestion de patrimoine à Bordeaux.",
+    "Cabinet indépendant de conseil en gestion de patrimoine à Biarritz.",
   url: SITE_URL,
   telephone: "+33-5-56-00-00-00",
   email: "kanti@adnfamily.com",
@@ -81,7 +81,7 @@ export const organizationJsonLd = {
   address: {
     "@type": "PostalAddress",
     streetAddress: "9 Rue de la Négresse",
-    addressLocality: "Bordeaux",
+    addressLocality: "Biarritz",
     postalCode: "33000",
     addressCountry: "FR",
   },
@@ -103,7 +103,7 @@ export const localBusinessJsonLd = {
   address: {
     "@type": "PostalAddress",
     streetAddress: "9 Rue de la Négresse",
-    addressLocality: "Bordeaux",
+    addressLocality: "Biarritz",
     postalCode: "33000",
     addressCountry: "FR",
   },
