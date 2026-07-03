@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import logoDark from "@/assets/logo-kanti-dark.png.asset.json";
+import logoWhite from "@/assets/logo-kanti-white.png.asset.json";
 
 const primaryLinks = [
   { label: "Le Cabinet", href: "/cabinet" },
@@ -62,9 +64,13 @@ export default function MobileHeader() {
             aria-label="KANTI — Accueil"
             className={`inline-flex items-center rounded-full px-5 h-11 transition-colors duration-300 ${bubble} ${textColor}`}
           >
-            <span className="font-heading text-[17px] font-semibold tracking-[0.18em]">
-              KANTI
-            </span>
+            <img
+              src={dark ? logoWhite.url : logoDark.url}
+              alt="KANTI"
+              className="h-5 w-auto"
+              width={110}
+              height={32}
+            />
           </Link>
 
           <button
