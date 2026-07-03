@@ -1,15 +1,15 @@
 import { MapPin, Navigation, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const ADDRESS = "12 rue Ferrère, 64200 Biarritz";
+const ADDRESS = "9 Rue de la Négresse, 64200 Biarritz";
 const DIRECTIONS_URL =
   "https://www.google.com/maps/dir/?api=1&destination=" +
   encodeURIComponent(ADDRESS);
 const STREETVIEW_URL =
   "https://www.google.com/maps/@44.8481708,-0.571695,3a,69y,141.86h,90.67t/data=!3m7!1e1!3m5!1sY-2B2Whh3J1AedtQcJiqXg!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fcb_client%3Dmaps_sv.tactile%26w%3D900%26h%3D600%26pitch%3D-0.6746400419454517%26panoid%3DY-2B2Whh3J1AedtQcJiqXg%26yaw%3D141.86449859379448!7i16384!8i8192";
-// Satellite 3D embed (tilt + rotation) centered on 12 rue Ferrère
+// Satellite 3D embed (tilt + rotation) centered on 9 Rue de la Négresse
 const EMBED_URL =
-  "https://www.google.com/maps/embed?pb=!4v1729600000000!6m8!1m7!1sCAoSLEFGMVFpcE5fZmFrZQ!2m2!1d44.8438!2d-0.5762!3f0!4f45!5f0.7820865974627469";
+  "https://www.google.com/maps/embed?pb=!4v1729600000000!6m8!1m7!1sCAoSLEFGMVFpcE5fZmFrZQ!2m2!1d43.4718!2d-1.5606!3f0!4f45!5f0.7820865974627469";
 // Fallback simpler embed (place mode) — guaranteed to work
 const EMBED_URL_FALLBACK =
   "https://maps.google.com/maps?q=9+Rue+de+la+Negresse+64200+Biarritz&t=k&z=18&ie=UTF8&iwloc=&output=embed";
@@ -35,14 +35,14 @@ export default function CabinetMap3D() {
               Notre adresse
             </p>
             <h2 className="text-2xl md:text-3xl font-heading font-semibold text-primary leading-tight mb-6">
-              Au cœur du Triangle d'Or bordelais
+              À deux pas de la Grande Plage de Biarritz
             </h2>
 
             <div className="border-l-2 border-gold/40 pl-6 mb-8">
               <p className="flex items-start gap-2 text-primary font-heading text-lg">
                 <MapPin className="w-5 h-5 text-gold mt-0.5 shrink-0" />
                 <span>
-                  12 rue Ferrère
+                  9 Rue de la Négresse
                   <br />
                   64200 Biarritz
                 </span>
@@ -52,15 +52,15 @@ export default function CabinetMap3D() {
             <ul className="space-y-3 mb-8 text-sm text-gray-text">
               <li className="flex items-start gap-3">
                 <span className="w-1 h-1 rounded-full bg-gold mt-2 shrink-0" />
-                À 5 minutes à pied de la Place de la Comédie
+                À proximité de la gare de Biarritz
               </li>
               <li className="flex items-start gap-3">
                 <span className="w-1 h-1 rounded-full bg-gold mt-2 shrink-0" />
-                Parking Tourny à 200 m
+                Stationnement facile dans le quartier de la Négresse
               </li>
               <li className="flex items-start gap-3">
                 <span className="w-1 h-1 rounded-full bg-gold mt-2 shrink-0" />
-                Tram C — arrêts Quinconces & CAPC
+                Accès direct depuis l'A63 — sortie Biarritz
               </li>
             </ul>
 
@@ -89,7 +89,7 @@ export default function CabinetMap3D() {
               <div className="relative rounded-lg overflow-hidden border border-gold/30 shadow-2xl bg-primary">
                 <div className="aspect-[16/10] w-full">
                   <iframe
-                    title="Plan 3D du cabinet KANTI — 12 rue Ferrère, 64200 Biarritz"
+                    title="Plan 3D du cabinet KANTI — 9 Rue de la Négresse, 64200 Biarritz"
                     src={EMBED_URL_FALLBACK}
                     className="w-full h-full border-0"
                     loading="lazy"
