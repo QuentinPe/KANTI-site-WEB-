@@ -58,7 +58,7 @@ export default function HomeProfilRisque() {
                 key={b}
                 className="flex items-start gap-3 text-foreground/75 text-[15px] font-light"
               >
-                <span className="mt-2 w-1.5 h-1.5 rounded-full bg-[hsl(var(--electric))] flex-shrink-0" />
+                <span className="mt-2 w-1.5 h-1.5 rounded-full bg-foreground/40 flex-shrink-0" />
                 <span>{b}</span>
               </li>
             ))}
