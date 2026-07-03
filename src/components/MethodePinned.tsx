@@ -183,19 +183,19 @@ export default function MethodePinned() {
             />
           </div>
 
-          {/* Pulsing electric halo behind the giant number */}
+          {/* Pulsing neutral halo behind the giant number */}
           <motion.div
             aria-hidden
             className="absolute left-[-8%] top-1/2 -translate-y-1/2 w-[55vw] h-[55vw] rounded-full pointer-events-none"
             animate={
               reduce
                 ? {}
-                : { opacity: [0.35, 0.55, 0.35], scale: [1, 1.06, 1] }
+                : { opacity: [0.25, 0.40, 0.25], scale: [1, 1.06, 1] }
             }
             transition={{ duration: 6, ease: "easeInOut", repeat: Infinity }}
             style={{
               background:
-                "radial-gradient(circle, hsl(210 100% 60% / 0.22) 0%, transparent 60%)",
+                "radial-gradient(circle, hsl(0 0% 100% / 0.10) 0%, transparent 60%)",
               filter: "blur(60px)",
             }}
           />
