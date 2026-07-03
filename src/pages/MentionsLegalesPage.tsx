@@ -21,14 +21,15 @@ export default function MentionsLegalesPage() {
             <>
               <p>
                 Le présent site est édité par <strong>KANTI</strong>, société par actions simplifiée
-                (SAS) au capital social de 10 000 €, immatriculée au Registre du Commerce et des
-                Sociétés de Bayonne sous le numéro 000 000 000.
+                (SAS) immatriculée au Registre du Commerce et des Sociétés de Bayonne sous le
+                numéro <strong>878&nbsp;821&nbsp;818</strong> (Code NAF&nbsp;: 7022Z).
               </p>
               <ul>
                 <li>Siège social : 9 Rue de la Négresse, 64200 Biarritz</li>
-                <li>Numéro de TVA intracommunautaire : FR 00 000000000</li>
+                <li>Numéro de TVA intracommunautaire : FR34878821818</li>
                 <li>Téléphone : 06 63 32 48 09</li>
                 <li>Courriel : kanti@adnfamily.com</li>
+                <li>Site : https://kanti.fr/</li>
                 <li>Directeur de la publication : le Président de KANTI</li>
               </ul>
             </>
@@ -55,30 +56,41 @@ export default function MentionsLegalesPage() {
                 de l'assurance, du crédit et de l'immobilier. À ce titre, le cabinet est soumis au
                 contrôle de plusieurs autorités.
               </p>
+              <p>
+                KANTI est immatriculé au Registre Unique des Intermédiaires en Assurance, Banque et
+                Finance (ORIAS) sous le numéro <strong>20&nbsp;000&nbsp;855</strong> en qualité de :
+              </p>
               <ul>
                 <li>
-                  <strong>Conseiller en Investissements Financiers (CIF)</strong> — enregistré à
-                  l'ORIAS sous le n° 00 000 000, sous le contrôle de l'Autorité des Marchés
-                  Financiers (AMF), 17 place de la Bourse — 75082 Paris Cedex 02.
+                  <strong>Conseiller en Investissements Financiers (CIF)</strong> — sous le contrôle
+                  de l'Autorité des Marchés Financiers (AMF), 17 place de la Bourse — 75082 Paris
+                  Cedex 02.
                 </li>
                 <li>
-                  Membre de la <strong>Chambre Nationale des Conseils en Gestion de Patrimoine
-                  (CNCGP)</strong>, association professionnelle agréée par l'AMF.
+                  <strong>Courtier d'assurance (IAS)</strong> — sous le contrôle de l'Autorité de
+                  Contrôle Prudentiel et de Résolution (ACPR), 4 place de Budapest — CS 92459 —
+                  75436 Paris Cedex 09.
                 </li>
                 <li>
-                  <strong>Courtier en assurances (COA)</strong> — catégorie B, immatriculé à l'ORIAS,
-                  sous le contrôle de l'Autorité de Contrôle Prudentiel et de Résolution (ACPR), 4
-                  place de Budapest — CS 92459 — 75436 Paris Cedex 09.
+                  <strong>Courtier en opérations de banque et services de paiement
+                  (IOBSP)</strong> — sous le contrôle de l'ACPR.
                 </li>
                 <li>
-                  <strong>Courtier en opérations de banque et services de paiement (COBSP)</strong> —
-                  immatriculé à l'ORIAS, sous le contrôle de l'ACPR.
-                </li>
-                <li>
-                  <strong>Activité de transaction immobilière</strong> — Carte professionnelle n° CPI
-                  0000 0000 000 000 000, délivrée par la CCI de Bordeaux Gironde.
+                  <strong>Activité de transaction immobilière</strong> — Carte professionnelle
+                  «&nbsp;Transactions immobilières&nbsp;» n° <strong>CPI33012020000045313</strong>,
+                  délivrée par la CCI de Bordeaux-Gironde. Ne peut recevoir aucun fonds, effet ou
+                  valeur.
                 </li>
               </ul>
+              <p>
+                KANTI est adhérent de <strong>La Compagnie CIF</strong> et de <strong>La Compagnie
+                IOBSP</strong> (8 Rue Godot de Mauroy — 75009 Paris) sous le numéro
+                <strong> F002635</strong>, ainsi que de la <strong>CNCEF Assurance</strong>
+                (103 Boulevard Haussmann — 75008 Paris) sous le numéro <strong>25/860422</strong>.
+                Ces associations sont agréées par l'Autorité des Marchés Financiers et par
+                l'Autorité de Contrôle Prudentiel et de Résolution. Les activités d'IAS et d'IOBSP
+                sont contrôlables par l'ACPR.
+              </p>
               <p>
                 Vérification des immatriculations sur{" "}
                 <a href="https://www.orias.fr" target="_blank" rel="noreferrer">www.orias.fr</a>.
@@ -98,8 +110,12 @@ export default function MentionsLegalesPage() {
                 réglementées.
               </p>
               <ul>
-                <li>Assureur : compagnie d'assurance agréée — coordonnées disponibles sur demande</li>
-                <li>Police n° 0000000000 — couverture conforme à la réglementation en vigueur</li>
+                <li>
+                  Assureur : <strong>MMA IARD Assurances Mutuelles / MMA IARD</strong> — 160 rue
+                  Henri Champion, 72030 Le Mans Cedex 9
+                </li>
+                <li>Police d'assurance n° <strong>112&nbsp;786&nbsp;342</strong></li>
+                <li>Numéro d'adhérent : <strong>231&nbsp;972</strong></li>
                 <li>Étendue territoriale : France et Union européenne</li>
               </ul>
             </>
