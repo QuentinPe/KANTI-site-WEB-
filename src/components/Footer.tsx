@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import logoWhite from "@/assets/logo-kanti-white.png.asset.json";
 
 export default function Footer() {
   return (
@@ -6,9 +7,13 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto relative z-10">
         <div className="grid md:grid-cols-4 gap-10 mb-14">
           <div className="md:col-span-2">
-            <p className="font-heading text-2xl font-light text-white tracking-[0.18em] mb-5">
-              KANTI
-            </p>
+            <img
+              src={logoWhite.url}
+              alt="KANTI"
+              className="h-9 w-auto mb-5"
+              width={180}
+              height={52}
+            />
             <p className="text-sm leading-relaxed max-w-md mb-5 text-white/55 font-light">
               Cabinet indépendant de conseil en gestion de patrimoine à Biarritz. Nous accompagnons les particuliers et les dirigeants dans la structuration, l'optimisation fiscale et la transmission de leur patrimoine.
             </p>
