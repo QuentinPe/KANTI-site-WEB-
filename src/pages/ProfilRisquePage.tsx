@@ -16,6 +16,8 @@ import {
   CORMORANT_REG_B64,
   CORMORANT_BOLD_B64,
   COVER_BUILDING_B64,
+  LOGO_KANTI_WHITE_B64,
+  LOGO_KANTI_DARK_B64,
 } from "@/assets/pdf-assets";
 
 type Phase = "intro" | "quiz" | "result";
@@ -612,21 +614,26 @@ function generatePdf(
   doc.line(W - photoW, 0, W - photoW, H);
 
   // ── Zone gauche : éditorial ───────────────────────────
-  // Marque KANTI en haut
-  setText(NAVY);
-  doc.setFont(SANS, "bold");
-  doc.setFontSize(11);
-  doc.setCharSpace(4);
-  doc.text("KANTI", M, 60);
-  doc.setCharSpace(0);
+  // Logo KANTI (variante navy sur fond papier)
+  try {
+    // Ratio natif ~3.2:1 (883x275)
+    doc.addImage(LOGO_KANTI_DARK_B64, "PNG", M, 42, 78, 24);
+  } catch {
+    setText(NAVY);
+    doc.setFont(SANS, "bold");
+    doc.setFontSize(11);
+    doc.setCharSpace(4);
+    doc.text("KANTI", M, 60);
+    doc.setCharSpace(0);
+  }
   setDraw(ACCENT);
   doc.setLineWidth(1.2);
-  doc.line(M, 70, M + 28, 70);
+  doc.line(M, 76, M + 28, 76);
   setText(MUTED);
   doc.setFont(SANS, "normal");
   doc.setFontSize(7);
   doc.setCharSpace(1.2);
-  doc.text(KANTI_INFO.baseline.toUpperCase(), M, 84);
+  doc.text(KANTI_INFO.baseline.toUpperCase(), M, 90);
   doc.setCharSpace(0);
 
   // Eyebrow
