@@ -200,7 +200,7 @@ export default function MobileHeader() {
                   Cabinet
                 </p>
                 <p className="text-white/65 text-[14px] font-light leading-relaxed">
-                  9 Rue de la Négresse · 64200 Biarritz
+                  12 rue Ferrere · 33000 Bordeaux
                 </p>
                 <a
                   href="tel:+33663324809"

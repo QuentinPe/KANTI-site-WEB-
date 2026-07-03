@@ -12,7 +12,7 @@ export default function OptimisationFiscalePage() {
       <Header />
       <PageHero
         title="Optimisation fiscale"
-        highlight="à Biarritz"
+        highlight="à Bordeaux"
         subtitle="Réduire votre imposition de façon légale, mesurée et documentée. Un audit fiscal patrimonial pour identifier vos marges de manœuvre réelles."
         breadcrumb="Optimisation fiscale"
       />

@@ -7,7 +7,7 @@ const HERO_IMAGE = "/video/hero-office-poster.jpg";
 const trust = [
   { k: "ORIAS", v: "Inscrit & vérifié" },
   { k: "CNCEF", v: "Membre certifié" },
-  { k: "15 ans", v: "à Biarritz" },
+  { k: "15 ans", v: "à Bordeaux" },
   { k: "500+", v: "familles" },
 ];
 
@@ -44,7 +44,7 @@ export default function HeroMobile() {
         <span className="inline-flex w-fit items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md ring-1 ring-white/15 mb-6">
           <span className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--electric-soft))]" />
           <span className="text-[10px] tracking-[0.28em] uppercase text-white/85 font-medium">
-            Cabinet · Biarritz
+            Cabinet · Bordeaux
           </span>
         </span>
 
@@ -59,7 +59,7 @@ export default function HeroMobile() {
         </h1>
 
         <p className="text-white/70 text-[16px] leading-[1.55] font-light mb-8 max-w-[34ch]">
-          Conseil indépendant en gestion de patrimoine. À Biarritz, depuis plus de 15 ans.
+          Conseil indépendant en gestion de patrimoine. À Bordeaux, depuis plus de 15 ans.
         </p>
 
         <div className="flex flex-col gap-3">
