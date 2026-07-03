@@ -49,7 +49,6 @@ const Index = () => {
             <Actualites />
             <HomeFAQ />
             <Confiance />
-            <DERSection />
             <CTAFinal />
           </main>
           <Footer />
