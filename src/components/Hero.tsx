@@ -97,7 +97,7 @@ export default function Hero() {
           >
             Votre patrimoine mérite
             <br />
-            <span className="italic font-normal bg-gradient-to-r from-white via-white/90 to-white/70 bg-clip-text text-transparent">
+            <span className="italic font-normal text-white">
               un conseil à la hauteur
             </span>
           </h1>
