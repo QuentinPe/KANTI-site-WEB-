@@ -23,7 +23,6 @@ import {
   BadgeCheck,
   ChevronRight,
   Clock,
-  ArrowRight,
 } from "lucide-react";
 
 const principes = [
