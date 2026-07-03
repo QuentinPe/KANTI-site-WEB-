@@ -98,9 +98,9 @@ export default function Identification() {
                 <p className="text-[10px] tracking-[0.3em] uppercase text-foreground/45 font-medium">
                   Enjeu N°{item.n}
                 </p>
-                <span className="text-[9px] tracking-[0.25em] uppercase text-[hsl(var(--electric))] font-medium px-2 py-0.5 rounded-full border border-[hsl(var(--electric))/0.3]">
-                  {item.tag}
-                </span>
+                  <span className="text-[9px] tracking-[0.25em] uppercase text-foreground/55 font-medium px-2 py-0.5 rounded-full border border-foreground/15">
+                    {item.tag}
+                  </span>
               </div>
 
               <h3 className="relative font-heading text-xl md:text-2xl font-light text-foreground tracking-tight mb-3 leading-[1.2]">
@@ -108,7 +108,7 @@ export default function Identification() {
                 <span> {item.title.split(" ").slice(1).join(" ")}</span>
               </h3>
 
-              <div className="separator-fine my-3" />
+              <div className="separator-fine opacity-30" />
 
               <p className="relative text-foreground/65 text-sm leading-relaxed font-light">
                 {item.line}

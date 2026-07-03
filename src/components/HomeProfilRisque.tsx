@@ -16,19 +16,19 @@ export default function HomeProfilRisque() {
       {/* Ambient halos */}
       <div
         aria-hidden
-        className="absolute -top-32 right-[8%] w-[420px] h-[420px] rounded-full pointer-events-none opacity-60"
+        className="absolute -top-32 right-[8%] w-[420px] h-[420px] rounded-full pointer-events-none opacity-40"
         style={{
           background:
-            "radial-gradient(circle, hsl(210 100% 60% / 0.16) 0%, transparent 70%)",
+            "radial-gradient(circle, hsl(0 0% 100% / 0.12) 0%, transparent 70%)",
           filter: "blur(70px)",
         }}
       />
       <div
         aria-hidden
-        className="absolute -bottom-32 -left-24 w-[360px] h-[360px] rounded-full pointer-events-none opacity-50"
+        className="absolute -bottom-32 -left-24 w-[360px] h-[360px] rounded-full pointer-events-none opacity-35"
         style={{
           background:
-            "radial-gradient(circle, hsl(218 35% 55% / 0.14) 0%, transparent 70%)",
+            "radial-gradient(circle, hsl(0 0% 100% / 0.08) 0%, transparent 70%)",
           filter: "blur(80px)",
         }}
       />
@@ -58,7 +58,7 @@ export default function HomeProfilRisque() {
                 key={b}
                 className="flex items-start gap-3 text-foreground/75 text-[15px] font-light"
               >
-                <span className="mt-2 w-1.5 h-1.5 rounded-full bg-[hsl(var(--electric))] flex-shrink-0" />
+                <span className="mt-2 w-1.5 h-1.5 rounded-full bg-foreground/40 flex-shrink-0" />
                 <span>{b}</span>
               </li>
             ))}
@@ -108,7 +108,7 @@ export default function HomeProfilRisque() {
 
             <div className="flex items-end gap-1.5 mb-6">
               {[1, 2, 3, 4, 5, 6, 7].map((n) => {
-                // Gradient navy → electric
+                // Gradient navy → stone
                 const intensity = 0.25 + (n / 7) * 0.7;
                 return (
                   <div key={n} className="flex-1 flex flex-col items-center gap-2">
@@ -116,14 +116,14 @@ export default function HomeProfilRisque() {
                       className="w-full rounded-md"
                       style={{
                         height: `${24 + n * 10}px`,
-                        background: `linear-gradient(180deg, hsl(218 45% ${
-                          55 - n * 4
+                        background: `linear-gradient(180deg, hsl(222 40% ${
+                          45 - n * 3
                         }% / ${intensity + 0.1}), hsl(222 50% ${
                           22 - n * 2
                         }% / ${intensity}))`,
                         boxShadow:
                           n === 4
-                            ? "0 0 0 1px hsl(var(--electric) / 0.4), 0 8px 24px -8px hsl(var(--electric) / 0.3)"
+                            ? "0 0 0 1px hsl(0 0% 100% / 0.4), 0 8px 24px -8px hsl(222 50% 11% / 0.2)"
                             : "inset 0 1px 0 hsl(0 0% 100% / 0.25)",
                       }}
                     />
@@ -140,7 +140,7 @@ export default function HomeProfilRisque() {
               <span>Très élevé</span>
             </div>
 
-            <div className="separator-fine mb-6" />
+            <div className="separator-fine opacity-30 mb-6" />
 
             <div className="grid grid-cols-3 gap-4 text-center">
               <div>

@@ -176,7 +176,7 @@ export default function CTAFinal() {
           className="absolute inset-0"
           style={{
             background:
-              "radial-gradient(ellipse at 30% 30%, hsl(210 100% 60% / 0.20) 0%, transparent 60%), radial-gradient(ellipse at 80% 70%, hsl(38 35% 60% / 0.10) 0%, transparent 60%)",
+              "radial-gradient(ellipse at 30% 30%, hsl(0 0% 100% / 0.08) 0%, transparent 60%), radial-gradient(ellipse at 80% 70%, hsl(0 0% 100% / 0.05) 0%, transparent 60%)",
           }}
         />
         <div aria-hidden className="absolute inset-0 overflow-hidden pointer-events-none">

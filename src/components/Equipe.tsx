@@ -36,9 +36,9 @@ export default function Equipe() {
     <section id="equipe" className="section-padding texture-paper relative overflow-hidden">
       <div
         aria-hidden
-        className="absolute -top-32 -right-32 w-[520px] h-[520px] rounded-full pointer-events-none opacity-60"
+        className="absolute -top-32 -right-32 w-[520px] h-[520px] rounded-full pointer-events-none opacity-40"
         style={{
-          background: "radial-gradient(circle, hsl(210 100% 70% / 0.18) 0%, transparent 70%)",
+          background: "radial-gradient(circle, hsl(0 0% 100% / 0.10) 0%, transparent 70%)",
           filter: "blur(80px)",
         }}
       />
