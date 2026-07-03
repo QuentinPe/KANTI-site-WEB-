@@ -11,6 +11,7 @@ import HomeCasClients from "@/components/HomeCasClients";
 import HomeProfilRisque from "@/components/HomeProfilRisque";
 import Equipe from "@/components/Equipe";
 import Confiance from "@/components/Confiance";
+import DERSection from "@/components/DERSection";
 import Actualites from "@/components/Actualites";
 import HomeFAQ from "@/components/HomeFAQ";
 import CTAFinal from "@/components/CTAFinal";
@@ -49,6 +50,7 @@ const Index = () => {
             <Actualites />
             <HomeFAQ />
             <Confiance />
+            <DERSection />
             <CTAFinal />
           </main>
           <Footer />
