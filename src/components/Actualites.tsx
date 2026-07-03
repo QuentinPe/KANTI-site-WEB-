@@ -113,7 +113,7 @@ export default function Actualites() {
               className="electric-line mb-5"
               style={{
                 background:
-                  "linear-gradient(90deg, hsl(210 100% 70%), hsl(210 100% 70% / 0.2))",
+                  "linear-gradient(90deg, hsl(0 0% 100% / 0.55), hsl(0 0% 100% / 0.1))",
               }}
             />
             <p className="text-[11px] tracking-[0.3em] uppercase text-white/50 mb-5 font-medium">
@@ -152,7 +152,7 @@ export default function Actualites() {
               <p className="text-[10px] tracking-[0.3em] uppercase text-white/60 mb-4 font-medium">
                 {featured.date} · {featured.readingTime}
               </p>
-              <h3 className="font-heading text-2xl md:text-3xl lg:text-4xl font-light text-white mb-4 leading-[1.1] tracking-tight max-w-2xl group-hover:text-[hsl(var(--electric-soft))] transition-colors duration-500">
+                  <h3 className="font-heading text-2xl md:text-3xl lg:text-4xl font-light text-white mb-4 leading-[1.1] tracking-tight max-w-2xl group-hover:text-white/90 transition-colors duration-500">
                 {featured.title}
               </h3>
               <p className="text-white/70 text-[15px] leading-relaxed font-light max-w-2xl mb-5">
@@ -185,7 +185,7 @@ export default function Actualites() {
                   <p className="text-[10px] text-white/40 tracking-[0.25em] uppercase mb-2 font-medium">
                     {a.tag} · {a.readingTime}
                   </p>
-                  <h3 className="font-heading text-base lg:text-lg font-normal text-white mb-2 leading-snug tracking-tight group-hover:text-[hsl(var(--electric-soft))] transition-colors duration-500">
+                    <h3 className="font-heading text-base lg:text-lg font-normal text-white mb-2 leading-snug tracking-tight group-hover:text-white/90 transition-colors duration-500">
                     {a.title}
                   </h3>
                   <p className="text-white/50 text-[12px] leading-relaxed font-light line-clamp-2">
