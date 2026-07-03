@@ -240,8 +240,8 @@ export default function NotreMethodePage() {
           </div>
 
           <div className="relative">
-            {/* Timeline line */}
-            <div className="absolute left-6 md:left-1/2 md:-translate-x-px top-0 bottom-0 w-px bg-foreground/10" />
+            {/* Timeline line — desktop only */}
+            <div className="hidden md:block absolute left-1/2 -translate-x-px top-0 bottom-0 w-px bg-foreground/10" />
 
             <div className="space-y-12">
               {steps.map((step, i) => {
@@ -250,12 +250,19 @@ export default function NotreMethodePage() {
                 return (
                   <div
                     key={step.number}
-                    className={`reveal relative grid md:grid-cols-2 gap-8 md:gap-16 items-center ${
+                    className={`reveal relative grid md:grid-cols-2 gap-6 md:gap-16 items-center ${
                       isEven ? "" : "md:[direction:rtl]"
                     }`}
                   >
-                    {/* Card */}
-                    <div className={`md:px-8 ${isEven ? "md:text-right md:[direction:ltr]" : "md:[direction:ltr]"}`}>
+                    {/* Mobile node + card wrapper */}
+                    <div className={`pl-16 md:pl-0 md:px-8 ${isEven ? "md:text-right md:[direction:ltr]" : "md:[direction:ltr]"}`}>
+                      {/* Mobile node */}
+                      <div className="md:hidden absolute left-0 top-0 z-10">
+                        <div className="w-10 h-10 rounded-full bg-background border border-foreground/15 flex items-center justify-center shadow-[0_4px_16px_-6px_hsl(var(--foreground)/0.12)]">
+                          <Icon className="w-4 h-4 text-foreground/70" strokeWidth={1.5} />
+                        </div>
+                      </div>
+
                       <div className="bg-background rounded-2xl p-6 md:p-8 border border-foreground/10 shadow-[0_4px_24px_-12px_hsl(var(--foreground)/0.08)]">
                         <div className={`flex items-center gap-3 mb-4 ${isEven ? "md:justify-end" : ""}`}>
                           <span className="text-[10px] tracking-[0.3em] uppercase text-foreground/45 font-medium">
@@ -289,8 +296,8 @@ export default function NotreMethodePage() {
                       </div>
                     </div>
 
-                    {/* Center node */}
-                    <div className="absolute left-6 md:left-1/2 -translate-x-1/2 top-0 md:top-1/2 md:-translate-y-1/2 z-10">
+                    {/* Desktop center node */}
+                    <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 z-10">
                       <div className="w-12 h-12 rounded-full bg-background border border-foreground/15 flex items-center justify-center shadow-[0_4px_16px_-6px_hsl(var(--foreground)/0.12)]">
                         <Icon className="w-5 h-5 text-foreground/70" strokeWidth={1.5} />
                       </div>
