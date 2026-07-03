@@ -209,16 +209,16 @@ export default function HeroSticky() {
           className="absolute inset-0 pointer-events-none"
           style={{
             background:
-              "linear-gradient(180deg, hsl(224 60% 5% / 0.55) 0%, transparent 25%, transparent 70%, hsl(224 60% 5% / 0.65) 100%)",
+              "linear-gradient(180deg, hsl(224 60% 5% / 0.65) 0%, hsl(224 60% 5% / 0.15) 25%, hsl(224 60% 5% / 0.15) 70%, hsl(224 60% 5% / 0.75) 100%)",
           }}
         />
 
-        {/* Soft readability shade behind the left text column only */}
+        {/* Radial reading scrim — protects only the text column, leaves video vivid on the right */}
         <div
-          className="absolute inset-y-0 left-0 w-full md:w-1/2 pointer-events-none"
+          className="absolute inset-0 pointer-events-none"
           style={{
             background:
-              "linear-gradient(90deg, hsl(224 60% 5% / 0.45) 0%, transparent 100%)",
+              "radial-gradient(ellipse 55% 70% at 22% 55%, hsl(224 60% 5% / 0.70) 0%, hsl(224 60% 5% / 0.35) 45%, transparent 75%)",
           }}
         />
 
@@ -230,7 +230,12 @@ export default function HeroSticky() {
           <div className="max-w-3xl">
             <div
               className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-dark mb-8 opacity-0"
-              style={{ animation: "fade-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.2s forwards" }}
+              style={{
+                animation: "fade-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.2s forwards",
+                backgroundColor: "hsl(224 60% 5% / 0.4)",
+                backdropFilter: "blur(12px)",
+                WebkitBackdropFilter: "blur(12px)",
+              }}
             >
               <span className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse" />
               <p className="text-[11px] tracking-[0.2em] uppercase text-white/85 font-medium">
@@ -240,7 +245,11 @@ export default function HeroSticky() {
 
             <h1
               className="text-5xl md:text-6xl lg:text-7xl font-heading font-light text-white leading-[1.05] mb-10 tracking-tight opacity-0"
-              style={{ animation: "fade-in-up 1s cubic-bezier(0.22, 1, 0.36, 1) 0.4s forwards" }}
+              style={{
+                animation: "fade-in-up 1s cubic-bezier(0.22, 1, 0.36, 1) 0.4s forwards",
+                textShadow:
+                  "0 2px 24px hsl(224 60% 5% / 0.55), 0 1px 2px hsl(224 60% 5% / 0.4)",
+              }}
             >
               Votre patrimoine mérite
               <br />
@@ -251,7 +260,10 @@ export default function HeroSticky() {
 
             <p
               className="text-base md:text-lg text-white/65 max-w-xl leading-relaxed mb-12 font-light opacity-0"
-              style={{ animation: "fade-in-up 1s cubic-bezier(0.22, 1, 0.36, 1) 0.7s forwards" }}
+              style={{
+                animation: "fade-in-up 1s cubic-bezier(0.22, 1, 0.36, 1) 0.7s forwards",
+                textShadow: "0 1px 12px hsl(224 60% 5% / 0.6)",
+              }}
             >
               Nous accompagnons les particuliers, les dirigeants et les familles dans la
               structuration, l'optimisation et la transmission de leur patrimoine. À Bordeaux,
@@ -283,7 +295,10 @@ export default function HeroSticky() {
 
             <div
               className="mt-16 flex flex-wrap gap-x-8 gap-y-3 opacity-0"
-              style={{ animation: "fade-in 1s ease-out 1.4s forwards" }}
+              style={{
+                animation: "fade-in 1s ease-out 1.4s forwards",
+                textShadow: "0 1px 10px hsl(224 60% 5% / 0.6)",
+              }}
             >
               {[
                 { k: "ORIAS", v: "Inscrit & vérifié" },

@@ -1,79 +1,47 @@
-## Objectif
+## Problème
 
-Transformer `MethodePinned` en une expérience **immersive cinématographique** qui tranche radicalement avec la section "Vos enjeux" qui la précède (grille éditoriale claire, statique, sur fond papier). Le contraste visuel et sensoriel doit être immédiat dès l'entrée dans la section.
+Sur la hero animée (`HeroSticky.tsx`), le titre et le sous-titre en blanc se retrouvent par moments devant les rideaux clairs et la fenêtre de la vidéo bureau → contraste insuffisant, lecture pénible (visible sur la capture).
 
-## Contraste à créer avec la section précédente
+Les voiles actuels sont trop timides :
+- Gradient vertical : `0.55 → transparent → 0.65` (le milieu, où vit le texte, est à 0 %).
+- Voile latéral gauche : `0.45 → transparent` sur 50 % de large, s'arrête trop tôt.
 
-| Section précédente (Vos enjeux) | Nouvelle Méthode |
-|---|---|
-| Fond clair (texture papier) | Fond noir profond, immersif |
-| Cartes statiques en grille | Plein écran, narration cinématique |
-| Lecture libre, scan rapide | Voyage guidé, étape par étape |
-| Pas de média | Image plein-cadre + parallax |
-| Typo discrète | Typo monumentale, numéros XXL |
+Résultat : la zone du texte (centre-gauche, mi-hauteur) n'a quasiment aucune protection.
 
-## Concept : "Le studio" — narration plein-écran
+## Solution proposée
 
-Refonte complète de `src/components/MethodePinned.tsx` (desktop uniquement, le mobile `MethodeMobile.tsx` reste inchangé).
+Renforcer la lisibilité **sans assombrir toute la vidéo** (on garde le côté cinématique). 4 leviers combinés, tous dans `HeroSticky.tsx` :
 
-### 1. Transition d'entrée immersive
-- Une bande noire qui **se déploie depuis le haut** quand la section entre dans le viewport (clip-path mask reveal), créant une rupture nette avec le fond clair de la section précédente.
-- Ambiance : grain léger animé, halo bleu électrique pulsant en arrière-plan, particules subtiles.
+### 1. Voile de lecture ciblé derrière le texte
+Remplacer le voile latéral gauche linéaire par un **radial gradient scrim** centré sur la colonne de texte :
+- Rayon ellipse ~55 % × 70 %, ancré en bas-gauche.
+- Densité : `hsl(224 60% 5% / 0.70)` au centre → `0.35` à mi-course → transparent aux bords.
+- Couvre exactement la zone titre + sous-titre + CTA, laisse la partie droite (fenêtre, tableau bleu) intacte.
 
-### 2. Layout pinned plein-écran (au lieu du split 5/7 actuel)
-```text
-┌─────────────────────────────────────────────┐
-│  [chiffre géant 01]      ÉTAPE 01 / 06     │
-│                                             │
-│   IMAGE PLEIN CADRE EN ARRIÈRE-PLAN        │
-│   (parallax, ken-burns lent, vignette)     │
-│                                             │
-│              Découverte                     │
-│   Un premier rendez-vous de 30 minutes...   │
-│                                             │
-│  ●─●─○─○─○─○   ← timeline horizontale     │
-└─────────────────────────────────────────────┘
-```
-- L'image occupe 100vw × 100vh en arrière-plan, avec un fort gradient sombre par-dessus pour la lisibilité.
-- Effet **ken-burns** lent (zoom + pan) sur l'image active.
-- À chaque changement d'étape : **crossfade cinéma** entre les deux images (1.2s, ease cinematic), comme un fondu enchaîné.
+### 2. Gradient vertical global légèrement remonté
+- Passer de `0.55 → 0 → 0 → 0.65` à `0.65 → 0.15 → 0.15 → 0.75`.
+- Ajoute une base sombre continue de 15 % qui rattrape les frames les plus claires (rideaux) sans écraser les frames sombres.
 
-### 3. Typographie monumentale
-- **Numéro géant** ("01", "02"...) en filigrane, taille `clamp(18rem, 28vw, 32rem)`, ultra-light, opacité ~6 %, qui glisse en parallax à contre-sens du scroll.
-- Titre étape en `clamp(3rem, 6vw, 5.5rem)`, font-light italic, avec animation `SplitText` à chaque changement.
-- Description en colonne étroite (max-w-md), centrée ou alignée à gauche selon parité d'étape (alternance gauche/droite/centré pour rythmer).
+### 3. Text-shadow subtil sur le H1 et le paragraphe
+- H1 : `text-shadow: 0 2px 24px hsl(224 60% 5% / 0.55), 0 1px 2px hsl(224 60% 5% / 0.4)`.
+- Paragraphe : `text-shadow: 0 1px 12px hsl(224 60% 5% / 0.6)`.
+- Invisible sur fond sombre, sauveur sur fond clair. Standard éditorial premium (NYT, Apple).
 
-### 4. Timeline horizontale en bas (au lieu de verticale à gauche)
-- Une fine ligne horizontale en bas du viewport avec 6 points.
-- Le point actif grossit, glow électrique, label "Étape 01 — Découverte".
-- Trait de progression qui se remplit de gauche à droite.
-- Cliquable pour sauter à une étape (scroll vers la fenêtre correspondante).
+### 4. Renforcer le pill "KANTI · Cabinet · Bordeaux" et les trust signals
+- Pill : passer de `glass-dark` à un `bg-black/40 backdrop-blur-md` pour tenir sur rideaux clairs.
+- Trust signals (ORIAS, CNCGP…) : ajouter le même `text-shadow` léger.
 
-### 5. Compteur cinéma en haut
-- Petit overlay top-right : `01 / 06` en mono, façon générique de film, avec une petite barre de progression linéaire de l'étape en cours (basée sur `stepProgress` du hook existant).
+## Ce qui ne change PAS
 
-### 6. Effets sensoriels
-- **Grain animé** subtil (réutiliser `NoiseGrain` existant) en overlay full-screen pour la texture cinéma.
-- **Halo électrique** qui pulse derrière le numéro géant, couleur `--electric`.
-- **Vignette** radiale sombre sur les bords pour concentrer le regard.
-- Léger **parallax inversé** entre image (descend) et texte (monte) pendant `stepProgress`.
+- Aucune modification de la vidéo/frames.
+- Aucun changement de layout, typographie, ni animations d'entrée.
+- Version mobile (`HeroMobile.tsx`) : déjà correcte (gradient `0.55 → 0.85`), on n'y touche pas.
+- Reduced-motion (fallback `Hero.tsx`) : intact.
 
-### 7. Sortie immersive
-- Une dernière sous-section après l'étape 06 : un écran "fin de méthode" plein noir avec le CTA `Démarrer la conversation` centré, en gros, magnétique. La section se "referme" avant de laisser place à la suivante.
+## Fichier modifié
 
-## Détails techniques
+- `src/components/HeroSticky.tsx` — uniquement les couches d'overlay + text-shadow inline sur h1/p/pill/trust.
 
-- **Fichier modifié** : `src/components/MethodePinned.tsx` uniquement.
-- **Hook réutilisé** : `usePinnedSectionProgress` (déjà en place, parfait pour activeIndex + stepProgress).
-- **Hauteur de section** : passer de `100 + steps * 68 vh` à `100 + steps * 90 vh` pour donner plus d'air à chaque étape (lecture cinéma plus lente).
-- **Composants réutilisés** : `SplitText`, `NoiseGrain`, `MaskReveal` (pour l'entrée), `MagneticCard` (pour le CTA final).
-- **Images** : conserver les 6 URLs Unsplash existantes ou en proposer de plus cinématographiques (intérieurs feutrés, mains/écriture, vue Bordeaux). À confirmer si vous souhaitez que je propose un nouveau set.
-- **Mobile** : `MethodeMobile.tsx` n'est pas touché (la version mobile actuelle est déjà très lisible et adaptée au scroll fluide).
-- **Performance** : `will-change: transform` sur l'image active uniquement, `AnimatePresence mode="wait"` pour le crossfade, `loading="eager"` sur la première image, `loading="lazy"` sur les suivantes.
-- **Accessibilité** : respect de `useReducedMotion` (désactive ken-burns, parallax et crossfades — passe en simple fade), timeline cliquable au clavier, `aria-current="step"` sur l'étape active.
+## Rendu attendu
 
-## Ce qui ne change pas
-- Le contenu des 6 étapes (textes inchangés).
-- La version mobile.
-- Le lien vers `/notre-methode`.
-- L'id `#methode` (ancres préservées).
+Le titre reste lisible sur **toutes** les frames de la séquence (bureau sombre → panoramique fenêtre claire → plan large rideaux), tout en préservant la richesse chromatique de la vidéo côté droit.
