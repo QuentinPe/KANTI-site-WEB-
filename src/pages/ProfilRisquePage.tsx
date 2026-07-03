@@ -38,22 +38,6 @@ export default function ProfilRisquePage() {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, AnswerValue>>({});
 
-  if (typeof window !== "undefined") {
-    (window as any).__testGeneratePdf = () => {
-      const fake: Record<string, AnswerValue> = {};
-      RISK_QUESTIONS.forEach((q) => {
-        if (q.type === "number") fake[q.id] = q.numberConfig?.placeholder ?? "10000";
-        else if (q.options && q.options.length) {
-          const mid = q.options[Math.floor(q.options.length / 2)];
-          fake[q.id] = mid.score;
-        }
-      });
-      const numeric: Record<string, number> = {};
-      Object.entries(fake).forEach(([k, v]) => { if (typeof v === "number") numeric[k] = v; });
-      generatePdf(computeSri(numeric), fake);
-    };
-  }
-
   const total = RISK_QUESTIONS.length;
   const current = RISK_QUESTIONS[step];
   const progress = useMemo(
