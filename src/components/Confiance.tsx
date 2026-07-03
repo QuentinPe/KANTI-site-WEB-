@@ -3,15 +3,15 @@ import { motion } from "framer-motion";
 const badges = [
   {
     label: "ORIAS",
-    code: "n° 00 000 000",
+    code: "n° 20 000 855",
     title: "Conseiller en Investissements Financiers",
-    body: "Enregistré à l'ORIAS comme CIF, Courtier en Assurances (COA) et en opérations de banque (COBSP). Carte de transaction immobilière (carte T) délivrée par la CCI de Bordeaux.",
+    body: "Immatriculé à l'ORIAS comme CIF, Courtier d'assurance (IAS) et Courtier en opérations de banque et services de paiement (IOBSP). Carte de transaction immobilière n° CPI33012020000045313 délivrée par la CCI de Bordeaux-Gironde.",
   },
   {
-    label: "CNCGP",
-    code: "Membre certifié",
-    title: "Chambre Nationale des CGP",
-    body: "Association professionnelle agréée par l'AMF. Code de déontologie strict, formation continue obligatoire et contrôle annuel des pratiques.",
+    label: "CNCEF",
+    code: "Adhérent certifié",
+    title: "La Compagnie CIF / IOBSP · CNCEF Assurance",
+    body: "Adhérent de La Compagnie CIF et de La Compagnie IOBSP (n° F002635) et de la CNCEF Assurance (n° 25/860422), associations agréées par l'AMF et l'ACPR. Code de déontologie strict et contrôle continu.",
   },
   {
     label: "AMF / ACPR",

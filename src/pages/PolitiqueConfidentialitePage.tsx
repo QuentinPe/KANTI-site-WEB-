@@ -38,8 +38,8 @@ export default function PolitiqueConfidentialitePage() {
               </p>
               <ul>
                 <li><strong>KANTI</strong> — SAS au capital de 10 000 €</li>
-                <li>12 Cours de l'Intendance, 33000 Bordeaux</li>
-                <li>Téléphone : 05 56 00 00 00 — Courriel : <a href="mailto:dpo@kanti.fr">dpo@kanti.fr</a></li>
+                <li>9 Rue de la Négresse, 64200 Biarritz</li>
+                <li>Téléphone : 06 63 32 48 09 — Courriel : <a href="mailto:kanti@adnfamily.com">kanti@adnfamily.com</a></li>
               </ul>
             </>
           ),
@@ -127,7 +127,7 @@ export default function PolitiqueConfidentialitePage() {
               </ul>
               <p>
                 Pour exercer ces droits, adressez votre demande accompagnée d'un justificatif
-                d'identité à <a href="mailto:dpo@kanti.fr">dpo@kanti.fr</a> ou par courrier au siège
+                d'identité à <a href="mailto:kanti@adnfamily.com">kanti@adnfamily.com</a> ou par courrier au siège
                 social. Une réponse vous sera apportée dans un délai d'un mois.
               </p>
               <p>

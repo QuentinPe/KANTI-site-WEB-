@@ -91,8 +91,8 @@ export default function ContactPage() {
   return (
     <>
       <Seo
-        title="Contact — Prendre rendez-vous avec un conseiller patrimonial à Bordeaux"
-        description="Premier échange de 30 minutes gratuit et sans engagement avec un conseiller KANTI. Cabinet indépendant à Bordeaux, réponse sous 24h ouvrées."
+        title="Contact — Prendre rendez-vous avec un conseiller patrimonial à Biarritz"
+        description="Premier échange de 30 minutes gratuit et sans engagement avec un conseiller KANTI. Cabinet indépendant à Biarritz, réponse sous 24h ouvrées."
         jsonLd={[
           localBusinessJsonLd,
           breadcrumbJsonLd([
@@ -174,7 +174,7 @@ export default function ContactPage() {
               className="inline-flex items-center gap-2 text-sm text-foreground/70 hover:text-[hsl(var(--electric))] transition-colors"
             >
               <Phone className="w-4 h-4" />
-              ou appelez-nous au 05 56 00 00 00
+              ou appelez-nous au 06 63 32 48 09
             </a>
           </div>
         </div>
@@ -331,15 +331,15 @@ export default function ContactPage() {
                 <div className="space-y-2.5 text-sm text-foreground/70 font-light">
                   <p className="flex items-start gap-3">
                     <MapPin className="w-3.5 h-3.5 mt-1 text-foreground/40 flex-shrink-0" />
-                    12 Cours de l'Intendance, 33000 Bordeaux
+                    9 Rue de la Négresse, 64200 Biarritz
                   </p>
                   <p className="flex items-center gap-3">
                     <Phone className="w-3.5 h-3.5 text-foreground/40 flex-shrink-0" />
-                    05 56 00 00 00
+                    06 63 32 48 09
                   </p>
                   <p className="flex items-center gap-3">
                     <Mail className="w-3.5 h-3.5 text-foreground/40 flex-shrink-0" />
-                    contact@kanti.fr
+                    kanti@adnfamily.com
                   </p>
                   <p className="flex items-center gap-3 text-xs text-foreground/40 pt-3 border-t border-foreground/10">
                     <Clock className="w-3.5 h-3.5 flex-shrink-0" />

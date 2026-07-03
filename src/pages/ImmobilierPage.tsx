@@ -47,7 +47,7 @@ export default function ImmobilierPage() {
 
       <StickyImageBand
         image={heroImg}
-        imageAlt="Immobilier patrimonial à Bordeaux"
+        imageAlt="Immobilier patrimonial à Biarritz"
         eyebrow="Pierre & stratégie"
         caption="L'immobilier est rarement une décision isolée. Nous l'intégrons dans votre stratégie."
       />

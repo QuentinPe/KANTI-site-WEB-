@@ -6,7 +6,7 @@ export default function ReclamationsPage() {
       eyebrow="Relation client"
       title="Réclamations &"
       highlight="médiation"
-      subtitle="Procédure de traitement des réclamations et voies de recours en cas de désaccord, conformément aux exigences de l'AMF, de l'ACPR et de la CNCGP."
+      subtitle="Procédure de traitement des réclamations et voies de recours en cas de désaccord, conformément aux exigences de l'AMF, de l'ACPR et de la CNCEF."
       breadcrumb="Réclamations"
       updatedAt="Avril 2026"
       relatedLinks={[
@@ -61,8 +61,8 @@ export default function ReclamationsPage() {
                 réclamations du cabinet, par courrier ou par courriel.
               </p>
               <ul>
-                <li><strong>Par courrier</strong> : KANTI — Service Réclamations — 12 Cours de l'Intendance, 33000 Bordeaux</li>
-                <li><strong>Par courriel</strong> : <a href="mailto:reclamations@kanti.fr">reclamations@kanti.fr</a></li>
+                <li><strong>Par courrier</strong> : KANTI — Service Réclamations — 9 Rue de la Négresse, 64200 Biarritz</li>
+                <li><strong>Par courriel</strong> : <a href="mailto:kanti@adnfamily.com">kanti@adnfamily.com</a></li>
               </ul>
               <p>
                 Afin de faciliter le traitement, votre courrier devra préciser vos coordonnées,
@@ -114,7 +114,7 @@ export default function ReclamationsPage() {
                   <a href="https://www.mediation-assurance.org" target="_blank" rel="noreferrer">www.mediation-assurance.org</a>.
                 </li>
                 <li>
-                  <strong>Médiateur de l'ANACOFI</strong> ou de la <strong>CNCGP</strong> — pour les
+                  <strong>Médiateur de l'ANACOFI</strong> ou de la <strong>CNCEF</strong> — pour les
                   litiges entrant dans le champ du conseil en gestion de patrimoine non couvert par
                   les médiateurs précédents.
                 </li>
@@ -136,7 +136,7 @@ export default function ReclamationsPage() {
           content: (
             <p>
               Indépendamment de la procédure de médiation, vous conservez la possibilité de saisir
-              les juridictions compétentes. Les tribunaux de Bordeaux sont compétents pour tout
+              les juridictions compétentes. Les tribunaux de Bayonne sont compétents pour tout
               litige relatif à l'exécution des prestations du cabinet, sous réserve des
               dispositions légales protectrices des consommateurs.
             </p>
@@ -149,7 +149,7 @@ export default function ReclamationsPage() {
             <p>
               Pour toute réclamation portant spécifiquement sur le traitement de vos données
               personnelles, vous pouvez contacter notre délégué à la protection des données à{" "}
-              <a href="mailto:dpo@kanti.fr">dpo@kanti.fr</a> ou saisir directement la CNIL —{" "}
+              <a href="mailto:kanti@adnfamily.com">kanti@adnfamily.com</a> ou saisir directement la CNIL —{" "}
               <a href="https://www.cnil.fr" target="_blank" rel="noreferrer">www.cnil.fr</a>.
             </p>
           ),

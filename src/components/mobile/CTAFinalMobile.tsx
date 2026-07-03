@@ -31,7 +31,7 @@ export default function CTAFinalMobile() {
       >
         <div className="max-w-md mx-auto">
           <p className="text-[10px] tracking-[0.32em] uppercase text-white/55 mb-5 font-medium">
-            Premier rendez-vous · Bordeaux
+            Premier rendez-vous · Biarritz
           </p>
           <h2 className="font-heading text-[36px] font-light leading-[1.05] tracking-tight mb-5">
             Parlons de votre
@@ -39,7 +39,7 @@ export default function CTAFinalMobile() {
             <span className="italic text-white/85">patrimoine.</span>
           </h2>
           <p className="text-white/70 text-[15.5px] leading-relaxed font-light mb-8 max-w-[34ch]">
-            30 minutes en visio ou dans nos bureaux du Cours de l'Intendance.
+            30 minutes en visio ou dans nos bureaux du Rue de la Négresse.
             Gratuit, confidentiel, sans engagement.
           </p>
 
@@ -77,26 +77,26 @@ export default function CTAFinalMobile() {
             </p>
             <ul className="space-y-3 text-white/85 text-[14.5px] font-light">
               <li>
-                12 Cours de l'Intendance
+                9 Rue de la Négresse
                 <br />
-                <span className="text-white/55 text-[13px]">33000 Bordeaux</span>
+                <span className="text-white/55 text-[13px]">64200 Biarritz</span>
               </li>
               <li>
                 <a
-                  href="tel:+33556000000"
+                  href="tel:+33663324809"
                   className="inline-flex items-center gap-2"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--electric-soft))]" />
-                  05 56 00 00 00
+                  06 63 32 48 09
                 </a>
               </li>
               <li>
                 <a
-                  href="mailto:contact@kanti.fr"
+                  href="mailto:kanti@adnfamily.com"
                   className="inline-flex items-center gap-2"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--electric-soft))]" />
-                  contact@kanti.fr
+                  kanti@adnfamily.com
                 </a>
               </li>
             </ul>

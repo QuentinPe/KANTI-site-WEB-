@@ -191,7 +191,7 @@ export default function CTAFinal() {
           <div className="relative w-full pointer-events-auto max-w-6xl mx-auto px-6 lg:px-12 pb-20 md:pb-28 grid lg:grid-cols-12 gap-12 items-end">
             <div className="lg:col-span-7">
               <p className="text-[11px] tracking-[0.35em] uppercase text-white/55 mb-6 font-medium">
-                Premier rendez-vous · Bordeaux
+                Premier rendez-vous · Biarritz
               </p>
               <h2 className="font-heading font-light tracking-tight leading-[1] text-5xl md:text-6xl lg:text-7xl xl:text-[5.25rem] mb-10 max-w-3xl">
                 <SplitText text="Parlons de votre" by="char" stagger={0.025} y={32} />
@@ -205,7 +205,7 @@ export default function CTAFinal() {
                 />
               </h2>
               <p className="text-white/70 text-lg lg:text-xl font-light leading-relaxed max-w-xl mb-10">
-                30 minutes en visio ou dans nos bureaux du Cours de l'Intendance. Gratuit, confidentiel, sans engagement. Vous repartez avec un regard expert sur votre situation.
+                30 minutes en visio ou dans nos bureaux du Rue de la Négresse. Gratuit, confidentiel, sans engagement. Vous repartez avec un regard expert sur votre situation.
               </p>
               <div className="flex flex-wrap gap-4">
                 <Link
@@ -238,17 +238,17 @@ export default function CTAFinal() {
                   <li className="flex items-start gap-3">
                     <span className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--electric-soft))] mt-2 flex-shrink-0" />
                     <span>
-                      12 Cours de l'Intendance<br />
-                      <span className="text-white/55 text-sm">33000 Bordeaux</span>
+                      9 Rue de la Négresse<br />
+                      <span className="text-white/55 text-sm">64200 Biarritz</span>
                     </span>
                   </li>
                   <li className="flex items-center gap-3">
                     <span className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--electric-soft))] flex-shrink-0" />
-                    <a href="tel:+33556000000" className="hover:text-[hsl(var(--electric-soft))] transition-colors">05 56 00 00 00</a>
+                    <a href="tel:+33663324809" className="hover:text-[hsl(var(--electric-soft))] transition-colors">06 63 32 48 09</a>
                   </li>
                   <li className="flex items-center gap-3">
                     <span className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--electric-soft))] flex-shrink-0" />
-                    <a href="mailto:contact@kanti.fr" className="hover:text-[hsl(var(--electric-soft))] transition-colors">contact@kanti.fr</a>
+                    <a href="mailto:kanti@adnfamily.com" className="hover:text-[hsl(var(--electric-soft))] transition-colors">kanti@adnfamily.com</a>
                   </li>
                 </ul>
                 <div className="mt-7 pt-6 border-t border-white/10 text-white/55 text-[12px] font-light tracking-wide leading-relaxed">

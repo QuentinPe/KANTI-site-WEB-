@@ -1,6 +1,6 @@
 const badges = [
-  { label: "ORIAS", title: "CIF · COA · COBSP", body: "Inscrit comme Conseiller en Investissements Financiers et Courtier en Assurances." },
-  { label: "CNCGP", title: "Membre certifié", body: "Code de déontologie strict, formation continue et contrôle annuel." },
+  { label: "ORIAS", title: "CIF · IAS · IOBSP", body: "Inscrit comme Conseiller en Investissements Financiers et Courtier en Assurances." },
+  { label: "CNCEF", title: "Membre certifié", body: "Code de déontologie strict, formation continue et contrôle annuel." },
   { label: "AMF / ACPR", title: "Sous supervision", body: "Activités encadrées par les autorités françaises de tutelle financière." },
   { label: "RC Pro", title: "& garantie financière", body: "Conformes aux articles L.541-3 et L.512-6. Aucune détention d'actifs." },
 ];
