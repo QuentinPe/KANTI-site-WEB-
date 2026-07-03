@@ -140,7 +140,7 @@ export default function HomeProfilRisque() {
               <span>Très élevé</span>
             </div>
 
-            <div className="separator-fine mb-6" />
+            <div className="separator-fine opacity-30 mb-6" />
 
             <div className="grid grid-cols-3 gap-4 text-center">
               <div>

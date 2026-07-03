@@ -98,7 +98,7 @@ export default function About() {
                 </p>
                 <p className="text-sm text-foreground/55 mt-1 font-light">d'exercice à Bordeaux</p>
               </div>
-              <div className="separator-fine" />
+              <div className="separator-fine opacity-30" />
               <Stat
                 refEl={clients.ref}
                 value={clients.value}
@@ -106,7 +106,7 @@ export default function About() {
                 delay={0.35}
                 reduce={!!reduce}
               />
-              <div className="separator-fine" />
+              <div className="separator-fine opacity-30" />
               <Stat
                 refEl={fidelity.ref}
                 value={fidelity.value}

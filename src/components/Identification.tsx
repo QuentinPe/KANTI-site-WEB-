@@ -108,7 +108,7 @@ export default function Identification() {
                 <span> {item.title.split(" ").slice(1).join(" ")}</span>
               </h3>
 
-              <div className="separator-fine my-3" />
+              <div className="separator-fine opacity-30" />
 
               <p className="relative text-foreground/65 text-sm leading-relaxed font-light">
                 {item.line}

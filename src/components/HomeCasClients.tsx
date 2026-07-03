@@ -99,7 +99,7 @@ export default function HomeCasClients() {
                 <p className="relative text-foreground/65 text-sm leading-relaxed mb-4 font-light">
                   {c.situation}
                 </p>
-                <div className="separator-fine my-4" />
+                <div className="separator-fine opacity-30 my-4" />
                 <p className="relative text-foreground/85 text-sm leading-relaxed mb-5">
                   {c.axes}
                 </p>

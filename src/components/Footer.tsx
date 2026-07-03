@@ -51,7 +51,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="separator-fine mb-8" style={{ background: "linear-gradient(90deg, transparent, hsl(0 0% 100% / 0.12), transparent)" }} />
+        <div className="separator-fine opacity-30 mb-8" style={{ background: "linear-gradient(90deg, transparent, hsl(0 0% 100% / 0.08), transparent)" }} />
 
         <div className="text-[11px] leading-relaxed mb-6 text-white/55 font-light">
           <p>
