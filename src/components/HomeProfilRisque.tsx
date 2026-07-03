@@ -34,7 +34,7 @@ export default function HomeProfilRisque() {
       />
 
       <div className="max-w-7xl mx-auto relative z-10 grid lg:grid-cols-12 gap-10 lg:gap-16 items-center">
-        {/* Left — Editorial copy */}
+        {/* Left, Editorial copy */}
         <div className="lg:col-span-7 reveal">
           <div className="electric-line mb-6" />
           <p className="text-[11px] tracking-[0.3em] uppercase text-foreground/50 mb-5 font-medium">
@@ -46,8 +46,8 @@ export default function HomeProfilRisque() {
           </h2>
           <p className="text-foreground/65 text-base lg:text-lg font-light leading-relaxed max-w-xl mb-8">
             Avant toute recommandation, la réglementation impose d'évaluer votre
-            tolérance au risque. Notre questionnaire — aligné sur les exigences
-            de l'AMF — calcule votre indicateur synthétique de risque
+            tolérance au risque. Notre questionnaire, aligné sur les exigences
+            de l'AMF, calcule votre indicateur synthétique de risque
             <span className="text-foreground"> (SRI) sur une échelle de 1 à 7</span>
             , et vous remet une fiche PDF aux couleurs KANTI.
           </p>
@@ -93,7 +93,7 @@ export default function HomeProfilRisque() {
           </div>
         </div>
 
-        {/* Right — Visual SRI scale */}
+        {/* Right, Visual SRI scale */}
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}

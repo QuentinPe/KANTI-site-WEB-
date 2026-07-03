@@ -32,7 +32,7 @@ export default function TransmissionPage() {
       <ExpertiseShowcase
         eyebrow="Préparer & protéger"
         title="La transmission ne s'improvise pas. Elle se prépare, se structure et se documente."
-        intro="En l'absence de dispositions, c'est le Code civil qui organise la succession — pas toujours conformément à vos souhaits. Préparer la transmission, c'est réfléchir à ce que vous voulez transmettre, à qui, comment et quand. Nous mettons ensuite en place les outils juridiques et financiers adaptés, en coordination avec votre notaire."
+        intro="En l'absence de dispositions, c'est le Code civil qui organise la succession, pas toujours conformément à vos souhaits. Préparer la transmission, c'est réfléchir à ce que vous voulez transmettre, à qui, comment et quand. Nous mettons ensuite en place les outils juridiques et financiers adaptés, en coordination avec votre notaire."
         image={heroImg}
         imageAlt="Transmission familiale KANTI"
         pillars={[

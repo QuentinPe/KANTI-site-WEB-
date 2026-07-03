@@ -17,7 +17,7 @@ const expertises = [
       "Allocation revue chaque année",
       "Assurance-vie, PER, SCPI, PE",
     ],
-    fiscality: "Optimisation par enveloppe : assurance-vie, PER, PEA — chaque support adapté à votre TMI et horizon.",
+    fiscality: "Optimisation par enveloppe : assurance-vie, PER, PEA, chaque support adapté à votre TMI et horizon.",
     horizon: "Long terme",
     href: "/gestion-patrimoniale",
     featured: true,

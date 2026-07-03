@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 const team = [
   {
     name: "Alexandre Dumont",
-    role: "Fondateur — Ingénierie patrimoniale",
+    role: "Fondateur, Ingénierie patrimoniale",
     short: "Holding, cession, transmission",
     bio: "Ancien directeur de clientèle privée en banque, Alexandre a fondé le cabinet après 12 ans passés à structurer des patrimoines familiaux et professionnels. Il intervient sur les dossiers complexes : holding, cession, transmission internationale.",
     image:
@@ -13,7 +13,7 @@ const team = [
   },
   {
     name: "Claire Lefèvre",
-    role: "Associée — Stratégie fiscale",
+    role: "Associée, Stratégie fiscale",
     short: "Fiscalité & succession",
     bio: "Diplômée du Master Gestion de Patrimoine de Clermont-Ferrand, Claire est spécialisée en optimisation fiscale et structuration successorale. Elle coordonne les dossiers impliquant notaires et avocats fiscalistes.",
     image:
@@ -22,12 +22,12 @@ const team = [
   },
   {
     name: "Thomas Bernier",
-    role: "Associé — Allocations & marchés",
+    role: "Associé, Allocations & marchés",
     short: "Allocation & supports",
     bio: "Certifié CFA et CIF, Thomas pilote l'allocation d'actifs et la sélection des supports d'investissement. Il assure le suivi de performance et les arbitrages stratégiques sur les portefeuilles.",
     image:
       "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=900&q=80",
-    credentials: ["Certifié CFA", "CIF — ORIAS", "Sélection multi-gérants"],
+    credentials: ["Certifié CFA", "CIF, ORIAS", "Sélection multi-gérants"],
   },
 ];
 

@@ -3,7 +3,7 @@ import { ActorNode, FlowEdge } from "@/data/productsAnalysis";
 /**
  * Lightweight SVG actors-and-flows diagram.
  * Layout : circular placement around the central manager / vehicle.
- * Uses semantic design tokens (gold, foreground, electric) — no raw colours.
+ * Uses semantic design tokens (gold, foreground, electric), no raw colours.
  */
 export default function ProductFlowDiagram({
   actors,

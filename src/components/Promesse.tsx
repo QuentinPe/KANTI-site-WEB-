@@ -34,7 +34,7 @@ export default function Promesse() {
       className="relative overflow-hidden"
       style={{ background: "hsl(var(--navy-deep))" }}
     >
-      {/* Editorial image — right side, parallax */}
+      {/* Editorial image, right side, parallax */}
       <div className="absolute inset-y-0 right-0 w-full md:w-[45%] overflow-hidden pointer-events-none">
         <motion.div
           style={{ y: imageY, scale: imageScale, backgroundImage: `url(${PROMESSE_IMAGE})` }}
@@ -101,7 +101,7 @@ export default function Promesse() {
           >
             Inscrits à l'ORIAS et adhérents de la CNCEF, nous travaillons sans lien
             capitalistique avec aucune banque ni assureur. Votre intérêt est notre
-            seule boussole — et nous nous tenons à vos côtés sur dix, vingt, trente ans.
+            seule boussole, et nous nous tenons à vos côtés sur dix, vingt, trente ans.
           </motion.p>
         </div>
       </div>

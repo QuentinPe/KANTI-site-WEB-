@@ -14,7 +14,7 @@ const NotFound = () => {
   return (
     <>
       <Seo
-        title="Page introuvable — KANTI"
+        title="Page introuvable, KANTI"
         description="La page que vous cherchez n'existe pas ou a été déplacée. Retrouvez l'ensemble des expertises et services du cabinet KANTI."
         noindex
       />

@@ -30,7 +30,7 @@ export default function GlassSlider({ label, value, min, max, step = 1, current,
           className="absolute inset-y-0 left-0 bg-foreground transition-[width] duration-150"
           style={{ width: `${pct}%` }}
         />
-        {/* Native input — invisible but interactive */}
+        {/* Native input, invisible but interactive */}
         <input
           type="range"
           min={min}
@@ -41,7 +41,7 @@ export default function GlassSlider({ label, value, min, max, step = 1, current,
           className="absolute -inset-y-3 inset-x-0 w-full h-7 opacity-0 cursor-pointer"
           aria-label={label}
         />
-        {/* Thumb — minimalist line */}
+        {/* Thumb, minimalist line */}
         <div
           aria-hidden
           className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 pointer-events-none transition-[left] duration-150"

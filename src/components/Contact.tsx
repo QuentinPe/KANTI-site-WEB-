@@ -34,7 +34,7 @@ export default function Contact() {
                 kanti@adnfamily.com
               </p>
               <p className="text-foreground/40 pt-3 text-xs">
-                Du lundi au vendredi, 9h–18h — Sur rendez-vous
+                Du lundi au vendredi, 9h–18h, Sur rendez-vous
               </p>
             </div>
           </div>

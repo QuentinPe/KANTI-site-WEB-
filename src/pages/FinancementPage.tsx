@@ -31,7 +31,7 @@ export default function FinancementPage() {
       <ExpertiseShowcase
         eyebrow="Crédit patrimonial"
         title="Le crédit n'est pas qu'une question de taux. C'est un outil patrimonial."
-        intro="Un financement bien structuré accélère la constitution de votre patrimoine, optimise votre fiscalité et préserve votre capacité d'investissement. En courtier indépendant, nous accédons aux offres de nombreux établissements et négocions taux, assurance, garanties et modularité — en intégrant chaque crédit dans votre stratégie globale."
+        intro="Un financement bien structuré accélère la constitution de votre patrimoine, optimise votre fiscalité et préserve votre capacité d'investissement. En courtier indépendant, nous accédons aux offres de nombreux établissements et négocions taux, assurance, garanties et modularité, en intégrant chaque crédit dans votre stratégie globale."
         image={heroImg}
         imageAlt="Courtage et financement KANTI"
         pillars={[

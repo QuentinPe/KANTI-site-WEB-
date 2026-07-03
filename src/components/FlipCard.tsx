@@ -50,7 +50,7 @@ export default function FlipCard({
       role="button"
       tabIndex={0}
       aria-pressed={flipped}
-      aria-label={`${title} — ${flipped ? "Voir résumé" : "Voir détails"}`}
+      aria-label={`${title}, ${flipped ? "Voir résumé" : "Voir détails"}`}
     >
       <div
         className={`relative w-full h-full transition-transform duration-[700ms] [transform-style:preserve-3d] ease-[cubic-bezier(0.22,1,0.36,1)] ${

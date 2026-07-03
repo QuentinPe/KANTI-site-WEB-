@@ -8,12 +8,12 @@ const principes = [
   {
     label: "Indépendance",
     text:
-      "Statut de Conseiller en Investissements Financiers — aucune appartenance à un groupe bancaire ou assurantiel. Nos recommandations ne dépendent d'aucun objectif commercial.",
+      "Statut de Conseiller en Investissements Financiers, aucune appartenance à un groupe bancaire ou assurantiel. Nos recommandations ne dépendent d'aucun objectif commercial.",
   },
   {
     label: "Architecture ouverte",
     text:
-      "Nous comparons l'ensemble des contrats du marché — assurance-vie, PER, SCPI, contrats luxembourgeois, private equity — sans quota ni produit maison.",
+      "Nous comparons l'ensemble des contrats du marché, assurance-vie, PER, SCPI, contrats luxembourgeois, private equity, sans quota ni produit maison.",
   },
   {
     label: "Transparence des frais",
@@ -41,12 +41,12 @@ const steps = [
   {
     number: "01",
     eyebrow: "Phase 1",
-    duration: "30 min — gratuit",
+    duration: "30 min, gratuit",
     title: "Écoute & découverte",
     summary:
       "Un premier rendez-vous pour comprendre votre contexte avant toute recommandation.",
     description:
-      "Nous vous écoutons. Nous posons les bonnes questions sur votre situation familiale, professionnelle, patrimoniale et fiscale. Nous identifions les sujets qui méritent un travail approfondi et ceux qui n'en méritent pas. Aucune recommandation n'est formulée à ce stade — uniquement un cadrage clair de la mission qui pourrait suivre.",
+      "Nous vous écoutons. Nous posons les bonnes questions sur votre situation familiale, professionnelle, patrimoniale et fiscale. Nous identifions les sujets qui méritent un travail approfondi et ceux qui n'en méritent pas. Aucune recommandation n'est formulée à ce stade, uniquement un cadrage clair de la mission qui pourrait suivre.",
     livrables: ["Compte-rendu d'échange", "Liste des documents à transmettre", "Devis et lettre de mission"],
     intervenants: "Conseiller référent",
   },
@@ -70,7 +70,7 @@ const steps = [
     summary:
       "Un rapport structuré, des scénarios chiffrés, un plan d'action priorisé.",
     description:
-      "Nous vous présentons un document écrit : diagnostic, enjeux identifiés, recommandations argumentées, simulations chiffrées et scénarios comparés. Le plan d'action est priorisé par impact et par horizon. Ce document vous appartient — vous pouvez le partager avec vos autres conseils pour challenger nos arbitrages.",
+      "Nous vous présentons un document écrit : diagnostic, enjeux identifiés, recommandations argumentées, simulations chiffrées et scénarios comparés. Le plan d'action est priorisé par impact et par horizon. Ce document vous appartient, vous pouvez le partager avec vos autres conseils pour challenger nos arbitrages.",
     livrables: ["Lettre de recommandations", "Simulations chiffrées", "Plan d'action priorisé"],
     intervenants: "Conseiller référent",
   },
@@ -101,7 +101,7 @@ const steps = [
 ];
 
 const garanties = [
-  { label: "Statut", value: "CIF — ORIAS", text: "Conseiller en Investissements Financiers, immatriculé à l'ORIAS et adhérent à une association agréée par l'AMF." },
+  { label: "Statut", value: "CIF, ORIAS", text: "Conseiller en Investissements Financiers, immatriculé à l'ORIAS et adhérent à une association agréée par l'AMF." },
   { label: "Assurance", value: "RC Pro", text: "Couverture en responsabilité civile professionnelle conforme aux exigences réglementaires." },
   { label: "Conformité", value: "MIF II / DDA", text: "Recueil d'adéquation, profil de risque, information précontractuelle systématique." },
   { label: "Confidentialité", value: "RGPD", text: "Données chiffrées, hébergement européen, accès restreint et journalisé." },
@@ -117,7 +117,7 @@ const livrablesCadre = [
 const faqs = [
   {
     q: "Combien coûte la mission ?",
-    a: "Le premier rendez-vous est gratuit. Au-delà, nous facturons soit en honoraires de conseil, soit via les rétrocessions des contrats mis en place — toujours détaillés par écrit. Le mode de rémunération est choisi avec vous lors de la lettre de mission.",
+    a: "Le premier rendez-vous est gratuit. Au-delà, nous facturons soit en honoraires de conseil, soit via les rétrocessions des contrats mis en place, toujours détaillés par écrit. Le mode de rémunération est choisi avec vous lors de la lettre de mission.",
   },
   {
     q: "Êtes-vous indépendants ?",
@@ -125,7 +125,7 @@ const faqs = [
   },
   {
     q: "Faut-il un patrimoine minimum ?",
-    a: "Non. Notre méthode s'adapte à toutes les situations dès lors qu'il existe un enjeu patrimonial — création d'entreprise, cession, transmission, optimisation fiscale, structuration immobilière.",
+    a: "Non. Notre méthode s'adapte à toutes les situations dès lors qu'il existe un enjeu patrimonial, création d'entreprise, cession, transmission, optimisation fiscale, structuration immobilière.",
   },
   {
     q: "Que se passe-t-il si je ne suis pas vos recommandations ?",
@@ -142,7 +142,7 @@ export default function NotreMethodePage() {
       <PageHero
         title="Notre méthode"
         highlight="rigueur & transparence"
-        subtitle="Cinq phases documentées, des livrables écrits à chaque étape, une gouvernance claire. Pas de formule standard — un cadre éprouvé qui garantit le même niveau d'exigence pour chaque client."
+        subtitle="Cinq phases documentées, des livrables écrits à chaque étape, une gouvernance claire. Pas de formule standard, un cadre éprouvé qui garantit le même niveau d'exigence pour chaque client."
         breadcrumb="Notre méthode"
         eyebrow="Méthodologie"
         stats={[
@@ -152,7 +152,7 @@ export default function NotreMethodePage() {
         ]}
       />
 
-      {/* 01 — Manifeste */}
+      {/* 01, Manifeste */}
       <section className="section-padding bg-background">
         <div className="max-w-6xl mx-auto">
           <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 border-t border-foreground/10 pt-12 md:pt-16">
@@ -173,7 +173,7 @@ export default function NotreMethodePage() {
               <p className="text-base md:text-lg font-light leading-relaxed text-foreground/70 mb-6">
                 Trop souvent, le conseil patrimonial se résume à proposer un contrat. Nous croyons l'inverse :
                 un bon conseil commence par un diagnostic complet, se construit autour de votre projet de vie, et
-                se mesure dans la durée — pas dans la performance d'un trimestre.
+                se mesure dans la durée, pas dans la performance d'un trimestre.
               </p>
               <p className="text-base md:text-lg font-light leading-relaxed text-foreground/70">
                 Notre méthode est née de cette conviction. Elle impose une discipline : prendre le temps
@@ -185,7 +185,7 @@ export default function NotreMethodePage() {
         </div>
       </section>
 
-      {/* 02 — Principes */}
+      {/* 02, Principes */}
       <section className="section-padding section-ivory">
         <div className="max-w-6xl mx-auto">
           <div className="grid lg:grid-cols-12 gap-8 md:gap-10 lg:gap-16 border-t border-foreground/10 pt-12 md:pt-16 items-start">
@@ -207,7 +207,7 @@ export default function NotreMethodePage() {
                 {principes.map((p, i) => (
                   <div key={p.label} className={`reveal reveal-delay-${(i % 5) + 1} border-t border-foreground/12 pt-5`}>
                     <div className="text-[10px] tracking-[0.28em] uppercase text-foreground/45 mb-3">
-                      {String(i + 1).padStart(2, "0")} — {p.label}
+                      {String(i + 1).padStart(2, "0")}, {p.label}
                     </div>
                     <p className="text-foreground/75 text-sm leading-relaxed font-light">{p.text}</p>
                   </div>
@@ -218,7 +218,7 @@ export default function NotreMethodePage() {
         </div>
       </section>
 
-      {/* 03 — Les 5 phases */}
+      {/* 03, Les 5 phases */}
       <section className="section-padding bg-background">
         <div className="max-w-6xl mx-auto">
           <div className="border-t border-foreground/10 pt-12 md:pt-16 mb-14 reveal">
@@ -231,7 +231,7 @@ export default function NotreMethodePage() {
               </span>
             </div>
             <h2 className="text-3xl md:text-4xl lg:text-[44px] font-heading font-light tracking-tight leading-[1.05] text-foreground max-w-3xl">
-              De la première écoute au suivi annuel — un fil conducteur sans angles morts.
+              De la première écoute au suivi annuel, un fil conducteur sans angles morts.
             </h2>
           </div>
 
@@ -277,7 +277,7 @@ export default function NotreMethodePage() {
                   <ul className="space-y-2 mb-6">
                     {step.livrables.map((l) => (
                       <li key={l} className="text-xs text-foreground/75 font-light leading-relaxed flex gap-2">
-                        <span className="text-foreground/30">—</span>
+                        <span className="text-foreground/30">-</span>
                         <span>{l}</span>
                       </li>
                     ))}
@@ -295,7 +295,7 @@ export default function NotreMethodePage() {
         </div>
       </section>
 
-      {/* 04 — Cadre des livrables */}
+      {/* 04, Cadre des livrables */}
       <section className="section-padding section-ivory">
         <div className="max-w-6xl mx-auto">
           <div className="grid lg:grid-cols-12 gap-8 md:gap-10 lg:gap-16 border-t border-foreground/10 pt-12 md:pt-16 items-start">
@@ -335,7 +335,7 @@ export default function NotreMethodePage() {
         </div>
       </section>
 
-      {/* 05 — Gouvernance & déontologie */}
+      {/* 05, Gouvernance & déontologie */}
       <section className="section-padding bg-background">
         <div className="max-w-6xl mx-auto">
           <div className="border-t border-foreground/10 pt-12 md:pt-16 mb-14 reveal">
@@ -371,7 +371,7 @@ export default function NotreMethodePage() {
         </div>
       </section>
 
-      {/* 06 — FAQ courte */}
+      {/* 06, FAQ courte */}
       <section className="section-padding section-ivory">
         <div className="max-w-6xl mx-auto">
           <div className="grid lg:grid-cols-12 gap-8 md:gap-10 lg:gap-16 border-t border-foreground/10 pt-12 md:pt-16 items-start">

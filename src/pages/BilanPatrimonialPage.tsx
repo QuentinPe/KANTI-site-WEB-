@@ -69,7 +69,7 @@ export default function BilanPatrimonialPage() {
         breadcrumb="Bilan patrimonial"
         eyebrow="Diagnostic global"
         image={heroImg}
-        imageAlt="Bilan patrimonial à Biarritz — KANTI"
+        imageAlt="Bilan patrimonial à Biarritz, KANTI"
         stats={[
           { value: "360°", label: "Vision patrimoniale" },
           { value: "3 sem.", label: "Durée moyenne" },

@@ -12,7 +12,7 @@ function readConsent(): Consent {
 }
 
 /**
- * Bandeau cookies RGPD — front-only, persiste le choix dans localStorage.
+ * Bandeau cookies RGPD, front-only, persiste le choix dans localStorage.
  * Aucun script tiers n'est chargé : ce composant est purement déclaratif.
  */
 export default function CookieBanner() {

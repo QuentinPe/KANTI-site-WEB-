@@ -61,7 +61,7 @@ export default function MobileHeader() {
         <div className="flex items-center justify-between">
           <Link
             to="/"
-            aria-label="KANTI — Accueil"
+            aria-label="KANTI, Accueil"
             className={`inline-flex items-center rounded-full px-5 h-11 transition-colors duration-300 ${bubble} ${textColor}`}
           >
             <img

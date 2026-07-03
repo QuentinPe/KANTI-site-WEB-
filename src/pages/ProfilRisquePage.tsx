@@ -16,6 +16,8 @@ import {
   CORMORANT_REG_B64,
   CORMORANT_BOLD_B64,
   COVER_BUILDING_B64,
+  LOGO_KANTI_WHITE_B64,
+  LOGO_KANTI_DARK_B64,
 } from "@/assets/pdf-assets";
 
 type Phase = "intro" | "quiz" | "result";
@@ -26,11 +28,11 @@ type AnswerValue = number | string;
 const KANTI_INFO = {
   name: "KANTI",
   baseline: "Cabinet de gestion de patrimoine indépendant",
-  address: "9 Rue de la Négresse — 64200 Biarritz",
+  address: "9 Rue de la Négresse, 64200 Biarritz",
   phone: "06 63 32 48 09",
   email: "kanti@adnfamily.com",
   legal:
-    "KANTI — CIF inscrit auprès de l'AMF, adhérent de la CNCEF. Le présent document est un outil pédagogique d'auto-évaluation et ne constitue pas une recommandation personnalisée d'investissement au sens de l'article L.541-1 du Code monétaire et financier.",
+    "KANTI, CIF inscrit auprès de l'AMF, adhérent de la CNCEF. Le présent document est un outil pédagogique d'auto-évaluation et ne constitue pas une recommandation personnalisée d'investissement au sens de l'article L.541-1 du Code monétaire et financier.",
 };
 
 export default function ProfilRisquePage() {
@@ -76,7 +78,7 @@ export default function ProfilRisquePage() {
   return (
     <>
       <Seo
-        title="Définir son profil de risque — Questionnaire AMF | KANTI"
+        title="Définir son profil de risque, Questionnaire AMF | KANTI"
         description="Évaluez votre profil investisseur et obtenez votre indicateur synthétique de risque (SRI) sur une échelle de 1 à 7. Questionnaire conforme aux exigences AMF, export PDF instantané."
       />
       <Header />
@@ -285,7 +287,7 @@ function Intro({ onStart, total }: { onStart: () => void; total: number }) {
       </p>
       <p className="text-foreground/55 text-sm lg:text-base font-light leading-relaxed max-w-2xl mx-auto mb-10 italic">
         Il est conforme aux exigences de l'AMF (DDA / MIF II) et reprend l'échelle
-        européenne PRIIPs — la même que celle utilisée par toutes les sociétés de gestion.
+        européenne PRIIPs, la même que celle utilisée par toutes les sociétés de gestion.
         À l'issue, vous obtenez un score précis sur 7, une lecture personnalisée et un
         rapport PDF que vous pourrez nous transmettre pour préparer votre rendez-vous.
       </p>
@@ -353,7 +355,7 @@ function ResultView({
     // Pour l'instant on confirme le téléchargement et on ouvre un mailto.
     generatePdf(profile, answers);
     const subject = encodeURIComponent(
-      `Profil de risque — SRI ${profile.sri}/7 (${profile.shortLabel})`,
+      `Profil de risque, SRI ${profile.sri}/7 (${profile.shortLabel})`,
     );
     const body = encodeURIComponent(
       "Bonjour,\n\nVeuillez trouver ci-joint ma fiche profil de risque générée sur le site KANTI.\n\nCordialement.",
@@ -580,7 +582,7 @@ function generatePdf(
   };
 
   // ══════════════════════════════════════════════════════
-  // PAGE 1 — COUVERTURE (épurée, éditoriale)
+  // PAGE 1, COUVERTURE (épurée, éditoriale)
   // ══════════════════════════════════════════════════════
 
   const sriPrecise = profile.sriPrecise ?? profile.sri;
@@ -612,21 +614,26 @@ function generatePdf(
   doc.line(W - photoW, 0, W - photoW, H);
 
   // ── Zone gauche : éditorial ───────────────────────────
-  // Marque KANTI en haut
-  setText(NAVY);
-  doc.setFont(SANS, "bold");
-  doc.setFontSize(11);
-  doc.setCharSpace(4);
-  doc.text("KANTI", M, 60);
-  doc.setCharSpace(0);
+  // Logo KANTI (variante navy sur fond papier)
+  try {
+    // Ratio natif ~3.2:1 (883x275)
+    doc.addImage(LOGO_KANTI_DARK_B64, "PNG", M, 42, 78, 24);
+  } catch {
+    setText(NAVY);
+    doc.setFont(SANS, "bold");
+    doc.setFontSize(11);
+    doc.setCharSpace(4);
+    doc.text("KANTI", M, 60);
+    doc.setCharSpace(0);
+  }
   setDraw(ACCENT);
   doc.setLineWidth(1.2);
-  doc.line(M, 70, M + 28, 70);
+  doc.line(M, 76, M + 28, 76);
   setText(MUTED);
   doc.setFont(SANS, "normal");
   doc.setFontSize(7);
   doc.setCharSpace(1.2);
-  doc.text(KANTI_INFO.baseline.toUpperCase(), M, 84);
+  doc.text(KANTI_INFO.baseline.toUpperCase(), M, 90);
   doc.setCharSpace(0);
 
   // Eyebrow
@@ -637,7 +644,7 @@ function generatePdf(
   doc.text("RAPPORT CONFIDENTIEL  ·  AUTO-ÉVALUATION AMF", M, 170);
   doc.setCharSpace(0);
 
-  // Titre éditorial — Cormorant Garamond (taille adaptée pour ne pas déborder)
+  // Titre éditorial, Cormorant Garamond (taille adaptée pour ne pas déborder)
   setText(NAVY);
   doc.setFont(SERIF, "normal");
   doc.setFontSize(50);
@@ -685,7 +692,7 @@ function generatePdf(
 
   setText(NAVY);
   doc.setFont(SERIF, "normal");
-  // Label peut être long — on contraint à la largeur intérieure de la carte
+  // Label peut être long, on contraint à la largeur intérieure de la carte
   doc.setFontSize(18);
   const labelLines = doc.splitTextToSize(profile.label, cardW - 44);
   doc.text(labelLines[0], M + 22, cardY + 122);
@@ -751,11 +758,11 @@ function generatePdf(
   setText([200, 210, 230]);
   doc.setFont(SANS, "normal");
   doc.setFontSize(6.5);
-  doc.text("Document pédagogique — ne constitue pas", sigX, H - 50, { align: "center" });
+  doc.text("Document pédagogique, ne constitue pas", sigX, H - 50, { align: "center" });
   doc.text("un conseil personnalisé au sens AMF.", sigX, H - 38, { align: "center" });
 
   // ══════════════════════════════════════════════════════
-  // PAGE 2 — NOTRE DÉMARCHE (storytelling éditorial)
+  // PAGE 2, NOTRE DÉMARCHE (storytelling éditorial)
   // ══════════════════════════════════════════════════════
   doc.addPage();
   drawPageHeader("Notre démarche", "00");
@@ -766,7 +773,7 @@ function generatePdf(
   doc.setFont(SERIF, "normal");
   doc.setFontSize(20);
   const opener = doc.splitTextToSize(
-    "« Investir n'est pas un pari. C'est un alignement — entre votre histoire, vos objectifs et le temps dont vous disposez. »",
+    "« Investir n'est pas un pari. C'est un alignement, entre votre histoire, vos objectifs et le temps dont vous disposez. »",
     CW - 40,
   );
   doc.text(opener, M, yS);
@@ -781,7 +788,7 @@ function generatePdf(
   doc.setFont(SANS, "normal");
   doc.setFontSize(10.5);
   const story1 = doc.splitTextToSize(
-    "Avant de parler de produits, de fiscalité ou de performance, KANTI prend le temps de vous écouter. Ce questionnaire est la première pierre d'un dialogue : il transforme une notion abstraite — votre tolérance au risque — en un repère clair, partagé, et opposable. C'est aussi une exigence réglementaire, posée par l'Autorité des Marchés Financiers pour protéger l'épargnant.",
+    "Avant de parler de produits, de fiscalité ou de performance, KANTI prend le temps de vous écouter. Ce questionnaire est la première pierre d'un dialogue : il transforme une notion abstraite, votre tolérance au risque, en un repère clair, partagé, et opposable. C'est aussi une exigence réglementaire, posée par l'Autorité des Marchés Financiers pour protéger l'épargnant.",
     CW,
   );
   doc.text(story1, M, yS);
@@ -850,13 +857,13 @@ function generatePdf(
   doc.setFont(SANS, "normal");
   doc.setFontSize(9);
   const meth = doc.splitTextToSize(
-    "Vos réponses sont pondérées sur l'échelle PRIIPs (1 → 7) reconnue à l'échelle européenne. Le score décimal final reflète la nuance de votre profil — au-delà du simple palier entier.",
+    "Vos réponses sont pondérées sur l'échelle PRIIPs (1 → 7) reconnue à l'échelle européenne. Le score décimal final reflète la nuance de votre profil, au-delà du simple palier entier.",
     CW - 40,
   );
   doc.text(meth, M + 18, yS + 36);
 
   // ══════════════════════════════════════════════════════
-  // PAGE 3 — SYNTHÈSE
+  // PAGE 3, SYNTHÈSE
   // ══════════════════════════════════════════════════════
   doc.addPage();
   drawPageHeader("Synthèse de votre profil", "01");
@@ -967,7 +974,7 @@ function generatePdf(
   );
 
   // ══════════════════════════════════════════════════════
-  // PAGE 3 — VOTRE POSITIONNEMENT (statistiques INSEE / AMF / Banque de France)
+  // PAGE 3, VOTRE POSITIONNEMENT (statistiques INSEE / AMF / Banque de France)
   // ══════════════════════════════════════════════════════
   doc.addPage();
   drawPageHeader("Votre positionnement", "02");
@@ -977,14 +984,14 @@ function generatePdf(
   doc.setFont(SANS, "normal");
   doc.setFontSize(10);
   const posLead = doc.splitTextToSize(
-    "Comparez votre profil à la population française des épargnants à partir de données publiques (INSEE 2023, AMF Baromètre 2024, Banque de France — Enquête Patrimoine).",
+    "Comparez votre profil à la population française des épargnants à partir de données publiques (INSEE 2023, AMF Baromètre 2024, Banque de France, Enquête Patrimoine).",
     CW,
   );
   doc.text(posLead, M, y);
   y += posLead.length * 13 + 24;
 
   // ── Distribution SRI sur la population française (estimation AMF) ─
-  // Source : AMF — Baromètre Épargne 2024 (répartition indicative
+  // Source : AMF, Baromètre Épargne 2024 (répartition indicative
   // des profils de risque parmi les détenteurs de produits financiers).
   const distribution: { sri: number; pct: number }[] = [
     { sri: 1, pct: 18 },
@@ -1066,18 +1073,18 @@ function generatePdf(
   setText(MUTED);
   doc.setFont(SANS, "italic");
   doc.setFontSize(7);
-  doc.text("Source : AMF — Baromètre Épargne et Investissement 2024 (estimation indicative).", M, y);
+  doc.text("Source : AMF, Baromètre Épargne et Investissement 2024 (estimation indicative).", M, y);
   y += 24;
 
   // ── KPI cards : statistiques clés du patrimoine FR ─
   y = ensureSpace(y, 130, () => { doc.addPage(); drawPageHeader("Votre positionnement", "02"); return 150; });
-  y = sectionLabel(y, "Le patrimoine des Français — chiffres clés");
+  y = sectionLabel(y, "Le patrimoine des Français, chiffres clés");
 
   const kpis = [
-    { value: "177 200 €", label: "Patrimoine brut médian", source: "INSEE — Enquête Patrimoine 2021" },
+    { value: "177 200 €", label: "Patrimoine brut médian", source: "INSEE, Enquête Patrimoine 2021" },
     { value: "39,5 %", label: "Ménages détenant un produit risqué", source: "AMF / Banque de France 2023" },
     { value: "5,8 %", label: "Rendement annuel moyen actions FR (40 ans)", source: "Banque de France" },
-    { value: "2,9 %", label: "Inflation annuelle moyenne 2020-2024", source: "INSEE — IPC" },
+    { value: "2,9 %", label: "Inflation annuelle moyenne 2020-2024", source: "INSEE, IPC" },
   ];
   const kpiW = (CW - 30) / 2;
   const kpiH = 78;
@@ -1131,7 +1138,7 @@ function generatePdf(
   y += 100;
 
   // ══════════════════════════════════════════════════════
-  // PAGES SUIVANTES — DÉTAIL DES RÉPONSES
+  // PAGES SUIVANTES, DÉTAIL DES RÉPONSES
   // ══════════════════════════════════════════════════════
   doc.addPage();
   drawPageHeader("Détail de vos réponses", "03");
@@ -1141,7 +1148,7 @@ function generatePdf(
   doc.setFont("helvetica", "normal");
   doc.setFontSize(10);
   const recapLead = doc.splitTextToSize(
-    "Récapitulatif structuré du questionnaire — conservé pour la traçabilité de l'évaluation et nos échanges futurs.",
+    "Récapitulatif structuré du questionnaire, conservé pour la traçabilité de l'évaluation et nos échanges futurs.",
     CW,
   );
   doc.text(recapLead, M, y);
@@ -1174,7 +1181,7 @@ function generatePdf(
         }
       } else if (typeof raw === "number") {
         const opt = q.options?.find((o) => o.score === raw);
-        answerLabel = opt?.label ?? "—";
+        answerLabel = opt?.label ?? "-";
       }
       const isUnanswered = answerLabel === "Non renseigné";
 
@@ -1272,14 +1279,19 @@ function generatePdf(
     doc.setLineWidth(0.4);
     doc.line(M, H - 78, W - M, H - 78);
 
-    setText(NAVY);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(8);
-    doc.text("KANTI", M, H - 62);
+    // Logo KANTI (navy) sur fond blanc
+    try {
+      doc.addImage(LOGO_KANTI_DARK_B64, "PNG", M, H - 72, 42, 13);
+    } catch {
+      setText(NAVY);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8);
+      doc.text("KANTI", M, H - 62);
+    }
     setText(MUTED);
     doc.setFont("helvetica", "normal");
     doc.setFontSize(7.5);
-    doc.text(KANTI_INFO.address, M, H - 50);
+    doc.text(KANTI_INFO.address, M + 50, H - 62);
     doc.text(`${KANTI_INFO.phone}  ·  ${KANTI_INFO.email}`, M, H - 38);
 
     // Pagination élégante
@@ -1310,12 +1322,17 @@ function generatePdf(
     // Bandeau supérieur très fin
     setFill(NAVY);
     doc.rect(0, 0, W, 32, "F");
-    setText(WHITE);
-    doc.setFont(SANS, "bold");
-    doc.setFontSize(10);
-    doc.setCharSpace(4);
-    doc.text("KANTI", M, 21);
-    doc.setCharSpace(0);
+    // Logo KANTI (variante blanche) sur bandeau navy
+    try {
+      doc.addImage(LOGO_KANTI_WHITE_B64, "PNG", M, 8, 55, 17);
+    } catch {
+      setText(WHITE);
+      doc.setFont(SANS, "bold");
+      doc.setFontSize(10);
+      doc.setCharSpace(4);
+      doc.text("KANTI", M, 21);
+      doc.setCharSpace(0);
+    }
     doc.setFont(SANS, "normal");
     doc.setFontSize(7.5);
     setText([180, 195, 220]);

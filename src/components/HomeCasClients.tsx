@@ -44,7 +44,7 @@ export default function HomeCasClients() {
             />
           </h2>
           <p className="text-foreground/60 text-lg font-light">
-            Chaque situation est différente. Voici comment nous avons accompagné des profils similaires — de façon anonymisée.
+            Chaque situation est différente. Voici comment nous avons accompagné des profils similaires, de façon anonymisée.
           </p>
         </div>
         <div className="group/fan grid md:grid-cols-3 gap-5 [perspective:1500px]">

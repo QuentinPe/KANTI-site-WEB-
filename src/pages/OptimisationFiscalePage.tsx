@@ -37,7 +37,7 @@ export default function OptimisationFiscalePage() {
           <div className="grid md:grid-cols-2 gap-x-12 gap-y-8 mb-16 reveal">
             {[
               { title: "Audit fiscal patrimonial", text: "Analyse détaillée de votre imposition sur trois ans, identification des anomalies, des leviers non exploités et des risques." },
-              { title: "IFI — Impôt sur la fortune immobilière", text: "Évaluation de l'assiette, stratégies de réduction (démembrement, dette déductible, contrats de capitalisation), mise en conformité." },
+              { title: "IFI, Impôt sur la fortune immobilière", text: "Évaluation de l'assiette, stratégies de réduction (démembrement, dette déductible, contrats de capitalisation), mise en conformité." },
               { title: "Revenus fonciers", text: "Arbitrage entre location nue et meublée, passage du micro au réel, déficit foncier, SCI à l'IS ou à l'IR." },
               { title: "Enveloppes fiscales", text: "PER, assurance-vie, PEA, contrat de capitalisation luxembourgeois. Chaque enveloppe a ses avantages et ses limites." },
               { title: "Structuration patrimoniale", text: "Holding, SCI, démembrement, donation : les outils juridiques au service de l'optimisation fiscale et de la transmission." },

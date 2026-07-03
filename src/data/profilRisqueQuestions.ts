@@ -39,7 +39,7 @@ export const RISK_SECTIONS: RiskSection[] = [
 ];
 
 /**
- * Questionnaire d'évaluation du profil investisseur — aligné sur les
+ * Questionnaire d'évaluation du profil investisseur, aligné sur les
  * exigences MIF II / AMF (test d'adéquation, art. 25 directive 2014/65).
  * Chaque réponse est notée de 1 (prudent) à 5 (offensif).
  * Le SRI final (1 → 7) est calculé à partir du score moyen.
@@ -249,7 +249,7 @@ export const RISK_QUESTIONS: RiskQuestion[] = [
   {
     id: "ct-emploi",
     section: "Comportement et tolérance au risque",
-    dimension: "Mise en situation — emploi",
+    dimension: "Mise en situation, emploi",
     question:
       "Vous obtenez un emploi dans une entreprise en pleine croissance. Lequel de ces choix retenez-vous ?",
     options: [
@@ -337,10 +337,10 @@ export const RISK_QUESTIONS: RiskQuestion[] = [
     helper:
       "Du portefeuille A (le plus stable) au portefeuille D (le plus volatil).",
     options: [
-      { label: "Portefeuille A — très stable, performance modeste", score: 1 },
-      { label: "Portefeuille B — variations modérées, performance régulière", score: 3 },
-      { label: "Portefeuille C — variations marquées, performance supérieure", score: 4 },
-      { label: "Portefeuille D — fortes variations, performance potentiellement élevée", score: 5 },
+      { label: "Portefeuille A, très stable, performance modeste", score: 1 },
+      { label: "Portefeuille B, variations modérées, performance régulière", score: 3 },
+      { label: "Portefeuille C, variations marquées, performance supérieure", score: 4 },
+      { label: "Portefeuille D, fortes variations, performance potentiellement élevée", score: 5 },
     ],
   },
   {
@@ -399,7 +399,7 @@ const SRI_PROFILES: SriProfile[] = [
   {
     sri: 1,
     shortLabel: "Très prudent",
-    label: "Profil 1 — Sécuritaire",
+    label: "Profil 1, Sécuritaire",
     description:
       "Vous privilégiez avant tout la préservation du capital et n'acceptez quasiment aucune fluctuation. Le rendement attendu est limité, proche de l'inflation.",
     recommendations: [
@@ -416,7 +416,7 @@ const SRI_PROFILES: SriProfile[] = [
   {
     sri: 2,
     shortLabel: "Prudent",
-    label: "Profil 2 — Prudent",
+    label: "Profil 2, Prudent",
     description:
       "Vous acceptez de très légères variations en échange d'un rendement supérieur à l'épargne réglementée. Votre horizon reste court à moyen.",
     recommendations: [
@@ -433,7 +433,7 @@ const SRI_PROFILES: SriProfile[] = [
   {
     sri: 3,
     shortLabel: "Modéré",
-    label: "Profil 3 — Modéré",
+    label: "Profil 3, Modéré",
     description:
       "Vous recherchez un équilibre entre sécurité et performance. Vous comprenez que des fluctuations sont nécessaires pour battre l'inflation.",
     recommendations: [
@@ -450,7 +450,7 @@ const SRI_PROFILES: SriProfile[] = [
   {
     sri: 4,
     shortLabel: "Équilibré",
-    label: "Profil 4 — Équilibré",
+    label: "Profil 4, Équilibré",
     description:
       "Vous êtes prêt(e) à accepter des baisses temporaires significatives en échange d'une perspective de rendement supérieur sur le long terme.",
     recommendations: [
@@ -467,7 +467,7 @@ const SRI_PROFILES: SriProfile[] = [
   {
     sri: 5,
     shortLabel: "Dynamique",
-    label: "Profil 5 — Dynamique",
+    label: "Profil 5, Dynamique",
     description:
       "Vous acceptez une part importante de risque pour viser une performance significative. Votre horizon est long et votre capacité financière confortable.",
     recommendations: [
@@ -484,7 +484,7 @@ const SRI_PROFILES: SriProfile[] = [
   {
     sri: 6,
     shortLabel: "Offensif",
-    label: "Profil 6 — Offensif",
+    label: "Profil 6, Offensif",
     description:
       "Vous êtes très tolérant(e) au risque, avec une forte capacité financière et une connaissance avancée des marchés. La volatilité ne vous décourage pas.",
     recommendations: [
@@ -501,7 +501,7 @@ const SRI_PROFILES: SriProfile[] = [
   {
     sri: 7,
     shortLabel: "Spéculatif",
-    label: "Profil 7 — Très offensif",
+    label: "Profil 7, Très offensif",
     description:
       "Vous recherchez la performance maximale et acceptez explicitement le risque de perte totale sur la part investie. Profil réservé à un patrimoine déjà solidement structuré.",
     recommendations: [

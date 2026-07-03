@@ -32,7 +32,7 @@ export default function GestionPatrimonialePage() {
       <ExpertiseShowcase
         eyebrow="Notre approche"
         title="Gérer son épargne, ce n'est pas cocher des cases dans un questionnaire bancaire."
-        intro="Une allocation patrimoniale efficace intègre votre fiscalité, votre régime matrimonial, vos projets à 5 ou 20 ans, vos revenus futurs et votre capacité à absorber une baisse des marchés. Architecture ouverte, aucun produit maison, aucun quota — chaque support est sélectionné après une analyse comparative rigoureuse."
+        intro="Une allocation patrimoniale efficace intègre votre fiscalité, votre régime matrimonial, vos projets à 5 ou 20 ans, vos revenus futurs et votre capacité à absorber une baisse des marchés. Architecture ouverte, aucun produit maison, aucun quota, chaque support est sélectionné après une analyse comparative rigoureuse."
         image={heroImg}
         imageAlt="Allocation patrimoniale KANTI"
         pillars={[
@@ -48,7 +48,7 @@ export default function GestionPatrimonialePage() {
         image={heroImg}
         imageAlt="Allocation patrimoniale KANTI"
         eyebrow="Architecture ouverte"
-        caption="Aucun produit maison, aucun quota — chaque support sélectionné après analyse comparative."
+        caption="Aucun produit maison, aucun quota, chaque support sélectionné après analyse comparative."
       />
 
       <ProductGrid

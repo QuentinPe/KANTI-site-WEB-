@@ -7,7 +7,7 @@ const expertises = [
     tag: "Épargne & placements",
     title: "Gestion patrimoniale",
     description:
-      "Allocation d'actifs, assurance-vie, PER, compte-titres, SCPI — une stratégie d'épargne construite pour durer.",
+      "Allocation d'actifs, assurance-vie, PER, compte-titres, SCPI, une stratégie d'épargne construite pour durer.",
     benefit: "Faire travailler votre capital en cohérence avec vos projets de vie.",
     href: "/gestion-patrimoniale",
   },
@@ -15,7 +15,7 @@ const expertises = [
     tag: "Fiscalité",
     title: "Fiscalité du patrimoine",
     description:
-      "Audit fiscal, IFI, revenus fonciers, structuration — réduire votre pression fiscale sans prendre de risques inutiles.",
+      "Audit fiscal, IFI, revenus fonciers, structuration, réduire votre pression fiscale sans prendre de risques inutiles.",
     benefit: "Identifier vos marges de manœuvre fiscales réelles.",
     href: "/fiscalite",
   },
@@ -39,7 +39,7 @@ const expertises = [
     tag: "Succession",
     title: "Transmission & prévoyance",
     description:
-      "Donation, démembrement, assurance-vie, pacte Dutreil — anticiper pour protéger ceux qui comptent.",
+      "Donation, démembrement, assurance-vie, pacte Dutreil, anticiper pour protéger ceux qui comptent.",
     benefit: "Préparer la transmission en maîtrisant la fiscalité.",
     href: "/transmission-patrimoine-famille",
   },
@@ -47,7 +47,7 @@ const expertises = [
     tag: "Immobilier",
     title: "Immobilier patrimonial",
     description:
-      "Résidence principale, locatif, SCI, nue-propriété — chaque investissement pensé dans une logique globale.",
+      "Résidence principale, locatif, SCI, nue-propriété, chaque investissement pensé dans une logique globale.",
     benefit: "Structurer vos actifs immobiliers intelligemment.",
     href: "/patrimoine-immobilier-strategie",
   },
@@ -107,7 +107,7 @@ function StackCard({
     : useTransform(scrollYProgress, [0, 0.5, 1], [0.95, 1, 0.94]);
   const opacity = useTransform(scrollYProgress, [0, 0.4, 0.8, 1], [0.4, 1, 1, 0.85]);
 
-  // Sticky offset — slight stagger so cards stack with depth
+  // Sticky offset, slight stagger so cards stack with depth
   const top = `${80 + index * 18}px`;
 
   return (

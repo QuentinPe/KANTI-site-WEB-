@@ -92,7 +92,7 @@ export default function ProductDetailPage() {
           </div>
 
           <p className="text-[10px] tracking-[0.32em] uppercase text-white/45 mb-5 font-medium">
-            Note d'analyse — {product.tag}
+            Note d'analyse, {product.tag}
           </p>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-light text-white leading-[1.05] mb-7 tracking-tight max-w-4xl">
             {product.title}
@@ -164,7 +164,7 @@ export default function ProductDetailPage() {
           {/* Main content */}
           <div className="lg:col-span-9 space-y-20 reveal reveal-delay-1">
             {/* SYNTHESE */}
-            <Block id="synthese" eyebrow="01 — Synthèse" title="L'essentiel en un paragraphe">
+            <Block id="synthese" eyebrow="01, Synthèse" title="L'essentiel en un paragraphe">
               <p className="text-foreground/85 text-[16px] leading-[1.75] font-light">{analysis.summary}</p>
 
               <div className="mt-6 grid sm:grid-cols-2 gap-4">
@@ -187,7 +187,7 @@ export default function ProductDetailPage() {
             </Block>
 
             {/* MECANIQUE */}
-            <Block id="mecanique" eyebrow="02 — Mécanique" title="Comment cela fonctionne, étape par étape">
+            <Block id="mecanique" eyebrow="02, Mécanique" title="Comment cela fonctionne, étape par étape">
               <ol className="space-y-3">
                 {analysis.mechanics.map((m, i) => (
                   <li key={i} className="flex gap-4">
@@ -201,7 +201,7 @@ export default function ProductDetailPage() {
             </Block>
 
             {/* ACTEURS */}
-            <Block id="acteurs" eyebrow="03 — Architecture" title="Acteurs en présence et flux financiers">
+            <Block id="acteurs" eyebrow="03, Architecture" title="Acteurs en présence et flux financiers">
               <ProductFlowDiagram actors={analysis.actors} flows={analysis.flows} />
               <div className="mt-6 grid sm:grid-cols-2 gap-3">
                 {analysis.actors.map((a) => (
@@ -219,7 +219,7 @@ export default function ProductDetailPage() {
             </Block>
 
             {/* KPI */}
-            <Block id="indicateurs" eyebrow="04 — Indicateurs clés" title="Les chiffres à connaître">
+            <Block id="indicateurs" eyebrow="04, Indicateurs clés" title="Les chiffres à connaître">
               <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {analysis.kpis.map((k) => (
                   <div key={k.label} className="glass-card p-5">
@@ -232,7 +232,7 @@ export default function ProductDetailPage() {
             </Block>
 
             {/* RISQUES */}
-            <Block id="risques" eyebrow="05 — Risques" title="Matrice probabilité × impact">
+            <Block id="risques" eyebrow="05, Risques" title="Matrice probabilité × impact">
               <p className="text-foreground/65 text-[14px] font-light mb-6 max-w-2xl">
                 Cliquez sur un risque pour ouvrir sa fiche détaillée : probabilité, impact chiffré,
                 scénarios déclencheurs, signaux à surveiller et mesures d'atténuation opérationnelles.
@@ -270,7 +270,7 @@ export default function ProductDetailPage() {
             </Block>
 
             {/* PERFORMANCE & COSTS */}
-            <Block id="performance" eyebrow="06 — Performance & coûts" title="Ce que cela rapporte, ce que cela coûte">
+            <Block id="performance" eyebrow="06, Performance & coûts" title="Ce que cela rapporte, ce que cela coûte">
               <div className="grid lg:grid-cols-2 gap-6">
                 <div className="glass-card p-6">
                   <p className="text-[10px] tracking-[0.22em] uppercase text-[hsl(var(--electric))] mb-3">Performance</p>
@@ -298,7 +298,7 @@ export default function ProductDetailPage() {
             </Block>
 
             {/* VIGILANCE */}
-            <Block id="vigilance" eyebrow="07 — Vigilance" title="Les pièges à éviter">
+            <Block id="vigilance" eyebrow="07, Vigilance" title="Les pièges à éviter">
               <ul className="space-y-3">
                 {analysis.vigilance.map((v) => (
                   <li key={v} className="flex gap-3 p-4 rounded-md border-l-2 border-[hsl(var(--gold))]/60 bg-foreground/[0.02]">
@@ -321,7 +321,7 @@ export default function ProductDetailPage() {
             </Block>
 
             {/* CAS CHIFFRE */}
-            <Block id="cas" eyebrow="08 — Cas d'usage" title="Illustration chiffrée">
+            <Block id="cas" eyebrow="08, Cas d'usage" title="Illustration chiffrée">
               <div className="glass-strong rounded-[var(--radius)] p-7">
                 <p className="text-[13px] tracking-[0.18em] uppercase text-foreground/55 mb-4">Profil</p>
                 <p className="text-foreground/90 text-[15.5px] font-light mb-6">{analysis.caseStudy.profile}</p>
@@ -352,13 +352,13 @@ export default function ProductDetailPage() {
                 </div>
 
                 <p className="mt-6 text-[11.5px] text-foreground/45 italic">
-                  Simulation à but pédagogique — ne constitue pas un conseil personnalisé au sens de l'article L541-1 du Code monétaire et financier.
+                  Simulation à but pédagogique, ne constitue pas un conseil personnalisé au sens de l'article L541-1 du Code monétaire et financier.
                 </p>
               </div>
             </Block>
 
             {/* DECISION */}
-            <Block id="decision" eyebrow="09 — Décision" title="Quand cela vous correspond, quand cela ne vous correspond pas">
+            <Block id="decision" eyebrow="09, Décision" title="Quand cela vous correspond, quand cela ne vous correspond pas">
               <div className="grid md:grid-cols-2 gap-5">
                 <div className="p-5 rounded-[var(--radius)] border border-[hsl(var(--electric))]/30 bg-[hsl(var(--electric))]/[0.03]">
                   <p className="flex items-center gap-2 text-[12px] tracking-[0.18em] uppercase text-[hsl(var(--electric))] mb-3">
@@ -366,7 +366,7 @@ export default function ProductDetailPage() {
                   </p>
                   <ul className="space-y-2">
                     {analysis.whenItFits.map((w) => (
-                      <li key={w} className="text-foreground/80 text-[14px] font-light">— {w}</li>
+                      <li key={w} className="text-foreground/80 text-[14px] font-light">- {w}</li>
                     ))}
                   </ul>
                 </div>
@@ -376,7 +376,7 @@ export default function ProductDetailPage() {
                   </p>
                   <ul className="space-y-2">
                     {analysis.whenItDoesNot.map((w) => (
-                      <li key={w} className="text-foreground/75 text-[14px] font-light">— {w}</li>
+                      <li key={w} className="text-foreground/75 text-[14px] font-light">- {w}</li>
                     ))}
                   </ul>
                 </div>
@@ -384,7 +384,7 @@ export default function ProductDetailPage() {
             </Block>
 
             {/* FAQ */}
-            <Block id="faq" eyebrow="10 — FAQ" title="Questions que l'on nous pose">
+            <Block id="faq" eyebrow="10, FAQ" title="Questions que l'on nous pose">
               <Accordion type="single" collapsible className="w-full">
                 {analysis.faq.map((f, i) => (
                   <AccordionItem key={i} value={`item-${i}`} className="border-foreground/10">
@@ -576,7 +576,7 @@ function RowFragment({
             className={`min-h-[88px] rounded-md border p-2 flex flex-col gap-1.5 ${tone}`}
           >
             {items.length === 0 && (
-              <span className="text-[10px] text-foreground/25 m-auto">—</span>
+              <span className="text-[10px] text-foreground/25 m-auto">-</span>
             )}
             {items.map((r) => (
               <button

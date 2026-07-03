@@ -6,7 +6,7 @@ export default function TrustBand() {
           <div className="flex flex-wrap justify-center items-center gap-x-8 gap-y-3 text-[12px] text-foreground/60 font-light">
             <span className="flex items-center gap-2">
               <span className="w-1 h-1 rounded-full bg-[hsl(var(--electric))]" />
-              KANTI — ORIAS n° 00 000 000
+              KANTI, ORIAS n° 00 000 000
             </span>
             <span className="hidden sm:inline text-foreground/15">·</span>
             <span>Adhérent CNCEF</span>

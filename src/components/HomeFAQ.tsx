@@ -50,7 +50,7 @@ export default function HomeFAQ() {
               <span className="italic text-foreground/70">avant d'avancer</span>
             </h2>
             <p className="text-foreground/60 text-base lg:text-lg font-light leading-relaxed mb-8 max-w-md">
-              Les questions qu'on nous pose le plus souvent. Si la vôtre n'y figure pas, écrivez-nous — nous répondons sous 24 heures ouvrées.
+              Les questions qu'on nous pose le plus souvent. Si la vôtre n'y figure pas, écrivez-nous, nous répondons sous 24 heures ouvrées.
             </p>
             <Link
               to="/faq-patrimoniale"

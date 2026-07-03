@@ -37,9 +37,9 @@ export default function PolitiqueConfidentialitePage() {
                 des missions de conseil est :
               </p>
               <ul>
-                <li><strong>KANTI</strong> — SAS au capital de 10 000 €</li>
+                <li><strong>KANTI</strong>, SAS au capital de 10 000 €</li>
                 <li>9 Rue de la Négresse, 64200 Biarritz</li>
-                <li>Téléphone : 06 63 32 48 09 — Courriel : <a href="mailto:kanti@adnfamily.com">kanti@adnfamily.com</a></li>
+                <li>Téléphone : 06 63 32 48 09, Courriel : <a href="mailto:kanti@adnfamily.com">kanti@adnfamily.com</a></li>
               </ul>
             </>
           ),
@@ -132,7 +132,7 @@ export default function PolitiqueConfidentialitePage() {
               </p>
               <p>
                 En cas de désaccord persistant, vous pouvez introduire une réclamation auprès de la
-                <strong> CNIL</strong> — 3 place de Fontenoy, TSA 80715, 75334 Paris Cedex 07 —{" "}
+                <strong> CNIL</strong>, 3 place de Fontenoy, TSA 80715, 75334 Paris Cedex 07 -{" "}
                 <a href="https://www.cnil.fr" target="_blank" rel="noreferrer">www.cnil.fr</a>.
               </p>
             </>

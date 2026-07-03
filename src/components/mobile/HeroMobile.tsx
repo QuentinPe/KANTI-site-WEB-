@@ -90,7 +90,7 @@ export default function HeroMobile() {
           </Link>
         </div>
 
-        {/* Trust signals — horizontal scroll */}
+        {/* Trust signals, horizontal scroll */}
         <div className="mt-10 -mx-6 px-6 overflow-x-auto no-scrollbar snap-x snap-mandatory">
           <ul className="flex gap-3 w-max">
             {trust.map((t) => (

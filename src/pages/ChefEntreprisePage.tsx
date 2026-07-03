@@ -27,7 +27,7 @@ export default function ChefEntreprisePage() {
               Un chef d'entreprise qui optimise sa rémunération sans penser à sa retraite fait une erreur. Un dirigeant qui prépare sa cession sans anticiper la fiscalité de la plus-value prend un risque majeur. Un associé qui n'a pas de garantie croisée met en péril l'entreprise et sa famille.
             </p>
             <p className="text-gray-text leading-relaxed mb-8">
-              Notre approche est transversale : nous analysons simultanément les dimensions personnelles et professionnelles de votre patrimoine. Chaque décision est évaluée sous l'angle fiscal, social, juridique et financier — en coordination avec votre expert-comptable et votre avocat.
+              Notre approche est transversale : nous analysons simultanément les dimensions personnelles et professionnelles de votre patrimoine. Chaque décision est évaluée sous l'angle fiscal, social, juridique et financier, en coordination avec votre expert-comptable et votre avocat.
             </p>
           </div>
 

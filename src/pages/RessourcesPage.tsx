@@ -158,7 +158,7 @@ export default function RessourcesPage() {
       return;
     }
     setLoading(true);
-    // Mock — front-only. Le back sera branché plus tard.
+    // Mock, front-only. Le back sera branché plus tard.
     console.info("[KANTI mock] Lead magnet request:", {
       ...parsed.data,
       resource: activeResource?.id,
@@ -178,7 +178,7 @@ export default function RessourcesPage() {
   return (
     <>
       <Seo
-        title="Ressources patrimoniales — guides et études KANTI"
+        title="Ressources patrimoniales, guides et études KANTI"
         description="Guides PDF gratuits : défiscalisation 2026, transmission, cession d'entreprise, immobilier patrimonial. Téléchargez les analyses du cabinet KANTI."
       />
       <Header />
@@ -267,7 +267,7 @@ export default function RessourcesPage() {
       </main>
       <Footer />
 
-      {/* Modale email — fictive */}
+      {/* Modale email, fictive */}
       {activeResource && (
         <div
           role="dialog"

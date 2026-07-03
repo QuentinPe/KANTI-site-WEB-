@@ -183,7 +183,7 @@ export default function CTAFinal() {
           <AmbientParticles count={14} color="rgba(180, 210, 255, 0.55)" speed={0.18} />
         </div>
 
-        {/* Pinned content — sits over the sticky video and reveals as scroll progresses */}
+        {/* Pinned content, sits over the sticky video and reveals as scroll progresses */}
         <motion.div
           style={{ opacity: contentOpacity, y: contentY }}
           className="absolute inset-0 flex items-end pointer-events-none"

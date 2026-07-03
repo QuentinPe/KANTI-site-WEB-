@@ -12,7 +12,7 @@ const faqCategories = [
     category: "Le cabinet",
     intro: "Notre cadre réglementaire, notre indépendance et notre modèle économique.",
     questions: [
-      { q: "Qu'est-ce qu'un conseiller en gestion de patrimoine indépendant ?", a: "Un CGP indépendant est un professionnel enregistré à l'ORIAS, habilité à délivrer des conseils en investissements financiers (CIF), en assurance (IAS) et en opérations de banque (IOBSP). Contrairement à un conseiller bancaire, il n'a aucun produit maison et travaille en architecture ouverte — il compare l'ensemble du marché pour sélectionner ce qui convient le mieux à votre situation." },
+      { q: "Qu'est-ce qu'un conseiller en gestion de patrimoine indépendant ?", a: "Un CGP indépendant est un professionnel enregistré à l'ORIAS, habilité à délivrer des conseils en investissements financiers (CIF), en assurance (IAS) et en opérations de banque (IOBSP). Contrairement à un conseiller bancaire, il n'a aucun produit maison et travaille en architecture ouverte, il compare l'ensemble du marché pour sélectionner ce qui convient le mieux à votre situation." },
       { q: "Comment êtes-vous rémunérés ?", a: "Nous pouvons travailler en honoraires de conseil (facturation directe pour l'audit et les recommandations) ou en commissions sur les produits souscrits (versées par les compagnies d'assurance ou les sociétés de gestion). Dans tous les cas, notre mode de rémunération est communiqué en amont, de façon transparente, avant toute recommandation." },
       { q: "Êtes-vous contrôlés par un organisme ?", a: "Oui. En tant que adhérent de la CNCEF (Chambre Nationale des Conseils en Gestion de Patrimoine), nous sommes soumis au contrôle de l'Autorité des Marchés Financiers (AMF) et de l'ACPR. Nous disposons également d'une assurance responsabilité civile professionnelle et d'une garantie financière." },
       { q: "Quelle est la différence avec un banquier privé ?", a: "Un banquier privé distribue les produits de son établissement. Nous, nous n'avons aucune obligation de placement auprès d'un partenaire donné. Notre seul engagement est de vous recommander les solutions les plus adaptées, quel que soit l'émetteur." },
@@ -42,7 +42,7 @@ const faqCategories = [
       { q: "Travaillez-vous avec notre notaire ou notre expert-comptable ?", a: "Oui, systématiquement. La coordination avec vos autres conseils est un élément central de notre méthode. Nous échangeons avec eux (avec votre accord) pour garantir la cohérence des décisions patrimoniales, fiscales et juridiques." },
       { q: "Que se passe-t-il après l'audit ?", a: "Nous vous présentons un rapport de recommandations structuré. Vous décidez ensuite de mettre en œuvre nos préconisations ou non. Si vous nous confiez la mise en œuvre, nous sélectionnons les contrats, ouvrons les comptes et assurons le suivi. Sinon, vous conservez le rapport et êtes libre de l'utiliser avec le professionnel de votre choix." },
       { q: "À quelle fréquence faites-vous le point avec vos clients ?", a: "Au minimum un rendez-vous annuel de revue patrimoniale, complété par des points trimestriels sur l'allocation financière. Nous restons disponibles entre deux rendez-vous pour toute question, opportunité ou changement de situation (mariage, naissance, cession, héritage)." },
-      { q: "Que couvre exactement votre mission ?", a: "Selon la lettre de mission : audit patrimonial 360°, stratégie fiscale, sélection et souscription de placements, accompagnement immobilier, structuration de la transmission, conseil en financement, suivi annuel. Vous choisissez le périmètre — global ou ciblé sur une problématique précise." },
+      { q: "Que couvre exactement votre mission ?", a: "Selon la lettre de mission : audit patrimonial 360°, stratégie fiscale, sélection et souscription de placements, accompagnement immobilier, structuration de la transmission, conseil en financement, suivi annuel. Vous choisissez le périmètre, global ou ciblé sur une problématique précise." },
       { q: "Puis-je arrêter l'accompagnement à tout moment ?", a: "Oui. Aucune clause d'engagement de durée. Vous restez libre d'interrompre la relation à tout moment. Vos contrats et placements demeurent évidemment actifs et nous organisons le transfert vers le conseil de votre choix si nécessaire." },
     ],
   },
@@ -50,10 +50,10 @@ const faqCategories = [
     category: "Fiscalité & placements",
     intro: "Stratégie fiscale, supports d'investissement, performance et sécurité de vos actifs.",
     questions: [
-      { q: "Pouvez-vous m'aider à réduire mes impôts ?", a: "Oui, c'est l'un de nos domaines d'expertise. Mais nous ne vendons pas de la défiscalisation — nous construisons une stratégie fiscale cohérente, adaptée à votre situation. Chaque levier est analysé en termes de rapport bénéfice/risque et intégré dans votre stratégie globale." },
+      { q: "Pouvez-vous m'aider à réduire mes impôts ?", a: "Oui, c'est l'un de nos domaines d'expertise. Mais nous ne vendons pas de la défiscalisation, nous construisons une stratégie fiscale cohérente, adaptée à votre situation. Chaque levier est analysé en termes de rapport bénéfice/risque et intégré dans votre stratégie globale." },
       { q: "Quels types de placements proposez-vous ?", a: "En architecture ouverte, nous accédons à l'ensemble des supports du marché : assurance-vie, PER, PEA, compte-titres, SCPI, OPCI, private equity, produits structurés, nue-propriété, etc. La sélection dépend exclusivement de votre profil, de vos objectifs et de votre horizon d'investissement." },
       { q: "Mes placements sont-ils en sécurité ?", a: "Vos actifs sont détenus chez des dépositaires agréés (compagnies d'assurance, banques dépositaires), jamais sur nos comptes. Nous n'avons aucune capacité de détention ou de mouvement sur vos fonds." },
-      { q: "Quelle performance puis-je espérer ?", a: "Aucun rendement ne peut être garanti — c'est une exigence réglementaire et un principe de prudence. Nous construisons des allocations adaptées à votre profil de risque, votre horizon et vos objectifs, et nous documentons les hypothèses retenues. La performance se juge sur le long terme, nette de frais et de fiscalité." },
+      { q: "Quelle performance puis-je espérer ?", a: "Aucun rendement ne peut être garanti, c'est une exigence réglementaire et un principe de prudence. Nous construisons des allocations adaptées à votre profil de risque, votre horizon et vos objectifs, et nous documentons les hypothèses retenues. La performance se juge sur le long terme, nette de frais et de fiscalité." },
       { q: "Comment évaluez-vous mon profil de risque ?", a: "Via un questionnaire MIF II structuré (réglementation européenne) couvrant votre expérience financière, votre tolérance aux pertes, votre horizon de placement et vos objectifs. Ce profil est revu à chaque évolution de votre situation et au moins une fois par an." },
       { q: "Investissez-vous dans des supports responsables (ISR/ESG) ?", a: "Oui. Nous proposons systématiquement une lecture extra-financière (ISR, ESG, label Greenfin, article 8/9 SFDR) et pouvons construire une allocation 100 % responsable si vous le souhaitez. Le sujet est abordé dès la phase de profilage." },
     ],
@@ -65,14 +65,14 @@ const faqCategories = [
       { q: "Quand faut-il commencer à préparer sa transmission ?", a: "Le plus tôt possible. La majorité des leviers (donation en pleine propriété ou démembrée, assurance-vie, pacte Dutreil, SCI) tirent leur efficacité du temps. Idéalement dès 50-55 ans, mais il n'est jamais trop tard pour optimiser." },
       { q: "Quel est l'intérêt de l'assurance-vie pour la transmission ?", a: "L'assurance-vie bénéficie d'un cadre fiscal hors succession très favorable : 152 500 € d'abattement par bénéficiaire pour les versements avant 70 ans, puis taxation forfaitaire avantageuse. C'est l'outil de transmission le plus utilisé en France, à manier avec rigueur (clause bénéficiaire sur mesure)." },
       { q: "Qu'est-ce que le démembrement de propriété ?", a: "C'est la séparation entre l'usufruit (jouissance, revenus) et la nue-propriété (titre de propriété). Couplé à une donation, il permet de transmettre à coût fiscal réduit tout en conservant la maîtrise du bien. Outil clé pour anticiper la succession sur l'immobilier ou les parts sociales." },
-      { q: "Faut-il créer une SCI familiale ?", a: "Pas systématiquement. La SCI est pertinente pour : organiser une indivision, faciliter une transmission progressive, dissocier propriété et gestion. Elle ne doit pas être créée pour des raisons fiscales seules — l'intérêt est avant tout patrimonial et organisationnel." },
+      { q: "Faut-il créer une SCI familiale ?", a: "Pas systématiquement. La SCI est pertinente pour : organiser une indivision, faciliter une transmission progressive, dissocier propriété et gestion. Elle ne doit pas être créée pour des raisons fiscales seules, l'intérêt est avant tout patrimonial et organisationnel." },
     ],
   },
   {
     category: "Confidentialité & sécurité",
     intro: "Protection de vos données, secret professionnel et sécurité informatique.",
     questions: [
-      { q: "Mes informations restent-elles confidentielles ?", a: "Oui, sans condition. Nous sommes soumis au secret professionnel CIF et au code de déontologie de la CNCEF. Aucune donnée n'est partagée avec un tiers — y compris vos autres conseils — sans votre accord écrit." },
+      { q: "Mes informations restent-elles confidentielles ?", a: "Oui, sans condition. Nous sommes soumis au secret professionnel CIF et au code de déontologie de la CNCEF. Aucune donnée n'est partagée avec un tiers, y compris vos autres conseils, sans votre accord écrit." },
       { q: "Comment sont stockées mes données ?", a: "Sur des serveurs hébergés en Europe, chiffrés et conformes au RGPD. L'accès est limité aux collaborateurs habilités sur votre dossier, avec authentification forte et journalisation des consultations." },
       { q: "Que se passe-t-il en cas de litige ?", a: "Une procédure de réclamation interne est à votre disposition (réponse sous 10 jours ouvrés, traitement sous 2 mois maximum). À défaut de solution, vous pouvez saisir gratuitement le médiateur de l'AMF ou de l'ACPR selon la nature du litige. Le détail figure sur notre page Réclamations." },
     ],
@@ -107,7 +107,7 @@ export default function FAQPage() {
   return (
     <>
       <Seo
-        title="FAQ patrimoniale — toutes les questions sur le conseil indépendant"
+        title="FAQ patrimoniale, toutes les questions sur le conseil indépendant"
         description="Cabinet, premier rendez-vous, méthode, fiscalité, placements, transmission : les réponses détaillées aux questions que nos clients nous posent le plus souvent."
         jsonLd={[
           breadcrumbJsonLd([
@@ -146,7 +146,7 @@ export default function FAQPage() {
 
         <div className="max-w-6xl mx-auto relative z-10">
           <div className="grid lg:grid-cols-12 gap-8 md:gap-10 lg:gap-16 items-start">
-            {/* Sticky sidebar — categories nav */}
+            {/* Sticky sidebar, categories nav */}
             <aside className="lg:col-span-4 reveal mb-2 lg:mb-0">
               <div className="lg:sticky lg:top-32">
                 <div className="electric-line mb-5" />
