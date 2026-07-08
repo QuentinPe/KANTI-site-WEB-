@@ -46,7 +46,7 @@ const livrables = [
   "Analyse fiscale sur trois ans avec marges d'optimisation identifiées",
   "Diagnostic de votre couverture prévoyance et points de vigilance",
   "Simulation successorale chiffrée selon vos dispositions actuelles",
-  "Lettre de recommandations argumentée, neutre, indépendante",
+  "Lettre de recommandations argumentée et neutre",
   "Plan d'action priorisé avec calendrier et ordre de grandeur des effets",
 ];
 
@@ -192,7 +192,7 @@ export default function BilanPatrimonialPage() {
                 ))}
               </div>
               <p className="text-[11px] text-foreground/50 mt-6 leading-relaxed font-light">
-                Le rapport est neutre et indépendant. Vous pouvez le partager librement avec votre notaire, votre avocat ou votre expert-comptable.
+                Le rapport est neutre et argumenté. Vous pouvez le partager librement avec votre notaire, votre avocat ou votre expert-comptable.
               </p>
             </div>
           </div>

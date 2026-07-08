@@ -70,7 +70,7 @@ export default function About() {
               La plupart des conseils patrimoniaux partent d'un produit. Chez KANTI, nous partons de vous : votre situation familiale, vos revenus, votre fiscalité, vos projets, vos inquiétudes. Ensuite seulement, nous cherchons les bonnes réponses.
             </p>
             <p className="text-foreground/65 leading-relaxed mb-10 text-[17px] font-light">
-              Cabinet indépendant inscrit à l'ORIAS et adhérent de la CNCEF, nous ne dépendons d'aucun réseau bancaire ni d'aucun groupe financier. Cette liberté nous permet de travailler exclusivement dans votre intérêt, et de vous le démontrer, année après année.
+              Cabinet inscrit à l'ORIAS et adhérent de la CNCEF, nous travaillons en architecture ouverte, sans lien capitalistique avec un réseau bancaire ou un groupe financier. Cette liberté nous permet de travailler exclusivement dans votre intérêt, et de vous le démontrer, année après année.
             </p>
             <div className="flex flex-wrap items-center gap-4 mt-2">
               <Link

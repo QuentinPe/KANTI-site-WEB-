@@ -73,7 +73,7 @@ export const organizationJsonLd = {
   "@type": "FinancialService",
   name: "KANTI",
   description:
-    "Cabinet indépendant de conseil en gestion de patrimoine à Bordeaux.",
+    "Cabinet de conseil en gestion de patrimoine à Bordeaux.",
   url: SITE_URL,
   telephone: "+33-6-63-32-48-09",
   email: "kanti@adnfamily.com",

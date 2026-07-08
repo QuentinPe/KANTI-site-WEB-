@@ -87,7 +87,7 @@ export default function Hero() {
           >
             <span className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse" />
             <p className="text-[11px] tracking-[0.2em] uppercase text-white/85 font-medium">
-              KANTI · Cabinet indépendant · Bordeaux
+              KANTI · Cabinet de gestion de patrimoine · Bordeaux
             </p>
           </div>
 

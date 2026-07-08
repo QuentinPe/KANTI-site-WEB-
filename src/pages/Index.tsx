@@ -25,8 +25,8 @@ const Index = () => {
   return (
     <>
       <Seo
-        title="KANTI, Cabinet de gestion de patrimoine indépendant à Bordeaux"
-        description="KANTI accompagne particuliers, dirigeants et familles dans la structuration, l'optimisation fiscale et la transmission de leur patrimoine. Conseil patrimonial indépendant à Bordeaux."
+        title="KANTI, Cabinet de gestion de patrimoine à Bordeaux"
+        description="KANTI accompagne particuliers, dirigeants et familles dans la structuration, l'optimisation fiscale et la transmission de leur patrimoine. Conseil patrimonial sur-mesure à Bordeaux."
         jsonLd={[organizationJsonLd, localBusinessJsonLd]}
       />
       {isMobile ? (

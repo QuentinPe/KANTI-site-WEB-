@@ -491,7 +491,7 @@ const SRI_PROFILES: SriProfile[] = [
       "Travaillez avec un horizon supérieur à 10 ans.",
       "Documentez chaque position : thèse, scénario adverse, point de sortie.",
       "Conservez une part de votre patrimoine sur des supports défensifs.",
-      "Faites valider la cohérence du profil par un conseiller indépendant.",
+      "Faites valider la cohérence du profil par un conseiller patrimonial.",
     ],
     cautions: [
       "Des pertes supérieures à 35 % sont possibles sur des marchés extrêmes.",

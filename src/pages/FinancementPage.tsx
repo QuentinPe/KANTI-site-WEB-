@@ -18,9 +18,9 @@ export default function FinancementPage() {
       <Header />
       <PageHero
         title="Financement & crédit"
-        subtitle="Obtenir les meilleures conditions de financement pour vos projets immobiliers et professionnels. Courtage indépendant, conseil intégré."
+        subtitle="Obtenir les meilleures conditions de financement pour vos projets immobiliers et professionnels. Courtage patrimonial, conseil intégré."
         breadcrumb="Financement"
-        eyebrow="Courtage indépendant"
+        eyebrow="Courtage patrimonial"
         stats={[
           { value: "20+", label: "Banques partenaires" },
           { value: "0%", label: "Frais cachés" },
@@ -31,7 +31,7 @@ export default function FinancementPage() {
       <ExpertiseShowcase
         eyebrow="Crédit patrimonial"
         title="Le crédit n'est pas qu'une question de taux. C'est un outil patrimonial."
-        intro="Un financement bien structuré accélère la constitution de votre patrimoine, optimise votre fiscalité et préserve votre capacité d'investissement. En courtier indépendant, nous accédons aux offres de nombreux établissements et négocions taux, assurance, garanties et modularité, en intégrant chaque crédit dans votre stratégie globale."
+        intro="Un financement bien structuré accélère la constitution de votre patrimoine, optimise votre fiscalité et préserve votre capacité d'investissement. En courtier patrimonial, nous accédons aux offres de nombreux établissements et négocions taux, assurance, garanties et modularité, en intégrant chaque crédit dans votre stratégie globale."
         image={heroImg}
         imageAlt="Courtage et financement KANTI"
         pillars={[
@@ -47,7 +47,7 @@ export default function FinancementPage() {
       <StickyImageBand
         image={heroImg}
         imageAlt="Courtage et financement KANTI"
-        eyebrow="Courtage indépendant"
+        eyebrow="Courtage patrimonial"
         caption="Le crédit n'est pas qu'une question de taux. C'est un outil patrimonial."
       />
 
@@ -62,7 +62,7 @@ export default function FinancementPage() {
       <PageCTA
         title="Parlons de votre projet de financement"
         subtitle="Nous étudions votre dossier et vous obtenons les meilleures conditions du marché."
-        eyebrow="Courtage indépendant"
+        eyebrow="Courtage patrimonial"
         index="06"
         secondaryText="Patrimoine immobilier"
         secondaryHref="/immobilier"

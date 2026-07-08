@@ -17,7 +17,7 @@ const faqs = [
   },
   {
     q: "Travaillez-vous avec une seule banque ?",
-    a: "Non. KANTI est totalement indépendant. Nous sélectionnons les meilleurs contrats parmi plus de 30 partenaires.",
+    a: "Non. KANTI travaille en architecture ouverte. Nous sélectionnons les meilleurs contrats parmi plus de 30 partenaires.",
   },
   {
     q: "Êtes-vous tenus au secret professionnel ?",

@@ -136,7 +136,7 @@ const faqs = [
     a: "Le premier rendez-vous est gratuit. Au-delà, nous facturons soit en honoraires de conseil, soit via les rétrocessions des contrats, toujours détaillées par écrit. Le mode de rémunération est validé avec vous dans la lettre de mission.",
   },
   {
-    q: "Êtes-vous indépendants ?",
+    q: "Travaillez-vous en architecture ouverte ?",
     a: "Oui. Nous n'appartenons à aucun groupe bancaire ou assurantiel. Nous travaillons avec une trentaine de partenaires sélectionnés sur la qualité et les conditions tarifaires.",
   },
   {

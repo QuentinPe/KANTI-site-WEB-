@@ -48,7 +48,7 @@ const reassurances = [
   { icon: Clock3, title: "30 minutes", text: "Un échange court, ciblé, qui respecte votre temps." },
   { icon: ShieldCheck, title: "Gratuit & confidentiel", text: "Sans engagement, aucune recommandation produit." },
   { icon: Calendar, title: "Sous 24h ouvrées", text: "Nous vous rappelons rapidement pour caler le créneau." },
-  { icon: Sparkles, title: "Conseil indépendant", text: "Aucun produit maison, aucun quota commercial." },
+  { icon: Sparkles, title: "Architecture ouverte", text: "Aucun produit maison, aucun quota commercial." },
 ];
 
 const etapes = [
@@ -92,7 +92,7 @@ export default function ContactPage() {
     <>
       <Seo
         title="Contact, Prendre rendez-vous avec un conseiller patrimonial à Bordeaux"
-        description="Premier échange de 30 minutes gratuit et sans engagement avec un conseiller KANTI. Cabinet indépendant à Bordeaux, réponse sous 24h ouvrées."
+        description="Premier échange de 30 minutes gratuit et sans engagement avec un conseiller KANTI. Cabinet de gestion de patrimoine à Bordeaux, réponse sous 24h ouvrées."
         jsonLd={[
           localBusinessJsonLd,
           breadcrumbJsonLd([
