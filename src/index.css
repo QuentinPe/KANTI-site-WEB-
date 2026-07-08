@@ -44,6 +44,9 @@
     --ivory: 220 30% 98%;
     --ivory-warm: 220 25% 96%;
     --stone: 220 15% 92%;
+    /* Editorial magazine tokens (page Cabinet — édito papier/encre) */
+    --paper: 38 34% 94%;
+    --ink: 216 40% 9%;
     /* "gold" tokens kept as aliases but remapped to a soft navy/steel blue
        so legacy usages (text-gold, bg-gold, var(--gold)) instantly align
        with the navy palette, no orange/amber tints anywhere. */

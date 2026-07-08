@@ -16,6 +16,7 @@ export default {
       fontFamily: {
         heading: ['"Cormorant Garamond"', 'Georgia', 'serif'],
         body: ['Inter', 'system-ui', 'sans-serif'],
+        editorial: ['Fraunces', '"Cormorant Garamond"', 'Georgia', 'serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -61,6 +62,8 @@ export default {
           warm: "hsl(var(--ivory-warm))",
         },
         stone: "hsl(var(--stone))",
+        paper: "hsl(var(--paper))",
+        ink: "hsl(var(--ink))",
         gold: {
           DEFAULT: "hsl(var(--gold))",
           light: "hsl(var(--gold-light))",
