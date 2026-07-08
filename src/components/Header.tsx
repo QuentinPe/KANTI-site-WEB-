@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { UserRound } from "lucide-react";
 import logoDark from "@/assets/logo-kanti-dark.png.asset.json";
 import logoWhite from "@/assets/logo-kanti-white.png.asset.json";
 
@@ -222,8 +223,11 @@ export default function Header() {
             </Link>
             <a
               href="#"
-              className={`ml-2 px-5 py-2 rounded-full text-[13px] font-medium tracking-wide ${hoverPillClass} ${textColor}`}
+              className={`ml-2 inline-flex items-center gap-2 px-5 py-2 rounded-full text-[13px] font-medium tracking-wide ${
+                useDarkGlass ? "btn-glass text-white" : "btn-primary-glass"
+              }`}
             >
+              <UserRound className="w-4 h-4" strokeWidth={1.75} />
               Espace client
             </a>
             </nav>
