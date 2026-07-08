@@ -242,6 +242,12 @@ export default function MobileHeader() {
                   />
                 </svg>
               </Link>
+              <a
+                href="#"
+                className="mt-3 flex items-center justify-center h-12 rounded-full ring-1 ring-white/20 text-white text-[14px] font-medium tracking-wide"
+              >
+                Espace client
+              </a>
             </div>
           </motion.div>
         )}
