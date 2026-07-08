@@ -51,13 +51,6 @@ const PARCOURS: {
   },
 ];
 
-const CREDENTIALS: string[] = [
-  "Master 2 Gestion de Patrimoine",
-  "CIF — CNCEF Patrimoine",
-  "Inscrit ORIAS",
-  "DU Ingénierie du Patrimoine",
-];
-
 const easing = [0.22, 1, 0.36, 1] as const;
 
 export default function QuentinPerromat() {
@@ -195,67 +188,74 @@ export default function QuentinPerromat() {
           </motion.div>
         </div>
 
-        {/* B — Parcours : cartes glass */}
+        {/* B — Parcours : frise verticale */}
         <div className="mt-24 md:mt-32">
-          <div className="mb-10 flex items-end justify-between border-b border-ivory/15 pb-5">
+          <div className="mb-12 flex items-end justify-between border-b border-ivory/15 pb-5">
             <p className="text-[10px] tracking-[0.35em] uppercase text-gold font-medium">
               Chapitre II &nbsp;·&nbsp; Parcours
             </p>
-            <p className="hidden md:block font-heading italic text-[12px] tracking-[0.22em] text-ivory/50">
-              Quinze années — de la banque privée au cabinet fondé.
-            </p>
           </div>
-          <ol className="space-y-3 md:space-y-4">
-            {PARCOURS.map((step, i) => (
-              <motion.li
-                key={step.year + step.role}
-                initial={reduce ? { opacity: 0 } : { opacity: 0, y: 14 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-15% 0px" }}
-                transition={{ duration: 0.6, delay: i * 0.07, ease: easing }}
-                className="group grid grid-cols-12 gap-4 md:gap-8 items-baseline rounded-2xl glass-dark px-5 md:px-7 py-5 md:py-6 hover:-translate-y-0.5 hover:border-white/20 transition-all duration-300"
-              >
-                <span className="col-span-2 md:col-span-1 font-heading italic text-[14px] tracking-[0.2em] text-gold">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <span className="col-span-10 md:col-span-2 font-heading text-2xl md:text-3xl font-light text-white tracking-tight">
-                  {step.year}
-                </span>
-                <div className="col-span-12 md:col-span-4">
-                  <p className="font-heading text-[17px] md:text-[19px] text-white leading-snug">
-                    {step.role}
-                  </p>
-                  <p className="mt-1 font-heading italic text-[12px] tracking-[0.2em] text-ivory/55">
-                    {step.place}
-                  </p>
-                </div>
-                <p className="col-span-12 md:col-span-5 text-ivory/70 text-[14.5px] leading-relaxed font-light">
-                  {step.detail}
-                </p>
-              </motion.li>
-            ))}
-          </ol>
-        </div>
 
-        {/* C — Credentials en ligne */}
-        <div className="mt-16 md:mt-20 pt-8 border-t border-ivory/15">
-          <p className="text-[10px] tracking-[0.35em] uppercase text-gold mb-6 font-medium">
-            Références &nbsp;·&nbsp; diplômes & titres
-          </p>
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
-            {CREDENTIALS.map((c, i) => (
-              <span key={c} className="inline-flex items-center gap-4">
-                <span className="px-4 py-2 rounded-full glass-dark font-heading text-ivory text-[15px] md:text-[16px] tracking-wide">
-                  {c}
-                </span>
-                {i < CREDENTIALS.length - 1 && (
-                  <span
-                    aria-hidden
-                    className="w-1.5 h-1.5 rounded-full bg-gold shadow-[0_0_10px_hsl(var(--gold)/0.7)]"
-                  />
-                )}
-              </span>
-            ))}
+          <div className="relative">
+            {/* Vertical line */}
+            <div
+              aria-hidden
+              className="absolute left-4 md:left-1/2 top-2 bottom-2 w-px bg-gradient-to-b from-gold/60 via-gold/25 to-transparent md:-translate-x-px"
+            />
+            <ol className="space-y-10 md:space-y-14">
+              {PARCOURS.map((step, i) => {
+                const leftSide = i % 2 === 0;
+                return (
+                  <motion.li
+                    key={step.year + step.role}
+                    initial={reduce ? { opacity: 0 } : { opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-12% 0px" }}
+                    transition={{ duration: 0.7, delay: i * 0.08, ease: easing }}
+                    className="relative grid md:grid-cols-2 md:gap-16 items-center"
+                  >
+                    {/* Dot */}
+                    <span
+                      aria-hidden
+                      className="absolute left-4 md:left-1/2 top-6 -translate-x-1/2 w-3 h-3 rounded-full bg-gold shadow-[0_0_16px_hsl(var(--gold)/0.7)] ring-4 ring-navy-deep"
+                    />
+
+                    {/* Year */}
+                    <div
+                      className={`pl-12 md:pl-0 ${
+                        leftSide ? "md:text-right md:pr-10" : "md:col-start-2 md:pl-10 md:order-2"
+                      }`}
+                    >
+                      <p className="text-[10px] tracking-[0.32em] uppercase text-gold/80 mb-2 font-medium">
+                        {String(i + 1).padStart(2, "0")}
+                      </p>
+                      <p className="font-heading text-5xl md:text-6xl font-light text-white tracking-tight leading-none">
+                        {step.year}
+                      </p>
+                    </div>
+
+                    {/* Card */}
+                    <div
+                      className={`mt-4 md:mt-0 pl-12 md:pl-0 ${
+                        leftSide ? "md:col-start-2 md:pl-10" : "md:col-start-1 md:row-start-1 md:pr-10 md:order-1"
+                      }`}
+                    >
+                      <div className="rounded-2xl glass-dark p-6 md:p-7 hover:-translate-y-0.5 transition-all duration-300">
+                        <p className="font-heading text-lg md:text-xl text-white leading-snug">
+                          {step.role}
+                        </p>
+                        <p className="mt-1 font-heading italic text-[12px] tracking-[0.22em] text-gold/80">
+                          {step.place}
+                        </p>
+                        <p className="mt-4 text-ivory/70 text-[14.5px] leading-relaxed font-light">
+                          {step.detail}
+                        </p>
+                      </div>
+                    </div>
+                  </motion.li>
+                );
+              })}
+            </ol>
           </div>
         </div>
       </div>

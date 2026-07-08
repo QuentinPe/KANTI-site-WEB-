@@ -160,12 +160,7 @@ export default function CabinetHeroSequence() {
                 </motion.span>
               ))}
             </div>
-            <div className="hidden md:inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-dark">
-              <span className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse" aria-hidden />
-              <p className="text-[10px] tracking-[0.28em] uppercase text-ivory/75 font-medium">
-                Séquence cinématique &nbsp;·&nbsp; I — IV
-              </p>
-            </div>
+            <div />
           </div>
 
           {/* Bottom — caption card + headline */}
@@ -202,24 +197,10 @@ export default function CabinetHeroSequence() {
                   </h1>
                 </div>
               </div>
-              <p className="hidden md:block font-heading italic text-[11px] tracking-[0.28em] text-ivory/55 whitespace-nowrap">
-                — défiler pour lire —
-              </p>
             </div>
           </div>
         </div>
 
-        {/* Scroll indicator — bottom */}
-        <div
-          className="absolute bottom-4 left-1/2 -translate-x-1/2 opacity-0"
-          style={{ animation: "fade-in 1s ease-out 1.4s forwards" }}
-          aria-hidden
-        >
-          <div className="flex flex-col items-center gap-2">
-            <span className="text-[10px] tracking-[0.3em] uppercase text-ivory/40">Découvrir</span>
-            <div className="w-[1px] h-10 bg-gradient-to-b from-ivory/40 to-transparent" />
-          </div>
-        </div>
       </div>
     </section>
   );

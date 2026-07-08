@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, MapPin } from "lucide-react";
 import facade from "@/assets/cabinet-seq-03-facade.jpg";
 
 export default function CabinetAdresse() {
@@ -103,24 +103,7 @@ export default function CabinetAdresse() {
                 </div>
               </dl>
 
-              <div className="mt-8 flex items-center justify-between gap-6">
-                {/* Cachet glass ring or */}
-                <div
-                  className="inline-flex flex-col items-center justify-center rounded-full ring-1 ring-gold/70 px-5 py-5 rotate-[-6deg] glass-dark"
-                  style={{ boxShadow: "0 0 24px -6px hsl(var(--gold) / 0.35), inset 0 0 24px -12px hsl(var(--gold) / 0.4)" }}
-                  aria-hidden
-                >
-                  <p className="font-heading italic text-[9px] tracking-[0.28em] uppercase leading-none text-gold/90">
-                    Établi à
-                  </p>
-                  <p className="font-heading text-base tracking-[0.25em] leading-tight mt-1 text-white">
-                    Bordeaux
-                  </p>
-                  <p className="font-heading italic text-[9px] tracking-[0.28em] uppercase leading-none mt-1 text-gold/90">
-                    depuis 2009
-                  </p>
-                </div>
-
+              <div className="mt-8 flex flex-wrap items-center gap-3">
                 <Link
                   to="/contact"
                   className="group inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground text-sm font-medium tracking-wide rounded-full hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5"
@@ -131,6 +114,15 @@ export default function CabinetAdresse() {
                     strokeWidth={1.5}
                   />
                 </Link>
+                <a
+                  href="https://share.google/dAsdiZH2F1BB2RXpd"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group inline-flex items-center gap-2 px-6 py-3 rounded-full glass-dark ring-1 ring-gold/40 text-ivory text-sm font-medium tracking-wide hover:ring-gold/80 hover:-translate-y-0.5 transition-all duration-300"
+                >
+                  <MapPin className="w-4 h-4 text-gold" strokeWidth={1.5} />
+                  Venir au cabinet
+                </a>
               </div>
             </div>
           </div>
