@@ -144,7 +144,7 @@ const fallback = (title: string): ProductAnalysis => ({
   ],
   actors: [
     { id: "C", label: "Client", role: "Souscripteur / investisseur", kind: "client" },
-    { id: "K", label: "KANTI", role: "Conseil indépendant & coordination", kind: "manager" },
+    { id: "K", label: "KANTI", role: "Conseil & coordination", kind: "manager" },
     { id: "V", label: "Véhicule", role: "Enveloppe / contrat / société porteuse", kind: "vehicle" },
     { id: "R", label: "Régulateur", role: "AMF, ACPR, administration fiscale", kind: "regulator" },
   ],

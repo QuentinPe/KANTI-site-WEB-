@@ -42,7 +42,7 @@ const expertises = [
     tag: "Financement",
     title: "Financement & crédit",
     description:
-      "Courtage indépendant, négociation des meilleures conditions, montages patrimoniaux adaptés à chaque projet.",
+      "Courtage patrimonial, négociation des meilleures conditions, montages patrimoniaux adaptés à chaque projet.",
     benefit: "Obtenir les conditions de crédit les plus compétitives.",
     href: "/financement",
     image: financementImg.url,

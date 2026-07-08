@@ -59,7 +59,7 @@ export default function HeroMobile() {
         </h1>
 
         <p className="text-white/70 text-[16px] leading-[1.55] font-light mb-8 max-w-[34ch]">
-          Conseil indépendant en gestion de patrimoine. À Bordeaux, depuis plus de 15 ans.
+          Conseil en gestion de patrimoine. À Bordeaux, depuis plus de 15 ans.
         </p>
 
         <div className="flex flex-col gap-3">

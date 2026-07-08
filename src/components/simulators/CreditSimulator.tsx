@@ -27,7 +27,7 @@ export default function CreditSimulator() {
 
   return (
     <SimulatorShell
-      eyebrow="Courtage indépendant"
+      eyebrow="Courtage patrimonial"
       index="06"
       title="Calculez votre capacité d'emprunt"
       subtitle="Estimez votre mensualité et le coût total de votre financement immobilier."

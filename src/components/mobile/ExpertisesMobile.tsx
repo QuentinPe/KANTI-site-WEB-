@@ -31,7 +31,7 @@ const items = [
   {
     tag: "Financement",
     title: "Financement & crédit",
-    desc: "Courtage indépendant, négociation des meilleures conditions de crédit.",
+    desc: "Courtage patrimonial, négociation des meilleures conditions de crédit.",
     href: "/financement",
     image: financementImg.url,
   },

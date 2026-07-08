@@ -19,7 +19,7 @@ export default function CabinetPage() {
       <Header />
       <PageHero
         title="Le Cabinet"
-        subtitle="KANTI est un cabinet indépendant de conseil en gestion de patrimoine, installé à Bordeaux. Nous intervenons auprès de particuliers, de familles et de dirigeants d'entreprise."
+        subtitle="KANTI est un cabinet de conseil en gestion de patrimoine, installé à Bordeaux. Nous intervenons auprès de particuliers, de familles et de dirigeants d'entreprise."
         breadcrumb="Le Cabinet"
       />
 

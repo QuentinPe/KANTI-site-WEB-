@@ -267,7 +267,7 @@ export const expertiseCatalog: ExpertiseCategory[] = [
     slug: "financement",
     label: "Financement",
     parentTitle: "Financement & crédit",
-    parentEyebrow: "Courtage indépendant",
+    parentEyebrow: "Courtage patrimonial",
     products: [
       {
         slug: "credit-residence-principale",

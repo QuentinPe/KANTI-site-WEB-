@@ -107,7 +107,7 @@ export default function FAQPage() {
   return (
     <>
       <Seo
-        title="FAQ patrimoniale, toutes les questions sur le conseil indépendant"
+        title="FAQ patrimoniale, toutes les questions sur le conseil en gestion de patrimoine"
         description="Cabinet, premier rendez-vous, méthode, fiscalité, placements, transmission : les réponses détaillées aux questions que nos clients nous posent le plus souvent."
         jsonLd={[
           breadcrumbJsonLd([

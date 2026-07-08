@@ -17,7 +17,7 @@ const faqs = [
   },
   {
     q: "Travaillez-vous avec une seule banque ou compagnie d'assurance ?",
-    a: "Non. KANTI est totalement indépendant. Nous sélectionnons les meilleurs contrats du marché parmi plus de 30 partenaires (assureurs, banques privées, sociétés de gestion) en fonction de votre profil et de vos objectifs.",
+    a: "Non. KANTI travaille en architecture ouverte. Nous sélectionnons les meilleurs contrats du marché parmi plus de 30 partenaires (assureurs, banques privées, sociétés de gestion) en fonction de votre profil et de vos objectifs.",
   },
   {
     q: "Êtes-vous tenus au secret professionnel ?",

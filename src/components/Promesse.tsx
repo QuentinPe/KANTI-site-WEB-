@@ -7,7 +7,7 @@ const PROMESSE_IMAGE =
 
 const fragments = [
   { t: "Un cabinet ", em: false },
-  { t: "indépendant", em: true },
+  { t: "à taille humaine", em: true },
   { t: ", une vision ", em: false },
   { t: "globale", em: true },
   { t: ",", em: false },

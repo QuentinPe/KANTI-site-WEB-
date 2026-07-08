@@ -59,7 +59,7 @@ const expertises = [
     forWhom: "Acquéreurs, investisseurs locatifs, dirigeants en projet de croissance.",
     benefits: [
       "20+ banques partenaires",
-      "Courtage indépendant",
+      "Courtage patrimonial",
       "Délégation d'assurance",
       "Crédit lombard",
     ],

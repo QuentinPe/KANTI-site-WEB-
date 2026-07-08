@@ -15,7 +15,7 @@ export default function PromesseMobile() {
         </p>
         <h2 className="font-heading text-[28px] font-light leading-[1.25] tracking-tight">
           Un cabinet{" "}
-          <span className="italic font-normal">indépendant</span>, une vision{" "}
+          <span className="italic font-normal">à taille humaine</span>, une vision{" "}
           <span className="italic font-normal">globale</span>, et la conviction
           qu'un patrimoine se construit{" "}
           <span className="italic font-normal">dans la durée</span>.
