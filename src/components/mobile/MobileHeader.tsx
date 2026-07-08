@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { UserRound } from "lucide-react";
 import logoDark from "@/assets/logo-kanti-dark.png.asset.json";
 import logoWhite from "@/assets/logo-kanti-white.png.asset.json";
 
@@ -244,8 +245,9 @@ export default function MobileHeader() {
               </Link>
               <a
                 href="#"
-                className="mt-3 flex items-center justify-center h-12 rounded-full ring-1 ring-white/20 text-white text-[14px] font-medium tracking-wide"
+                className="mt-3 flex items-center justify-center gap-2 h-14 rounded-full bg-white text-[hsl(var(--navy-deep))] text-[15px] font-medium tracking-wide"
               >
+                <UserRound className="w-4 h-4" strokeWidth={1.75} />
                 Espace client
               </a>
             </div>
