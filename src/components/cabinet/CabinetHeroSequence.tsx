@@ -68,9 +68,11 @@ export default function CabinetHeroSequence() {
   const opacities = [op0, op1, op2, op3];
 
   const scale = useTransform(scrollYProgress, [0, 1], reduce ? [1, 1] : [1.02, 1.08]);
-  const activeIndex = useTransform(scrollYProgress, (v) =>
-    Math.min(total - 1, Math.max(0, Math.floor(v * total)))
-  );
+  const numeralOp0 = useTransform(scrollYProgress, (v) => (Math.floor(v * total) === 0 ? 1 : 0.28));
+  const numeralOp1 = useTransform(scrollYProgress, (v) => (Math.floor(v * total) === 1 ? 1 : 0.28));
+  const numeralOp2 = useTransform(scrollYProgress, (v) => (Math.floor(v * total) === 2 ? 1 : 0.28));
+  const numeralOp3 = useTransform(scrollYProgress, (v) => (Math.min(total - 1, Math.floor(v * total)) === 3 ? 1 : 0.28));
+  const numeralOps = [numeralOp0, numeralOp1, numeralOp2, numeralOp3];
 
   return (
     <section
@@ -118,18 +120,15 @@ export default function CabinetHeroSequence() {
           {/* Top row — plan numeral + place */}
           <div className="flex items-start justify-between text-paper">
             <div className="flex items-baseline gap-4">
-              {PLANS.map((plan, i) => {
-                const active = useTransform(activeIndex, (v) => (v === i ? 1 : 0.28));
-                return (
-                  <motion.span
-                    key={plan.num}
-                    style={{ opacity: active }}
-                    className="font-editorial text-[13px] tracking-[0.3em]"
-                  >
-                    {plan.num}
-                  </motion.span>
-                );
-              })}
+              {PLANS.map((plan, i) => (
+                <motion.span
+                  key={plan.num}
+                  style={{ opacity: numeralOps[i] }}
+                  className="font-editorial text-[13px] tracking-[0.3em]"
+                >
+                  {plan.num}
+                </motion.span>
+              ))}
             </div>
             <p className="font-editorial italic text-[11px] tracking-[0.28em] text-paper/75 hidden md:block">
               Séquence cinématique &nbsp;·&nbsp; I — IV
