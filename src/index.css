@@ -44,6 +44,9 @@
     --ivory: 220 30% 98%;
     --ivory-warm: 220 25% 96%;
     --stone: 220 15% 92%;
+    /* Editorial magazine tokens (page Cabinet — édito papier/encre) */
+    --paper: 38 34% 94%;
+    --ink: 216 40% 9%;
     /* "gold" tokens kept as aliases but remapped to a soft navy/steel blue
        so legacy usages (text-gold, bg-gold, var(--gold)) instantly align
        with the navy palette, no orange/amber tints anywhere. */
@@ -654,6 +657,56 @@
 }
 
 .duration-400 { transition-duration: 400ms; }
+
+/* ─────────────────────────────────────────────────────────────────
+   Editorial magazine utilities (page Cabinet)
+   ───────────────────────────────────────────────────────────────── */
+.bg-paper {
+  background-color: hsl(var(--paper));
+}
+.text-ink {
+  color: hsl(var(--ink));
+}
+.paper-grain {
+  background-color: hsl(var(--paper));
+  background-image:
+    radial-gradient(hsl(var(--ink) / 0.04) 1px, transparent 1px),
+    radial-gradient(hsl(var(--ink) / 0.025) 1px, transparent 1px);
+  background-size: 3px 3px, 7px 7px;
+  background-position: 0 0, 1px 2px;
+}
+.editorial-rule {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, hsl(var(--ink) / 0.35), transparent);
+}
+.editorial-rule-solid {
+  height: 1px;
+  background: hsl(var(--ink) / 0.85);
+}
+.editorial-rule-gold {
+  height: 1px;
+  background: hsl(var(--gold));
+}
+.drop-cap::first-letter {
+  font-family: 'Fraunces', 'Cormorant Garamond', Georgia, serif;
+  font-weight: 500;
+  font-style: normal;
+  font-size: 4.6em;
+  line-height: 0.85;
+  float: left;
+  padding: 0.08em 0.14em 0 0;
+  color: hsl(var(--gold));
+}
+.magazine-columns {
+  column-count: 2;
+  column-gap: 2.25rem;
+  column-rule: 1px solid hsl(var(--ink) / 0.12);
+  text-align: justify;
+  hyphens: auto;
+}
+@media (max-width: 767px) {
+  .magazine-columns { column-count: 1; }
+}
 
 /* Ensure interactive content stays above ambient bg */
 header, main, footer, section { position: relative; z-index: 1; }
