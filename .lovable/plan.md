@@ -1,47 +1,82 @@
-## Problème
+# Refonte de la page "Le Cabinet"
 
-Sur la hero animée (`HeroSticky.tsx`), le titre et le sous-titre en blanc se retrouvent par moments devant les rideaux clairs et la fenêtre de la vidéo bureau → contraste insuffisant, lecture pénible (visible sur la capture).
+Objectif : une page plus originale, plus premium, plus personnelle — centrée sur Quentin Perromat et l'ancrage bordelais.
 
-Les voiles actuels sont trop timides :
-- Gradient vertical : `0.55 → transparent → 0.65` (le milieu, où vit le texte, est à 0 %).
-- Voile latéral gauche : `0.45 → transparent` sur 50 % de large, s'arrête trop tôt.
+## Nouvelle structure de la page
 
-Résultat : la zone du texte (centre-gauche, mi-hauteur) n'a quasiment aucune protection.
+```
+1. HERO immersif "Rue de Bordeaux"           (nouveau)
+2. Manifeste — Qui sommes-nous               (existant, retravaillé)
+3. Quentin Perromat, Associé Fondateur       (NOUVEAU — bloc signature)
+   ├─ Portrait + bio + citation
+   ├─ Parcours financier (timeline verticale)
+   └─ Diplômes & certifications
+4. Quatre engagements                        (existant, restylé)
+5. Galerie cinématographique des bureaux     (conservée)
+6. Transition éditoriale "Triangle d'Or"     (conservée, nettoyée — bug typo actuel)
+7. Bloc adresse premium                      (remplace la carte 3D)
+8. CTA final                                 (conservé)
+```
 
-## Solution proposée
+Suppression : `CabinetMap3D` (retiré de la page, composant laissé au repo mais non importé).
 
-Renforcer la lisibilité **sans assombrir toute la vidéo** (on garde le côté cinématique). 4 leviers combinés, tous dans `HeroSticky.tsx` :
+## 1. Hero immersif "Rue de Bordeaux"
 
-### 1. Voile de lecture ciblé derrière le texte
-Remplacer le voile latéral gauche linéaire par un **radial gradient scrim** centré sur la colonne de texte :
-- Rayon ellipse ~55 % × 70 %, ancré en bas-gauche.
-- Densité : `hsl(224 60% 5% / 0.70)` au centre → `0.35` à mi-course → transparent aux bords.
-- Couvre exactement la zone titre + sous-titre + CTA, laisse la partie droite (fenêtre, tableau bleu) intacte.
+Reprend exactement le langage visuel du `Hero` de la home :
+- Image plein écran d'une rue du Triangle d'Or (façades haussmanniennes bordelaises, lumière rasante).
+- Parallax + scale au scroll (framer-motion `useScroll` / `useTransform`), orbe cursor-tracked, overlays gradient navy → gold subtil.
+- Eyebrow `KANTI · BORDEAUX · TRIANGLE D'OR`, H1 `Le Cabinet` avec italique éditorial ("un ancrage bordelais"), sous-titre court, trust-bar (ORIAS · CNCEF · 2009 · 500+ familles).
+- Indicateur de scroll bas de page.
 
-### 2. Gradient vertical global légèrement remonté
-- Passer de `0.55 → 0 → 0 → 0.65` à `0.65 → 0.15 → 0.15 → 0.75`.
-- Ajoute une base sombre continue de 15 % qui rattrape les frames les plus claires (rideaux) sans écraser les frames sombres.
+Image : générée en `standard` (photo éditoriale rue bordelaise, façades pierre blonde, réverbères, ambiance dorée fin de journée), sauvegardée dans `src/assets/hero-rue-bordeaux.jpg`.
 
-### 3. Text-shadow subtil sur le H1 et le paragraphe
-- H1 : `text-shadow: 0 2px 24px hsl(224 60% 5% / 0.55), 0 1px 2px hsl(224 60% 5% / 0.4)`.
-- Paragraphe : `text-shadow: 0 1px 12px hsl(224 60% 5% / 0.6)`.
-- Invisible sur fond sombre, sauveur sur fond clair. Standard éditorial premium (NYT, Apple).
+## 2. Section Quentin Perromat (le cœur de la refonte)
 
-### 4. Renforcer le pill "KANTI · Cabinet · Bordeaux" et les trust signals
-- Pill : passer de `glass-dark` à un `bg-black/40 backdrop-blur-md` pour tenir sur rideaux clairs.
-- Trust signals (ORIAS, CNCGP…) : ajouter le même `text-shadow` léger.
+Layout asymétrique en trois temps, sur fond ivoire :
 
-## Ce qui ne change PAS
+**A. Portrait + bio + citation** — grille 12 colonnes
+- Colonne gauche (5 col) : portrait grand format en ratio 4/5, cadre glass avec fine bordure gold, ombre douce, léger tilt au hover (magnetic). Placeholder pro en attendant votre photo (silhouette élégante générée + note dans le code pour remplacement facile via `src/assets/quentin-perromat.jpg`).
+- Colonne droite (7 col) :
+  - Eyebrow `Associé Fondateur`
+  - H2 `Quentin Perromat`
+  - Bio courte 2–3 paragraphes (placeholder éditorial que vous pourrez ajuster)
+  - Citation en display italique, filet gold à gauche
 
-- Aucune modification de la vidéo/frames.
-- Aucun changement de layout, typographie, ni animations d'entrée.
-- Version mobile (`HeroMobile.tsx`) : déjà correcte (gradient `0.55 → 0.85`), on n'y touche pas.
-- Reduced-motion (fallback `Hero.tsx`) : intact.
+**B. Parcours financier — timeline verticale**
+- Rail vertical fin en gold à gauche, points lumineux à chaque étape.
+- Alternance dates / cartes glass avec institution + rôle + une ligne de contexte.
+- Étapes placeholders réalistes (Banque privée → Family office → Fondation KANTI 2009), éditables en un tableau JS en haut du composant.
+- Reveal séquencé au scroll (framer-motion, staggered).
 
-## Fichier modifié
+**C. Diplômes & certifications**
+- Bande horizontale, 4 cartes minimalistes (Master Gestion de Patrimoine, CIF, ORIAS, DU Fiscalité) — icône fine, intitulé, année, organisme. Fond ivoire clair, ring subtle.
 
-- `src/components/HeroSticky.tsx` — uniquement les couches d'overlay + text-shadow inline sur h1/p/pill/trust.
+Tout le contenu textuel de la section est centralisé en haut du fichier dans des constantes pour édition facile.
 
-## Rendu attendu
+## 3. Autres retouches
 
-Le titre reste lisible sur **toutes** les frames de la séquence (bureau sombre → panoramique fenêtre claire → plan large rideaux), tout en préservant la richesse chromatique de la vidéo côté droit.
+- Sous-titre du `PageHero` actuel supprimé (remplacé par le nouveau hero immersif → on n'utilise plus `PageHero` sur cette page).
+- Section "Manifeste" : typographie retravaillée, chiffres-clés passés en grille horizontale bas de section plutôt qu'en colonne latérale, pour respirer.
+- Section "engagements" : passage en cartes glass avec numérotation `01 · 02 · 03 · 04` et hover subtil, au lieu du simple filet.
+- Transition "Triangle d'Or" : correction du bug d'affichage actuel (`, Du dedans au dehors -` mal encodé → `— Du dedans au dehors —`).
+- Nouveau bloc adresse remplaçant la carte : carte visuelle éditoriale (image façade cabinet + adresse, horaires, téléphone, CTA `Prendre rendez-vous`), pas de carte interactive.
+
+## Détails techniques
+
+- Fichiers modifiés :
+  - `src/pages/CabinetPage.tsx` — nouvelle composition
+  - `src/components/CabinetHero.tsx` — **nouveau**, hero parallax rue Bordeaux
+  - `src/components/cabinet/QuentinPerromat.tsx` — **nouveau**, section signature (bio + timeline + diplômes)
+  - `src/components/cabinet/CabinetAdresse.tsx` — **nouveau**, bloc adresse premium
+- Assets générés :
+  - `src/assets/hero-rue-bordeaux.jpg` (image `standard`)
+  - `src/assets/quentin-perromat-placeholder.jpg` (portrait placeholder discret — à remplacer par votre photo, même chemin)
+  - `src/assets/facade-cabinet.jpg` (façade pour bloc adresse — placeholder)
+- Aucune modification du design system (tokens, couleurs, fonts inchangés — réutilisation `hsl(var(--electric))`, `gold`, `glass-card`, etc.).
+- `CabinetMap3D` retiré des imports mais fichier conservé.
+- `VirtualTourFAB` conservé.
+- Animations : framer-motion (déjà installé), même easing `[0.22, 1, 0.36, 1]` que la home pour cohérence.
+
+## Ce que je vous demanderai après implémentation
+- Votre vraie photo de Quentin Perromat (drop dans `src/assets/quentin-perromat.jpg`).
+- Validation / correction du texte de bio, de la citation et des étapes de parcours (j'utilise des placeholders crédibles mais génériques).
