@@ -658,6 +658,16 @@
 
 .duration-400 { transition-duration: 400ms; }
 
+/* Hairline gold divider (page Cabinet — DA liquid glass) */
+.hairline-gold {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, hsl(var(--gold) / 0.55), transparent);
+}
+.hairline-gold-v {
+  width: 1px;
+  background: linear-gradient(180deg, transparent, hsl(var(--gold) / 0.45), transparent);
+}
+
 /* ─────────────────────────────────────────────────────────────────
    Editorial magazine utilities (page Cabinet)
    ───────────────────────────────────────────────────────────────── */
