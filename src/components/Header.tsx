@@ -220,6 +220,12 @@ export default function Header() {
             >
               Prendre rendez-vous
             </Link>
+            <a
+              href="#"
+              className={`ml-2 px-5 py-2 rounded-full text-[13px] font-medium tracking-wide ${hoverPillClass} ${textColor}`}
+            >
+              Espace client
+            </a>
             </nav>
           </div>
 
@@ -293,6 +299,12 @@ export default function Header() {
         >
           Prendre rendez-vous
         </Link>
+        <a
+          href="#"
+          className="mt-2 px-8 py-3 rounded-full ring-1 ring-white/20 text-white text-sm tracking-wide"
+        >
+          Espace client
+        </a>
       </div>
     </header>
   );
