@@ -10,9 +10,9 @@ import Seo, { breadcrumbJsonLd, faqJsonLd } from "@/components/Seo";
 const faqCategories = [
   {
     category: "Le cabinet",
-    intro: "Notre cadre réglementaire, notre indépendance et notre modèle économique.",
+    intro: "Notre cadre réglementaire, notre positionnement et notre modèle économique.",
     questions: [
-      { q: "Qu'est-ce qu'un conseiller en gestion de patrimoine indépendant ?", a: "Un CGP indépendant est un professionnel enregistré à l'ORIAS, habilité à délivrer des conseils en investissements financiers (CIF), en assurance (IAS) et en opérations de banque (IOBSP). Contrairement à un conseiller bancaire, il n'a aucun produit maison et travaille en architecture ouverte, il compare l'ensemble du marché pour sélectionner ce qui convient le mieux à votre situation." },
+      { q: "Qu'est-ce qu'un conseiller en gestion de patrimoine ?", a: "Un CGP est un professionnel enregistré à l'ORIAS, habilité à délivrer des conseils en investissements financiers (CIF), en assurance (IAS) et en opérations de banque (IOBSP). Contrairement à un conseiller bancaire, il n'a pas de produit maison et travaille en architecture ouverte : il compare une large partie du marché pour sélectionner ce qui convient le mieux à votre situation." },
       { q: "Comment êtes-vous rémunérés ?", a: "Nous pouvons travailler en honoraires de conseil (facturation directe pour l'audit et les recommandations) ou en commissions sur les produits souscrits (versées par les compagnies d'assurance ou les sociétés de gestion). Dans tous les cas, notre mode de rémunération est communiqué en amont, de façon transparente, avant toute recommandation." },
       { q: "Êtes-vous contrôlés par un organisme ?", a: "Oui. En tant que adhérent de la CNCEF (Chambre Nationale des Conseils en Gestion de Patrimoine), nous sommes soumis au contrôle de l'Autorité des Marchés Financiers (AMF) et de l'ACPR. Nous disposons également d'une assurance responsabilité civile professionnelle et d'une garantie financière." },
       { q: "Quelle est la différence avec un banquier privé ?", a: "Un banquier privé distribue les produits de son établissement. Nous, nous n'avons aucune obligation de placement auprès d'un partenaire donné. Notre seul engagement est de vous recommander les solutions les plus adaptées, quel que soit l'émetteur." },
