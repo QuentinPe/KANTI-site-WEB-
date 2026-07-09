@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, UserRound, Monitor, Building2, ArrowUpRight } from "lucide-react";
+import logoWhite from "@/assets/logo-kanti-white.png.asset.json";
 
 const PORTAIL_WEB_URL = "#";                                  // → à brancher (auth Google)
 const ESPACE_CABINET_URL = "https://app.wealthcome.fr/login"; // → Wealthcome
@@ -81,14 +82,12 @@ export default function ClientSpaceModal({ open, onClose }: Props) {
                   style={{ background: "hsl(0 0% 100% / 0.12)", border: "1px solid hsl(0 0% 100% / 0.14)" }}>
                   <UserRound className="w-[18px] h-[18px]" strokeWidth={1.5} style={{ color: "hsl(0 0% 100% / 0.85)" }} />
                 </div>
-                <div>
-                  <p className="text-[10px] tracking-[0.32em] uppercase font-medium" style={{ color: "hsl(0 0% 100% / 0.38)" }}>
-                    KANTI
-                  </p>
-                  <h2 className="font-heading text-[18px] font-light tracking-tight" style={{ color: "hsl(0 0% 100% / 0.92)" }}>
-                    Votre espace personnel
-                  </h2>
-                </div>
+                <img
+                  src={logoWhite.url}
+                  alt="KANTI"
+                  className="h-6 w-auto"
+                  style={{ opacity: 0.88 }}
+                />
               </div>
 
               {/* Séparateur */}
