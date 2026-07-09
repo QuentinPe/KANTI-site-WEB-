@@ -31,7 +31,7 @@ const guarantees = [
   "Information précontractuelle remise systématiquement",
   "Mode de rémunération expliqué avant toute recommandation",
   "Aucune détention d'actifs en propre",
-  "Indépendance vis-à-vis des établissements financiers",
+  "Aucun lien capitalistique avec les établissements financiers",
 ];
 
 export default function Confiance() {

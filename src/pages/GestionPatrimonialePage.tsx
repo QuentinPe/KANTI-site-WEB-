@@ -19,7 +19,7 @@ export default function GestionPatrimonialePage() {
       <PageHero
         title="Gestion patrimoniale"
         highlight="& placements"
-        subtitle="Construire une allocation d'actifs cohérente avec vos objectifs, votre horizon et votre tolérance au risque. En toute indépendance."
+        subtitle="Construire une allocation d'actifs cohérente avec vos objectifs, votre horizon et votre tolérance au risque. En architecture ouverte."
         breadcrumb="Gestion patrimoniale"
         eyebrow="Allocation & placements"
         stats={[

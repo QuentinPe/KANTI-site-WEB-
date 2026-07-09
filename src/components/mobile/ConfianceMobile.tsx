@@ -9,7 +9,7 @@ const guarantees = [
   "Information précontractuelle systématique",
   "Mode de rémunération expliqué avant tout conseil",
   "Aucune détention d'actifs en propre",
-  "Indépendance totale des banques",
+  "Aucun lien capitalistique avec les banques",
 ];
 
 export default function ConfianceMobile() {

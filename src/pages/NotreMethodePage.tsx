@@ -28,7 +28,7 @@ import {
 const principes = [
   {
     icon: Scale,
-    label: "Indépendance",
+    label: "Objectivité",
     text: "Aucun groupe bancaire ou assurantiel derrière nous. Nos conseils ne sont liés à aucun objectif de vente.",
   },
   {

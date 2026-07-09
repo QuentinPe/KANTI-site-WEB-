@@ -12,7 +12,7 @@ import CabinetAdresse from "@/components/cabinet/CabinetAdresse";
 const ADN = [
   {
     icon: Shield,
-    title: "Indépendance totale",
+    title: "Objectivité totale",
     text: "Architecture ouverte, aucun produit maison, aucune pression commerciale. Nous sélectionnons les meilleures solutions parmi plus de 30 partenaires en fonction de votre seul intérêt.",
   },
   {
@@ -32,9 +32,9 @@ const EQUIPE = [
     name: "Quentin Perromat",
     role: "Associé Fondateur",
     short: "Vision · stratégie · clientèle",
-    bio: "Fondateur de KANTI, Quentin accompagne ses clients avec une approche globale et indépendante de la gestion de patrimoine. Passionné par la transmission et l'optimisation fiscale, il construit avec chaque famille une stratégie patrimoniale sur mesure, fondée sur la confiance et la durée.",
+    bio: "Fondateur de KANTI, Quentin accompagne ses clients avec une approche globale de la gestion de patrimoine. Passionné par la transmission et l'optimisation fiscale, il construit avec chaque famille une stratégie patrimoniale sur mesure, fondée sur la confiance et la durée.",
     image: "/quentin-perromat.png",
-    credentials: ["Associé Fondateur · KANTI", "Gestion de patrimoine indépendante", "ORIAS n° 20 000 855"],
+    credentials: ["Associé Fondateur · KANTI", "Conseil en gestion de patrimoine", "ORIAS n° 20 000 855"],
   },
   {
     name: "Thomas Robert",
@@ -95,7 +95,7 @@ export default function CabinetPage() {
               <span className="italic text-foreground/70">trois convictions.</span>
             </h2>
             <p className="text-foreground/60 text-lg font-light leading-relaxed">
-              Indépendants par choix, rigoureux par conviction. Chez KANTI, chaque recommandation ne répond qu'à une seule exigence : votre intérêt.
+              Rigoureux par conviction, transparents par choix. Chez KANTI, chaque recommandation ne répond qu'à une seule exigence : votre intérêt.
             </p>
           </div>
 

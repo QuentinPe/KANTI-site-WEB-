@@ -7,9 +7,9 @@ const team = [
     role: "Associé Fondateur",
     badge: "Associé fondateur",
     short: "Vision, stratégie & clientèle",
-    bio: "Fondateur de KANTI, Quentin accompagne ses clients avec une approche globale et indépendante de la gestion de patrimoine. Passionné par la transmission et l'optimisation fiscale, il construit avec chaque famille une stratégie patrimoniale sur mesure, fondée sur la confiance et la durée.",
+    bio: "Fondateur de KANTI, Quentin accompagne ses clients avec une approche globale de la gestion de patrimoine. Passionné par la transmission et l'optimisation fiscale, il construit avec chaque famille une stratégie patrimoniale sur mesure, fondée sur la confiance et la durée.",
     image: "/quentin-perromat.png",
-    credentials: ["Associé Fondateur · KANTI", "Gestion de patrimoine indépendante", "ORIAS n° 20 000 855"],
+    credentials: ["Associé Fondateur · KANTI", "Conseil en gestion de patrimoine", "ORIAS n° 20 000 855"],
   },
   {
     name: "Thomas Robert",
