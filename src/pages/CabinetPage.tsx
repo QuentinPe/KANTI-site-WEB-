@@ -6,7 +6,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PageCTA from "@/components/PageCTA";
 import VirtualTourFAB from "@/components/VirtualTourFAB";
-import CabinetHeroSequence from "@/components/cabinet/CabinetHeroSequence";
+import CabinetHeroSticky from "@/components/cabinet/CabinetHeroSticky";
 import CabinetAdresse from "@/components/cabinet/CabinetAdresse";
 
 const ADN = [
@@ -80,7 +80,7 @@ export default function CabinetPage() {
   return (
     <>
       <Header />
-      <CabinetHeroSequence />
+      <CabinetHeroSticky />
 
       {/* Notre ADN */}
       <section id="adn" className="section-padding section-ivory">
