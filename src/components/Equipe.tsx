@@ -3,31 +3,22 @@ import { Link } from "react-router-dom";
 
 const team = [
   {
-    name: "Alexandre Dumont",
-    role: "Fondateur, Ingénierie patrimoniale",
-    short: "Holding, cession, transmission",
-    bio: "Ancien directeur de clientèle privée en banque, Alexandre a fondé le cabinet après 12 ans passés à structurer des patrimoines familiaux et professionnels. Il intervient sur les dossiers complexes : holding, cession, transmission internationale.",
+    name: "Quentin Perromat",
+    role: "Associé Fondateur",
+    short: "Vision, stratégie & clientèle",
+    bio: "Fondateur de KANTI, Quentin accompagne ses clients avec une approche globale et indépendante de la gestion de patrimoine. Passionné par la transmission et l'optimisation fiscale, il construit avec chaque famille une stratégie patrimoniale sur mesure, fondée sur la confiance et la durée.",
     image:
       "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=900&q=80",
-    credentials: ["12 ans · Banque privée", "Master Gestion de Patrimoine", "Adhérent CNCEF"],
+    credentials: ["Associé Fondateur · KANTI", "Gestion de patrimoine indépendante", "ORIAS n° 20 000 855"],
   },
   {
-    name: "Claire Lefèvre",
-    role: "Associée, Stratégie fiscale",
-    short: "Fiscalité & succession",
-    bio: "Diplômée du Master Gestion de Patrimoine de Clermont-Ferrand, Claire est spécialisée en optimisation fiscale et structuration successorale. Elle coordonne les dossiers impliquant notaires et avocats fiscalistes.",
-    image:
-      "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=900&q=80",
-    credentials: ["Master fiscalité patrimoniale", "Réseau notarial Pays basque", "Carte T immobilier"],
-  },
-  {
-    name: "Thomas Bernier",
-    role: "Associé, Allocations & marchés",
-    short: "Allocation & supports",
-    bio: "Certifié CFA et CIF, Thomas pilote l'allocation d'actifs et la sélection des supports d'investissement. Il assure le suivi de performance et les arbitrages stratégiques sur les portefeuilles.",
+    name: "Thomas Robert",
+    role: "Courtier & Assistant en gestion de patrimoine",
+    short: "Financement & suivi client",
+    bio: "Thomas intervient aux côtés des clients sur les problématiques de financement et d'investissement. Rigoureux et à l'écoute, il assure le suivi opérationnel des dossiers et veille à ce que chaque solution retenue soit parfaitement adaptée à la situation personnelle et professionnelle de chaque client.",
     image:
       "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=900&q=80",
-    credentials: ["Certifié CFA", "CIF, ORIAS", "Sélection multi-gérants"],
+    credentials: ["Courtier en financement", "Assistant gestion de patrimoine", "Cabinet KANTI · Bordeaux"],
   },
 ];
 
@@ -49,14 +40,14 @@ export default function Equipe() {
             L'équipe · Bordeaux
           </p>
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-heading font-light text-foreground mb-6 tracking-tight leading-[1.05]">
-            Trois associés,<br />
-            <span className="italic text-foreground/70">une même exigence</span>
+            L'équipe,<br />
+            <span className="italic text-foreground/70">à votre service</span>
           </h2>
           <p className="text-foreground/60 text-lg font-light leading-relaxed max-w-xl">
             Chaque client a un interlocuteur dédié. L'équipe collabore sur les dossiers qui l'exigent : un seul cabinet, plusieurs cerveaux.
           </p>
         </div>
-        <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
+        <div className="grid md:grid-cols-2 gap-6 lg:gap-8 max-w-4xl">
           {team.map((member, i) => (
             <motion.article
               key={member.name}

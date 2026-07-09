@@ -2,23 +2,16 @@ import { Link } from "react-router-dom";
 
 const team = [
   {
-    name: "Alexandre Dumont",
-    role: "Fondateur",
-    short: "Holding · cession · transmission",
+    name: "Quentin Perromat",
+    role: "Associé Fondateur",
+    short: "Vision · stratégie · clientèle",
     image:
       "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=600&q=75",
   },
   {
-    name: "Claire Lefèvre",
-    role: "Associée",
-    short: "Fiscalité & succession",
-    image:
-      "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=600&q=75",
-  },
-  {
-    name: "Thomas Bernier",
-    role: "Associé",
-    short: "Allocation & supports",
+    name: "Thomas Robert",
+    role: "Courtier & Assistant patrimoine",
+    short: "Financement · suivi client",
     image:
       "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=75",
   },
@@ -36,9 +29,9 @@ export default function EquipeMobile() {
           L'équipe · Bordeaux
         </p>
         <h2 className="font-heading text-[32px] font-light text-foreground tracking-tight leading-[1.1] mb-3">
-          Trois associés,
+          L'équipe,
           <br />
-          <span className="italic text-foreground/65">une même exigence</span>
+          <span className="italic text-foreground/65">à votre service</span>
         </h2>
         <p className="text-foreground/60 text-[15px] font-light leading-relaxed mb-8">
           Un interlocuteur dédié par client. Plusieurs cerveaux sur les
