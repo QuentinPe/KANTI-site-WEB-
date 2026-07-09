@@ -1,25 +1,76 @@
 import { useScrollReveal } from "@/hooks/useScrollReveal";
+import { motion, useReducedMotion } from "framer-motion";
+import { Link } from "react-router-dom";
+import { Shield, Clock, Network } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PageCTA from "@/components/PageCTA";
 import VirtualTourFAB from "@/components/VirtualTourFAB";
 import CabinetHeroSequence from "@/components/cabinet/CabinetHeroSequence";
-import QuentinPerromat from "@/components/cabinet/QuentinPerromat";
-import CarnetBordelais from "@/components/cabinet/CarnetBordelais";
 import CabinetAdresse from "@/components/cabinet/CabinetAdresse";
 
-import { motion, useReducedMotion } from "framer-motion";
-
-const MANIFESTE = [
-  "KANTI est né d'un constat simple : les intérêts du client et ceux des grands établissements ne sont pas toujours alignés. Nous avons fait le choix d'une approche libre, en architecture ouverte, pour lever cette ambiguïté — sans produit maison, sans quota, sans pression de réseau.",
-  "Nous accompagnons familles, cadres et dirigeants dans la durée. Chaque recommandation repose sur une analyse objective de la situation, écrite noir sur blanc, discutée et signée. Installés au cœur de Bordeaux, nous travaillons en coordination étroite avec les notaires, avocats fiscalistes et experts-comptables de nos clients.",
+const ADN = [
+  {
+    icon: Shield,
+    title: "Indépendance totale",
+    text: "Architecture ouverte, aucun produit maison, aucune pression commerciale. Nous sélectionnons les meilleures solutions parmi plus de 30 partenaires en fonction de votre seul intérêt.",
+  },
+  {
+    icon: Clock,
+    title: "Proximité & durée",
+    text: "Un interlocuteur dédié, une relation qui s'inscrit dans le temps. Vos dossiers sont archivés 10 ans, chaque recommandation est écrite, discutée et signée.",
+  },
+  {
+    icon: Network,
+    title: "Expertise pluridisciplinaire",
+    text: "Fiscalité, immobilier, transmission, financement. Une vision 360° coordonnée en étroite collaboration avec vos notaires, avocats fiscalistes et experts-comptables.",
+  },
 ];
 
-const CHIFFRES = [
-  { v: "2009", l: "Fondation" },
-  { v: "15+", l: "Années d'expertise" },
-  { v: "500+", l: "Familles" },
-  { v: "98 %", l: "Fidélisation" },
+const EQUIPE = [
+  {
+    name: "Quentin Perromat",
+    role: "Associé Fondateur",
+    short: "Vision · stratégie · clientèle",
+    bio: "Fondateur de KANTI, Quentin accompagne ses clients avec une approche globale et indépendante de la gestion de patrimoine. Passionné par la transmission et l'optimisation fiscale, il construit avec chaque famille une stratégie patrimoniale sur mesure, fondée sur la confiance et la durée.",
+    image: "/quentin-perromat.png",
+    credentials: ["Associé Fondateur · KANTI", "Gestion de patrimoine indépendante", "ORIAS n° 20 000 855"],
+  },
+  {
+    name: "Thomas Robert",
+    role: "Courtier & Assistant en gestion de patrimoine",
+    short: "Financement · suivi client",
+    bio: "Thomas intervient aux côtés des clients sur les problématiques de financement et d'investissement. Rigoureux et à l'écoute, il assure le suivi opérationnel des dossiers et veille à ce que chaque solution retenue soit parfaitement adaptée à la situation de chaque client.",
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=900&q=80",
+    credentials: ["Courtier en financement", "Assistant gestion de patrimoine", "Cabinet KANTI · Biarritz"],
+  },
+];
+
+const AGREMENTS = [
+  {
+    title: "CIF",
+    label: "Conseiller en Investissements Financiers",
+    numero: "ORIAS n° 20 000 855",
+    href: "https://www.orias.fr",
+  },
+  {
+    title: "COA",
+    label: "Courtier d'assurance",
+    numero: "CNCEF Assurance n° 25/860422",
+    href: "https://www.orias.fr",
+  },
+  {
+    title: "IOBSP",
+    label: "Courtier en opérations de banque",
+    numero: "La Compagnie IOBSP n° F002635",
+    href: "https://www.orias.fr",
+  },
+  {
+    title: "Carte T",
+    label: "Transaction immobilière",
+    numero: "CPI33012020000045313 · CCI Bordeaux",
+    href: "https://www.orias.fr",
+  },
 ];
 
 export default function CabinetPage() {
@@ -31,94 +82,180 @@ export default function CabinetPage() {
       <Header />
       <CabinetHeroSequence />
 
-      {/* Manifeste — glass sur navy */}
-      <section id="manifeste" className="relative bg-navy text-ivory py-24 md:py-36 overflow-hidden">
-        <div
-          aria-hidden
-          className="absolute top-[-10%] left-[10%] w-[520px] h-[520px] rounded-full pointer-events-none float-soft"
-          style={{
-            background: "radial-gradient(circle, hsl(var(--gold) / 0.10) 0%, transparent 70%)",
-            filter: "blur(70px)",
-          }}
-        />
-        <div className="max-w-6xl mx-auto px-6 relative z-10">
-          <div className="mb-16 md:mb-20 flex items-end justify-between border-b border-ivory/15 pb-6">
-            <div>
-              <p className="text-[10px] tracking-[0.35em] uppercase text-gold mb-3 font-medium">
-                Prologue
-              </p>
-              <h2 className="font-heading text-3xl md:text-5xl font-light leading-[1.05] tracking-tight text-white">
-                Qui sommes-nous.
-              </h2>
-            </div>
-            <p className="hidden md:block font-heading italic text-[12px] tracking-[0.25em] text-ivory/55">
-              — un manifeste bordelais —
+      {/* Notre ADN */}
+      <section id="adn" className="section-padding section-ivory">
+        <div className="max-w-6xl mx-auto">
+          <div className="mb-14 reveal max-w-2xl">
+            <div className="electric-line mb-5" />
+            <p className="text-[11px] tracking-[0.3em] uppercase text-foreground/50 mb-4 font-medium">
+              Notre ADN
+            </p>
+            <h2 className="text-4xl md:text-5xl font-heading font-light text-foreground mb-5 tracking-tight leading-[1.05]">
+              Un cabinet bâti sur<br />
+              <span className="italic text-foreground/70">trois convictions.</span>
+            </h2>
+            <p className="text-foreground/60 text-lg font-light leading-relaxed">
+              Indépendants par choix, rigoureux par conviction. Chez KANTI, chaque recommandation ne répond qu'à une seule exigence : votre intérêt.
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-12 gap-10 lg:gap-14">
-            <div className="lg:col-span-8">
-              <p className="font-heading text-2xl md:text-4xl leading-[1.1] tracking-tight text-white mb-10 font-light">
-                Un cabinet fondé sur une conviction simple —{" "}
-                <em className="italic text-ivory/70">
-                  votre conseil doit travailler pour vous.
-                </em>
-              </p>
-              <div className="rounded-2xl glass-dark p-6 md:p-8 space-y-5">
-                {MANIFESTE.map((p, i) => (
-                  <p key={i} className="text-ivory/75 text-[15.5px] leading-[1.75] font-light">
-                    {p}
-                  </p>
-                ))}
-              </div>
-            </div>
-
-            {/* Marginalia — chiffres-clés */}
-            <aside className="lg:col-span-4">
-              <p className="text-[10px] tracking-[0.35em] uppercase text-gold mb-6 font-medium">
-                En chiffres
-              </p>
-              <ul className="space-y-3">
-                {CHIFFRES.map((s, i) => (
-                  <motion.li
-                    key={s.l}
-                    initial={reduce ? { opacity: 0 } : { opacity: 0, y: 12 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: "-10% 0px" }}
-                    transition={{ duration: 0.6, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
-                    className="flex items-baseline justify-between rounded-2xl glass-dark px-5 py-4"
-                  >
-                    <span className="font-heading text-3xl md:text-4xl font-light text-white tracking-tight">
-                      {s.v}
-                    </span>
-                    <span className="text-[10px] tracking-[0.24em] uppercase text-ivory/60 font-medium">
-                      {s.l}
-                    </span>
-                  </motion.li>
-                ))}
-              </ul>
-            </aside>
+          <div className="grid md:grid-cols-3 gap-6">
+            {ADN.map((item, i) => (
+              <motion.div
+                key={item.title}
+                initial={reduce ? { opacity: 0 } : { opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-80px" }}
+                transition={{ duration: 0.6, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
+                className="group p-7 rounded-2xl bg-background/60 border border-foreground/[0.08] hover:border-foreground/15 transition-colors duration-300"
+              >
+                <div className="w-10 h-10 rounded-xl bg-foreground/5 flex items-center justify-center mb-5">
+                  <item.icon className="w-5 h-5 text-foreground/60" strokeWidth={1.5} />
+                </div>
+                <h3 className="font-heading text-xl font-normal text-foreground mb-3 tracking-tight">
+                  {item.title}
+                </h3>
+                <p className="text-foreground/60 text-[14px] leading-relaxed font-light">
+                  {item.text}
+                </p>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
 
-      <QuentinPerromat />
+      {/* L'équipe */}
+      <section id="equipe" className="section-padding bg-background">
+        <div className="max-w-6xl mx-auto">
+          <div className="mb-14 reveal max-w-2xl">
+            <div className="electric-line mb-5" />
+            <p className="text-[11px] tracking-[0.3em] uppercase text-foreground/50 mb-4 font-medium">
+              L'équipe
+            </p>
+            <h2 className="text-4xl md:text-5xl font-heading font-light text-foreground mb-5 tracking-tight leading-[1.05]">
+              À votre écoute,<br />
+              <span className="italic text-foreground/70">à chaque étape.</span>
+            </h2>
+            <p className="text-foreground/60 text-lg font-light leading-relaxed">
+              Un interlocuteur dédié par client. Plusieurs expertises mobilisées ensemble quand le dossier le demande.
+            </p>
+          </div>
 
-      <CarnetBordelais />
+          <div className="grid md:grid-cols-2 gap-6 lg:gap-8 max-w-4xl">
+            {EQUIPE.map((member, i) => (
+              <motion.article
+                key={member.name}
+                initial={reduce ? { opacity: 0 } : { opacity: 0, y: 28 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-80px" }}
+                transition={{ duration: 0.55, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
+                className="group relative rounded-[2rem] overflow-hidden bg-white/40 backdrop-blur-sm border border-foreground/[0.06] hover:border-foreground/15 transition-all duration-500"
+              >
+                <div className="relative aspect-[4/5] overflow-hidden">
+                  <div
+                    className="absolute inset-0 bg-cover bg-center grayscale-[0.35] transition-all duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105 group-hover:grayscale-0"
+                    style={{ backgroundImage: `url(${member.image})` }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-foreground/85 via-foreground/10 to-transparent" />
+                  <div className="absolute bottom-0 inset-x-0 p-6">
+                    <p className="text-[10px] tracking-[0.3em] uppercase text-white/70 mb-2 font-medium">{member.short}</p>
+                    <h3 className="font-heading text-2xl font-light text-white tracking-tight leading-tight">
+                      {member.name}
+                    </h3>
+                  </div>
+                </div>
+                <div className="p-6 lg:p-7">
+                  <p className="text-[hsl(var(--electric))] text-[11px] font-medium mb-4 tracking-[0.15em] uppercase">
+                    {member.role}
+                  </p>
+                  <p className="text-foreground/65 text-[14px] leading-relaxed font-light mb-5">
+                    {member.bio}
+                  </p>
+                  <ul className="space-y-1.5 border-t border-foreground/10 pt-4 mb-5">
+                    {member.credentials.map((c) => (
+                      <li key={c} className="flex items-center gap-2 text-[12px] text-foreground/55 font-light">
+                        <span className="w-1 h-1 rounded-full bg-[hsl(var(--electric))]" />
+                        {c}
+                      </li>
+                    ))}
+                  </ul>
+                  <Link
+                    to="/contact"
+                    className="inline-flex items-center gap-1.5 text-[12px] font-medium text-foreground/60 hover:text-foreground transition-colors duration-300"
+                  >
+                    Prendre rendez-vous avec {member.name.split(" ")[0]} →
+                  </Link>
+                </div>
+              </motion.article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Agréments */}
+      <section id="agrements" className="section-padding section-dark">
+        <div className="max-w-6xl mx-auto">
+          <div className="mb-14 reveal max-w-2xl">
+            <p className="text-[11px] tracking-[0.3em] uppercase text-white/50 mb-4 font-medium">
+              Transparence & réglementation
+            </p>
+            <h2 className="text-4xl md:text-5xl font-heading font-light text-white mb-5 tracking-tight leading-[1.05]">
+              Un cabinet réglementé,<br />
+              <span className="italic text-white/65">auditable.</span>
+            </h2>
+            <p className="text-white/60 text-lg font-light leading-relaxed">
+              Nos habilitations sont publiques et vérifiables sur orias.fr.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {AGREMENTS.map((a, i) => (
+              <motion.div
+                key={a.title}
+                initial={reduce ? { opacity: 0 } : { opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-60px" }}
+                transition={{ duration: 0.5, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                className="glass-dark rounded-2xl p-5 flex flex-col gap-3"
+              >
+                <span className="text-[10px] tracking-[0.3em] uppercase text-white/40 font-medium">
+                  Habilitation
+                </span>
+                <p className="font-heading text-2xl font-light text-white tracking-tight">
+                  {a.title}
+                </p>
+                <p className="text-white/65 text-[13px] font-light leading-snug flex-1">
+                  {a.label}
+                </p>
+                <p className="font-mono text-[11px] text-white/40 leading-snug">
+                  {a.numero}
+                </p>
+                <a
+                  href={a.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[11px] text-white/40 hover:text-white/70 transition-colors duration-300 underline underline-offset-2"
+                >
+                  Vérifier sur orias.fr →
+                </a>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       <CabinetAdresse />
 
       <PageCTA
-        title="Rencontrons-nous"
-        subtitle="Un premier échange de 30 minutes pour parler de votre situation et voir comment nous pouvons vous aider."
+        title="Rencontrons-nous à Biarritz"
+        subtitle="Un premier échange de 30 minutes pour parler de votre situation patrimoniale, sans engagement."
         eyebrow="Le cabinet"
-        index="02"
-        secondaryText="En savoir plus sur notre méthode"
+        index="05"
+        secondaryText="Découvrir notre méthode"
         secondaryHref="/notre-methode"
       />
       <Footer />
 
-      {/* Floating 360° virtual tour CTA */}
       <VirtualTourFAB href="https://adnfamily.com/studio/mind/adn/bureaux.html" />
     </>
   );

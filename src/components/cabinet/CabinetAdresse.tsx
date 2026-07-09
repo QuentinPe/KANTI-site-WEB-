@@ -15,18 +15,17 @@ export default function CabinetAdresse() {
       />
 
       <div className="max-w-6xl mx-auto px-6 relative z-10">
-        {/* Chapter header */}
         <div className="mb-16 md:mb-20 flex items-end justify-between border-b border-ivory/15 pb-6">
           <div>
             <p className="text-[10px] tracking-[0.35em] uppercase text-gold mb-3 font-medium">
-              Chapitre IV
+              Nous trouver
             </p>
             <h2 className="font-heading text-3xl md:text-5xl font-light leading-[1.05] tracking-tight text-white">
               L'adresse.
             </h2>
           </div>
           <p className="hidden md:block font-heading italic text-[12px] tracking-[0.25em] text-ivory/55">
-            Sur rendez-vous, dans le Triangle d'Or.
+            Sur rendez-vous, à Biarritz.
           </p>
         </div>
 
@@ -78,7 +77,7 @@ export default function CabinetAdresse() {
                   <dd className="font-heading text-xl md:text-2xl text-white leading-snug font-light">
                     Cabinet KANTI
                     <br />
-                    <span className="italic text-ivory/75">Triangle d'Or — Bordeaux</span>
+                    <span className="italic text-ivory/75">9 Rue de la Négresse — 64200 Biarritz</span>
                   </dd>
                 </div>
                 <div className="pb-5 border-b border-white/10">
@@ -93,12 +92,10 @@ export default function CabinetAdresse() {
                 </div>
                 <div>
                   <dt className="text-[10px] tracking-[0.32em] uppercase text-gold/85 mb-2 font-medium">
-                    Prise de contact
+                    Premier contact
                   </dt>
                   <dd className="text-ivory/80 text-[15px] leading-relaxed font-light">
-                    Nous vous rappelons dans la journée
-                    <br />
-                    pour convenir d'un premier échange.
+                    Nous vous rappelons dans la journée pour convenir d'un premier échange, sans engagement.
                   </dd>
                 </div>
               </dl>
