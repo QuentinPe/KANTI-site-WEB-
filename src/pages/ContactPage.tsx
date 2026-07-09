@@ -7,7 +7,8 @@ import { ArrowRight, Building2, Video, Phone as PhoneIcon, MapPin, Mail } from "
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Seo, { breadcrumbJsonLd, localBusinessJsonLd } from "@/components/Seo";
-import contactBg from "@/assets/contact-bordeaux.jpg";
+// Photo de fond — public/contact-bg.png
+const contactBg = "/contact-bg.png";
 
 /* ─── Validation ─── */
 const contactSchema = z.object({
@@ -26,7 +27,7 @@ const contactSchema = z.object({
 const ADVISORS = [
   { id: "quentin", name: "Quentin Perromat", role: "Associé Fondateur", tags: ["Stratégie", "Fiscalité", "Transmission"], img: "/quentin-perromat.png" },
   { id: "thomas",  name: "Thomas Robert",    role: "Courtier & Assistant", tags: ["Financement", "Suivi client"],         img: "/thomas-robert.png" },
-  { id: "any",     name: "Peu importe",       role: "Le plus disponible",  tags: ["Disponibilité"],                       img: null },
+  { id: "any",     name: "Peu importe",        role: "Le plus disponible",  tags: ["Disponibilité"],                       img: null },
 ];
 
 const FORMATS = [
@@ -337,7 +338,7 @@ export default function ContactPage() {
                                   )}
                                   <div>
                                     <p className="text-[11px] font-semibold leading-tight" style={{ color: "hsl(224 60% 14%)" }}>
-                                      {a.name.split(" ")[0]}
+                                      {a.id === "any" ? a.name : a.name.split(" ")[0]}
                                     </p>
                                     <p className="text-[10px] font-light leading-snug" style={{ color: "hsl(224 25% 48%)" }}>
                                       {a.role}
