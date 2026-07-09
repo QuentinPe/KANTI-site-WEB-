@@ -1,72 +1,144 @@
 import { useState } from "react";
-import { useScrollReveal } from "@/hooks/useScrollReveal";
-import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { toast } from "sonner";
-import { MapPin, Phone, Mail, Clock, Calendar, FileText, Users, ShieldCheck, Clock3, Sparkles, MessageSquare } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowRight, Building2, Video, Phone as PhoneIcon, CheckCircle2, MapPin, Mail } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import PageHero from "@/components/PageHero";
-import Seo, { breadcrumbJsonLd, faqJsonLd, localBusinessJsonLd } from "@/components/Seo";
+import Seo, { breadcrumbJsonLd, localBusinessJsonLd } from "@/components/Seo";
+// Photo placeholder — remplacez src="/contact-bg.jpg" par votre propre image dans public/
+// en attendant on utilise contact-bordeaux.jpg de src/assets
+import contactBg from "@/assets/contact-bordeaux.jpg";
 
+/* ─── Validation ─────────────────────────────────────────────────────────── */
 const contactSchema = z.object({
-  nom: z.string().trim().min(2, "Indiquez votre nom complet").max(100, "Nom trop long"),
+  conseiller: z.string().optional(),
+  format: z.string().optional(),
+  timing: z.string().optional(),
+  sujet: z.string().optional(),
+  nom: z.string().trim().min(2, "Indiquez votre nom complet").max(100),
   email: z.string().trim().email("Email invalide").max(255),
-  telephone: z.string().trim().max(30, "Téléphone trop long").optional().or(z.literal("")),
-  profil: z.string().max(60).optional().or(z.literal("")),
-  sujet: z.string().max(60).optional().or(z.literal("")),
-  message: z.string().trim().max(2000, "Message trop long").optional().or(z.literal("")),
-  // Honeypot anti-spam
+  telephone: z.string().trim().max(30).optional().or(z.literal("")),
+  message: z.string().trim().max(2000).optional().or(z.literal("")),
   website: z.string().max(0, "").optional().or(z.literal("")),
 });
 
-const faqItems = [
+/* ─── Données statiques ───────────────────────────────────────────────────── */
+const ADVISORS = [
   {
-    q: "Le premier rendez-vous est-il vraiment gratuit ?",
-    a: "Oui. Ce premier échange de 30 minutes est gratuit et sans engagement. Il sert à comprendre votre situation et à voir si un accompagnement est pertinent. Aucune recommandation produit n'est faite lors de ce rendez-vous.",
+    id: "quentin",
+    name: "Quentin Perromat",
+    role: "Associé Fondateur",
+    tags: ["Stratégie", "Fiscalité", "Transmission"],
+    img: "/quentin-perromat.png",
   },
   {
-    q: "Combien coûte un accompagnement patrimonial ?",
-    a: "Nos honoraires dépendent de la complexité de votre situation. Ils vous sont communiqués de façon transparente avant toute mission. Nous pouvons travailler en honoraires de conseil ou en commissions sur les produits souscrits, vous choisissez.",
+    id: "thomas",
+    name: "Thomas Robert",
+    role: "Courtier & Assistant",
+    tags: ["Financement", "Suivi client"],
+    img: "/thomas-robert.png",
   },
   {
-    q: "Quels documents apporter au premier rendez-vous ?",
-    a: "Pour un premier échange, rien d'obligatoire. Si vous souhaitez aller plus loin, nous vous demanderons vos avis d'imposition, relevés de comptes et contrats en cours. Nous vous fournirons une liste précise.",
-  },
-  {
-    q: "Quelle est la différence avec ma banque ?",
-    a: "Un conseiller bancaire distribue les produits de son établissement. Nous, nous n'avons aucun produit maison. Nous comparons l'ensemble du marché pour sélectionner ce qui correspond réellement à votre situation.",
-  },
-  {
-    q: "Sous quel délai recevrai-je une réponse ?",
-    a: "Nous revenons vers vous sous 24 heures ouvrées maximum, généralement le jour même. Le premier rendez-vous peut être fixé dans la semaine qui suit votre prise de contact.",
+    id: "any",
+    name: "Peu importe",
+    role: "Le plus disponible",
+    tags: ["Disponibilité prioritaire"],
+    img: null,
   },
 ];
 
-const reassurances = [
-  { icon: Clock3, title: "30 minutes", text: "Un échange court, ciblé, qui respecte votre temps." },
-  { icon: ShieldCheck, title: "Gratuit & confidentiel", text: "Sans engagement, aucune recommandation produit." },
-  { icon: Calendar, title: "Sous 24h ouvrées", text: "Nous vous rappelons rapidement pour caler le créneau." },
-  { icon: Sparkles, title: "Architecture ouverte", text: "Aucun produit maison, aucun quota commercial." },
+const FORMATS = [
+  { id: "cabinet", icon: Building2, label: "En cabinet", sub: "12 rue Ferrere · Bordeaux" },
+  { id: "visio", icon: Video, label: "Visioconférence", sub: "Lien envoyé par email" },
+  { id: "telephone", icon: PhoneIcon, label: "Par téléphone", sub: "Nous vous rappelons" },
 ];
 
-const etapes = [
-  { n: "01", title: "Vous prenez contact", text: "Quelques informations sur votre situation via le formulaire." },
-  { n: "02", title: "Nous vous rappelons", text: "Un conseiller vous contacte sous 24h ouvrées pour fixer le rendez-vous." },
-  { n: "03", title: "Premier échange", text: "30 minutes en cabinet ou en visio, sans engagement." },
+const TIMING = [
+  { id: "asap", label: "Dès que possible" },
+  { id: "week", label: "Cette semaine" },
+  { id: "two_weeks", label: "Dans 2 semaines" },
+  { id: "month", label: "Dans le mois" },
 ];
 
+const SUBJECTS = [
+  "Bilan patrimonial",
+  "Optimisation fiscale",
+  "Placements & épargne",
+  "Immobilier",
+  "Transmission",
+  "Financement",
+  "Patrimoine pro",
+  "Autre sujet",
+];
+
+/* ─── Composants internes ─────────────────────────────────────────────────── */
+function SectionLabel({ n, children }: { n: string; children: React.ReactNode }) {
+  return (
+    <div className="flex items-center gap-2.5 mb-4">
+      <span
+        className="text-[10px] font-semibold tracking-[0.28em] tabular-nums"
+        style={{ color: "hsl(224 60% 40%)" }}
+      >
+        {n}
+      </span>
+      <span className="flex-1 h-px" style={{ background: "hsl(224 60% 12% / 0.10)" }} />
+      <span className="text-[11px] font-medium tracking-[0.2em] uppercase" style={{ color: "hsl(224 40% 35%)" }}>
+        {children}
+      </span>
+    </div>
+  );
+}
+
+function TogglePill({
+  selected,
+  onClick,
+  children,
+}: {
+  selected: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="px-4 py-2 rounded-full text-[12px] font-medium tracking-wide transition-all duration-200"
+      style={{
+        background: selected ? "hsl(224 60% 18%)" : "hsl(0 0% 100% / 0.60)",
+        color: selected ? "white" : "hsl(224 40% 30%)",
+        border: `1px solid ${selected ? "hsl(224 60% 18%)" : "hsl(224 20% 12% / 0.14)"}`,
+        boxShadow: selected ? "0 4px 12px -4px hsl(224 60% 18% / 0.35)" : "none",
+      }}
+    >
+      {children}
+    </button>
+  );
+}
+
+/* ─── Page ────────────────────────────────────────────────────────────────── */
 export default function ContactPage() {
-  useScrollReveal();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ nom: "", email: "", telephone: "", profil: "", sujet: "", message: "", website: "" });
-  const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const [form, setForm] = useState({
+    conseiller: "",
+    format: "",
+    timing: "",
+    sujet: "",
+    nom: "",
+    email: "",
+    telephone: "",
+    message: "",
+    website: "",
+  });
+  const [status, setStatus] = useState<"idle" | "loading">("idle");
+
+  const set = (key: string, val: string) =>
+    setForm((prev) => ({ ...prev, [key]: prev[key as keyof typeof prev] === val ? "" : val }));
+
+  const handleInput = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -76,13 +148,11 @@ export default function ContactPage() {
       return;
     }
     if (parsed.data.website) {
-      // Honeypot rempli → on simule un succès silencieux
       navigate("/merci", { state: { name: parsed.data.nom.split(" ")[0], subject: "contact" } });
       return;
     }
     setStatus("loading");
-    // Mock front-only, log pour brancher le back ultérieurement
-    console.info("[KANTI mock] Contact submission:", parsed.data);
+    console.info("[KANTI] Contact submission:", parsed.data);
     await new Promise((r) => setTimeout(r, 1100));
     setStatus("idle");
     navigate("/merci", { state: { name: parsed.data.nom.split(" ")[0], subject: "contact" } });
@@ -91,7 +161,7 @@ export default function ContactPage() {
   return (
     <>
       <Seo
-        title="Contact, Prendre rendez-vous avec un conseiller patrimonial à Bordeaux"
+        title="Prendre rendez-vous — Cabinet KANTI, Bordeaux"
         description="Premier échange de 30 minutes gratuit et sans engagement avec un conseiller KANTI. Cabinet de gestion de patrimoine à Bordeaux, réponse sous 24h ouvrées."
         jsonLd={[
           localBusinessJsonLd,
@@ -99,293 +169,406 @@ export default function ContactPage() {
             { name: "Accueil", url: "/" },
             { name: "Contact", url: "/contact" },
           ]),
-          faqJsonLd(faqItems.map((f) => ({ q: f.q, a: f.a }))),
         ]}
       />
       <Header />
+
       <main id="main">
-      <PageHero
-        title="Parlons de votre patrimoine"
-        subtitle="Un premier échange de 30 minutes, gratuit et sans engagement, pour faire le point sur votre situation et clarifier vos priorités."
-        breadcrumb="Cabinet · Contact"
-      />
+        <section className="relative overflow-hidden" style={{ minHeight: "100vh" }}>
 
-      {/* Reassurance bar, pousse à la prise de rendez-vous */}
-      <section className="section-padding texture-paper relative overflow-hidden">
-        <div className="max-w-6xl mx-auto relative z-10">
-          <div className="mb-12 reveal max-w-2xl">
-            <div className="electric-line mb-5" />
-            <p className="text-[11px] tracking-[0.3em] uppercase text-foreground/50 mb-5 font-medium">
-              Pourquoi prendre rendez-vous
-            </p>
-            <h2 className="text-3xl md:text-4xl font-heading font-light text-foreground leading-[1.15] tracking-tight">
-              Un échange court, <span className="italic text-foreground/70">utile dès la première minute</span>
-            </h2>
-          </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {reassurances.map((r, i) => (
-              <motion.div
-                key={r.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-60px" }}
-                transition={{ duration: 0.5, delay: i * 0.06 }}
-                className="glass-float p-6"
-              >
-                <r.icon className="w-5 h-5 text-[hsl(var(--electric))] mb-4" />
-                <p className="font-heading text-base font-light text-foreground mb-1.5">{r.title}</p>
-                <p className="text-foreground/60 text-sm font-light leading-relaxed">{r.text}</p>
-              </motion.div>
-            ))}
+          {/* ── Background image ── */}
+          <div className="absolute inset-0">
+            <img
+              src={contactBg}
+              alt=""
+              aria-hidden
+              className="w-full h-full object-cover object-center"
+              fetchPriority="high"
+            />
           </div>
 
-          {/* Étapes */}
-          <div className="mt-16 grid md:grid-cols-3 gap-5">
-            {etapes.map((e, i) => (
-              <motion.div
-                key={e.n}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-60px" }}
-                transition={{ duration: 0.55, delay: i * 0.08 }}
-                className="glass-float p-7 relative"
-              >
-                <span className="font-heading text-xs text-[hsl(var(--electric))] tabular-nums tracking-[0.3em]">{e.n}</span>
-                <p className="font-heading text-lg font-light text-foreground mt-3 mb-2">{e.title}</p>
-                <p className="text-foreground/60 text-sm font-light leading-relaxed">{e.text}</p>
-              </motion.div>
-            ))}
-          </div>
+          {/* ── Left white gradient ── */}
+          <div
+            aria-hidden
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background:
+                "linear-gradient(105deg, hsl(0 0% 100% / 0.98) 0%, hsl(0 0% 100% / 0.94) 30%, hsl(0 0% 100% / 0.62) 52%, hsl(0 0% 100% / 0.10) 70%, transparent 82%)",
+            }}
+          />
+          {/* Top / bottom vignette for seamless blending */}
+          <div aria-hidden className="absolute inset-x-0 top-0 h-24 pointer-events-none" style={{ background: "linear-gradient(to bottom, hsl(220 30% 97% / 0.85) 0%, transparent 100%)" }} />
+          <div aria-hidden className="absolute inset-x-0 bottom-0 h-24 pointer-events-none" style={{ background: "linear-gradient(to top, hsl(220 30% 97% / 0.85) 0%, transparent 100%)" }} />
 
-          {/* CTA principal */}
-          <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4 reveal">
-            <a
-              href="#formulaire"
-              className="group inline-flex items-center justify-center gap-2 py-3.5 px-8 btn-primary-glass text-sm font-medium tracking-wide reflection-sweep"
+          {/* ── Content grid ── */}
+          <div className="relative z-10 max-w-6xl mx-auto px-8 md:px-14 py-28 lg:py-32 grid lg:grid-cols-[1fr_500px] gap-12 xl:gap-20 items-center min-h-screen">
+
+            {/* ── Left: Brand statement ── */}
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+              className="lg:self-center"
             >
-              <MessageSquare className="w-4 h-4" />
-              <span>Réserver mon premier échange</span>
-              <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-              </svg>
-            </a>
-            <a
-              href="tel:0556000000"
-              className="inline-flex items-center gap-2 text-sm text-foreground/70 hover:text-[hsl(var(--electric))] transition-colors"
-            >
-              <Phone className="w-4 h-4" />
-              ou appelez-nous au 06 63 32 48 09
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* Formulaire + infos */}
-      <section id="formulaire" className="section-padding texture-paper relative overflow-hidden">
-        <div className="max-w-6xl mx-auto grid lg:grid-cols-12 gap-8 lg:gap-12 relative z-10 items-start">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.7 }}
-            className="lg:col-span-7"
-          >
-            <div className="electric-line mb-5" />
-            <p className="text-[11px] tracking-[0.3em] uppercase text-foreground/50 mb-5 font-medium">
-              Demande de rendez-vous
-            </p>
-            <h2 className="text-3xl md:text-4xl font-heading font-light text-foreground leading-[1.15] tracking-tight mb-10">
-              Quelques informations,<br />
-              <span className="italic text-foreground/70">et nous vous rappelons</span>
-            </h2>
-
-            <div className="glass-float p-8 md:p-10">
-              <form onSubmit={handleSubmit} className="space-y-5" noValidate>
-                {/* Honeypot anti-spam (invisible) */}
-                <div aria-hidden className="absolute -left-[9999px] w-px h-px overflow-hidden">
-                  <label htmlFor="website">Site web (laisser vide)</label>
-                  <input
-                    id="website"
-                    name="website"
-                    type="text"
-                    tabIndex={-1}
-                    autoComplete="off"
-                    value={form.website}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="grid sm:grid-cols-2 gap-5">
-                  <div>
-                    <label htmlFor="nom" className="block text-[11px] font-medium text-foreground/60 mb-2 tracking-[0.2em] uppercase">Nom complet *</label>
-                    <input id="nom" name="nom" type="text" value={form.nom} onChange={handleChange} required maxLength={100} disabled={status === "loading"} className="w-full px-4 py-3 bg-background/40 border border-foreground/15 rounded-md text-foreground text-sm focus:outline-none focus:border-[hsl(var(--electric))]/60 transition-colors disabled:opacity-50" placeholder="Votre nom" />
-                  </div>
-                  <div>
-                    <label htmlFor="email" className="block text-[11px] font-medium text-foreground/60 mb-2 tracking-[0.2em] uppercase">Email *</label>
-                    <input id="email" name="email" type="email" value={form.email} onChange={handleChange} required maxLength={255} disabled={status === "loading"} className="w-full px-4 py-3 bg-background/40 border border-foreground/15 rounded-md text-foreground text-sm focus:outline-none focus:border-[hsl(var(--electric))]/60 transition-colors disabled:opacity-50" placeholder="votre@email.fr" />
-                  </div>
-                </div>
-                <div className="grid sm:grid-cols-2 gap-5">
-                  <div>
-                    <label htmlFor="telephone" className="block text-[11px] font-medium text-foreground/60 mb-2 tracking-[0.2em] uppercase">Téléphone</label>
-                    <input id="telephone" name="telephone" type="tel" value={form.telephone} onChange={handleChange} maxLength={30} disabled={status === "loading"} className="w-full px-4 py-3 bg-background/40 border border-foreground/15 rounded-md text-foreground text-sm focus:outline-none focus:border-[hsl(var(--electric))]/60 transition-colors disabled:opacity-50" placeholder="06 00 00 00 00" />
-                  </div>
-                  <div>
-                    <label htmlFor="profil" className="block text-[11px] font-medium text-foreground/60 mb-2 tracking-[0.2em] uppercase">Votre profil</label>
-                    <select id="profil" name="profil" value={form.profil} onChange={handleChange} disabled={status === "loading"} className="w-full px-4 py-3 bg-background/40 border border-foreground/15 rounded-md text-foreground text-sm focus:outline-none focus:border-[hsl(var(--electric))]/60 transition-colors disabled:opacity-50">
-                      <option value="">Sélectionner</option>
-                      <option value="particulier">Particulier / Famille</option>
-                      <option value="dirigeant">Chef d'entreprise / Dirigeant</option>
-                      <option value="liberal">Profession libérale</option>
-                      <option value="investisseur">Investisseur immobilier</option>
-                      <option value="expatrie">Expatrié / Retour en France</option>
-                    </select>
-                  </div>
-                </div>
-                <div>
-                  <label htmlFor="sujet" className="block text-[11px] font-medium text-foreground/60 mb-2 tracking-[0.2em] uppercase">Sujet principal</label>
-                  <select id="sujet" name="sujet" value={form.sujet} onChange={handleChange} disabled={status === "loading"} className="w-full px-4 py-3 bg-background/40 border border-foreground/15 rounded-md text-foreground text-sm focus:outline-none focus:border-[hsl(var(--electric))]/60 transition-colors disabled:opacity-50">
-                    <option value="">Sélectionner un sujet</option>
-                    <option value="bilan">Bilan patrimonial</option>
-                    <option value="fiscalite">Optimisation fiscale</option>
-                    <option value="placement">Placements & épargne</option>
-                    <option value="immobilier">Immobilier & financement</option>
-                    <option value="transmission">Transmission & succession</option>
-                    <option value="entreprise">Patrimoine professionnel</option>
-                    <option value="autre">Autre</option>
-                  </select>
-                </div>
-                <div>
-                  <label htmlFor="message" className="block text-[11px] font-medium text-foreground/60 mb-2 tracking-[0.2em] uppercase">Quelques mots sur votre situation</label>
-                  <textarea id="message" name="message" rows={4} value={form.message} onChange={handleChange} maxLength={2000} disabled={status === "loading"} className="w-full px-4 py-3 bg-background/40 border border-foreground/15 rounded-md text-foreground text-sm focus:outline-none focus:border-[hsl(var(--electric))]/60 transition-colors resize-none disabled:opacity-50" placeholder="Décrivez brièvement votre situation ou ce qui vous amène..." />
-                </div>
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-2">
-                  <button
-                    type="submit"
-                    disabled={status === "loading"}
-                    className="group inline-flex items-center justify-center gap-2 py-3.5 px-8 btn-primary-glass text-sm font-medium tracking-wide reflection-sweep disabled:opacity-60 disabled:cursor-not-allowed"
-                  >
-                    <span>{status === "loading" ? "Envoi en cours…" : "Envoyer ma demande"}</span>
-                    <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                    </svg>
-                  </button>
-                  <p className="text-[11px] text-foreground/40 font-light">Réponse sous 24h ouvrées · Confidentiel</p>
-                </div>
-              </form>
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.7, delay: 0.15 }}
-            className="lg:col-span-5 space-y-5 lg:sticky lg:top-28"
-          >
-            <div className="glass-float p-7 divide-y divide-foreground/10">
-              <div className="pb-5">
-                <div className="flex items-center gap-3 mb-2.5">
-                  <Calendar className="w-4 h-4 text-[hsl(var(--electric))]" />
-                  <p className="text-[10px] tracking-[0.3em] uppercase text-foreground/50 font-medium">Premier rendez-vous</p>
-                </div>
-                <p className="text-foreground/65 text-sm leading-relaxed font-light">
-                  <span className="text-foreground/90">30 minutes, gratuit, sans engagement.</span> Un échange libre pour comprendre votre situation. Aucune recommandation produit n'est faite.
+              <div className="flex items-center gap-2 mb-7">
+                <span className="w-5 h-[2px]" style={{ background: "hsl(224 60% 22%)" }} />
+                <p className="text-[11px] tracking-[0.32em] uppercase font-medium" style={{ color: "hsl(224 60% 22%)" }}>
+                  Cabinet KANTI · Bordeaux
                 </p>
               </div>
 
-              <div className="py-5">
-                <div className="flex items-center gap-3 mb-3">
-                  <Users className="w-4 h-4 text-[hsl(var(--electric))]" />
-                  <p className="text-[10px] tracking-[0.3em] uppercase text-foreground/50 font-medium">Qui accompagnons-nous</p>
-                </div>
-                <ul className="grid grid-cols-1 gap-1.5 text-sm text-foreground/65 font-light">
-                  {[
-                    "Particuliers avec un patrimoine à structurer",
-                    "Cadres dirigeants et professions libérales",
-                    "Chefs d'entreprise et associés",
-                    "Familles en phase de transmission",
-                  ].map((line) => (
-                    <li key={line} className="flex items-start gap-2.5">
-                      <span className="w-1 h-1 rounded-full bg-[hsl(var(--electric))] mt-2 flex-shrink-0" />
-                      <span>{line}</span>
-                    </li>
-                  ))}
-                </ul>
+              <h1
+                className="font-heading font-light leading-[1.04] tracking-tight mb-8"
+                style={{ fontSize: "clamp(2.4rem, 5vw, 3.6rem)", color: "hsl(224 60% 12%)" }}
+              >
+                Prenons
+                <br />
+                rendez-vous.
+              </h1>
+
+              <div className="space-y-3 mb-10">
+                {[
+                  "30 minutes, gratuit et sans engagement",
+                  "Réponse sous 24 heures ouvrées",
+                  "Échange confidentiel, aucun engagement commercial",
+                ].map((line) => (
+                  <div key={line} className="flex items-start gap-2.5">
+                    <CheckCircle2
+                      className="w-4 h-4 mt-0.5 flex-shrink-0"
+                      style={{ color: "hsl(224 55% 38%)" }}
+                      strokeWidth={1.5}
+                    />
+                    <p className="text-[14px] font-light" style={{ color: "hsl(224 30% 28%)" }}>
+                      {line}
+                    </p>
+                  </div>
+                ))}
               </div>
 
-              <div className="pt-5">
-                <div className="flex items-center gap-3 mb-2.5">
-                  <FileText className="w-4 h-4 text-[hsl(var(--electric))]" />
-                  <p className="text-[10px] tracking-[0.3em] uppercase text-foreground/50 font-medium">Documents utiles</p>
-                </div>
-                <p className="text-foreground/60 text-sm leading-relaxed font-light">
-                  Aucun document requis pour le premier échange. Pour aller plus loin : avis d'imposition, relevés de patrimoine, contrats en cours.
-                </p>
-              </div>
-            </div>
-
-            <div className="glass-float p-7 relative overflow-hidden">
-              <div className="absolute inset-0 opacity-[0.04] bg-gradient-to-br from-[hsl(var(--electric))] to-transparent pointer-events-none" />
-              <div className="relative">
-                <p className="text-[10px] tracking-[0.3em] uppercase text-[hsl(var(--electric))] mb-4 font-medium">Coordonnées</p>
-                <div className="space-y-2.5 text-sm text-foreground/70 font-light">
-                  <p className="flex items-start gap-3">
-                    <MapPin className="w-3.5 h-3.5 mt-1 text-foreground/40 flex-shrink-0" />
-                    12 rue Ferrere, 33000 Bordeaux
-                  </p>
-                  <p className="flex items-center gap-3">
-                    <Phone className="w-3.5 h-3.5 text-foreground/40 flex-shrink-0" />
-                    06 63 32 48 09
-                  </p>
-                  <p className="flex items-center gap-3">
-                    <Mail className="w-3.5 h-3.5 text-foreground/40 flex-shrink-0" />
-                    kanti@adnfamily.com
-                  </p>
-                  <p className="flex items-center gap-3 text-xs text-foreground/40 pt-3 border-t border-foreground/10">
-                    <Clock className="w-3.5 h-3.5 flex-shrink-0" />
-                    Lundi – Vendredi · 9h–18h · Sur rendez-vous
-                  </p>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* FAQ de conversion */}
-      <section className="section-padding texture-paper relative overflow-hidden">
-        <div className="max-w-3xl mx-auto relative z-10">
-          <div className="mb-12 reveal">
-            <div className="electric-line mb-5" />
-            <p className="text-[11px] tracking-[0.3em] uppercase text-foreground/50 mb-5 font-medium">
-              Questions fréquentes
-            </p>
-            <h2 className="text-3xl md:text-4xl font-heading font-light text-foreground leading-[1.15] tracking-tight">
-              Avant de prendre <span className="italic text-foreground/70">rendez-vous</span>
-            </h2>
-          </div>
-          <div className="glass-float p-2 reveal">
-            {faqItems.map((item, i) => (
-              <div key={i} className={i === 0 ? "" : "border-t border-foreground/10"}>
-                <button
-                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                  className="w-full py-5 px-6 flex items-start justify-between text-left group"
+              <div className="space-y-2 pt-8 border-t" style={{ borderColor: "hsl(224 20% 12% / 0.12)" }}>
+                <a
+                  href="tel:+33663324809"
+                  className="flex items-center gap-2.5 text-[13px] font-light transition-colors duration-300"
+                  style={{ color: "hsl(224 30% 40%)" }}
                 >
-                  <span className="font-heading text-base md:text-lg font-light text-foreground pr-8 group-hover:text-[hsl(var(--electric))] transition-colors">
-                    {item.q}
-                  </span>
-                  <span className={`text-[hsl(var(--electric))] flex-shrink-0 mt-1 text-xl transition-transform duration-300 ${openFaq === i ? "rotate-45" : ""}`}>+</span>
-                </button>
-                <div className={`overflow-hidden transition-all duration-300 ${openFaq === i ? "max-h-60 pb-5 px-6" : "max-h-0"}`}>
-                  <p className="text-foreground/65 text-sm leading-relaxed font-light">{item.a}</p>
+                  <PhoneIcon className="w-3.5 h-3.5" strokeWidth={1.5} style={{ color: "hsl(224 40% 50%)" }} />
+                  06 63 32 48 09
+                </a>
+                <a
+                  href="mailto:kanti@adnfamily.com"
+                  className="flex items-center gap-2.5 text-[13px] font-light"
+                  style={{ color: "hsl(224 30% 40%)" }}
+                >
+                  <Mail className="w-3.5 h-3.5" strokeWidth={1.5} style={{ color: "hsl(224 40% 50%)" }} />
+                  kanti@adnfamily.com
+                </a>
+                <div className="flex items-start gap-2.5 text-[13px] font-light" style={{ color: "hsl(224 20% 55%)" }}>
+                  <MapPin className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" strokeWidth={1.5} />
+                  12 Rue Ferrere · 33000 Bordeaux
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
+            </motion.div>
 
+            {/* ── Right: Glass form card ── */}
+            <motion.div
+              initial={{ opacity: 0, y: 32 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <div
+                className="w-full p-7 md:p-8"
+                style={{
+                  background: "hsl(0 0% 100% / 0.78)",
+                  backdropFilter: "blur(36px) saturate(160%)",
+                  WebkitBackdropFilter: "blur(36px) saturate(160%)",
+                  border: "1px solid hsl(0 0% 100% / 0.65)",
+                  borderTopColor: "hsl(0 0% 100% / 0.95)",
+                  boxShadow:
+                    "inset 0 1.5px 0 0 hsl(0 0% 100% / 0.90), 0 40px 80px -20px hsl(224 60% 12% / 0.14), 0 8px 24px -8px hsl(224 60% 12% / 0.08)",
+                  borderRadius: "24px",
+                }}
+              >
+                <form onSubmit={handleSubmit} noValidate className="space-y-7">
+
+                  {/* Honeypot */}
+                  <div aria-hidden className="absolute -left-[9999px] w-px h-px overflow-hidden">
+                    <input name="website" tabIndex={-1} autoComplete="off" value={form.website} onChange={handleInput} />
+                  </div>
+
+                  {/* ── 01 Conseiller ── */}
+                  <div>
+                    <SectionLabel n="01">Avec qui souhaitez-vous échanger ?</SectionLabel>
+                    <div className="grid grid-cols-3 gap-2.5">
+                      {ADVISORS.map((a) => {
+                        const selected = form.conseiller === a.id;
+                        return (
+                          <button
+                            key={a.id}
+                            type="button"
+                            onClick={() => set("conseiller", a.id)}
+                            className="relative flex flex-col items-center gap-2 p-3 rounded-[14px] text-center transition-all duration-200"
+                            style={{
+                              background: selected
+                                ? "hsl(224 60% 18% / 0.08)"
+                                : "hsl(0 0% 100% / 0.55)",
+                              border: `1px solid ${selected ? "hsl(224 60% 35%)" : "hsl(224 20% 12% / 0.12)"}`,
+                              boxShadow: selected
+                                ? "0 0 0 2px hsl(224 60% 35% / 0.25), inset 0 1px 0 hsl(0 0% 100% / 0.80)"
+                                : "inset 0 1px 0 hsl(0 0% 100% / 0.70)",
+                            }}
+                          >
+                            {a.img ? (
+                              <div
+                                className="w-10 h-10 rounded-full overflow-hidden border-2"
+                                style={{ borderColor: selected ? "hsl(224 60% 35%)" : "hsl(0 0% 0% / 0.08)" }}
+                              >
+                                <img src={a.img} alt={a.name} className="w-full h-full object-cover grayscale-[0.3]" />
+                              </div>
+                            ) : (
+                              <div
+                                className="w-10 h-10 rounded-full flex items-center justify-center text-base"
+                                style={{
+                                  background: "hsl(224 20% 92%)",
+                                  border: `2px solid ${selected ? "hsl(224 60% 35%)" : "hsl(0 0% 0% / 0.08)"}`,
+                                }}
+                              >
+                                ✦
+                              </div>
+                            )}
+                            <div>
+                              <p className="text-[11px] font-semibold leading-tight" style={{ color: "hsl(224 60% 14%)" }}>
+                                {a.name.split(" ")[0]}
+                              </p>
+                              <p className="text-[10px] font-light" style={{ color: "hsl(224 30% 45%)" }}>
+                                {a.role}
+                              </p>
+                            </div>
+                            {selected && (
+                              <span
+                                className="absolute top-2 right-2 w-4 h-4 rounded-full flex items-center justify-center"
+                                style={{ background: "hsl(224 60% 30%)" }}
+                              >
+                                <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 12 12">
+                                  <path d="M10 3L5 8.5 2 5.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                                </svg>
+                              </span>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* ── 02 Format ── */}
+                  <div>
+                    <SectionLabel n="02">Comment souhaitez-vous nous rencontrer ?</SectionLabel>
+                    <div className="grid grid-cols-3 gap-2.5">
+                      {FORMATS.map(({ id, icon: Icon, label, sub }) => {
+                        const selected = form.format === id;
+                        return (
+                          <button
+                            key={id}
+                            type="button"
+                            onClick={() => set("format", id)}
+                            className="flex flex-col items-center gap-1.5 py-4 px-2 rounded-[14px] text-center transition-all duration-200"
+                            style={{
+                              background: selected
+                                ? "hsl(224 60% 18% / 0.09)"
+                                : "hsl(0 0% 100% / 0.55)",
+                              border: `1px solid ${selected ? "hsl(224 60% 35%)" : "hsl(224 20% 12% / 0.12)"}`,
+                              boxShadow: selected
+                                ? "0 0 0 2px hsl(224 60% 35% / 0.20), inset 0 1px 0 hsl(0 0% 100% / 0.80)"
+                                : "inset 0 1px 0 hsl(0 0% 100% / 0.70)",
+                            }}
+                          >
+                            <Icon
+                              className="w-5 h-5"
+                              strokeWidth={1.5}
+                              style={{ color: selected ? "hsl(224 60% 30%)" : "hsl(224 30% 55%)" }}
+                            />
+                            <p className="text-[11px] font-semibold leading-tight" style={{ color: "hsl(224 50% 18%)" }}>
+                              {label}
+                            </p>
+                            <p className="text-[10px] leading-snug" style={{ color: "hsl(224 20% 55%)" }}>
+                              {sub}
+                            </p>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* ── 03 Timing ── */}
+                  <div>
+                    <SectionLabel n="03">Quand souhaitez-vous échanger ?</SectionLabel>
+                    <div className="flex flex-wrap gap-2">
+                      {TIMING.map(({ id, label }) => (
+                        <TogglePill key={id} selected={form.timing === id} onClick={() => set("timing", id)}>
+                          {label}
+                        </TogglePill>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* ── 04 Vos infos ── */}
+                  <div>
+                    <SectionLabel n="04">Vos coordonnées</SectionLabel>
+                    <div className="space-y-3">
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label htmlFor="nom" className="block text-[10px] font-medium tracking-[0.2em] uppercase mb-1.5" style={{ color: "hsl(224 30% 45%)" }}>
+                            Nom complet *
+                          </label>
+                          <input
+                            id="nom"
+                            name="nom"
+                            type="text"
+                            required
+                            maxLength={100}
+                            value={form.nom}
+                            onChange={handleInput}
+                            disabled={status === "loading"}
+                            placeholder="Votre nom"
+                            className="w-full px-4 py-2.5 text-[13px] rounded-xl transition-all duration-200 disabled:opacity-50"
+                            style={{
+                              background: "hsl(0 0% 100% / 0.60)",
+                              border: "1px solid hsl(224 20% 12% / 0.13)",
+                              color: "hsl(224 50% 14%)",
+                              outline: "none",
+                            }}
+                            onFocus={(e) => { e.target.style.borderColor = "hsl(224 60% 40% / 0.50)"; e.target.style.boxShadow = "0 0 0 3px hsl(224 60% 40% / 0.10)"; }}
+                            onBlur={(e) => { e.target.style.borderColor = "hsl(224 20% 12% / 0.13)"; e.target.style.boxShadow = "none"; }}
+                          />
+                        </div>
+                        <div>
+                          <label htmlFor="telephone" className="block text-[10px] font-medium tracking-[0.2em] uppercase mb-1.5" style={{ color: "hsl(224 30% 45%)" }}>
+                            Téléphone
+                          </label>
+                          <input
+                            id="telephone"
+                            name="telephone"
+                            type="tel"
+                            maxLength={30}
+                            value={form.telephone}
+                            onChange={handleInput}
+                            disabled={status === "loading"}
+                            placeholder="06 00 00 00 00"
+                            className="w-full px-4 py-2.5 text-[13px] rounded-xl transition-all duration-200 disabled:opacity-50"
+                            style={{
+                              background: "hsl(0 0% 100% / 0.60)",
+                              border: "1px solid hsl(224 20% 12% / 0.13)",
+                              color: "hsl(224 50% 14%)",
+                              outline: "none",
+                            }}
+                            onFocus={(e) => { e.target.style.borderColor = "hsl(224 60% 40% / 0.50)"; e.target.style.boxShadow = "0 0 0 3px hsl(224 60% 40% / 0.10)"; }}
+                            onBlur={(e) => { e.target.style.borderColor = "hsl(224 20% 12% / 0.13)"; e.target.style.boxShadow = "none"; }}
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label htmlFor="email" className="block text-[10px] font-medium tracking-[0.2em] uppercase mb-1.5" style={{ color: "hsl(224 30% 45%)" }}>
+                          Email *
+                        </label>
+                        <input
+                          id="email"
+                          name="email"
+                          type="email"
+                          required
+                          maxLength={255}
+                          value={form.email}
+                          onChange={handleInput}
+                          disabled={status === "loading"}
+                          placeholder="votre@email.fr"
+                          className="w-full px-4 py-2.5 text-[13px] rounded-xl transition-all duration-200 disabled:opacity-50"
+                          style={{
+                            background: "hsl(0 0% 100% / 0.60)",
+                            border: "1px solid hsl(224 20% 12% / 0.13)",
+                            color: "hsl(224 50% 14%)",
+                            outline: "none",
+                          }}
+                          onFocus={(e) => { e.target.style.borderColor = "hsl(224 60% 40% / 0.50)"; e.target.style.boxShadow = "0 0 0 3px hsl(224 60% 40% / 0.10)"; }}
+                          onBlur={(e) => { e.target.style.borderColor = "hsl(224 20% 12% / 0.13)"; e.target.style.boxShadow = "none"; }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* ── 05 Sujet ── */}
+                  <div>
+                    <SectionLabel n="05">Sujet principal</SectionLabel>
+                    <div className="flex flex-wrap gap-2">
+                      {SUBJECTS.map((s) => (
+                        <TogglePill key={s} selected={form.sujet === s} onClick={() => set("sujet", s)}>
+                          {s}
+                        </TogglePill>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* ── Message ── */}
+                  <div>
+                    <label htmlFor="message" className="block text-[10px] font-medium tracking-[0.2em] uppercase mb-1.5" style={{ color: "hsl(224 30% 45%)" }}>
+                      Quelques mots sur votre situation <span className="normal-case tracking-normal opacity-60">(optionnel)</span>
+                    </label>
+                    <textarea
+                      id="message"
+                      name="message"
+                      rows={3}
+                      maxLength={2000}
+                      value={form.message}
+                      onChange={handleInput}
+                      disabled={status === "loading"}
+                      placeholder="Décrivez brièvement votre situation ou ce qui vous amène…"
+                      className="w-full px-4 py-2.5 text-[13px] rounded-xl resize-none transition-all duration-200 disabled:opacity-50"
+                      style={{
+                        background: "hsl(0 0% 100% / 0.60)",
+                        border: "1px solid hsl(224 20% 12% / 0.13)",
+                        color: "hsl(224 50% 14%)",
+                        outline: "none",
+                      }}
+                      onFocus={(e) => { e.target.style.borderColor = "hsl(224 60% 40% / 0.50)"; e.target.style.boxShadow = "0 0 0 3px hsl(224 60% 40% / 0.10)"; }}
+                      onBlur={(e) => { e.target.style.borderColor = "hsl(224 20% 12% / 0.13)"; e.target.style.boxShadow = "none"; }}
+                    />
+                  </div>
+
+                  {/* ── Submit ── */}
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-4 pt-1">
+                    <button
+                      type="submit"
+                      disabled={status === "loading"}
+                      className="group inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full text-sm font-medium tracking-wide transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed hover:-translate-y-0.5"
+                      style={{
+                        background: "hsl(224 60% 18%)",
+                        color: "white",
+                        boxShadow: "0 8px 24px -8px hsl(224 60% 18% / 0.45)",
+                      }}
+                    >
+                      <AnimatePresence mode="wait">
+                        {status === "loading" ? (
+                          <motion.span key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                            Envoi en cours…
+                          </motion.span>
+                        ) : (
+                          <motion.span key="idle" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex items-center gap-2">
+                            Envoyer ma demande
+                            <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" strokeWidth={1.5} />
+                          </motion.span>
+                        )}
+                      </AnimatePresence>
+                    </button>
+                    <p className="text-[11px] font-light" style={{ color: "hsl(224 20% 55%)" }}>
+                      Réponse sous 24h ouvrées · Confidentiel
+                    </p>
+                  </div>
+
+                </form>
+              </div>
+            </motion.div>
+
+          </div>
+        </section>
       </main>
+
       <Footer />
     </>
   );
