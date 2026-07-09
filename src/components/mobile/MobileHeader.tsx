@@ -204,12 +204,6 @@ export default function MobileHeader() {
                   12 rue Ferrere · 33000 Bordeaux
                 </p>
                 <a
-                  href="tel:+33663324809"
-                  className="block mt-2 text-white/85 text-[14px] font-light"
-                >
-                  06 63 32 48 09
-                </a>
-                <a
                   href="mailto:kanti@adnfamily.com"
                   className="block mt-1 text-white/85 text-[14px] font-light"
                 >

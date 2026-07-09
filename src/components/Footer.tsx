@@ -19,7 +19,7 @@ export default function Footer() {
             </p>
             <div className="text-xs text-white/40 space-y-1 font-light">
               <p>12 rue Ferrere, 33000 Bordeaux</p>
-              <p>06 63 32 48 09, kanti@adnfamily.com</p>
+              <p>kanti@adnfamily.com</p>
             </div>
           </div>
           <div>

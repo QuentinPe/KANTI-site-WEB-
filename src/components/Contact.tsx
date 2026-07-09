@@ -27,10 +27,6 @@ export default function Contact() {
               </p>
               <p className="flex items-center gap-3">
                 <span className="w-1 h-1 rounded-full bg-[hsl(var(--electric))]" />
-                06 63 32 48 09
-              </p>
-              <p className="flex items-center gap-3">
-                <span className="w-1 h-1 rounded-full bg-[hsl(var(--electric))]" />
                 kanti@adnfamily.com
               </p>
               <p className="text-foreground/40 pt-3 text-xs">

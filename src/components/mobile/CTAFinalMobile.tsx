@@ -83,15 +83,6 @@ export default function CTAFinalMobile() {
               </li>
               <li>
                 <a
-                  href="tel:+33663324809"
-                  className="inline-flex items-center gap-2"
-                >
-                  <span className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--electric-soft))]" />
-                  06 63 32 48 09
-                </a>
-              </li>
-              <li>
-                <a
                   href="mailto:kanti@adnfamily.com"
                   className="inline-flex items-center gap-2"
                 >

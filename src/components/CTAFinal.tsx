@@ -244,10 +244,6 @@ export default function CTAFinal() {
                   </li>
                   <li className="flex items-center gap-3">
                     <span className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--electric-soft))] flex-shrink-0" />
-                    <a href="tel:+33663324809" className="hover:text-[hsl(var(--electric-soft))] transition-colors">06 63 32 48 09</a>
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--electric-soft))] flex-shrink-0" />
                     <a href="mailto:kanti@adnfamily.com" className="hover:text-[hsl(var(--electric-soft))] transition-colors">kanti@adnfamily.com</a>
                   </li>
                 </ul>

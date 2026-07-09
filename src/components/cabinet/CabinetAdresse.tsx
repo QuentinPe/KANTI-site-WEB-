@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { ArrowRight, MapPin, Phone, Mail } from "lucide-react";
+import { ArrowRight, MapPin, Mail } from "lucide-react";
 
 export default function CabinetAdresse() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -89,15 +89,8 @@ export default function CabinetAdresse() {
                 </p>
               </div>
 
-              {/* Téléphone & email */}
+              {/* Email */}
               <div className="flex flex-col gap-2">
-                <a
-                  href="tel:+33663324809"
-                  className="inline-flex items-center gap-2 text-[hsl(224_40%_30%)] hover:text-[hsl(224_60%_12%)] transition-colors duration-300 text-[14px] font-light group"
-                >
-                  <Phone className="w-3.5 h-3.5 text-[hsl(224_40%_50%)]" strokeWidth={1.5} />
-                  06 63 32 48 09
-                </a>
                 <a
                   href="mailto:kanti@adnfamily.com"
                   className="inline-flex items-center gap-2 text-[hsl(224_40%_30%)] hover:text-[hsl(224_60%_12%)] transition-colors duration-300 text-[14px] font-light group"

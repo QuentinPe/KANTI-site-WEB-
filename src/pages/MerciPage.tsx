@@ -51,7 +51,7 @@ export default function MerciPage() {
             <p className="text-base md:text-lg text-foreground/65 font-light leading-relaxed max-w-xl mx-auto mb-12">
               {isResource
                 ? `Vous recevrez « ${state?.resourceTitle ?? "votre ressource"} » par email dans quelques minutes. En attendant, explorez nos analyses et nos cas clients.`
-                : "Un conseiller KANTI prend connaissance de votre message et vous recontacte sous 24 heures ouvrées. Pour les demandes urgentes, vous pouvez nous joindre directement au 06 63 32 48 09."}
+                : "Un conseiller KANTI prend connaissance de votre message et vous recontacte sous 24 heures ouvrées."}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

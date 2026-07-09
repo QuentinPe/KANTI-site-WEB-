@@ -251,10 +251,6 @@ export default function ContactPage() {
                 ))}
               </div>
               <div className="space-y-2 pt-7 border-t" style={{ borderColor: "hsl(224 20% 12% / 0.12)" }}>
-                <a href="tel:+33663324809" className="flex items-center gap-2.5 text-[13px] font-light" style={{ color: "hsl(224 30% 40%)" }}>
-                  <PhoneIcon className="w-3.5 h-3.5 flex-shrink-0" strokeWidth={1.5} style={{ color: "hsl(224 40% 52%)" }} />
-                  06 63 32 48 09
-                </a>
                 <a href="mailto:kanti@adnfamily.com" className="flex items-center gap-2.5 text-[13px] font-light" style={{ color: "hsl(224 30% 40%)" }}>
                   <Mail className="w-3.5 h-3.5 flex-shrink-0" strokeWidth={1.5} style={{ color: "hsl(224 40% 52%)" }} />
                   kanti@adnfamily.com
