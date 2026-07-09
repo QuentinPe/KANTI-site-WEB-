@@ -59,16 +59,6 @@ export default function CabinetHeroSticky() {
           <div className="max-w-lg">
 
             {/* Eyebrow */}
-            <div
-              className="flex items-center gap-2 mb-8 opacity-0"
-              style={{ animation: "fade-in 0.7s cubic-bezier(0.22,1,0.36,1) 0.1s forwards" }}
-            >
-              <span className="w-6 h-[2px] bg-[hsl(224_60%_22%)]" />
-              <p className="text-[11px] tracking-[0.32em] uppercase font-medium text-[hsl(224_60%_22%)]">
-                Le Cabinet · KANTI · Bordeaux
-              </p>
-            </div>
-
             {/* Headline */}
             <h1
               className="font-heading text-5xl md:text-6xl lg:text-[68px] font-light leading-[1.04] tracking-tight mb-6 opacity-0 text-[hsl(224_60%_12%)]"

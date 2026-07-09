@@ -218,12 +218,6 @@ export default function ContactPage() {
               transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
               className="lg:self-center"
             >
-              <div className="flex items-center gap-2 mb-7">
-                <span className="w-5 h-[2px]" style={{ background: "hsl(224 60% 22%)" }} />
-                <p className="text-[11px] tracking-[0.32em] uppercase font-medium" style={{ color: "hsl(224 60% 22%)" }}>
-                  Cabinet KANTI · Bordeaux
-                </p>
-              </div>
               <h1
                 className="font-heading font-light leading-[1.04] tracking-tight mb-8"
                 style={{ fontSize: "clamp(2.4rem, 5vw, 3.6rem)", color: "hsl(224 60% 12%)" }}
