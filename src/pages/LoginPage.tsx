@@ -11,15 +11,18 @@ import logoWhite from "@/assets/logo-kanti-white.png.asset.json";
 const ADMIN_EMAILS = ["quentin@adnfamily.com", "m.delorme@adnfamily.com"];
 
 const loginSchema = z.object({
-  email: z.string().email("Adresse email invalide"),
+  email: z.string().min(1, "Email requis").email("Adresse email invalide"),
   password: z.string().min(6, "Minimum 6 caractères"),
 });
 
-const signupSchema = loginSchema.extend({
-  confirm: z.string(),
-}).refine((d) => d.password === d.confirm, {
-  message: "Les mots de passe ne correspondent pas",
-  path: ["confirm"],
+const signupSchema = z.object({
+  email: z.string().min(1, "Email requis").email("Adresse email invalide"),
+  password: z.string().min(6, "Minimum 6 caractères"),
+  confirm: z.string().min(1, "Requis"),
+}).superRefine((data, ctx) => {
+  if (data.password !== data.confirm) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Les mots de passe ne correspondent pas", path: ["confirm"] });
+  }
 });
 
 type LoginData = z.infer<typeof loginSchema>;
@@ -40,61 +43,8 @@ const CARD_STYLE = {
   ].join(", "),
 };
 
-function FieldWrapper({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <label className="text-[12px] font-medium tracking-wide" style={{ color: "hsl(0 0% 100% / 0.55)" }}>
-        {label}
-      </label>
-      {children}
-      {error && <p className="text-[11px]" style={{ color: "hsl(0 80% 72%)" }}>{error}</p>}
-    </div>
-  );
-}
-
-function InputField({ icon, type = "text", showToggle, onToggle, ...props }: {
-  icon: React.ReactNode;
-  type?: string;
-  showToggle?: boolean;
-  onToggle?: () => void;
-  [k: string]: unknown;
-}) {
-  return (
-    <div className="relative">
-      <span className="absolute left-3.5 top-1/2 -translate-y-1/2" style={{ color: "hsl(0 0% 100% / 0.35)" }}>
-        {icon}
-      </span>
-      <input
-        type={type}
-        className="w-full pl-10 pr-10 py-2.5 rounded-xl text-[14px] outline-none transition-all duration-200"
-        style={{
-          background: "hsl(0 0% 100% / 0.06)",
-          border: "1px solid hsl(0 0% 100% / 0.12)",
-          color: "hsl(0 0% 100% / 0.90)",
-        }}
-        onFocus={(e) => {
-          (e.target as HTMLElement).style.borderColor = "hsl(0 0% 100% / 0.30)";
-          (e.target as HTMLElement).style.background = "hsl(0 0% 100% / 0.09)";
-        }}
-        onBlur={(e) => {
-          (e.target as HTMLElement).style.borderColor = "hsl(0 0% 100% / 0.12)";
-          (e.target as HTMLElement).style.background = "hsl(0 0% 100% / 0.06)";
-        }}
-        {...props}
-      />
-      {showToggle && (
-        <button
-          type="button"
-          onClick={onToggle}
-          className="absolute right-3.5 top-1/2 -translate-y-1/2 transition-opacity hover:opacity-80"
-          style={{ color: "hsl(0 0% 100% / 0.35)" }}
-        >
-          {type === "password" ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-        </button>
-      )}
-    </div>
-  );
-}
+const inputBase =
+  "w-full pl-10 pr-4 py-2.5 rounded-xl text-[14px] outline-none transition-all duration-200 bg-white/[0.06] border border-white/[0.12] text-white/90 placeholder:text-white/30 focus:bg-white/[0.09] focus:border-white/30";
 
 export default function LoginPage() {
   const { signIn, signUp, resetPassword } = useAuth();
@@ -108,17 +58,27 @@ export default function LoginPage() {
   const [resetEmail, setResetEmail] = useState("");
   const [resetSent, setResetSent] = useState(false);
 
-  const loginForm = useForm<LoginData>({ resolver: zodResolver(loginSchema) });
-  const signupForm = useForm<SignupData>({ resolver: zodResolver(signupSchema) });
+  const {
+    register: regLogin,
+    handleSubmit: handleLogin,
+    formState: { errors: loginErrors, isSubmitting: loginPending },
+  } = useForm<LoginData>({ resolver: zodResolver(loginSchema) });
+
+  const {
+    register: regSignup,
+    handleSubmit: handleSignup,
+    formState: { errors: signupErrors, isSubmitting: signupPending },
+  } = useForm<SignupData>({ resolver: zodResolver(signupSchema) });
 
   const onLogin = async (data: LoginData) => {
     setGlobalError("");
     const { error } = await signIn(data.email, data.password);
     if (error) {
+      const msg = error.message ?? "";
       setGlobalError(
-        error.message.includes("Invalid login") || error.message.includes("invalid_credentials")
+        msg.includes("Invalid login") || msg.includes("invalid_credentials")
           ? "Email ou mot de passe incorrect."
-          : error.message.includes("Email not confirmed")
+          : msg.includes("Email not confirmed")
           ? "Vérifiez votre email avant de vous connecter."
           : "Une erreur est survenue. Réessayez."
       );
@@ -132,7 +92,7 @@ export default function LoginPage() {
     const { error } = await signUp(data.email, data.password);
     if (error) {
       setGlobalError(
-        error.message.includes("already registered")
+        (error.message ?? "").includes("already registered")
           ? "Un compte existe déjà avec cet email."
           : "Une erreur est survenue. Réessayez."
       );
@@ -151,18 +111,11 @@ export default function LoginPage() {
   return (
     <div
       className="min-h-screen flex items-center justify-center p-4"
-      style={{
-        background: "linear-gradient(145deg, hsl(224 60% 7%) 0%, hsl(222 50% 12%) 100%)",
-      }}
+      style={{ background: "linear-gradient(145deg, hsl(224 60% 7%) 0%, hsl(222 50% 12%) 100%)" }}
     >
-      {/* Grain overlay */}
-      <div
-        aria-hidden
-        className="fixed inset-0 opacity-[0.030] pointer-events-none"
-        style={{ backgroundImage: GRAIN, backgroundSize: "200px" }}
-      />
+      <div aria-hidden className="fixed inset-0 opacity-[0.030] pointer-events-none"
+        style={{ backgroundImage: GRAIN, backgroundSize: "200px" }} />
 
-      {/* Back to site */}
       <Link
         to="/"
         className="fixed top-6 left-6 inline-flex items-center gap-2 text-[12px] font-medium tracking-wide transition-opacity hover:opacity-70"
@@ -178,14 +131,13 @@ export default function LoginPage() {
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
       >
-        {/* Grain inside card */}
         <div aria-hidden className="absolute inset-0 opacity-[0.025] pointer-events-none"
           style={{ backgroundImage: GRAIN, backgroundSize: "200px" }} />
 
         <div className="p-7">
-          {/* Header */}
-          <div className="flex items-center gap-3 mb-7">
-            <img src={logoWhite.url} alt="KANTI" className="h-6 w-auto" style={{ opacity: 0.88 }} />
+          {/* Logo centré */}
+          <div className="flex justify-center mb-7">
+            <img src={logoWhite.url} alt="KANTI" className="h-7 w-auto" style={{ opacity: 0.88 }} />
           </div>
           <div className="mb-6" style={{ height: 1, background: "hsl(0 0% 100% / 0.08)" }} />
 
@@ -193,65 +145,58 @@ export default function LoginPage() {
             {resetMode ? (
               <motion.div key="reset"
                 initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -12 }}
-                transition={{ duration: 0.25 }}
+                transition={{ duration: 0.22 }}
               >
-                <h2 className="text-[18px] font-medium mb-1 tracking-tight" style={{ color: "hsl(0 0% 100% / 0.90)" }}>
+                <h2 className="text-[17px] font-medium mb-1.5 tracking-tight" style={{ color: "hsl(0 0% 100% / 0.90)" }}>
                   Réinitialisation
                 </h2>
-                <p className="text-[13px] font-light mb-6" style={{ color: "hsl(0 0% 100% / 0.45)" }}>
-                  Entrez votre email pour recevoir un lien de réinitialisation.
+                <p className="text-[13px] font-light mb-5" style={{ color: "hsl(0 0% 100% / 0.45)" }}>
+                  Entrez votre email pour recevoir un lien.
                 </p>
                 {resetSent ? (
                   <p className="text-[13px] py-3 px-4 rounded-xl" style={{ background: "hsl(142 60% 18% / 0.50)", color: "hsl(142 60% 75%)" }}>
-                    Email envoyé ! Vérifiez votre boîte de réception.
+                    Email envoyé ! Vérifiez votre boîte.
                   </p>
                 ) : (
                   <>
-                    <FieldWrapper label="Email">
-                      <InputField
-                        icon={<Mail className="w-4 h-4" />}
+                    <div className="relative mb-4">
+                      <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "hsl(0 0% 100% / 0.35)" }} />
+                      <input
                         type="email"
                         placeholder="votre@email.com"
                         value={resetEmail}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setResetEmail(e.target.value)}
+                        onChange={(e) => setResetEmail(e.target.value)}
+                        className={inputBase}
                       />
-                    </FieldWrapper>
-                    {globalError && (
-                      <p className="text-[12px] mt-3" style={{ color: "hsl(0 80% 72%)" }}>{globalError}</p>
-                    )}
-                    <button
-                      onClick={onReset}
-                      className="mt-5 w-full py-2.5 rounded-xl text-[14px] font-medium transition-opacity hover:opacity-80"
-                      style={{ background: "hsl(0 0% 100%)", color: "hsl(224 60% 12%)" }}
-                    >
+                    </div>
+                    {globalError && <p className="text-[12px] mb-3" style={{ color: "hsl(0 80% 72%)" }}>{globalError}</p>}
+                    <button onClick={onReset}
+                      className="w-full py-2.5 rounded-xl text-[14px] font-medium transition-opacity hover:opacity-80"
+                      style={{ background: "white", color: "hsl(224 60% 12%)" }}>
                       Envoyer le lien
                     </button>
                   </>
                 )}
-                <button
-                  onClick={() => { setResetMode(false); setGlobalError(""); setResetSent(false); }}
+                <button onClick={() => { setResetMode(false); setGlobalError(""); setResetSent(false); }}
                   className="mt-4 w-full text-center text-[12px] transition-opacity hover:opacity-70"
-                  style={{ color: "hsl(0 0% 100% / 0.40)" }}
-                >
+                  style={{ color: "hsl(0 0% 100% / 0.40)" }}>
                   ← Retour à la connexion
                 </button>
               </motion.div>
             ) : (
               <motion.div key="auth"
                 initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 12 }}
-                transition={{ duration: 0.25 }}
+                transition={{ duration: 0.22 }}
               >
                 {/* Tabs */}
                 <div className="flex rounded-xl p-1 mb-6" style={{ background: "hsl(0 0% 100% / 0.06)" }}>
                   {(["login", "signup"] as const).map((t) => (
-                    <button
-                      key={t}
+                    <button key={t}
                       onClick={() => { setTab(t); setGlobalError(""); setSuccessMsg(""); }}
                       className="flex-1 py-2 rounded-[10px] text-[13px] font-medium transition-all duration-200"
                       style={tab === t
                         ? { background: "hsl(0 0% 100% / 0.14)", color: "hsl(0 0% 100% / 0.92)" }
-                        : { color: "hsl(0 0% 100% / 0.42)" }}
-                    >
+                        : { color: "hsl(0 0% 100% / 0.42)" }}>
                       {t === "login" ? "Se connecter" : "Créer un compte"}
                     </button>
                   ))}
@@ -261,33 +206,35 @@ export default function LoginPage() {
                   <div className="py-4 px-5 rounded-xl text-[13px] font-light leading-relaxed"
                     style={{ background: "hsl(142 60% 18% / 0.50)", color: "hsl(142 60% 75%)" }}>
                     {successMsg}
-                    <button
-                      onClick={() => { setTab("login"); setSuccessMsg(""); }}
-                      className="block mt-3 text-[12px] underline underline-offset-2 opacity-80 hover:opacity-100"
-                    >
+                    <button onClick={() => { setTab("login"); setSuccessMsg(""); }}
+                      className="block mt-3 text-[12px] underline underline-offset-2 opacity-80 hover:opacity-100">
                       Se connecter maintenant
                     </button>
                   </div>
                 ) : tab === "login" ? (
-                  <form onSubmit={loginForm.handleSubmit(onLogin)} className="flex flex-col gap-4">
-                    <FieldWrapper label="Email" error={loginForm.formState.errors.email?.message}>
-                      <InputField
-                        icon={<Mail className="w-4 h-4" />}
-                        type="email"
-                        placeholder="votre@email.com"
-                        {...loginForm.register("email")}
-                      />
-                    </FieldWrapper>
-                    <FieldWrapper label="Mot de passe" error={loginForm.formState.errors.password?.message}>
-                      <InputField
-                        icon={<Lock className="w-4 h-4" />}
-                        type={showPw ? "text" : "password"}
-                        placeholder="••••••••"
-                        showToggle
-                        onToggle={() => setShowPw((v) => !v)}
-                        {...loginForm.register("password")}
-                      />
-                    </FieldWrapper>
+                  <form onSubmit={handleLogin(onLogin)} className="flex flex-col gap-4">
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-[12px] font-medium tracking-wide" style={{ color: "hsl(0 0% 100% / 0.55)" }}>Email</label>
+                      <div className="relative">
+                        <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "hsl(0 0% 100% / 0.35)" }} />
+                        <input type="email" placeholder="votre@email.com" className={inputBase} {...regLogin("email")} />
+                      </div>
+                      {loginErrors.email && <p className="text-[11px]" style={{ color: "hsl(0 80% 72%)" }}>{loginErrors.email.message}</p>}
+                    </div>
+
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-[12px] font-medium tracking-wide" style={{ color: "hsl(0 0% 100% / 0.55)" }}>Mot de passe</label>
+                      <div className="relative">
+                        <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "hsl(0 0% 100% / 0.35)" }} />
+                        <input type={showPw ? "text" : "password"} placeholder="••••••••" className={`${inputBase} pr-10`} {...regLogin("password")} />
+                        <button type="button" onClick={() => setShowPw((v) => !v)}
+                          className="absolute right-3.5 top-1/2 -translate-y-1/2 transition-opacity hover:opacity-80"
+                          style={{ color: "hsl(0 0% 100% / 0.35)" }}>
+                          {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                      </div>
+                      {loginErrors.password && <p className="text-[11px]" style={{ color: "hsl(0 80% 72%)" }}>{loginErrors.password.message}</p>}
+                    </div>
 
                     {globalError && (
                       <p className="text-[12px] py-2 px-3 rounded-lg" style={{ background: "hsl(0 60% 20% / 0.50)", color: "hsl(0 80% 72%)" }}>
@@ -295,54 +242,56 @@ export default function LoginPage() {
                       </p>
                     )}
 
-                    <button
-                      type="submit"
-                      disabled={loginForm.formState.isSubmitting}
+                    <button type="submit" disabled={loginPending}
                       className="mt-1 w-full py-2.5 rounded-xl text-[14px] font-medium transition-opacity disabled:opacity-60"
-                      style={{ background: "hsl(0 0% 100%)", color: "hsl(224 60% 12%)" }}
-                    >
-                      {loginForm.formState.isSubmitting ? "Connexion…" : "Se connecter"}
+                      style={{ background: "white", color: "hsl(224 60% 12%)" }}>
+                      {loginPending ? "Connexion…" : "Se connecter"}
                     </button>
 
-                    <button
-                      type="button"
-                      onClick={() => { setResetMode(true); setGlobalError(""); }}
+                    <button type="button" onClick={() => { setResetMode(true); setGlobalError(""); }}
                       className="text-center text-[11px] transition-opacity hover:opacity-70"
-                      style={{ color: "hsl(0 0% 100% / 0.36)" }}
-                    >
+                      style={{ color: "hsl(0 0% 100% / 0.36)" }}>
                       Mot de passe oublié ?
                     </button>
                   </form>
                 ) : (
-                  <form onSubmit={signupForm.handleSubmit(onSignup)} className="flex flex-col gap-4">
-                    <FieldWrapper label="Email" error={signupForm.formState.errors.email?.message}>
-                      <InputField
-                        icon={<Mail className="w-4 h-4" />}
-                        type="email"
-                        placeholder="votre@email.com"
-                        {...signupForm.register("email")}
-                      />
-                    </FieldWrapper>
-                    <FieldWrapper label="Mot de passe" error={signupForm.formState.errors.password?.message}>
-                      <InputField
-                        icon={<Lock className="w-4 h-4" />}
-                        type={showPw ? "text" : "password"}
-                        placeholder="••••••••"
-                        showToggle
-                        onToggle={() => setShowPw((v) => !v)}
-                        {...signupForm.register("password")}
-                      />
-                    </FieldWrapper>
-                    <FieldWrapper label="Confirmer le mot de passe" error={signupForm.formState.errors.confirm?.message}>
-                      <InputField
-                        icon={<Lock className="w-4 h-4" />}
-                        type={showConfirm ? "text" : "password"}
-                        placeholder="••••••••"
-                        showToggle
-                        onToggle={() => setShowConfirm((v) => !v)}
-                        {...signupForm.register("confirm")}
-                      />
-                    </FieldWrapper>
+                  <form onSubmit={handleSignup(onSignup)} className="flex flex-col gap-4">
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-[12px] font-medium tracking-wide" style={{ color: "hsl(0 0% 100% / 0.55)" }}>Email</label>
+                      <div className="relative">
+                        <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "hsl(0 0% 100% / 0.35)" }} />
+                        <input type="email" placeholder="votre@email.com" className={inputBase} {...regSignup("email")} />
+                      </div>
+                      {signupErrors.email && <p className="text-[11px]" style={{ color: "hsl(0 80% 72%)" }}>{signupErrors.email.message}</p>}
+                    </div>
+
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-[12px] font-medium tracking-wide" style={{ color: "hsl(0 0% 100% / 0.55)" }}>Mot de passe</label>
+                      <div className="relative">
+                        <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "hsl(0 0% 100% / 0.35)" }} />
+                        <input type={showPw ? "text" : "password"} placeholder="••••••••" className={`${inputBase} pr-10`} {...regSignup("password")} />
+                        <button type="button" onClick={() => setShowPw((v) => !v)}
+                          className="absolute right-3.5 top-1/2 -translate-y-1/2 transition-opacity hover:opacity-80"
+                          style={{ color: "hsl(0 0% 100% / 0.35)" }}>
+                          {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                      </div>
+                      {signupErrors.password && <p className="text-[11px]" style={{ color: "hsl(0 80% 72%)" }}>{signupErrors.password.message}</p>}
+                    </div>
+
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-[12px] font-medium tracking-wide" style={{ color: "hsl(0 0% 100% / 0.55)" }}>Confirmer le mot de passe</label>
+                      <div className="relative">
+                        <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "hsl(0 0% 100% / 0.35)" }} />
+                        <input type={showConfirm ? "text" : "password"} placeholder="••••••••" className={`${inputBase} pr-10`} {...regSignup("confirm")} />
+                        <button type="button" onClick={() => setShowConfirm((v) => !v)}
+                          className="absolute right-3.5 top-1/2 -translate-y-1/2 transition-opacity hover:opacity-80"
+                          style={{ color: "hsl(0 0% 100% / 0.35)" }}>
+                          {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                      </div>
+                      {signupErrors.confirm && <p className="text-[11px]" style={{ color: "hsl(0 80% 72%)" }}>{signupErrors.confirm.message}</p>}
+                    </div>
 
                     {globalError && (
                       <p className="text-[12px] py-2 px-3 rounded-lg" style={{ background: "hsl(0 60% 20% / 0.50)", color: "hsl(0 80% 72%)" }}>
@@ -350,13 +299,10 @@ export default function LoginPage() {
                       </p>
                     )}
 
-                    <button
-                      type="submit"
-                      disabled={signupForm.formState.isSubmitting}
+                    <button type="submit" disabled={signupPending}
                       className="mt-1 w-full py-2.5 rounded-xl text-[14px] font-medium transition-opacity disabled:opacity-60"
-                      style={{ background: "hsl(0 0% 100%)", color: "hsl(224 60% 12%)" }}
-                    >
-                      {signupForm.formState.isSubmitting ? "Création…" : "Créer mon compte"}
+                      style={{ background: "white", color: "hsl(224 60% 12%)" }}>
+                      {signupPending ? "Création…" : "Créer mon compte"}
                     </button>
                   </form>
                 )}
@@ -364,7 +310,6 @@ export default function LoginPage() {
             )}
           </AnimatePresence>
 
-          {/* Footer */}
           <p className="mt-6 text-center text-[11px] font-light" style={{ color: "hsl(0 0% 100% / 0.28)" }}>
             Problème ?{" "}
             <a href="mailto:kanti@adnfamily.com"
