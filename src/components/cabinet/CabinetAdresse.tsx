@@ -25,7 +25,7 @@ export default function CabinetAdresse() {
             </h2>
           </div>
           <p className="hidden md:block font-heading italic text-[12px] tracking-[0.25em] text-ivory/55">
-            Sur rendez-vous, à Biarritz.
+            Sur rendez-vous, à Bordeaux.
           </p>
         </div>
 
@@ -77,7 +77,7 @@ export default function CabinetAdresse() {
                   <dd className="font-heading text-xl md:text-2xl text-white leading-snug font-light">
                     Cabinet KANTI
                     <br />
-                    <span className="italic text-ivory/75">9 Rue de la Négresse — 64200 Biarritz</span>
+                    <span className="italic text-ivory/75">12 Rue Ferrere — 33000 Bordeaux</span>
                   </dd>
                 </div>
                 <div className="pb-5 border-b border-white/10">
@@ -90,12 +90,20 @@ export default function CabinetAdresse() {
                     Sur rendez-vous uniquement.
                   </dd>
                 </div>
+                <div className="pb-5 border-b border-white/10">
+                  <dt className="text-[10px] tracking-[0.32em] uppercase text-gold/85 mb-2 font-medium">
+                    Siège social
+                  </dt>
+                  <dd className="text-ivory/60 text-[13px] leading-relaxed font-light">
+                    9 Rue de la Négresse — 64200 Biarritz
+                  </dd>
+                </div>
                 <div>
                   <dt className="text-[10px] tracking-[0.32em] uppercase text-gold/85 mb-2 font-medium">
-                    Premier contact
+                    Zone de conseil
                   </dt>
                   <dd className="text-ivory/80 text-[15px] leading-relaxed font-light">
-                    Nous vous rappelons dans la journée pour convenir d'un premier échange, sans engagement.
+                    Bordeaux et sur tout le territoire national.
                   </dd>
                 </div>
               </dl>

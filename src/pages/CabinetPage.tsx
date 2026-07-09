@@ -42,7 +42,7 @@ const EQUIPE = [
     short: "Financement · suivi client",
     bio: "Thomas intervient aux côtés des clients sur les problématiques de financement et d'investissement. Rigoureux et à l'écoute, il assure le suivi opérationnel des dossiers et veille à ce que chaque solution retenue soit parfaitement adaptée à la situation de chaque client.",
     image: "/thomas-robert.png",
-    credentials: ["Courtier en financement", "Assistant gestion de patrimoine", "Cabinet KANTI · Biarritz"],
+    credentials: ["Courtier en financement", "Assistant gestion de patrimoine", "Cabinet KANTI · Bordeaux"],
   },
 ];
 
@@ -247,7 +247,7 @@ export default function CabinetPage() {
       <CabinetAdresse />
 
       <PageCTA
-        title="Rencontrons-nous à Biarritz"
+        title="Rencontrons-nous à Bordeaux"
         subtitle="Un premier échange de 30 minutes pour parler de votre situation patrimoniale, sans engagement."
         eyebrow="Le cabinet"
         index="05"
