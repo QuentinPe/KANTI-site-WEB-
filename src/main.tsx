@@ -6,5 +6,9 @@ import "@fontsource/fraunces/500.css";
 import "@fontsource/fraunces/600.css";
 import "@fontsource/fraunces/400-italic.css";
 import "@fontsource/fraunces/600-italic.css";
+import "@fontsource/poppins/300.css";
+import "@fontsource/poppins/400.css";
+import "@fontsource/poppins/500.css";
+import "@fontsource/poppins/600.css";
 
 createRoot(document.getElementById("root")!).render(<App />);

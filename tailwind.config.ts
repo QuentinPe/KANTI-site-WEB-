@@ -15,7 +15,7 @@ export default {
     extend: {
       fontFamily: {
         heading: ['"Cormorant Garamond"', 'Georgia', 'serif'],
-        body: ['Inter', 'system-ui', 'sans-serif'],
+        body: ['Poppins', 'Inter', 'system-ui', 'sans-serif'],
         editorial: ['Fraunces', '"Cormorant Garamond"', 'Georgia', 'serif'],
       },
       colors: {

@@ -46,32 +46,6 @@ const EQUIPE = [
   },
 ];
 
-const AGREMENTS = [
-  {
-    title: "CIF",
-    label: "Conseiller en Investissements Financiers",
-    numero: "ORIAS n° 20 000 855",
-    href: "https://www.orias.fr",
-  },
-  {
-    title: "COA",
-    label: "Courtier d'assurance",
-    numero: "CNCEF Assurance n° 25/860422",
-    href: "https://www.orias.fr",
-  },
-  {
-    title: "IOBSP",
-    label: "Courtier en opérations de banque",
-    numero: "La Compagnie IOBSP n° F002635",
-    href: "https://www.orias.fr",
-  },
-  {
-    title: "Carte T",
-    label: "Transaction immobilière",
-    numero: "CPI33012020000045313 · CCI Bordeaux",
-    href: "https://www.orias.fr",
-  },
-];
 
 export default function CabinetPage() {
   useScrollReveal();
@@ -187,58 +161,6 @@ export default function CabinetPage() {
                   </Link>
                 </div>
               </motion.article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Agréments */}
-      <section id="agrements" className="section-padding section-dark">
-        <div className="max-w-6xl mx-auto">
-          <div className="mb-14 reveal max-w-2xl">
-            <p className="text-[11px] tracking-[0.3em] uppercase text-white/50 mb-4 font-medium">
-              Transparence & réglementation
-            </p>
-            <h2 className="text-4xl md:text-5xl font-heading font-light text-white mb-5 tracking-tight leading-[1.05]">
-              Un cabinet réglementé,<br />
-              <span className="italic text-white/65">auditable.</span>
-            </h2>
-            <p className="text-white/60 text-lg font-light leading-relaxed">
-              Nos habilitations sont publiques et vérifiables sur orias.fr.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {AGREMENTS.map((a, i) => (
-              <motion.div
-                key={a.title}
-                initial={reduce ? { opacity: 0 } : { opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-60px" }}
-                transition={{ duration: 0.5, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
-                className="glass-dark rounded-2xl p-5 flex flex-col gap-3"
-              >
-                <span className="text-[10px] tracking-[0.3em] uppercase text-white/40 font-medium">
-                  Habilitation
-                </span>
-                <p className="font-heading text-2xl font-light text-white tracking-tight">
-                  {a.title}
-                </p>
-                <p className="text-white/65 text-[13px] font-light leading-snug flex-1">
-                  {a.label}
-                </p>
-                <p className="font-mono text-[11px] text-white/40 leading-snug">
-                  {a.numero}
-                </p>
-                <a
-                  href={a.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[11px] text-white/40 hover:text-white/70 transition-colors duration-300 underline underline-offset-2"
-                >
-                  Vérifier sur orias.fr →
-                </a>
-              </motion.div>
             ))}
           </div>
         </div>
