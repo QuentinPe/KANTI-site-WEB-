@@ -5,8 +5,7 @@ const team = [
     name: "Quentin Perromat",
     role: "Associé Fondateur",
     short: "Vision · stratégie · clientèle",
-    image:
-      "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=600&q=75",
+    image: "/quentin-perromat.png",
   },
   {
     name: "Thomas Robert",

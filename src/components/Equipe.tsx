@@ -7,8 +7,7 @@ const team = [
     role: "Associé Fondateur",
     short: "Vision, stratégie & clientèle",
     bio: "Fondateur de KANTI, Quentin accompagne ses clients avec une approche globale et indépendante de la gestion de patrimoine. Passionné par la transmission et l'optimisation fiscale, il construit avec chaque famille une stratégie patrimoniale sur mesure, fondée sur la confiance et la durée.",
-    image:
-      "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=900&q=80",
+    image: "/quentin-perromat.png",
     credentials: ["Associé Fondateur · KANTI", "Gestion de patrimoine indépendante", "ORIAS n° 20 000 855"],
   },
   {
