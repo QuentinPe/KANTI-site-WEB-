@@ -1,10 +1,9 @@
 import { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, UserRound, Monitor, Building2, ArrowRight } from "lucide-react";
+import { X, UserRound, Monitor, Building2, ArrowUpRight } from "lucide-react";
 
-/* ─── URLs à mettre à jour ─── */
-const PORTAIL_WEB_URL = "#";   // → lien portail client en ligne
-const ESPACE_CABINET_URL = "#"; // → lien espace cabinet KANTI
+const PORTAIL_WEB_URL = "#";                                  // → à brancher (auth Google)
+const ESPACE_CABINET_URL = "https://app.wealthcome.fr/login"; // → Wealthcome
 
 interface Props {
   open: boolean;
@@ -12,7 +11,6 @@ interface Props {
 }
 
 export default function ClientSpaceModal({ open, onClose }: Props) {
-  /* Fermeture Échap */
   useEffect(() => {
     if (!open) return;
     const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
@@ -23,94 +21,102 @@ export default function ClientSpaceModal({ open, onClose }: Props) {
   return (
     <AnimatePresence>
       {open && (
-        /* Backdrop + centrage */
         <motion.div
           className="fixed inset-0 z-[80] flex items-center justify-center p-4"
-          style={{ background: "hsl(224 60% 8% / 0.42)", backdropFilter: "blur(10px)" }}
+          style={{ backdropFilter: "blur(14px) saturate(160%)", background: "hsl(224 60% 6% / 0.60)" }}
           onClick={onClose}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.22 }}
+          transition={{ duration: 0.20 }}
         >
-          {/* Carte liquid glass */}
+          {/* ── Carte liquid glass ── */}
           <motion.div
             role="dialog"
             aria-modal="true"
             aria-label="Espace client KANTI"
-            className="w-full max-w-[480px] rounded-[22px] relative"
+            className="w-full max-w-[460px] rounded-[24px] relative overflow-hidden"
             style={{
-              background: "hsl(0 0% 100% / 0.86)",
-              backdropFilter: "blur(40px) saturate(170%)",
-              border: "1px solid hsl(0 0% 100% / 0.95)",
-              boxShadow:
-                "0 32px 80px -20px hsl(224 60% 10% / 0.22), inset 0 1px 0 hsl(0 0% 100% / 0.96)",
+              background: "hsl(224 55% 10% / 0.82)",
+              backdropFilter: "blur(56px) saturate(200%)",
+              /* Specular top highlight */
+              boxShadow: [
+                "inset 0 1.5px 0 hsl(0 0% 100% / 0.20)",
+                "inset 1px 0 0 hsl(0 0% 100% / 0.06)",
+                "inset -1px 0 0 hsl(0 0% 100% / 0.06)",
+                "inset 0 -1px 0 hsl(0 0% 100% / 0.04)",
+                "0 40px 100px -20px hsl(0 0% 0% / 0.60)",
+                "0 0 0 0.5px hsl(0 0% 100% / 0.10)",
+              ].join(", "),
             }}
             onClick={(e) => e.stopPropagation()}
-            initial={{ opacity: 0, scale: 0.93, y: 14 }}
+            initial={{ opacity: 0, scale: 0.93, y: 16 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: 6 }}
-            transition={{ duration: 0.36, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
           >
+            {/* Grain texture subtile */}
+            <div
+              aria-hidden
+              className="absolute inset-0 opacity-[0.025] pointer-events-none"
+              style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")", backgroundSize: "200px" }}
+            />
+
             {/* Bouton fermer */}
             <button
               onClick={onClose}
               aria-label="Fermer"
-              className="absolute top-5 right-5 w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-200 hover:bg-[hsl(224_20%_12%/0.10)]"
-              style={{ color: "hsl(224 20% 45%)" }}
+              className="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200"
+              style={{ background: "hsl(0 0% 100% / 0.08)", color: "hsl(0 0% 100% / 0.50)" }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(0 0% 100% / 0.16)"; (e.currentTarget as HTMLElement).style.color = "hsl(0 0% 100% / 0.90)"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(0 0% 100% / 0.08)"; (e.currentTarget as HTMLElement).style.color = "hsl(0 0% 100% / 0.50)"; }}
             >
-              <X className="w-4 h-4" strokeWidth={1.5} />
+              <X className="w-3.5 h-3.5" strokeWidth={2} />
             </button>
 
-            <div className="p-7 md:p-8">
+            <div className="p-7">
               {/* En-tête */}
-              <div className="flex items-center gap-3 mb-5">
-                <div
-                  className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
-                  style={{ background: "hsl(224 60% 18%)" }}
-                >
-                  <UserRound className="w-[18px] h-[18px] text-white" strokeWidth={1.5} />
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
+                  style={{ background: "hsl(0 0% 100% / 0.12)", border: "1px solid hsl(0 0% 100% / 0.14)" }}>
+                  <UserRound className="w-[18px] h-[18px]" strokeWidth={1.5} style={{ color: "hsl(0 0% 100% / 0.85)" }} />
                 </div>
                 <div>
-                  <p className="text-[10px] tracking-[0.32em] uppercase font-medium" style={{ color: "hsl(224 20% 54%)" }}>
+                  <p className="text-[10px] tracking-[0.32em] uppercase font-medium" style={{ color: "hsl(0 0% 100% / 0.38)" }}>
                     KANTI
                   </p>
-                  <h2 className="font-heading text-[17px] font-light tracking-tight" style={{ color: "hsl(224 55% 12%)" }}>
+                  <h2 className="font-heading text-[18px] font-light tracking-tight" style={{ color: "hsl(0 0% 100% / 0.92)" }}>
                     Votre espace personnel
                   </h2>
                 </div>
               </div>
 
-              <p className="text-[13px] font-light leading-relaxed mb-6" style={{ color: "hsl(224 14% 44%)" }}>
-                Choisissez votre mode d'accès à l'espace client KANTI.
-              </p>
+              {/* Séparateur */}
+              <div className="mb-5" style={{ height: 1, background: "hsl(0 0% 100% / 0.08)" }} />
 
-              {/* Deux options */}
-              <div className="grid sm:grid-cols-2 gap-3">
-                {/* Portail web */}
+              {/* Deux cartes */}
+              <div className="grid grid-cols-2 gap-3 mb-6">
                 <OptionCard
                   href={PORTAIL_WEB_URL}
-                  icon={<Monitor className="w-4 h-4" strokeWidth={1.5} style={{ color: "hsl(224 52% 30%)" }} />}
+                  icon={<Monitor className="w-4 h-4" strokeWidth={1.5} style={{ color: "hsl(0 0% 100% / 0.72)" }} />}
                   title="Portail web"
-                  description="Gérez votre profil, vos paramètres et consultez l'historique de vos échanges en ligne."
+                  description="Profil, paramètres et historique de vos échanges en ligne."
+                  badge="Bientôt"
                 />
-
-                {/* Espace cabinet */}
                 <OptionCard
                   href={ESPACE_CABINET_URL}
-                  icon={<Building2 className="w-4 h-4" strokeWidth={1.5} style={{ color: "hsl(224 52% 30%)" }} />}
+                  icon={<Building2 className="w-4 h-4" strokeWidth={1.5} style={{ color: "hsl(0 0% 100% / 0.72)" }} />}
                   title="Espace cabinet"
-                  description="Accédez à vos documents, rapports d'audit et lettres de recommandations archivés par KANTI."
+                  description="Documents, rapports et suivi de votre dossier KANTI."
                 />
               </div>
 
               {/* Pied */}
-              <p className="text-center text-[11px] font-light mt-6" style={{ color: "hsl(224 12% 60%)" }}>
+              <p className="text-center text-[11px] font-light" style={{ color: "hsl(0 0% 100% / 0.30)" }}>
                 Problème de connexion ?{" "}
-                <a
-                  href="mailto:kanti@adnfamily.com"
-                  className="underline decoration-dotted underline-offset-2 transition-opacity hover:opacity-70"
-                >
+                <a href="mailto:kanti@adnfamily.com"
+                  className="transition-opacity hover:opacity-80"
+                  style={{ color: "hsl(0 0% 100% / 0.52)", textDecoration: "underline", textDecorationStyle: "dotted", textUnderlineOffset: "3px" }}>
                   kanti@adnfamily.com
                 </a>
               </p>
@@ -122,68 +128,73 @@ export default function ClientSpaceModal({ open, onClose }: Props) {
   );
 }
 
-/* ─── Carte option ─── */
-function OptionCard({
-  href,
-  icon,
-  title,
-  description,
-}: {
-  href: string;
-  icon: React.ReactNode;
-  title: string;
-  description: string;
+/* ── Carte option ── */
+function OptionCard({ href, icon, title, description, badge }: {
+  href: string; icon: React.ReactNode; title: string; description: string; badge?: string;
 }) {
+  const isDisabled = href === "#";
   return (
     <a
-      href={href}
-      target={href !== "#" ? "_blank" : undefined}
+      href={isDisabled ? undefined : href}
+      target={!isDisabled ? "_blank" : undefined}
       rel="noopener noreferrer"
-      className="group flex flex-col p-5 rounded-[16px] transition-all duration-300 hover:-translate-y-0.5 cursor-pointer"
+      role={isDisabled ? "button" : undefined}
+      aria-disabled={isDisabled}
+      className="group flex flex-col p-4 rounded-[16px] transition-all duration-300 relative"
       style={{
-        background: "hsl(224 30% 12% / 0.03)",
-        border: "1px solid hsl(224 20% 12% / 0.09)",
+        background: "hsl(0 0% 100% / 0.06)",
+        border: "1px solid hsl(0 0% 100% / 0.10)",
+        cursor: isDisabled ? "default" : "pointer",
       }}
       onMouseEnter={(e) => {
+        if (isDisabled) return;
         const el = e.currentTarget as HTMLElement;
-        el.style.background = "hsl(224 60% 18% / 0.05)";
-        el.style.borderColor = "hsl(224 60% 18% / 0.22)";
-        el.style.boxShadow = "0 8px 24px -8px hsl(224 60% 12% / 0.12)";
+        el.style.background = "hsl(0 0% 100% / 0.12)";
+        el.style.borderColor = "hsl(0 0% 100% / 0.22)";
+        el.style.transform = "translateY(-1px)";
+        el.style.boxShadow = "0 8px 24px -8px hsl(0 0% 0% / 0.30)";
       }}
       onMouseLeave={(e) => {
         const el = e.currentTarget as HTMLElement;
-        el.style.background = "hsl(224 30% 12% / 0.03)";
-        el.style.borderColor = "hsl(224 20% 12% / 0.09)";
+        el.style.background = "hsl(0 0% 100% / 0.06)";
+        el.style.borderColor = "hsl(0 0% 100% / 0.10)";
+        el.style.transform = "translateY(0)";
         el.style.boxShadow = "none";
       }}
     >
+      {/* Badge optionnel */}
+      {badge && (
+        <span className="absolute top-3 right-3 text-[9px] tracking-[0.20em] uppercase font-medium px-2 py-0.5 rounded-full"
+          style={{ background: "hsl(0 0% 100% / 0.10)", color: "hsl(0 0% 100% / 0.40)" }}>
+          {badge}
+        </span>
+      )}
+
       {/* Icône */}
-      <div
-        className="w-9 h-9 rounded-full flex items-center justify-center mb-4"
-        style={{ background: "hsl(224 60% 18% / 0.08)" }}
-      >
+      <div className="w-8 h-8 rounded-full flex items-center justify-center mb-3"
+        style={{ background: "hsl(0 0% 100% / 0.09)" }}>
         {icon}
       </div>
 
-      {/* Texte */}
-      <h3 className="font-heading text-[15px] font-light mb-2 tracking-tight" style={{ color: "hsl(224 55% 12%)" }}>
+      <h3 className="text-[14px] font-medium mb-1.5 tracking-tight" style={{ color: "hsl(0 0% 100% / 0.88)" }}>
         {title}
       </h3>
-      <p className="text-[12px] font-light leading-relaxed flex-1 mb-4" style={{ color: "hsl(224 12% 48%)" }}>
+      <p className="text-[12px] font-light leading-relaxed flex-1 mb-4" style={{ color: "hsl(0 0% 100% / 0.46)" }}>
         {description}
       </p>
 
       {/* CTA */}
-      <span
-        className="inline-flex items-center gap-1.5 text-[12px] font-medium"
-        style={{ color: "hsl(224 50% 30%)" }}
-      >
-        Accéder
-        <ArrowRight
-          className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-1"
-          strokeWidth={1.5}
-        />
-      </span>
+      {!isDisabled ? (
+        <span className="inline-flex items-center gap-1.5 text-[12px] font-medium transition-all duration-300 group-hover:gap-2"
+          style={{ color: "hsl(0 0% 100% / 0.65)" }}>
+          Accéder
+          <ArrowUpRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" strokeWidth={1.5} />
+        </span>
+      ) : (
+        <span className="text-[11px] font-light" style={{ color: "hsl(0 0% 100% / 0.25)" }}>
+          En préparation
+        </span>
+      )}
     </a>
   );
 }
