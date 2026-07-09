@@ -1,44 +1,14 @@
 import { Link } from "react-router-dom";
-
-const featured = {
-  date: "Avril 2026",
-  readingTime: "8 min",
-  title: "SCPI en 2026 : ce qu'il faut savoir avant d'investir",
-  excerpt:
-    "Après deux années de correction, le marché des SCPI se stabilise. Notre analyse des rendements, de la liquidité et des critères de sélection.",
-  tag: "Investissement",
-  image:
-    "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=900&q=70",
-};
-
-const articles = [
-  {
-    date: "Mars 2026",
-    readingTime: "5 min",
-    title: "Assurance-vie : quand faut-il arbitrer ?",
-    tag: "Épargne",
-    image:
-      "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=600&q=70",
-  },
-  {
-    date: "Mars 2026",
-    readingTime: "6 min",
-    title: "Donation : transmettre sereinement",
-    tag: "Transmission",
-    image:
-      "https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=600&q=70",
-  },
-  {
-    date: "Février 2026",
-    readingTime: "4 min",
-    title: "PER : encore pertinent en 2026 ?",
-    tag: "Retraite",
-    image:
-      "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=600&q=70",
-  },
-];
+import { useQuery } from "@tanstack/react-query";
+import { getArticles } from "@/lib/articlesService";
 
 export default function ActualitesMobile() {
+  const { data: allArticles = [] } = useQuery({ queryKey: ["articles"], queryFn: getArticles });
+  const featured = allArticles.find((a) => a.featured) ?? allArticles[0];
+  const articles = allArticles.filter((a) => a.id !== featured?.id).slice(0, 3);
+
+  if (!featured) return null;
+
   return (
     <section
       id="actualites"
@@ -77,7 +47,7 @@ export default function ActualitesMobile() {
           </div>
           <div className="p-5">
             <p className="text-[10px] tracking-[0.28em] uppercase text-white/55 mb-3 font-medium">
-              {featured.date} · {featured.readingTime}
+              {featured.date} · {featured.reading_time}
             </p>
             <h3 className="font-heading text-[20px] font-light text-white leading-snug tracking-tight mb-3">
               {featured.title}
@@ -105,7 +75,7 @@ export default function ActualitesMobile() {
               </div>
               <div className="min-w-0 flex flex-col justify-center">
                 <p className="text-[10px] text-white/45 tracking-[0.22em] uppercase mb-1 font-medium">
-                  {a.tag} · {a.readingTime}
+                  {a.tag} · {a.reading_time}
                 </p>
                 <h3 className="font-heading text-[15px] font-normal text-white leading-snug tracking-tight">
                   {a.title}

@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { useRef } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { getArticles } from "@/lib/articlesService";
 
 /**
  * Card wrapper that highlights (white glow + scale) when it crosses the
@@ -59,51 +61,13 @@ function SpotlightCard({
   );
 }
 
-const featured = {
-  date: "Avril 2026",
-  readingTime: "8 min de lecture",
-  title: "SCPI en 2026 : ce qu'il faut savoir avant d'investir",
-  excerpt:
-    "Après deux années de correction, le marché des SCPI se stabilise. Analyse complète des rendements, de la liquidité et des critères de sélection à appliquer avant tout arbitrage. Notre cabinet décrypte les pièges à éviter et les opportunités encore valables sur le segment.",
-  tag: "Investissement",
-  image:
-    "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1800&q=80",
-};
-
-const articles = [
-  {
-    date: "Mars 2026",
-    readingTime: "5 min",
-    title: "Assurance-vie : quand faut-il arbitrer ?",
-    excerpt:
-      "Un contrat d'assurance-vie n'est pas un placement qu'on oublie. Quand et comment réallouer pour rester aligné avec vos objectifs.",
-    tag: "Épargne",
-    image:
-      "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=1200&q=80",
-  },
-  {
-    date: "Mars 2026",
-    readingTime: "6 min",
-    title: "Donation : transmettre sereinement",
-    excerpt:
-      "Abattements, délais de rappel, démembrement : les mécanismes essentiels pour préparer une transmission efficace et conforme.",
-    tag: "Transmission",
-    image:
-      "https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=1200&q=80",
-  },
-  {
-    date: "Février 2026",
-    readingTime: "4 min",
-    title: "PER : encore pertinent en 2026 ?",
-    excerpt:
-      "Le Plan d'Épargne Retraite reste un outil de défiscalisation puissant. Pour qui, à quelle hauteur, et quels arbitrages prévoir à la sortie.",
-    tag: "Retraite",
-    image:
-      "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=80",
-  },
-];
-
 export default function Actualites() {
+  const { data: allArticles = [] } = useQuery({ queryKey: ["articles"], queryFn: getArticles });
+  const featured = allArticles.find((a) => a.featured) ?? allArticles[0];
+  const articles = allArticles.filter((a) => a.id !== featured?.id).slice(0, 3);
+
+  if (!featured) return null;
+
   return (
     <section id="actualites" className="section-padding section-dark relative overflow-hidden">
       <div className="max-w-7xl mx-auto relative z-10">
@@ -150,7 +114,7 @@ export default function Actualites() {
             </div>
             <div className="p-8 lg:p-10">
               <p className="text-[10px] tracking-[0.3em] uppercase text-white/60 mb-4 font-medium">
-                {featured.date} · {featured.readingTime}
+                {featured.date} · {featured.reading_time}
               </p>
                   <h3 className="font-heading text-2xl md:text-3xl lg:text-4xl font-light text-white mb-4 leading-[1.1] tracking-tight max-w-2xl group-hover:text-white/90 transition-colors duration-500">
                 {featured.title}
@@ -183,7 +147,7 @@ export default function Actualites() {
                 </div>
                 <div className="flex-1 min-w-0 flex flex-col justify-center">
                   <p className="text-[10px] text-white/40 tracking-[0.25em] uppercase mb-2 font-medium">
-                    {a.tag} · {a.readingTime}
+                    {a.tag} · {a.reading_time}
                   </p>
                     <h3 className="font-heading text-base lg:text-lg font-normal text-white mb-2 leading-snug tracking-tight group-hover:text-white/90 transition-colors duration-500">
                     {a.title}

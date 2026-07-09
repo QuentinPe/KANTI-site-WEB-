@@ -9,6 +9,8 @@ import PremiumCursor from "@/components/PremiumCursor";
 import CookieBanner from "@/components/CookieBanner";
 import SkipToContent from "@/components/SkipToContent";
 import MobileChrome from "@/components/mobile/MobileChrome";
+import { AuthProvider } from "@/contexts/AuthContext";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index.tsx";
 import CabinetPage from "./pages/CabinetPage.tsx";
 import GestionPatrimonialePage from "./pages/GestionPatrimonialePage.tsx";
@@ -33,6 +35,10 @@ import ReclamationsPage from "./pages/ReclamationsPage.tsx";
 import MerciPage from "./pages/MerciPage.tsx";
 import RessourcesPage from "./pages/RessourcesPage.tsx";
 import ProfilRisquePage from "./pages/ProfilRisquePage.tsx";
+import LoginPage from "./pages/LoginPage.tsx";
+import AdminLayout from "./pages/admin/AdminLayout.tsx";
+import AdminArticlesList from "./pages/admin/AdminArticlesList.tsx";
+import AdminArticleForm from "./pages/admin/AdminArticleForm.tsx";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +51,7 @@ const AppShell = () => {
       <Sonner />
       <PremiumCursor />
       <BrowserRouter>
+        <AuthProvider>
         <MobileChrome />
         <Routes>
           <Route path="/" element={<Index />} />
@@ -69,11 +76,18 @@ const AppShell = () => {
           <Route path="/ressources" element={<RessourcesPage />} />
           <Route path="/profil-de-risque" element={<ProfilRisquePage />} />
           <Route path="/merci" element={<MerciPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
+            <Route index element={<AdminArticlesList />} />
+            <Route path="articles/new" element={<AdminArticleForm />} />
+            <Route path="articles/:id/edit" element={<AdminArticleForm />} />
+          </Route>
           {/* Dynamic product / solution sub-pages */}
           <Route path="/:categorySlug/:productSlug" element={<ProductDetailPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <CookieBanner />
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   );

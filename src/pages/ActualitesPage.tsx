@@ -2,87 +2,11 @@ import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { useState, useMemo, useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PageCTA from "@/components/PageCTA";
-
-/* ─── Données ─── */
-const articles = [
-  {
-    date: "Avril 2026",
-    readingTime: "8 min",
-    tag: "Investissement",
-    title: "SCPI en 2026 : ce qu'il faut savoir avant d'investir",
-    excerpt:
-      "Après deux années de correction, le marché des SCPI se stabilise. Analyse des rendements, de la liquidité et des critères de sélection avant tout arbitrage.",
-    image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1800&q=80",
-    featured: true,
-  },
-  {
-    date: "Mars 2026",
-    readingTime: "5 min",
-    tag: "Épargne",
-    title: "Assurance-vie : quand faut-il arbitrer ?",
-    excerpt: "Un contrat d'assurance-vie n'est pas un placement qu'on oublie. Quand et comment réallouer pour rester aligné avec vos objectifs.",
-    image: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=1200&q=80",
-  },
-  {
-    date: "Mars 2026",
-    readingTime: "6 min",
-    tag: "Transmission",
-    title: "Donation : transmettre sereinement",
-    excerpt: "Abattements, délais de rappel, démembrement : les mécanismes essentiels pour préparer une transmission efficace.",
-    image: "https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=1200&q=80",
-  },
-  {
-    date: "Février 2026",
-    readingTime: "7 min",
-    tag: "Fiscalité",
-    title: "Loi de finances 2026 : ce qui change pour votre patrimoine",
-    excerpt: "Décryptage des mesures fiscales de la loi de finances et de leur impact sur votre stratégie patrimoniale.",
-    image: "https://images.unsplash.com/photo-1554224154-26032cdc0c63?auto=format&fit=crop&w=1200&q=80",
-  },
-  {
-    date: "Février 2026",
-    readingTime: "4 min",
-    tag: "Retraite",
-    title: "PER : pour qui, pourquoi, comment ?",
-    excerpt: "Avantages fiscaux, conditions de sortie, arbitrages : le PER expliqué pour ceux qui veulent préparer leur retraite.",
-    image: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=80",
-  },
-  {
-    date: "Janvier 2026",
-    readingTime: "6 min",
-    tag: "Immobilier",
-    title: "Investir en nue-propriété : un mécanisme peu connu",
-    excerpt: "Acquérir un bien à prix réduit, échapper à l'IFI, récupérer la pleine propriété au terme. Décryptage.",
-    image: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1200&q=80",
-  },
-  {
-    date: "Janvier 2026",
-    readingTime: "9 min",
-    tag: "Dirigeants",
-    title: "Cession d'entreprise : préparer sa sortie en amont",
-    excerpt: "Les étapes pour maximiser le prix de vente et optimiser la fiscalité de la plus-value de cession.",
-    image: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=1200&q=80",
-  },
-  {
-    date: "Décembre 2025",
-    readingTime: "7 min",
-    tag: "Allocation",
-    title: "Diversification : au-delà des marchés cotés",
-    excerpt: "Private equity, dette privée, forêts, infrastructures. Panorama des classes d'actifs alternatives accessibles.",
-    image: "https://images.unsplash.com/photo-1543286386-713bdd548da4?auto=format&fit=crop&w=1200&q=80",
-  },
-  {
-    date: "Décembre 2025",
-    readingTime: "5 min",
-    tag: "Prévoyance",
-    title: "Protéger sa famille : les contrats essentiels",
-    excerpt: "Assurance décès, invalidité, dépendance : identifier les couvertures indispensables et les lacunes fréquentes.",
-    image: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80",
-  },
-];
+import { getArticles } from "@/lib/articlesService";
 
 const CATEGORIES = ["Toutes", "Investissement", "Épargne", "Transmission", "Fiscalité", "Retraite", "Immobilier", "Dirigeants", "Allocation", "Prévoyance"];
 
@@ -91,6 +15,11 @@ export default function ActualitesPage() {
   useScrollReveal();
   const [activeCategory, setActiveCategory] = useState("Toutes");
 
+  const { data: articles = [], isLoading } = useQuery({
+    queryKey: ["articles"],
+    queryFn: getArticles,
+  });
+
   const heroRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -98,14 +27,28 @@ export default function ActualitesPage() {
   });
   const imageY = useTransform(scrollYProgress, [0, 1], ["0%", "22%"]);
 
-  const featured = articles.find((a) => a.featured)!;
+  const featured = articles.find((a) => a.featured) ?? articles[0];
   const filtered = useMemo(
     () =>
       articles
-        .filter((a) => !a.featured)
+        .filter((a) => a.id !== featured?.id)
         .filter((a) => activeCategory === "Toutes" || a.tag === activeCategory),
-    [activeCategory]
+    [articles, featured, activeCategory]
   );
+
+  const HERO_FALLBACK = "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1800&q=80";
+
+  if (isLoading) {
+    return (
+      <>
+        <Header />
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="w-8 h-8 rounded-full border-2 border-foreground/15 border-t-foreground/50 animate-spin" />
+        </div>
+        <Footer />
+      </>
+    );
+  }
 
   return (
     <>
@@ -123,7 +66,7 @@ export default function ActualitesPage() {
           style={{ y: imageY, scale: 1.14 }}
         >
           <img
-            src={featured.image}
+            src={featured?.image ?? HERO_FALLBACK}
             alt=""
             aria-hidden
             className="w-full h-full object-cover object-center"
@@ -191,7 +134,7 @@ export default function ActualitesPage() {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.6, delay: 0.5 }}
               >
-                {articles.length} analyses · Mise à jour mensuelle
+                {articles.length > 0 ? `${articles.length} analyses` : "Mise à jour mensuelle"} · Mise à jour mensuelle
               </motion.p>
 
             </div>
@@ -200,6 +143,7 @@ export default function ActualitesPage() {
       </section>
 
       {/* ── Article à la une ── */}
+      {featured && (
       <section className="bg-white pt-4 pb-16 md:pb-20">
         <div className="max-w-6xl mx-auto px-8 md:px-14">
 
@@ -242,7 +186,7 @@ export default function ActualitesPage() {
               style={{ background: "hsl(220 25% 98%)" }}
             >
               <p className="text-[10px] tracking-[0.3em] uppercase font-medium mb-4" style={{ color: "hsl(224 25% 52%)" }}>
-                {featured.date} · {featured.readingTime} de lecture
+                {featured.date} · {featured.reading_time} de lecture
               </p>
               <h2
                 className="font-heading text-2xl md:text-3xl font-light leading-[1.08] tracking-tight mb-5"
@@ -267,6 +211,7 @@ export default function ActualitesPage() {
           </motion.article>
         </div>
       </section>
+      )}
 
       {/* ── Grille articles ── */}
       <section className="bg-white pb-24 md:pb-32">
@@ -355,7 +300,7 @@ export default function ActualitesPage() {
                 {/* Contenu */}
                 <div className="p-5 flex-1 flex flex-col">
                   <p className="text-[10px] tracking-[0.25em] uppercase font-medium mb-2.5" style={{ color: "hsl(224 18% 56%)" }}>
-                    {a.date} · {a.readingTime}
+                    {a.date} · {a.reading_time}
                   </p>
                   <h3
                     className="font-heading text-[17px] font-light leading-snug tracking-tight mb-3 transition-colors duration-300 group-hover:text-[hsl(224_55%_28%)]"

@@ -1,9 +1,9 @@
 import { useEffect } from "react";
+import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, UserRound, Monitor, Building2, ArrowUpRight } from "lucide-react";
 import logoWhite from "@/assets/logo-kanti-white.png.asset.json";
 
-const PORTAIL_WEB_URL = "#";                                  // → à brancher (auth Google)
 const ESPACE_CABINET_URL = "https://app.wealthcome.fr/login"; // → Wealthcome
 
 interface Props {
@@ -95,12 +95,11 @@ export default function ClientSpaceModal({ open, onClose }: Props) {
 
               {/* Deux cartes */}
               <div className="grid grid-cols-2 gap-3 mb-6">
-                <OptionCard
-                  href={PORTAIL_WEB_URL}
+                <PortailCard
                   icon={<Monitor className="w-4 h-4" strokeWidth={1.5} style={{ color: "hsl(0 0% 100% / 0.72)" }} />}
                   title="Portail web"
-                  description="Profil, paramètres et historique de vos échanges en ligne."
-                  badge="Bientôt"
+                  description="Consultez vos documents et échanges en ligne."
+                  onClose={onClose}
                 />
                 <OptionCard
                   href={ESPACE_CABINET_URL}
@@ -127,26 +126,20 @@ export default function ClientSpaceModal({ open, onClose }: Props) {
   );
 }
 
-/* ── Carte option ── */
-function OptionCard({ href, icon, title, description, badge }: {
-  href: string; icon: React.ReactNode; title: string; description: string; badge?: string;
+/* ── Carte portail web (Link interne) ── */
+function PortailCard({ icon, title, description, onClose }: {
+  icon: React.ReactNode; title: string; description: string; onClose: () => void;
 }) {
-  const isDisabled = href === "#";
   return (
-    <a
-      href={isDisabled ? undefined : href}
-      target={!isDisabled ? "_blank" : undefined}
-      rel="noopener noreferrer"
-      role={isDisabled ? "button" : undefined}
-      aria-disabled={isDisabled}
+    <Link
+      to="/login"
+      onClick={onClose}
       className="group flex flex-col p-4 rounded-[16px] transition-all duration-300 relative"
       style={{
         background: "hsl(0 0% 100% / 0.06)",
         border: "1px solid hsl(0 0% 100% / 0.10)",
-        cursor: isDisabled ? "default" : "pointer",
       }}
       onMouseEnter={(e) => {
-        if (isDisabled) return;
         const el = e.currentTarget as HTMLElement;
         el.style.background = "hsl(0 0% 100% / 0.12)";
         el.style.borderColor = "hsl(0 0% 100% / 0.22)";
@@ -161,39 +154,69 @@ function OptionCard({ href, icon, title, description, badge }: {
         el.style.boxShadow = "none";
       }}
     >
-      {/* Badge optionnel */}
-      {badge && (
-        <span className="absolute top-3 right-3 text-[9px] tracking-[0.20em] uppercase font-medium px-2 py-0.5 rounded-full"
-          style={{ background: "hsl(0 0% 100% / 0.10)", color: "hsl(0 0% 100% / 0.40)" }}>
-          {badge}
-        </span>
-      )}
-
-      {/* Icône */}
       <div className="w-8 h-8 rounded-full flex items-center justify-center mb-3"
         style={{ background: "hsl(0 0% 100% / 0.09)" }}>
         {icon}
       </div>
-
       <h3 className="text-[14px] font-medium mb-1.5 tracking-tight" style={{ color: "hsl(0 0% 100% / 0.88)" }}>
         {title}
       </h3>
       <p className="text-[12px] font-light leading-relaxed flex-1 mb-4" style={{ color: "hsl(0 0% 100% / 0.46)" }}>
         {description}
       </p>
+      <span className="inline-flex items-center gap-1.5 text-[12px] font-medium transition-all duration-300 group-hover:gap-2"
+        style={{ color: "hsl(0 0% 100% / 0.65)" }}>
+        Se connecter
+        <ArrowUpRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" strokeWidth={1.5} />
+      </span>
+    </Link>
+  );
+}
 
-      {/* CTA */}
-      {!isDisabled ? (
-        <span className="inline-flex items-center gap-1.5 text-[12px] font-medium transition-all duration-300 group-hover:gap-2"
-          style={{ color: "hsl(0 0% 100% / 0.65)" }}>
-          Accéder
-          <ArrowUpRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" strokeWidth={1.5} />
-        </span>
-      ) : (
-        <span className="text-[11px] font-light" style={{ color: "hsl(0 0% 100% / 0.25)" }}>
-          En préparation
-        </span>
-      )}
+/* ── Carte option externe ── */
+function OptionCard({ href, icon, title, description }: {
+  href: string; icon: React.ReactNode; title: string; description: string;
+}) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="group flex flex-col p-4 rounded-[16px] transition-all duration-300 relative"
+      style={{
+        background: "hsl(0 0% 100% / 0.06)",
+        border: "1px solid hsl(0 0% 100% / 0.10)",
+      }}
+      onMouseEnter={(e) => {
+        const el = e.currentTarget as HTMLElement;
+        el.style.background = "hsl(0 0% 100% / 0.12)";
+        el.style.borderColor = "hsl(0 0% 100% / 0.22)";
+        el.style.transform = "translateY(-1px)";
+        el.style.boxShadow = "0 8px 24px -8px hsl(0 0% 0% / 0.30)";
+      }}
+      onMouseLeave={(e) => {
+        const el = e.currentTarget as HTMLElement;
+        el.style.background = "hsl(0 0% 100% / 0.06)";
+        el.style.borderColor = "hsl(0 0% 100% / 0.10)";
+        el.style.transform = "translateY(0)";
+        el.style.boxShadow = "none";
+      }}
+    >
+      <div className="w-8 h-8 rounded-full flex items-center justify-center mb-3"
+        style={{ background: "hsl(0 0% 100% / 0.09)" }}>
+        {icon}
+      </div>
+      <h3 className="text-[14px] font-medium mb-1.5 tracking-tight" style={{ color: "hsl(0 0% 100% / 0.88)" }}>
+        {title}
+      </h3>
+      <p className="text-[12px] font-light leading-relaxed flex-1 mb-4" style={{ color: "hsl(0 0% 100% / 0.46)" }}>
+        {description}
+      </p>
+      <span className="inline-flex items-center gap-1.5 text-[12px] font-medium transition-all duration-300 group-hover:gap-2"
+        style={{ color: "hsl(0 0% 100% / 0.65)" }}>
+        Accéder
+        <ArrowUpRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" strokeWidth={1.5} />
+      </span>
     </a>
   );
 }
