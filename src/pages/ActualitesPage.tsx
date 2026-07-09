@@ -1,11 +1,12 @@
 import { useScrollReveal } from "@/hooks/useScrollReveal";
-import { useState, useMemo } from "react";
-import { motion } from "framer-motion";
+import { useState, useMemo, useRef } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { ArrowRight } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import PageHero from "@/components/PageHero";
 import PageCTA from "@/components/PageCTA";
 
+/* ─── Données ─── */
 const articles = [
   {
     date: "Avril 2026",
@@ -13,7 +14,7 @@ const articles = [
     tag: "Investissement",
     title: "SCPI en 2026 : ce qu'il faut savoir avant d'investir",
     excerpt:
-      "Après deux années de correction, le marché des SCPI se stabilise. Analyse des rendements, de la liquidité et des critères de sélection.",
+      "Après deux années de correction, le marché des SCPI se stabilise. Analyse des rendements, de la liquidité et des critères de sélection avant tout arbitrage.",
     image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1800&q=80",
     featured: true,
   },
@@ -83,11 +84,19 @@ const articles = [
   },
 ];
 
-const categories = ["Toutes", "Investissement", "Épargne", "Transmission", "Fiscalité", "Retraite", "Immobilier", "Dirigeants", "Allocation", "Prévoyance"];
+const CATEGORIES = ["Toutes", "Investissement", "Épargne", "Transmission", "Fiscalité", "Retraite", "Immobilier", "Dirigeants", "Allocation", "Prévoyance"];
 
+/* ─── Page ─── */
 export default function ActualitesPage() {
   useScrollReveal();
   const [activeCategory, setActiveCategory] = useState("Toutes");
+
+  const heroRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"],
+  });
+  const imageY = useTransform(scrollYProgress, [0, 1], ["0%", "22%"]);
 
   const featured = articles.find((a) => a.featured)!;
   const filtered = useMemo(
@@ -101,125 +110,268 @@ export default function ActualitesPage() {
   return (
     <>
       <Header />
-      <PageHero
-        eyebrow="Magazine · Éclairages"
-        title="Actualités"
-        highlight="patrimoniales"
-        subtitle="Analyses, décryptages et points de vue pour éclairer vos décisions patrimoniales. Une veille régulière au service de votre stratégie."
-        breadcrumb="Actualités"
-      />
 
-      {/* Featured article */}
-      <section className="section-dark relative overflow-hidden pt-20 pb-12">
-        <div className="max-w-7xl mx-auto px-6">
+      {/* ── Hero ── */}
+      <section
+        ref={heroRef}
+        className="relative overflow-hidden"
+        style={{ minHeight: "68vh" }}
+      >
+        {/* Image parallax */}
+        <motion.div
+          className="absolute inset-0 will-change-transform"
+          style={{ y: imageY, scale: 1.14 }}
+        >
+          <img
+            src={featured.image}
+            alt=""
+            aria-hidden
+            className="w-full h-full object-cover object-center"
+            fetchPriority="high"
+          />
+        </motion.div>
+
+        {/* Dégradé blanc gauche */}
+        <div
+          aria-hidden
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              "linear-gradient(105deg, hsl(0 0% 100% / 0.98) 0%, hsl(0 0% 100% / 0.92) 28%, hsl(0 0% 100% / 0.60) 52%, hsl(0 0% 100% / 0.08) 70%, transparent 82%)",
+          }}
+        />
+        <div
+          aria-hidden
+          className="absolute inset-x-0 bottom-0 h-36 pointer-events-none"
+          style={{ background: "linear-gradient(to top, hsl(0 0% 100%) 0%, transparent 100%)" }}
+        />
+
+        {/* Contenu gauche */}
+        <div className="relative z-10 flex items-center min-h-[68vh] py-28 lg:py-36">
+          <div className="max-w-6xl mx-auto px-8 md:px-14 w-full">
+            <div className="max-w-[520px]">
+
+              <motion.div
+                className="flex items-center gap-2 mb-7"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+              >
+                <span className="w-5 h-[2px]" style={{ background: "hsl(224 60% 22%)" }} />
+                <p className="text-[11px] tracking-[0.32em] uppercase font-medium" style={{ color: "hsl(224 60% 22%)" }}>
+                  Magazine · Éclairages
+                </p>
+              </motion.div>
+
+              <motion.h1
+                className="font-heading font-light leading-[1.04] tracking-tight mb-6"
+                style={{ fontSize: "clamp(2.6rem, 5.5vw, 4rem)", color: "hsl(224 60% 12%)" }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+              >
+                Actualités<br />
+                <span className="italic" style={{ color: "hsl(224 55% 30%)" }}>patrimoniales.</span>
+              </motion.h1>
+
+              <motion.p
+                className="text-[15px] font-light leading-relaxed mb-8"
+                style={{ color: "hsl(224 25% 32%)" }}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
+              >
+                Analyses, décryptages et points de vue pour éclairer vos décisions patrimoniales. Une veille mensuelle au service de votre stratégie.
+              </motion.p>
+
+              <motion.p
+                className="text-[12px] font-light tracking-wide"
+                style={{ color: "hsl(224 18% 55%)" }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.6, delay: 0.5 }}
+              >
+                {articles.length} analyses · Mise à jour mensuelle
+              </motion.p>
+
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Article à la une ── */}
+      <section className="bg-white pt-4 pb-16 md:pb-20">
+        <div className="max-w-6xl mx-auto px-8 md:px-14">
+
+          <div className="flex items-center gap-2 mb-10 reveal">
+            <span className="w-5 h-[2px]" style={{ background: "hsl(224 50% 30%)" }} />
+            <p className="text-[11px] tracking-[0.32em] uppercase font-medium" style={{ color: "hsl(224 35% 42%)" }}>
+              À la une
+            </p>
+          </div>
+
           <motion.article
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
+            viewport={{ once: true }}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            className="group relative rounded-[2rem] overflow-hidden glass-dark cursor-pointer"
+            className="group grid lg:grid-cols-2 rounded-[22px] overflow-hidden cursor-pointer transition-all duration-500 hover:-translate-y-1"
+            style={{
+              border: "1px solid hsl(224 20% 12% / 0.07)",
+              boxShadow: "0 8px 32px -8px hsl(224 60% 12% / 0.10)",
+            }}
           >
-            <div className="relative aspect-[16/9] md:aspect-[21/9] overflow-hidden">
-              <div
-                className="absolute inset-0 bg-cover bg-center transition-transform duration-[1100ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.05]"
-                style={{ backgroundImage: `url(${featured.image})` }}
+            {/* Image */}
+            <div className="relative aspect-[4/3] lg:aspect-auto overflow-hidden">
+              <img
+                src={featured.image}
+                alt={featured.title}
+                className="w-full h-full object-cover transition-transform duration-[1100ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[hsl(var(--navy-deep))]/95 via-[hsl(var(--navy-deep))]/40 to-transparent" />
-              <span className="absolute top-6 left-6 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/15 backdrop-blur-md text-[10px] tracking-[0.3em] uppercase text-white font-medium">
-                À la une · {featured.tag}
+              <span
+                className="absolute top-5 left-5 px-3 py-1.5 rounded-full text-[10px] tracking-[0.25em] uppercase font-medium text-white"
+                style={{ background: "hsl(224 60% 18% / 0.85)", backdropFilter: "blur(12px)" }}
+              >
+                {featured.tag}
               </span>
-              <div className="absolute bottom-0 inset-x-0 p-8 md:p-12 lg:p-14">
-                <p className="text-[10px] tracking-[0.3em] uppercase text-white/60 mb-4 font-medium">
-                  {featured.date} · {featured.readingTime} de lecture
-                </p>
-                <h2 className="font-heading text-3xl md:text-4xl lg:text-5xl font-light text-white mb-5 leading-[1.05] tracking-tight max-w-3xl group-hover:text-[hsl(var(--electric-soft))] transition-colors duration-500">
-                  {featured.title}
-                </h2>
-                <p className="text-white/70 text-base leading-relaxed font-light max-w-2xl mb-6">
-                  {featured.excerpt}
-                </p>
-                <span className="inline-flex items-center gap-2 text-sm text-white tracking-wide">
-                  Lire l'analyse
-                  <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                  </svg>
-                </span>
-              </div>
+            </div>
+
+            {/* Contenu */}
+            <div
+              className="flex flex-col justify-center p-8 lg:p-12"
+              style={{ background: "hsl(220 25% 98%)" }}
+            >
+              <p className="text-[10px] tracking-[0.3em] uppercase font-medium mb-4" style={{ color: "hsl(224 25% 52%)" }}>
+                {featured.date} · {featured.readingTime} de lecture
+              </p>
+              <h2
+                className="font-heading text-2xl md:text-3xl font-light leading-[1.08] tracking-tight mb-5"
+                style={{ color: "hsl(224 60% 10%)" }}
+              >
+                {featured.title}
+              </h2>
+              <p className="text-[14px] font-light leading-relaxed mb-8" style={{ color: "hsl(224 18% 38%)" }}>
+                {featured.excerpt}
+              </p>
+              <span
+                className="inline-flex items-center gap-2 text-[13px] font-medium tracking-wide"
+                style={{ color: "hsl(224 60% 22%)" }}
+              >
+                Lire l'analyse
+                <ArrowRight
+                  className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1"
+                  strokeWidth={1.5}
+                />
+              </span>
             </div>
           </motion.article>
         </div>
       </section>
 
-      {/* Filters + grid */}
-      <section className="section-dark relative overflow-hidden pb-24">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
-            <div>
-              <div
-                className="electric-line mb-5"
-                style={{ background: "linear-gradient(90deg, hsl(210 100% 70%), hsl(210 100% 70% / 0.2))" }}
-              />
-              <p className="text-[11px] tracking-[0.3em] uppercase text-white/50 mb-4 font-medium">
-                Toutes les analyses
-              </p>
-              <h2 className="font-heading text-3xl md:text-4xl font-light text-white tracking-tight leading-[1.05]">
-                Explorer par <span className="italic text-white/75">thématique</span>
-              </h2>
-            </div>
+      {/* ── Grille articles ── */}
+      <section className="bg-white pb-24 md:pb-32">
+        <div className="max-w-6xl mx-auto px-8 md:px-14">
+
+          {/* En-tête */}
+          <div className="mb-10 reveal">
+            <div className="electric-line mb-5" />
+            <p className="text-[11px] tracking-[0.3em] uppercase font-medium mb-3" style={{ color: "hsl(224 25% 50%)" }}>
+              Toutes les analyses
+            </p>
+            <h2
+              className="font-heading text-3xl md:text-4xl font-light tracking-tight leading-[1.05]"
+              style={{ color: "hsl(224 55% 12%)" }}
+            >
+              Explorer par{" "}
+              <span className="italic" style={{ color: "hsl(224 25% 40%)" }}>thématique</span>
+            </h2>
           </div>
 
-          {/* Category pills */}
+          {/* Pills catégories */}
           <div className="flex flex-wrap gap-2 mb-12">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
-                className={`px-4 py-2 rounded-full text-xs tracking-wide transition-all duration-300 ${
-                  activeCategory === cat
-                    ? "bg-white text-[hsl(var(--navy-deep))] font-medium"
-                    : "glass-dark text-white/65 hover:text-white hover:border-white/20"
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
+            {CATEGORIES.map((cat) => {
+              const active = activeCategory === cat;
+              return (
+                <button
+                  key={cat}
+                  onClick={() => setActiveCategory(cat)}
+                  className="px-4 py-2 rounded-full text-[12px] font-medium tracking-wide transition-all duration-200"
+                  style={{
+                    background: active ? "hsl(224 60% 18%)" : "transparent",
+                    color: active ? "white" : "hsl(224 25% 40%)",
+                    border: `1px solid ${active ? "hsl(224 60% 18%)" : "hsl(224 20% 12% / 0.18)"}`,
+                    boxShadow: active ? "0 4px 12px -4px hsl(224 60% 18% / 0.30)" : "none",
+                  }}
+                >
+                  {cat}
+                </button>
+              );
+            })}
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-7">
+          {/* Grille */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
             {filtered.map((a, i) => (
               <motion.article
                 key={a.title}
-                initial={{ opacity: 0, y: 24 }}
+                initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-60px" }}
-                transition={{ duration: 0.5, delay: (i % 3) * 0.08, ease: [0.22, 1, 0.36, 1] }}
-                className="group relative flex flex-col rounded-[1.5rem] glass-dark cursor-pointer hover:border-white/15 transition-all duration-500 overflow-hidden"
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.5, delay: (i % 3) * 0.07, ease: [0.22, 1, 0.36, 1] }}
+                className="group flex flex-col rounded-[18px] overflow-hidden cursor-pointer transition-all duration-400 hover:-translate-y-1"
+                style={{
+                  background: "white",
+                  border: "1px solid hsl(224 20% 12% / 0.07)",
+                  boxShadow: "0 2px 12px -4px hsl(224 60% 12% / 0.06)",
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.boxShadow =
+                    "0 20px 48px -12px hsl(224 60% 12% / 0.13), 0 4px 16px -4px hsl(224 60% 12% / 0.07)";
+                  (e.currentTarget as HTMLElement).style.borderColor = "hsl(224 20% 12% / 0.14)";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.boxShadow =
+                    "0 2px 12px -4px hsl(224 60% 12% / 0.06)";
+                  (e.currentTarget as HTMLElement).style.borderColor = "hsl(224 20% 12% / 0.07)";
+                }}
               >
+                {/* Image */}
                 <div className="relative aspect-[16/10] overflow-hidden">
-                  <div
-                    className="absolute inset-0 bg-cover bg-center transition-transform duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.06]"
-                    style={{ backgroundImage: `url(${a.image})` }}
+                  <img
+                    src={a.image}
+                    alt={a.title}
+                    loading="lazy"
+                    decoding="async"
+                    className="w-full h-full object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.05]"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[hsl(var(--navy-deep))]/80 via-transparent to-transparent" />
-                  <span className="absolute top-4 left-4 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md text-[10px] tracking-[0.25em] uppercase text-white font-medium">
+                  <span
+                    className="absolute top-4 left-4 px-3 py-1 rounded-full text-[10px] tracking-[0.22em] uppercase font-medium text-white"
+                    style={{ background: "hsl(224 60% 16% / 0.82)", backdropFilter: "blur(10px)" }}
+                  >
                     {a.tag}
                   </span>
                 </div>
-                <div className="p-6 flex-1 flex flex-col">
-                  <p className="text-[10px] text-white/40 tracking-[0.25em] uppercase mb-3 font-medium">
+
+                {/* Contenu */}
+                <div className="p-5 flex-1 flex flex-col">
+                  <p className="text-[10px] tracking-[0.25em] uppercase font-medium mb-2.5" style={{ color: "hsl(224 18% 56%)" }}>
                     {a.date} · {a.readingTime}
                   </p>
-                  <h3 className="font-heading text-lg font-normal text-white mb-3 leading-snug tracking-tight group-hover:text-[hsl(var(--electric-soft))] transition-colors duration-500">
+                  <h3
+                    className="font-heading text-[17px] font-light leading-snug tracking-tight mb-3 transition-colors duration-300 group-hover:text-[hsl(224_55%_28%)]"
+                    style={{ color: "hsl(224 55% 12%)" }}
+                  >
                     {a.title}
                   </h3>
-                  <p className="text-white/55 text-[13px] leading-relaxed font-light line-clamp-3 mb-5">
+                  <p className="text-[13px] font-light leading-relaxed line-clamp-2 mb-5" style={{ color: "hsl(224 12% 46%)" }}>
                     {a.excerpt}
                   </p>
-                  <span className="mt-auto inline-flex items-center gap-2 text-[12px] text-white/80 tracking-wide">
+                  <span
+                    className="mt-auto inline-flex items-center gap-1.5 text-[12px] font-medium"
+                    style={{ color: "hsl(224 50% 30%)" }}
+                  >
                     Lire l'article
-                    <svg className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                    </svg>
+                    <ArrowRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-1" strokeWidth={1.5} />
                   </span>
                 </div>
               </motion.article>
@@ -227,8 +379,11 @@ export default function ActualitesPage() {
           </div>
 
           {filtered.length === 0 && (
-            <p className="text-center text-white/50 py-16 text-sm">Aucun article dans cette catégorie pour le moment.</p>
+            <p className="text-center py-16 text-[14px] font-light" style={{ color: "hsl(224 12% 55%)" }}>
+              Aucun article dans cette catégorie pour le moment.
+            </p>
           )}
+
         </div>
       </section>
 
