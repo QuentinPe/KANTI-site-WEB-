@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { UserRound } from "lucide-react";
 import logoDark from "@/assets/logo-kanti-dark.png.asset.json";
 import logoWhite from "@/assets/logo-kanti-white.png.asset.json";
+import ClientSpaceModal from "./ClientSpaceModal";
 
 const navLinks = [
   { label: "Le Cabinet", href: "/cabinet" },
@@ -30,6 +31,7 @@ export default function Header() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [navExpanded, setNavExpanded] = useState(false);
   const [hoveredKey, setHoveredKey] = useState<string | null>(null);
+  const [clientSpaceOpen, setClientSpaceOpen] = useState(false);
   const location = useLocation();
   const isHome = location.pathname === "/";
 
@@ -67,6 +69,7 @@ export default function Header() {
     : "bg-white/70 backdrop-blur-md ring-1 ring-foreground/10 shadow-[0_4px_20px_-8px_hsl(var(--foreground)/0.15)]";
 
   return (
+    <>
     <header
       id="desktop-header"
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
@@ -221,15 +224,16 @@ export default function Header() {
             >
               Prendre rendez-vous
             </Link>
-            <a
-              href="#"
+            <button
+              type="button"
+              onClick={() => setClientSpaceOpen(true)}
               className={`ml-2 inline-flex items-center gap-2 px-5 py-2 rounded-full text-[13px] font-medium tracking-wide ${
                 useDarkGlass ? "btn-glass text-white" : "btn-primary-glass"
               }`}
             >
               <UserRound className="w-4 h-4" strokeWidth={1.75} />
               Espace client
-            </a>
+            </button>
             </nav>
           </div>
 
@@ -303,13 +307,18 @@ export default function Header() {
         >
           Prendre rendez-vous
         </Link>
-        <a
-          href="#"
-          className="mt-2 px-8 py-3 rounded-full ring-1 ring-white/20 text-white text-sm tracking-wide"
+        <button
+          type="button"
+          onClick={() => { setMenuOpen(false); setClientSpaceOpen(true); }}
+          className="mt-2 px-8 py-3 rounded-full ring-1 ring-white/20 text-white text-sm tracking-wide inline-flex items-center gap-2"
         >
+          <UserRound className="w-4 h-4" strokeWidth={1.75} />
           Espace client
-        </a>
+        </button>
       </div>
     </header>
+
+    <ClientSpaceModal open={clientSpaceOpen} onClose={() => setClientSpaceOpen(false)} />
+    </>
   );
 }

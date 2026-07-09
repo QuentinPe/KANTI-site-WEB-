@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { UserRound } from "lucide-react";
 import logoDark from "@/assets/logo-kanti-dark.png.asset.json";
 import logoWhite from "@/assets/logo-kanti-white.png.asset.json";
+import ClientSpaceModal from "@/components/ClientSpaceModal";
 
 const primaryLinks = [
   { label: "Le Cabinet", href: "/cabinet" },
@@ -25,6 +26,7 @@ export default function MobileHeader() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [expExpanded, setExpExpanded] = useState(false);
+  const [clientSpaceOpen, setClientSpaceOpen] = useState(false);
   const location = useLocation();
   const isHome = location.pathname === "/";
 
@@ -237,17 +239,20 @@ export default function MobileHeader() {
                   />
                 </svg>
               </Link>
-              <a
-                href="#"
-                className="mt-3 flex items-center justify-center gap-2 h-14 rounded-full bg-white text-[hsl(var(--navy-deep))] text-[15px] font-medium tracking-wide"
+              <button
+                type="button"
+                onClick={() => { setOpen(false); setClientSpaceOpen(true); }}
+                className="mt-3 flex items-center justify-center gap-2 h-14 rounded-full bg-white text-[hsl(var(--navy-deep))] text-[15px] font-medium tracking-wide w-full"
               >
                 <UserRound className="w-4 h-4" strokeWidth={1.75} />
                 Espace client
-              </a>
+              </button>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
+
+      <ClientSpaceModal open={clientSpaceOpen} onClose={() => setClientSpaceOpen(false)} />
     </>
   );
 }
