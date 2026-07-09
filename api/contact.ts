@@ -1,0 +1,113 @@
+export const config = { runtime: "edge" };
+
+const ADVISORS: Record<string, string> = {
+  quentin: "Quentin Perromat (Associé Fondateur)",
+  thomas: "Thomas Robert (Courtier & Assistant)",
+  any: "Peu importe",
+};
+const FORMATS: Record<string, string> = {
+  cabinet: "En cabinet — 12 rue Ferrere, Bordeaux",
+  visio: "Visioconférence",
+  telephone: "Par téléphone",
+};
+const TIMING: Record<string, string> = {
+  asap: "Dès que possible",
+  week: "Cette semaine",
+  two_weeks: "Dans 2 semaines",
+  month: "Dans le mois",
+};
+
+export default async function handler(req: Request): Promise<Response> {
+  const cors = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Content-Type": "application/json",
+  };
+
+  if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: cors });
+  if (req.method !== "POST") return new Response("Method not allowed", { status: 405 });
+
+  let data: Record<string, string>;
+  try {
+    data = await req.json();
+  } catch {
+    return new Response(JSON.stringify({ error: "JSON invalide" }), { status: 400, headers: cors });
+  }
+
+  // Honeypot silencieux — on redirige quand même vers /merci
+  if (data.website) {
+    return new Response(JSON.stringify({ ok: true }), { status: 200, headers: cors });
+  }
+
+  // Validation minimale côté serveur
+  if (!data.nom?.trim() || !data.email?.trim()) {
+    return new Response(JSON.stringify({ error: "Nom et email requis" }), { status: 400, headers: cors });
+  }
+
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_CHAT_ID;
+
+  if (!token || !chatId) {
+    console.error("[KANTI] Telegram env vars manquantes");
+    return new Response(JSON.stringify({ error: "Configuration serveur incomplète" }), { status: 500, headers: cors });
+  }
+
+  const now = new Date().toLocaleString("fr-FR", {
+    timeZone: "Europe/Paris",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+  const lines: string[] = [
+    "🔔 <b>Nouveau lead — Cabinet KANTI</b>",
+    "",
+    `👤 <b>Conseiller :</b> ${ADVISORS[data.conseiller] ?? "—"}`,
+    `📍 <b>Format :</b> ${FORMATS[data.format] ?? "—"}`,
+    `📅 <b>Disponibilité :</b> ${TIMING[data.timing] ?? "—"}`,
+    `🏷️ <b>Sujet :</b> ${data.sujet || "—"}`,
+    "",
+    "━━━━━━━━━━━━━━━━━",
+    `<b>Nom :</b> ${data.nom}`,
+    `<b>Email :</b> ${data.email}`,
+    `<b>Tél :</b> ${data.telephone || "—"}`,
+  ];
+
+  if (data.message?.trim()) {
+    lines.push("");
+    lines.push(`💬 <b>Message :</b>`);
+    lines.push(`<i>${data.message.trim()}</i>`);
+  }
+
+  lines.push("━━━━━━━━━━━━━━━━━");
+  lines.push(`🕐 <i>Reçu le ${now}</i>`);
+
+  const message = lines.join("\n");
+
+  try {
+    const tgRes = await fetch(
+      `https://api.telegram.org/bot${token}/sendMessage`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: message,
+          parse_mode: "HTML",
+        }),
+      }
+    );
+
+    if (!tgRes.ok) {
+      const err = await tgRes.text();
+      console.error("[KANTI] Telegram error:", err);
+      // On ne bloque pas l'utilisateur pour une erreur Telegram
+    }
+  } catch (err) {
+    console.error("[KANTI] Fetch Telegram failed:", err);
+  }
+
+  return new Response(JSON.stringify({ ok: true }), { status: 200, headers: cors });
+}

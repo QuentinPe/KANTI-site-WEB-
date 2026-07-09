@@ -153,15 +153,26 @@ export default function ContactPage() {
     e.preventDefault();
     const parsed = contactSchema.safeParse(form);
     if (!parsed.success) { toast.error(parsed.error.issues[0].message); return; }
+
+    // Honeypot — redirection silencieuse sans appel API
     if (parsed.data.website) {
       navigate("/merci", { state: { name: parsed.data.nom.split(" ")[0], subject: "contact" } });
       return;
     }
+
     setStatus("loading");
-    console.info("[KANTI] submission:", parsed.data);
-    await new Promise(r => setTimeout(r, 1100));
-    setStatus("idle");
-    navigate("/merci", { state: { name: parsed.data.nom.split(" ")[0], subject: "contact" } });
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(parsed.data),
+      });
+      if (!res.ok) throw new Error("server_error");
+      navigate("/merci", { state: { name: parsed.data.nom.split(" ")[0], subject: "contact" } });
+    } catch {
+      toast.error("Une erreur est survenue. Veuillez réessayer ou nous appeler directement.");
+      setStatus("idle");
+    }
   };
 
   /* Labels pour les résumés */
