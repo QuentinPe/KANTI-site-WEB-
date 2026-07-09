@@ -5,6 +5,7 @@ const team = [
   {
     name: "Quentin Perromat",
     role: "Associé Fondateur",
+    badge: "Associé fondateur",
     short: "Vision, stratégie & clientèle",
     bio: "Fondateur de KANTI, Quentin accompagne ses clients avec une approche globale et indépendante de la gestion de patrimoine. Passionné par la transmission et l'optimisation fiscale, il construit avec chaque famille une stratégie patrimoniale sur mesure, fondée sur la confiance et la durée.",
     image: "/quentin-perromat.png",
@@ -13,10 +14,10 @@ const team = [
   {
     name: "Thomas Robert",
     role: "Courtier & Assistant en gestion de patrimoine",
+    badge: "Salarié",
     short: "Financement & suivi client",
     bio: "Thomas intervient aux côtés des clients sur les problématiques de financement et d'investissement. Rigoureux et à l'écoute, il assure le suivi opérationnel des dossiers et veille à ce que chaque solution retenue soit parfaitement adaptée à la situation personnelle et professionnelle de chaque client.",
-    image:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=900&q=80",
+    image: "/thomas-robert.png",
     credentials: ["Courtier en financement", "Assistant gestion de patrimoine", "Cabinet KANTI · Bordeaux"],
   },
 ];
@@ -65,7 +66,7 @@ export default function Equipe() {
                 <div className="absolute inset-0 bg-gradient-to-t from-foreground/85 via-foreground/10 to-transparent" />
                 <span className="absolute top-5 left-5 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md text-[10px] tracking-[0.3em] uppercase text-white/90 font-medium">
                   <span className="w-1 h-1 rounded-full bg-[hsl(var(--electric-soft))]" />
-                  {String(i + 1).padStart(2, "0")} · Associé
+                  {String(i + 1).padStart(2, "0")} · {member.badge}
                 </span>
                 <div className="absolute bottom-0 inset-x-0 p-6">
                   <p className="text-[10px] tracking-[0.3em] uppercase text-white/70 mb-2 font-medium">{member.short}</p>

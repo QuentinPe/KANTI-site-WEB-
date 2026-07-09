@@ -4,15 +4,16 @@ const team = [
   {
     name: "Quentin Perromat",
     role: "Associé Fondateur",
+    badge: "Associé fondateur",
     short: "Vision · stratégie · clientèle",
     image: "/quentin-perromat.png",
   },
   {
     name: "Thomas Robert",
     role: "Courtier & Assistant patrimoine",
+    badge: "Salarié",
     short: "Financement · suivi client",
-    image:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=75",
+    image: "/thomas-robert.png",
   },
 ];
 
@@ -54,7 +55,7 @@ export default function EquipeMobile() {
               </div>
               <div className="min-w-0">
                 <p className="text-[10px] tracking-[0.28em] uppercase text-foreground/45 font-medium mb-1">
-                  {String(i + 1).padStart(2, "0")} · {m.role}
+                  {String(i + 1).padStart(2, "0")} · {m.badge}
                 </p>
                 <h3 className="font-heading text-[18px] font-normal text-foreground tracking-tight leading-tight mb-0.5">
                   {m.name}

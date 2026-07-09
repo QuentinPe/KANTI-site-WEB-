@@ -41,7 +41,7 @@ const EQUIPE = [
     role: "Courtier & Assistant en gestion de patrimoine",
     short: "Financement · suivi client",
     bio: "Thomas intervient aux côtés des clients sur les problématiques de financement et d'investissement. Rigoureux et à l'écoute, il assure le suivi opérationnel des dossiers et veille à ce que chaque solution retenue soit parfaitement adaptée à la situation de chaque client.",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=900&q=80",
+    image: "/thomas-robert.png",
     credentials: ["Courtier en financement", "Assistant gestion de patrimoine", "Cabinet KANTI · Biarritz"],
   },
 ];
