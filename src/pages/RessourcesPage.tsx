@@ -388,7 +388,12 @@ export default function RessourcesPage() {
                 </div>
 
                 {/* Scrollable content */}
-                <div className="overflow-y-auto flex-1 overscroll-contain">
+                <div
+                  className="overflow-y-auto flex-1 overscroll-contain no-scrollbar"
+                  data-lenis-prevent
+                  onWheel={(e) => e.stopPropagation()}
+                  onTouchMove={(e) => e.stopPropagation()}
+                >
                   <div className="px-8 pt-7 pb-8">
 
                     {/* Eyebrow */}
