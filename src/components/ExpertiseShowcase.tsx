@@ -1,3 +1,5 @@
+import { motion, useReducedMotion } from "framer-motion";
+
 interface Pillar {
   title: string;
   text: string;
@@ -12,10 +14,6 @@ interface ExpertiseShowcaseProps {
   pillars: Pillar[];
 }
 
-/**
- * Editorial showcase: large image + numbered pillars.
- * Used on expertise pages to bring the visual richness of the home.
- */
 export default function ExpertiseShowcase({
   eyebrow = "Notre approche",
   title,
@@ -24,6 +22,8 @@ export default function ExpertiseShowcase({
   imageAlt,
   pillars,
 }: ExpertiseShowcaseProps) {
+  const reduce = useReducedMotion();
+
   return (
     <section className="section-padding bg-background relative">
       <div className="max-w-7xl mx-auto">
@@ -74,8 +74,12 @@ export default function ExpertiseShowcase({
 
             <div className="space-y-px bg-border/40">
               {pillars.map((p, i) => (
-                <div
+                <motion.div
                   key={p.title}
+                  initial={reduce ? false : { opacity: 0, x: 24 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.45, ease: "easeOut", delay: i * 0.09 }}
+                  viewport={{ once: true, margin: "-60px" }}
                   className="bg-background group py-7 px-1 grid grid-cols-12 gap-5 hover:bg-foreground/[0.02] transition-colors"
                 >
                   <div className="col-span-2 md:col-span-1">
@@ -91,7 +95,7 @@ export default function ExpertiseShowcase({
                       {p.text}
                     </p>
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
           </div>
