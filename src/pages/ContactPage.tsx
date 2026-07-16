@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { createLead } from "@/lib/leadsService";
 import { z } from "zod";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
@@ -161,6 +162,18 @@ export default function ContactPage() {
     }
 
     setStatus("loading");
+    // Save lead to Supabase (fire-and-forget, non-blocking)
+    createLead({
+      nom: parsed.data.nom,
+      email: parsed.data.email,
+      telephone: parsed.data.telephone || undefined,
+      conseiller: parsed.data.conseiller || undefined,
+      format: parsed.data.format || undefined,
+      timing: parsed.data.timing || undefined,
+      sujet: parsed.data.sujet || undefined,
+      message: parsed.data.message || undefined,
+    }).catch(() => null);
+
     try {
       const res = await fetch("/api/contact", {
         method: "POST",

@@ -50,6 +50,11 @@ import AdminTeamList from "./pages/admin/AdminTeamList.tsx";
 import AdminTeamForm from "./pages/admin/AdminTeamForm.tsx";
 import AdminLegalList from "./pages/admin/AdminLegalList.tsx";
 import AdminLegalForm from "./pages/admin/AdminLegalForm.tsx";
+import AdminDashboard from "./pages/admin/AdminDashboard.tsx";
+import AdminLeadsList from "./pages/admin/AdminLeadsList.tsx";
+import AdminSiteSettings from "./pages/admin/AdminSiteSettings.tsx";
+import AdminMediaLibrary from "./pages/admin/AdminMediaLibrary.tsx";
+import AdminAccessList from "./pages/admin/AdminAccessList.tsx";
 
 const queryClient = new QueryClient();
 
@@ -90,7 +95,12 @@ const AppShell = () => {
           <Route path="/merci" element={<MerciPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
-            <Route index element={<AdminArticlesList />} />
+            <Route index element={<AdminDashboard />} />
+            <Route path="leads" element={<AdminLeadsList />} />
+            <Route path="settings" element={<AdminSiteSettings />} />
+            <Route path="media" element={<AdminMediaLibrary />} />
+            <Route path="acces" element={<AdminAccessList />} />
+            <Route path="articles" element={<AdminArticlesList />} />
             <Route path="articles/new" element={<AdminArticleForm />} />
             <Route path="articles/:id/edit" element={<AdminArticleForm />} />
             <Route path="ressources" element={<AdminResourcesList />} />

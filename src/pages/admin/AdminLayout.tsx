@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
-import { FileText, LogOut, Plus, BookOpen, Users, HelpCircle, UserSquare2, Scale } from "lucide-react";
+import { FileText, LogOut, Plus, BookOpen, Users, HelpCircle, UserSquare2, Scale, LayoutDashboard, Inbox, Settings, Image, ShieldCheck } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import logoWhite from "@/assets/logo-kanti-white.png.asset.json";
 
@@ -13,10 +13,7 @@ export default function AdminLayout() {
     navigate("/login");
   };
 
-  const isActive = (path: string) =>
-    path === "/admin"
-      ? location.pathname === "/admin"
-      : location.pathname.startsWith(path);
+  const isActive = (path: string) => location.pathname.startsWith(path);
 
   return (
     <div className="min-h-screen flex" style={{ background: "hsl(220 25% 97%)" }}>
@@ -38,14 +35,27 @@ export default function AdminLayout() {
 
         {/* Nav */}
         <nav className="flex-1 px-3 py-5 space-y-1">
-          <p className="px-3 pb-2 text-[9px] tracking-[0.3em] uppercase font-medium" style={{ color: "hsl(0 0% 100% / 0.22)" }}>
+          <NavItem
+            to="/admin"
+            icon={<LayoutDashboard className="w-4 h-4" />}
+            label="Tableau de bord"
+            active={location.pathname === "/admin"}
+          />
+          <NavItem
+            to="/admin/leads"
+            icon={<Inbox className="w-4 h-4" />}
+            label="Leads"
+            active={isActive("/admin/leads")}
+          />
+
+          <p className="px-3 pb-2 pt-5 text-[9px] tracking-[0.3em] uppercase font-medium" style={{ color: "hsl(0 0% 100% / 0.22)" }}>
             Contenu
           </p>
           <NavItem
-            to="/admin"
+            to="/admin/articles"
             icon={<FileText className="w-4 h-4" />}
             label="Articles"
-            active={isActive("/admin")}
+            active={isActive("/admin/articles")}
           />
           <NavItem
             to="/admin/ressources"
@@ -80,6 +90,28 @@ export default function AdminLayout() {
             icon={<Scale className="w-4 h-4" />}
             label="Mentions légales"
             active={isActive("/admin/legal")}
+          />
+
+          <p className="px-3 pb-2 pt-5 text-[9px] tracking-[0.3em] uppercase font-medium" style={{ color: "hsl(0 0% 100% / 0.22)" }}>
+            Réglages
+          </p>
+          <NavItem
+            to="/admin/media"
+            icon={<Image className="w-4 h-4" />}
+            label="Médiathèque"
+            active={isActive("/admin/media")}
+          />
+          <NavItem
+            to="/admin/settings"
+            icon={<Settings className="w-4 h-4" />}
+            label="Paramètres & SEO"
+            active={isActive("/admin/settings")}
+          />
+          <NavItem
+            to="/admin/acces"
+            icon={<ShieldCheck className="w-4 h-4" />}
+            label="Accès"
+            active={isActive("/admin/acces")}
           />
         </nav>
 

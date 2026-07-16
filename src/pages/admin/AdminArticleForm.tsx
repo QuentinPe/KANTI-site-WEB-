@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft, ImageOff, Sparkles, Wand2, ChevronDown, Search } from "lucide-react";
+import { ArrowLeft, ImageOff, Sparkles, Wand2, ChevronDown, Search, Eye } from "lucide-react";
 import { getArticles, createArticle, updateArticle } from "@/lib/articlesService";
 import type { ArticleInput } from "@/lib/articlesService";
 import RichEditor from "@/components/admin/RichEditor";
@@ -176,7 +176,7 @@ export default function AdminArticleForm() {
     mutationFn: (data: ArticleInput) => createArticle(data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["articles"] });
-      navigate("/admin");
+      navigate("/admin/articles");
     },
     onError: () => setGlobalError("Erreur lors de la création. Vérifiez vos permissions Supabase."),
   });
@@ -185,7 +185,7 @@ export default function AdminArticleForm() {
     mutationFn: (data: ArticleInput) => updateArticle(id!, data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["articles"] });
-      navigate("/admin");
+      navigate("/admin/articles");
     },
     onError: () => setGlobalError("Erreur lors de la mise à jour."),
   });
@@ -225,7 +225,7 @@ export default function AdminArticleForm() {
     return (
       <div className="p-8 max-w-2xl mx-auto">
         <p className="text-[14px]" style={{ color: "hsl(0 60% 45%)" }}>Article introuvable.</p>
-        <Link to="/admin" className="mt-4 block text-[13px] underline" style={{ color: "hsl(224 55% 35%)" }}>← Retour</Link>
+        <Link to="/admin/articles" className="mt-4 block text-[13px] underline" style={{ color: "hsl(224 55% 35%)" }}>← Retour</Link>
       </div>
     );
   }
@@ -235,7 +235,7 @@ export default function AdminArticleForm() {
       {/* Header */}
       <div className="flex items-center gap-4 mb-8">
         <Link
-          to="/admin"
+          to="/admin/articles"
           className="p-2 rounded-lg transition-all duration-150"
           style={{ color: "hsl(224 25% 45%)" }}
           onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(224 60% 18% / 0.07)"; }}
@@ -243,11 +243,25 @@ export default function AdminArticleForm() {
         >
           <ArrowLeft className="w-5 h-5" />
         </Link>
-        <div>
+        <div className="flex-1">
           <h1 className="text-2xl font-heading font-light tracking-tight" style={{ color: "hsl(224 55% 12%)" }}>
             {isEdit ? "Modifier l'article" : "Nouvel article"}
           </h1>
         </div>
+        {isEdit && existing && (
+          <a
+            href={`/actualites/${existing.slug ?? existing.id}`}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-medium transition-all duration-150"
+            style={{ background: "hsl(224 60% 18% / 0.08)", color: "hsl(224 40% 32%)", border: "1px solid hsl(224 60% 18% / 0.12)" }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(224 60% 18% / 0.14)"; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(224 60% 18% / 0.08)"; }}
+          >
+            <Eye className="w-4 h-4" />
+            Prévisualiser
+          </a>
+        )}
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
@@ -545,7 +559,7 @@ export default function AdminArticleForm() {
             {isSubmitting ? "Enregistrement…" : isEdit ? "Mettre à jour" : "Publier l'article"}
           </button>
           <Link
-            to="/admin"
+            to="/admin/articles"
             className="px-5 py-2.5 rounded-xl text-[14px] font-medium transition-all duration-150"
             style={{ background: "hsl(224 20% 12% / 0.07)", color: "hsl(224 40% 35%)" }}
           >
