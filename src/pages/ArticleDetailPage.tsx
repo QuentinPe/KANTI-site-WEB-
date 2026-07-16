@@ -1,10 +1,10 @@
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Clock, Calendar, Tag } from "lucide-react";
+import { ArrowLeft, Clock, Calendar } from "lucide-react";
 import { getArticleById } from "@/lib/articlesService";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import Seo from "@/components/Seo";
+import Seo, { blogPostingJsonLd, breadcrumbJsonLd, SITE_URL } from "@/components/Seo";
 
 export default function ArticleDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -40,8 +40,24 @@ export default function ArticleDetailPage() {
       ) : article ? (
         <>
           <Seo
-            title={`${article.title} — KANTI Patrimoine`}
-            description={article.excerpt}
+            title={article.meta_title ?? article.title}
+            description={article.meta_description ?? article.excerpt}
+            image={article.image}
+            canonical={`${SITE_URL}/actualites/${article.slug ?? article.id}`}
+            articleMeta={{
+              publishedTime: article.created_at,
+              modifiedTime: article.updated_at,
+              section: article.tag,
+              author: article.author_name ?? "Cabinet KANTI",
+            }}
+            jsonLd={[
+              blogPostingJsonLd(article),
+              breadcrumbJsonLd([
+                { name: "Accueil", url: "/" },
+                { name: "Actualités", url: "/actualites" },
+                { name: article.title, url: `/actualites/${article.slug ?? article.id}` },
+              ]),
+            ]}
           />
 
           {/* Hero */}

@@ -4,12 +4,22 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft, ImageOff, Sparkles, Wand2 } from "lucide-react";
+import { ArrowLeft, ImageOff, Sparkles, Wand2, ChevronDown, Search } from "lucide-react";
 import { getArticles, createArticle, updateArticle } from "@/lib/articlesService";
 import type { ArticleInput } from "@/lib/articlesService";
 import RichEditor from "@/components/admin/RichEditor";
 
 const CATEGORIES = ["Investissement", "Épargne", "Transmission", "Fiscalité", "Retraite", "Immobilier", "Dirigeants", "Allocation", "Prévoyance"];
+
+function slugify(s: string) {
+  return s
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "")
+    .slice(0, 80);
+}
 
 const schema = z.object({
   title: z.string().min(5, "Titre trop court"),
@@ -20,6 +30,11 @@ const schema = z.object({
   reading_time: z.string().min(1, "Temps de lecture requis"),
   image: z.string().url("URL d'image invalide"),
   featured: z.boolean(),
+  // SEO
+  slug: z.string().max(80).optional(),
+  meta_title: z.string().max(60, "60 caractères maximum").optional(),
+  meta_description: z.string().max(155, "155 caractères maximum").optional(),
+  author_name: z.string().max(80).optional(),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -68,6 +83,9 @@ export default function AdminArticleForm() {
 
   const existing = isEdit ? articles.find((a) => a.id === id) : null;
 
+  const [seoOpen, setSeoOpen] = useState(false);
+  const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
+
   const { register, handleSubmit, reset, watch, setValue, formState: { errors, isSubmitting } } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -79,6 +97,10 @@ export default function AdminArticleForm() {
       reading_time: "",
       image: "",
       featured: false,
+      slug: "",
+      meta_title: "",
+      meta_description: "",
+      author_name: "",
     },
   });
 
@@ -93,8 +115,13 @@ export default function AdminArticleForm() {
         reading_time: existing.reading_time,
         image: existing.image,
         featured: existing.featured,
+        slug: existing.slug ?? "",
+        meta_title: existing.meta_title ?? "",
+        meta_description: existing.meta_description ?? "",
+        author_name: existing.author_name ?? "",
       });
       setImagePreview(existing.image);
+      if (existing.slug) setSlugManuallyEdited(true);
     }
   }, [existing, reset]);
 
@@ -105,6 +132,15 @@ export default function AdminArticleForm() {
 
   const bodyValue = watch("body") ?? "";
   const titleValue = watch("title") ?? "";
+  const metaTitleValue = watch("meta_title") ?? "";
+  const metaDescValue = watch("meta_description") ?? "";
+
+  /* Auto-generate slug from title unless user has edited it manually */
+  useEffect(() => {
+    if (!slugManuallyEdited && titleValue) {
+      setValue("slug", slugify(titleValue), { shouldValidate: false });
+    }
+  }, [titleValue, slugManuallyEdited, setValue]);
 
   const callAI = async (action: "summarize" | "reformat") => {
     setAiError("");
@@ -164,8 +200,11 @@ export default function AdminArticleForm() {
       reading_time: data.reading_time,
       image: data.image,
       featured: data.featured,
-      // body uniquement si non vide (nécessite ALTER TABLE articles ADD COLUMN body TEXT)
       ...(data.body && data.body !== "<p></p>" ? { body: data.body } : {}),
+      ...(data.slug ? { slug: data.slug } : {}),
+      ...(data.meta_title ? { meta_title: data.meta_title } : {}),
+      ...(data.meta_description ? { meta_description: data.meta_description } : {}),
+      ...(data.author_name ? { author_name: data.author_name } : {}),
     };
     if (isEdit) {
       updateMutation.mutate(payload);
@@ -371,6 +410,123 @@ export default function AdminArticleForm() {
             Mettre cet article à la une
           </span>
         </label>
+
+        {/* ── SEO ── */}
+        <div className="rounded-2xl overflow-hidden" style={{ border: "1px solid hsl(224 20% 12% / 0.10)" }}>
+          <button
+            type="button"
+            onClick={() => setSeoOpen((v) => !v)}
+            className="w-full flex items-center justify-between px-5 py-4 text-left transition-colors duration-150"
+            style={{ background: seoOpen ? "hsl(224 55% 12%)" : "hsl(224 20% 97%)" }}
+          >
+            <div className="flex items-center gap-2.5">
+              <Search className="w-4 h-4" style={{ color: seoOpen ? "hsl(0 0% 100% / 0.70)" : "hsl(224 40% 42%)" }} />
+              <span className="text-[13px] font-medium" style={{ color: seoOpen ? "hsl(0 0% 100% / 0.85)" : "hsl(224 40% 30%)" }}>
+                Référencement (SEO)
+              </span>
+              <span className="text-[10px] tracking-wide px-2 py-0.5 rounded-full"
+                style={{ background: seoOpen ? "hsl(0 0% 100% / 0.12)" : "hsl(224 55% 18% / 0.09)", color: seoOpen ? "hsl(0 0% 100% / 0.55)" : "hsl(224 40% 45%)" }}>
+                Optionnel
+              </span>
+            </div>
+            <ChevronDown
+              className="w-4 h-4 transition-transform duration-300"
+              style={{ transform: seoOpen ? "rotate(180deg)" : "rotate(0deg)", color: seoOpen ? "hsl(0 0% 100% / 0.50)" : "hsl(224 20% 52%)" }}
+            />
+          </button>
+
+          {seoOpen && (
+            <div className="px-5 py-5 flex flex-col gap-5" style={{ background: "hsl(220 30% 98%)", borderTop: "1px solid hsl(224 20% 12% / 0.07)" }}>
+
+              {/* Slug */}
+              <Field label="Slug (URL)" hint="Généré automatiquement · modifiable" error={errors.slug?.message}>
+                <div className="relative">
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[12px] select-none pointer-events-none" style={{ color: "hsl(224 15% 58%)" }}>
+                    /actualites/
+                  </span>
+                  <input
+                    className={inputClass}
+                    style={{ ...inputStyle, paddingLeft: "88px" }}
+                    placeholder="mon-article-2026"
+                    {...register("slug")}
+                    onChange={(e) => {
+                      setSlugManuallyEdited(true);
+                      setValue("slug", e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "-").replace(/-+/g, "-"), { shouldValidate: false });
+                    }}
+                    onFocus={(e) => Object.assign((e.target as HTMLElement).style, inputFocus)}
+                    onBlur={(e) => Object.assign((e.target as HTMLElement).style, inputBlur)}
+                  />
+                </div>
+              </Field>
+
+              {/* Meta title */}
+              <Field label="Titre SEO" hint="Affiché dans les résultats Google (60 car. max)" error={errors.meta_title?.message}>
+                <div className="relative">
+                  <input
+                    className={inputClass}
+                    style={{ ...inputStyle, paddingRight: "52px" }}
+                    placeholder={titleValue || "Titre de l'article"}
+                    {...register("meta_title")}
+                    onFocus={(e) => Object.assign((e.target as HTMLElement).style, inputFocus)}
+                    onBlur={(e) => Object.assign((e.target as HTMLElement).style, inputBlur)}
+                  />
+                  <span
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[11px] tabular-nums"
+                    style={{ color: metaTitleValue.length > 55 ? "hsl(25 80% 48%)" : "hsl(224 15% 60%)" }}
+                  >
+                    {metaTitleValue.length}/60
+                  </span>
+                </div>
+                {/* Google SERP preview */}
+                <div className="mt-2 p-3 rounded-xl" style={{ background: "white", border: "1px solid hsl(224 15% 88%)" }}>
+                  <p className="text-[11px] mb-1.5 font-medium" style={{ color: "hsl(224 12% 55%)" }}>Aperçu Google</p>
+                  <p className="text-[15px] font-medium leading-snug mb-0.5" style={{ color: "hsl(220 80% 38%)" }}>
+                    {metaTitleValue || titleValue || "Titre de l'article"}, KANTI
+                  </p>
+                  <p className="text-[12px] leading-snug" style={{ color: "hsl(130 30% 28%)" }}>
+                    kanti-patrimoine-courtage.lovable.app › actualites › {watch("slug") || "slug"}
+                  </p>
+                  <p className="text-[13px] leading-snug mt-1" style={{ color: "hsl(224 10% 38%)" }}>
+                    {metaDescValue || watch("excerpt") || "Description de l'article..."}
+                  </p>
+                </div>
+              </Field>
+
+              {/* Meta description */}
+              <Field label="Meta description" hint="Résumé affiché sous le titre dans Google (155 car. max)" error={errors.meta_description?.message}>
+                <div className="relative">
+                  <textarea
+                    className={inputClass}
+                    style={{ ...inputStyle, resize: "vertical", minHeight: "72px", paddingRight: "52px", paddingBottom: "28px" }}
+                    placeholder={watch("excerpt") || "Description pour les moteurs de recherche…"}
+                    {...register("meta_description")}
+                    onFocus={(e) => Object.assign((e.target as HTMLElement).style, inputFocus)}
+                    onBlur={(e) => Object.assign((e.target as HTMLElement).style, inputBlur)}
+                  />
+                  <span
+                    className="absolute right-3 bottom-3 text-[11px] tabular-nums"
+                    style={{ color: metaDescValue.length > 140 ? "hsl(25 80% 48%)" : "hsl(224 15% 60%)" }}
+                  >
+                    {metaDescValue.length}/155
+                  </span>
+                </div>
+              </Field>
+
+              {/* Author */}
+              <Field label="Auteur" hint="Affiché dans les résultats Google et le balisage JSON-LD" error={errors.author_name?.message}>
+                <input
+                  className={inputClass}
+                  style={inputStyle}
+                  placeholder="ex: Quentin Perromat"
+                  {...register("author_name")}
+                  onFocus={(e) => Object.assign((e.target as HTMLElement).style, inputFocus)}
+                  onBlur={(e) => Object.assign((e.target as HTMLElement).style, inputBlur)}
+                />
+              </Field>
+
+            </div>
+          )}
+        </div>
 
         {globalError && (
           <p className="py-2.5 px-4 rounded-xl text-[13px]"

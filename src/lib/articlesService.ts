@@ -10,6 +10,10 @@ export interface Article {
   body?: string;
   image: string;
   featured: boolean;
+  slug?: string | null;
+  meta_title?: string | null;
+  meta_description?: string | null;
+  author_name?: string | null;
   created_at: string;
   updated_at: string;
 }

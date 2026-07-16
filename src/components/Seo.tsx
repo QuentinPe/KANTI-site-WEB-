@@ -4,6 +4,13 @@ import { useLocation } from "react-router-dom";
 const SITE_URL = "https://kanti-patrimoine-courtage.lovable.app";
 const DEFAULT_OG = `${SITE_URL}/og-default.jpg`;
 
+interface ArticleMeta {
+  publishedTime?: string;
+  modifiedTime?: string;
+  section?: string;
+  author?: string;
+}
+
 interface SeoProps {
   title: string;
   description: string;
@@ -13,6 +20,8 @@ interface SeoProps {
   /** Override canonical URL. Defaults to current pathname. */
   canonical?: string;
   noindex?: boolean;
+  /** Pass for article pages to emit og:type=article and article:* meta tags. */
+  articleMeta?: ArticleMeta;
 }
 
 /**
@@ -26,11 +35,13 @@ export default function Seo({
   jsonLd,
   canonical,
   noindex = false,
+  articleMeta,
 }: SeoProps) {
   const { pathname } = useLocation();
   const url = canonical ?? `${SITE_URL}${pathname}`;
   const fullTitle = title.includes("KANTI") ? title : `${title}, KANTI`;
   const ldArray = Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [];
+  const isArticle = Boolean(articleMeta);
 
   return (
     <Helmet>
@@ -41,13 +52,30 @@ export default function Seo({
       <link rel="canonical" href={url} />
 
       {/* Open Graph */}
-      <meta property="og:type" content="website" />
+      <meta property="og:type" content={isArticle ? "article" : "website"} />
       <meta property="og:site_name" content="KANTI" />
       <meta property="og:locale" content="fr_FR" />
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={description} />
       <meta property="og:url" content={url} />
       <meta property="og:image" content={image} />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
+      <meta property="og:image:alt" content={title} />
+
+      {/* Article-specific OG */}
+      {isArticle && articleMeta?.publishedTime && (
+        <meta property="article:published_time" content={articleMeta.publishedTime} />
+      )}
+      {isArticle && articleMeta?.modifiedTime && (
+        <meta property="article:modified_time" content={articleMeta.modifiedTime} />
+      )}
+      {isArticle && articleMeta?.section && (
+        <meta property="article:section" content={articleMeta.section} />
+      )}
+      {isArticle && articleMeta?.author && (
+        <meta property="article:author" content={articleMeta.author} />
+      )}
 
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
@@ -149,6 +177,58 @@ export function faqJsonLd(items: { q: string; a: string }[]) {
         text: item.a,
       },
     })),
+  };
+}
+
+export function blogPostingJsonLd(article: {
+  title: string;
+  excerpt: string;
+  image: string;
+  tag: string;
+  author_name?: string | null;
+  created_at: string;
+  updated_at: string;
+  slug?: string | null;
+  id: string;
+}) {
+  const canonicalUrl = `${SITE_URL}/actualites/${article.slug ?? article.id}`;
+  return {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "@id": canonicalUrl,
+    headline: article.title,
+    description: article.excerpt,
+    image: {
+      "@type": "ImageObject",
+      url: article.image,
+      width: 1200,
+      height: 630,
+    },
+    datePublished: article.created_at,
+    dateModified: article.updated_at,
+    author: {
+      "@type": "Person",
+      name: article.author_name ?? "Cabinet KANTI",
+      url: `${SITE_URL}/cabinet`,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "KANTI",
+      url: SITE_URL,
+      logo: {
+        "@type": "ImageObject",
+        url: `${SITE_URL}/logo-kanti.png`,
+      },
+    },
+    url: canonicalUrl,
+    mainEntityOfPage: { "@type": "WebPage", "@id": canonicalUrl },
+    articleSection: article.tag,
+    inLanguage: "fr-FR",
+    isPartOf: {
+      "@type": "Blog",
+      name: "Actualités patrimoniales KANTI",
+      url: `${SITE_URL}/actualites`,
+    },
   };
 }
 
