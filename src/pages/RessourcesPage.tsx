@@ -10,7 +10,7 @@ import Footer from "@/components/Footer";
 import Seo from "@/components/Seo";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { getRessources, getDownloadUrl } from "@/lib/ressourcesService";
-import heroBg from "@/assets/contact-meeting.jpg";
+import heroBg from "@/assets/resources-dome.jpg";
 import imgDefisc from "@/assets/resource-defiscalisation.jpg";
 import imgTransmission from "@/assets/resource-transmission.jpg";
 import imgCession from "@/assets/resource-cession.jpg";
@@ -173,12 +173,11 @@ export default function RessourcesPage() {
       </section>
 
       {/* ── Vault — immersive resource library ── */}
-      <section className="relative py-20 pb-36 overflow-hidden" style={{ background: "hsl(220 28% 95%)" }}>
+      <section className="relative py-20 pb-36 overflow-hidden bg-white">
 
-        {/* Ambient top gradient */}
-        <div aria-hidden className="absolute inset-x-0 top-0 h-px" style={{ background: "hsl(224 40% 84%)" }} />
-        <div aria-hidden className="absolute inset-x-0 top-0 h-48 pointer-events-none" style={{
-          background: "radial-gradient(ellipse 80% 100% at 50% 0%, hsl(224 50% 90% / 0.55) 0%, transparent 100%)"
+        {/* Subtle ambient radial — stays on white, no coloured band at the seam */}
+        <div aria-hidden className="absolute inset-x-0 top-0 h-64 pointer-events-none" style={{
+          background: "radial-gradient(ellipse 70% 100% at 50% 0%, hsl(224 40% 94% / 0.50) 0%, transparent 100%)"
         }} />
 
         <div className="max-w-7xl mx-auto px-6 lg:px-12 relative z-10">
