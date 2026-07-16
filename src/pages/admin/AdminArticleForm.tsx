@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft, ImageOff } from "lucide-react";
+import { ArrowLeft, ImageOff, Sparkles, Wand2 } from "lucide-react";
 import { getArticles, createArticle, updateArticle } from "@/lib/articlesService";
 import type { ArticleInput } from "@/lib/articlesService";
 import RichEditor from "@/components/admin/RichEditor";
@@ -56,6 +56,9 @@ export default function AdminArticleForm() {
   const isEdit = Boolean(id);
   const [globalError, setGlobalError] = useState("");
   const [imagePreview, setImagePreview] = useState("");
+  const [aiSummarizing, setAiSummarizing] = useState(false);
+  const [aiReformatting, setAiReformatting] = useState(false);
+  const [aiError, setAiError] = useState("");
 
   const { data: articles = [], isLoading: articlesLoading } = useQuery({
     queryKey: ["articles"],
@@ -101,6 +104,37 @@ export default function AdminArticleForm() {
   }, [imageUrl]);
 
   const bodyValue = watch("body") ?? "";
+  const titleValue = watch("title") ?? "";
+
+  const callAI = async (action: "summarize" | "reformat") => {
+    setAiError("");
+    const content = bodyValue;
+    if (!content || content === "<p></p>") {
+      setAiError("Rédigez d'abord du contenu dans l'éditeur.");
+      return;
+    }
+    if (action === "summarize") setAiSummarizing(true);
+    else setAiReformatting(true);
+    try {
+      const res = await fetch("/api/ai-article", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action, content, title: titleValue }),
+      });
+      const data = await res.json();
+      if (!res.ok || data.error) throw new Error(data.error ?? "Erreur inconnue");
+      if (action === "summarize") {
+        setValue("excerpt", data.result, { shouldValidate: true });
+      } else {
+        setValue("body", data.result, { shouldValidate: false });
+      }
+    } catch (e) {
+      setAiError(String(e));
+    } finally {
+      setAiSummarizing(false);
+      setAiReformatting(false);
+    }
+  };
 
   const createMutation = useMutation({
     mutationFn: (data: ArticleInput) => createArticle(data),
@@ -213,11 +247,32 @@ export default function AdminArticleForm() {
           />
         </Field>
 
-        <Field
-          label="Extrait *"
-          hint="Court résumé affiché dans la liste des articles"
-          error={errors.excerpt?.message}
-        >
+        <div className="flex flex-col gap-1.5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-baseline gap-2">
+              <label className="text-[12px] font-medium tracking-wide" style={{ color: "hsl(224 25% 38%)" }}>
+                Extrait *
+              </label>
+              <span className="text-[11px] font-light" style={{ color: "hsl(224 15% 58%)" }}>
+                Court résumé affiché dans la liste des articles
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => callAI("summarize")}
+              disabled={aiSummarizing || aiReformatting}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all duration-200 disabled:opacity-50"
+              style={{ background: "hsl(270 60% 55% / 0.10)", color: "hsl(270 55% 40%)", border: "1px solid hsl(270 55% 55% / 0.20)" }}
+              title="Générer l'extrait automatiquement depuis le contenu de l'article"
+            >
+              {aiSummarizing ? (
+                <span className="w-3 h-3 rounded-full border border-current border-t-transparent animate-spin" />
+              ) : (
+                <Sparkles className="w-3 h-3" />
+              )}
+              {aiSummarizing ? "Génération…" : "Générer avec IA"}
+            </button>
+          </div>
           <textarea
             className={inputClass}
             style={{ ...inputStyle, resize: "vertical", minHeight: "80px" }}
@@ -226,19 +281,53 @@ export default function AdminArticleForm() {
             onFocus={(e) => Object.assign((e.target as HTMLElement).style, inputFocus)}
             onBlur={(e) => Object.assign((e.target as HTMLElement).style, inputBlur)}
           />
-        </Field>
+          {errors.excerpt?.message && (
+            <p className="text-[11px]" style={{ color: "hsl(0 60% 48%)" }}>{errors.excerpt.message}</p>
+          )}
+        </div>
 
         {/* Rich text body */}
-        <Field
-          label="Contenu de l'article"
-          hint="Éditeur riche — import Word ou PDF possible"
-          error={errors.body?.message}
-        >
+        <div className="flex flex-col gap-1.5">
+          <div className="flex items-baseline gap-2">
+            <label className="text-[12px] font-medium tracking-wide" style={{ color: "hsl(224 25% 38%)" }}>
+              Contenu de l'article
+            </label>
+            <span className="text-[11px] font-light" style={{ color: "hsl(224 15% 58%)" }}>
+              Éditeur riche — import Word ou PDF possible
+            </span>
+          </div>
           <RichEditor
             value={bodyValue}
             onChange={(html) => setValue("body", html, { shouldValidate: false })}
           />
-        </Field>
+          {/* AI reformat */}
+          <div className="flex items-center justify-between mt-1">
+            <p className="text-[11px] font-light" style={{ color: "hsl(224 15% 60%)" }}>
+              Grok analyse et restructure votre contenu selon les normes rédactionnelles
+            </p>
+            <button
+              type="button"
+              onClick={() => callAI("reformat")}
+              disabled={aiSummarizing || aiReformatting}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all duration-200 disabled:opacity-50 flex-shrink-0 ml-4"
+              style={{ background: "hsl(218 55% 42% / 0.10)", color: "hsl(218 55% 35%)", border: "1px solid hsl(218 55% 50% / 0.20)" }}
+              title="Améliorer la structure et le style de l'article avec Grok"
+            >
+              {aiReformatting ? (
+                <span className="w-3 h-3 rounded-full border border-current border-t-transparent animate-spin" />
+              ) : (
+                <Wand2 className="w-3 h-3" />
+              )}
+              {aiReformatting ? "Amélioration…" : "Améliorer avec Grok"}
+            </button>
+          </div>
+          {aiError && (
+            <p className="py-2 px-3 rounded-lg text-[12px]"
+              style={{ background: "hsl(0 60% 96%)", color: "hsl(0 60% 40%)", border: "1px solid hsl(0 60% 88%)" }}>
+              IA : {aiError}
+            </p>
+          )}
+        </div>
 
         <div className="grid grid-cols-2 gap-4">
           <Field label="Catégorie *" error={errors.tag?.message}>
