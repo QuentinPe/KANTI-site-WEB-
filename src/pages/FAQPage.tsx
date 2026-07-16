@@ -1,11 +1,22 @@
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PageHero from "@/components/PageHero";
 import PageCTA from "@/components/PageCTA";
 import Seo, { breadcrumbJsonLd, faqJsonLd } from "@/components/Seo";
+import { getFaq } from "@/lib/faqService";
+
+const CATEGORY_INTRO: Record<string, string> = {
+  "Le cabinet": "Notre cadre réglementaire, notre positionnement et notre modèle économique.",
+  "Premier rendez-vous": "Prise de contact, déroulé du premier échange et documents utiles.",
+  "Accompagnement": "Méthode, périmètre, suivi dans le temps et coordination avec vos conseils.",
+  "Fiscalité & placements": "Stratégie fiscale, supports d'investissement, performance et sécurité de vos actifs.",
+  "Transmission & succession": "Donation, démembrement, assurance-vie et anticipation successorale.",
+  "Confidentialité & sécurité": "Protection de vos données, secret professionnel et sécurité informatique.",
+};
 
 const faqCategories = [
   {
@@ -84,10 +95,29 @@ export default function FAQPage() {
   const slugify = (s: string) =>
     s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
-  const sections = useMemo(
-    () => faqCategories.map((c) => ({ ...c, id: slugify(c.category) })),
-    []
-  );
+  const { data: dbFaq } = useQuery({ queryKey: ["faq"], queryFn: getFaq });
+
+  const sections = useMemo(() => {
+    const base = dbFaq && dbFaq.length > 0
+      ? Object.values(
+          dbFaq.reduce<Record<string, { category: string; intro: string; questions: { q: string; a: string }[] }>>(
+            (acc, item) => {
+              if (!acc[item.category]) {
+                acc[item.category] = {
+                  category: item.category,
+                  intro: CATEGORY_INTRO[item.category] ?? "",
+                  questions: [],
+                };
+              }
+              acc[item.category].questions.push({ q: item.question, a: item.answer });
+              return acc;
+            },
+            {}
+          )
+        )
+      : faqCategories;
+    return base.map((c) => ({ ...c, id: slugify(c.category) }));
+  }, [dbFaq]);
 
   const [activeCatId, setActiveCatId] = useState<string>(sections[0].id);
   const [openItems, setOpenItems] = useState<Record<string, boolean>>({});
@@ -115,7 +145,7 @@ export default function FAQPage() {
             { name: "FAQ", url: "/faq-patrimoniale" },
           ]),
           faqJsonLd(
-            faqCategories.flatMap((c) => c.questions.map((q) => ({ q: q.q, a: q.a }))),
+            sections.flatMap((c) => c.questions.map((q) => ({ q: q.q, a: q.a }))),
           ),
         ]}
       />

@@ -5,11 +5,14 @@ import {
   ShieldCheck, TrendingDown, TrendingUp, Coins, X, ArrowRight,
   ChevronLeft, ChevronRight,
 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PageCTA from "@/components/PageCTA";
 import Seo, { breadcrumbJsonLd } from "@/components/Seo";
+import { getCasClients } from "@/lib/casClientsService";
+import type { CasClient as DbCasClient } from "@/lib/casClientsService";
 import heroBg from "@/assets/contact-advisors.jpg";
 import casCadre from "@/assets/cas-cadre.jpg";
 import casCouple from "@/assets/cas-couple.jpg";
@@ -26,6 +29,39 @@ interface CasClient {
   age: string; duration: string; image: string; contexte: string;
   diagnostic: string[]; strategie: string[]; resultat: string;
   kpis: KPI[]; vigilance: string; verbatim?: { quote: string; author: string };
+}
+
+/* ─── Mapping DB → affichage ────────────────────────────────────── */
+const CATEGORY_IMAGES: Record<string, string> = {
+  particulier: casCadre, dirigeant: casDirigeant,
+  liberal: casLiberal, investisseur: casImmobilier, expatrie: casExpatrie,
+};
+
+function kpiIcon(value: string): typeof TrendingDown {
+  if (value.startsWith("−") || value.startsWith("-")) return TrendingDown;
+  if (value.startsWith("+")) return TrendingUp;
+  if (value === "100 %") return ShieldCheck;
+  if (value.includes("k€") || value.includes("M€") || value.includes("k€")) return Coins;
+  return TrendingUp;
+}
+
+function mapDbToDisplay(d: DbCasClient): CasClient {
+  return {
+    category: d.category as Category,
+    categoryLabel: d.category_label,
+    expertise: d.expertise,
+    profil: d.profil,
+    age: d.age != null ? `${d.age} ans` : "",
+    duration: d.duration ?? "",
+    image: d.image ?? CATEGORY_IMAGES[d.category] ?? casCadre,
+    contexte: d.contexte ?? "",
+    diagnostic: d.diagnostic ?? [],
+    strategie: d.strategie ?? [],
+    resultat: d.resultat ?? "",
+    kpis: (d.kpis ?? []).map((k) => ({ ...k, icon: kpiIcon(k.value) })),
+    vigilance: d.vigilance ?? "",
+    verbatim: d.verbatim ? { quote: d.verbatim, author: d.verbatim_author ?? "" } : undefined,
+  };
 }
 
 /* ─── 3D config par position de carte ───────────────────────────── */
@@ -53,7 +89,7 @@ const categories = [
   { id: "expatrie" as const,     label: "Expatrié",     icon: Globe2      },
 ];
 
-const casClients: CasClient[] = [
+const CAS_CLIENTS_FALLBACK: CasClient[] = [
   {
     category: "particulier", categoryLabel: "Particulier",
     expertise: "Optimisation fiscale & transmission",
@@ -283,7 +319,7 @@ function CaseModal({
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose, onNext, onPrev]);
 
-  const caseNumber = String(casClients.indexOf(cas) + 1).padStart(2, "0");
+  const caseNumber = String(index + 1).padStart(2, "0");
 
   const stagger = {
     container: { hidden: {}, visible: { transition: { staggerChildren: 0.06, delayChildren: 0.15 } } },
@@ -516,14 +552,14 @@ function CaseModal({
 
 /* ─── CategoryFilter ────────────────────────────────────────────── */
 function CategoryFilter({ active, onChange, counts }: {
-  active: Category | "tous"; onChange: (id: Category | "tous") => void; counts: Record<string, number>;
+  active: Category | "tous"; onChange: (id: Category | "tous") => void; counts: Record<string, number>; total: number;
 }) {
   return (
     <div className="flex flex-wrap gap-2">
       {categories.map((cat) => {
         const Icon     = cat.icon;
         const isActive = active === cat.id;
-        const count    = cat.id === "tous" ? casClients.length : (counts[cat.id] ?? 0);
+        const count    = cat.id === "tous" ? total : (counts[cat.id] ?? 0);
         return (
           <button key={cat.id} type="button" onClick={() => onChange(cat.id)} aria-pressed={isActive}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-[12px] font-medium tracking-wide transition-all duration-300"
@@ -557,8 +593,15 @@ export default function CasClientsPage() {
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const imageY = useTransform(scrollYProgress, [0, 1], ["0%", "22%"]);
 
-  const counts   = useMemo(() => casClients.reduce<Record<string, number>>((acc, c) => { acc[c.category] = (acc[c.category] ?? 0) + 1; return acc; }, {}), []);
-  const filtered = useMemo(() => active === "tous" ? casClients : casClients.filter((c) => c.category === active), [active]);
+  const { data: dbCas } = useQuery({ queryKey: ["cas-clients"], queryFn: getCasClients });
+
+  const casClients = useMemo(
+    () => dbCas && dbCas.length > 0 ? dbCas.map(mapDbToDisplay) : CAS_CLIENTS_FALLBACK,
+    [dbCas]
+  );
+
+  const counts   = useMemo(() => casClients.reduce<Record<string, number>>((acc, c) => { acc[c.category] = (acc[c.category] ?? 0) + 1; return acc; }, {}), [casClients]);
+  const filtered = useMemo(() => active === "tous" ? casClients : casClients.filter((c) => c.category === active), [active, casClients]);
 
   const selectedIndex = selected ? filtered.indexOf(selected) : -1;
   const onPrev = () => { if (selectedIndex > 0) setSelected(filtered[selectedIndex - 1]); };
@@ -668,7 +711,7 @@ export default function CasClientsPage() {
             <p className="text-[11px] tracking-[0.3em] uppercase font-medium mb-4" style={{ color: "hsl(224 28% 45%)" }}>
               Filtrer par profil
             </p>
-            <CategoryFilter active={active} onChange={(id) => { setActive(id); setSelected(null); }} counts={counts} />
+            <CategoryFilter active={active} onChange={(id) => { setActive(id); setSelected(null); }} counts={counts} total={casClients.length} />
           </div>
 
           {/* 3D perspective container */}

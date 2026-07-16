@@ -4,10 +4,12 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { z } from "zod";
 import { toast } from "sonner";
 import { FileText, Download, Mail, BookOpen } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Seo from "@/components/Seo";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
+import { getRessources, getDownloadUrl } from "@/lib/ressourcesService";
 import heroBg from "@/assets/contact-meeting.jpg";
 import imgDefisc from "@/assets/resource-defiscalisation.jpg";
 import imgTransmission from "@/assets/resource-transmission.jpg";
@@ -22,17 +24,35 @@ import imgIsr from "@/assets/resource-isr.jpg";
 
 type Category = "Tous" | "Fiscalité" | "Transmission" | "Dirigeants" | "Investir" | "International";
 
-const resources = [
-  { id: "defiscalisation-2026", category: "Fiscalité" as const, eyebrow: "Guide PDF · 24 pages", title: "10 leviers de défiscalisation 2026", description: "Panorama actualisé des dispositifs : PER, Girardin, Pinel+, FCPI/FIP, déficits fonciers, donation-cession, Dutreil. Avantages, limites, profils éligibles.", file: "/resources/kanti-defiscalisation-2026.pdf", image: imgDefisc },
-  { id: "transmission-checklist", category: "Transmission" as const, eyebrow: "Checklist · 6 pages", title: "Préparer sa transmission patrimoniale", description: "Méthode pas-à-pas : inventaire, donation, démembrement, assurance-vie, holding familiale. Les questions à se poser avant 50, 60 et 70 ans.", file: "/resources/kanti-transmission-checklist.pdf", image: imgTransmission },
-  { id: "dirigeant-cession", category: "Dirigeants" as const, eyebrow: "Mémo · 12 pages", title: "Le dirigeant face à la cession", description: "Apport-cession, Dutreil, OBO, holding patrimoniale. Comment structurer en amont pour préserver le fruit de toute une vie d'entreprise.", file: "/resources/kanti-dirigeant-cession.pdf", image: imgCession },
-  { id: "immobilier-arbitrage", category: "Investir" as const, eyebrow: "Étude · 18 pages", title: "Immobilier patrimonial : arbitrer en 2026", description: "Faut-il vendre, conserver, démembrer ? Analyse comparative SCI, SCPI, nue-propriété, LMNP, et impact de la fiscalité 2026.", file: "/resources/kanti-immobilier-arbitrage.pdf", image: imgImmobilier },
-  { id: "retraite-cadres", category: "Investir" as const, eyebrow: "Guide PDF · 20 pages", title: "Préparer sa retraite de cadre supérieur", description: "Reconstituer 70 % de ses revenus à la retraite : PER individuel, PER d'entreprise, Madelin, capitalisation, immobilier locatif. Stratégies par tranche d'âge.", file: "/resources/kanti-retraite-cadres.pdf", image: imgRetraite },
-  { id: "assurance-vie-2026", category: "Investir" as const, eyebrow: "Mémo · 10 pages", title: "Assurance-vie : les arbitrages clés 2026", description: "Fonds euros, unités de compte, gestion pilotée, démembrement de clause bénéficiaire. Comment tirer le meilleur parti du contrat préféré des Français.", file: "/resources/kanti-assurance-vie-2026.pdf", image: imgAssuranceVie },
-  { id: "scpi-selection", category: "Investir" as const, eyebrow: "Étude · 22 pages", title: "SCPI : sélectionner sans se tromper", description: "Notre grille d'analyse en 12 critères : TOF, RAN, capitalisation, géographie, secteurs. Les 8 SCPI que nous suivons en 2026 et celles à éviter.", file: "/resources/kanti-scpi-selection.pdf", image: imgScpi },
-  { id: "expatriation-fiscale", category: "International" as const, eyebrow: "Guide PDF · 28 pages", title: "Expatriation : anticiper sa fiscalité", description: "Exit tax, conventions fiscales, comptes à l'étranger, IFI, retour en France. Le mode d'emploi pour les Français qui s'installent ou reviennent.", file: "/resources/kanti-expatriation-fiscale.pdf", image: imgExpat },
-  { id: "ifi-optimisation", category: "Fiscalité" as const, eyebrow: "Mémo · 8 pages", title: "IFI 2026 : les leviers d'optimisation", description: "Démembrement, dette déductible, nue-propriété de SCPI, foncières non cotées. Réduire son IFI sans dégrader son patrimoine.", file: "/resources/kanti-ifi-optimisation.pdf", image: imgIfi },
-  { id: "investissement-responsable", category: "Investir" as const, eyebrow: "Rapport · 16 pages", title: "Investissement responsable & ISR", description: "Labels ISR, Greenfin, Finansol : décrypter les promesses. Comment construire un portefeuille à impact sans sacrifier la performance.", file: "/resources/kanti-investissement-responsable.pdf", image: imgIsr },
+const CATEGORY_IMAGES: Record<string, string> = {
+  "Fiscalité": imgDefisc,
+  "Transmission": imgTransmission,
+  "Dirigeants": imgCession,
+  "Investir": imgRetraite,
+  "International": imgExpat,
+};
+
+interface DisplayResource {
+  id: string;
+  category: string;
+  eyebrow: string;
+  title: string;
+  description: string;
+  storagePath: string;
+  image: string;
+}
+
+const RESOURCES_FALLBACK: DisplayResource[] = [
+  { id: "defiscalisation-2026", category: "Fiscalité", eyebrow: "Guide PDF · 24 pages", title: "10 leviers de défiscalisation 2026", description: "Panorama actualisé des dispositifs : PER, Girardin, Pinel+, FCPI/FIP, déficits fonciers, donation-cession, Dutreil. Avantages, limites, profils éligibles.", storagePath: "/resources/kanti-defiscalisation-2026.pdf", image: imgDefisc },
+  { id: "transmission-checklist", category: "Transmission", eyebrow: "Checklist · 6 pages", title: "Préparer sa transmission patrimoniale", description: "Méthode pas-à-pas : inventaire, donation, démembrement, assurance-vie, holding familiale. Les questions à se poser avant 50, 60 et 70 ans.", storagePath: "/resources/kanti-transmission-checklist.pdf", image: imgTransmission },
+  { id: "dirigeant-cession", category: "Dirigeants", eyebrow: "Mémo · 12 pages", title: "Le dirigeant face à la cession", description: "Apport-cession, Dutreil, OBO, holding patrimoniale. Comment structurer en amont pour préserver le fruit de toute une vie d'entreprise.", storagePath: "/resources/kanti-dirigeant-cession.pdf", image: imgCession },
+  { id: "immobilier-arbitrage", category: "Investir", eyebrow: "Étude · 18 pages", title: "Immobilier patrimonial : arbitrer en 2026", description: "Faut-il vendre, conserver, démembrer ? Analyse comparative SCI, SCPI, nue-propriété, LMNP, et impact de la fiscalité 2026.", storagePath: "/resources/kanti-immobilier-arbitrage.pdf", image: imgImmobilier },
+  { id: "retraite-cadres", category: "Investir", eyebrow: "Guide PDF · 20 pages", title: "Préparer sa retraite de cadre supérieur", description: "Reconstituer 70 % de ses revenus à la retraite : PER individuel, PER d'entreprise, Madelin, capitalisation, immobilier locatif. Stratégies par tranche d'âge.", storagePath: "/resources/kanti-retraite-cadres.pdf", image: imgRetraite },
+  { id: "assurance-vie-2026", category: "Investir", eyebrow: "Mémo · 10 pages", title: "Assurance-vie : les arbitrages clés 2026", description: "Fonds euros, unités de compte, gestion pilotée, démembrement de clause bénéficiaire. Comment tirer le meilleur parti du contrat préféré des Français.", storagePath: "/resources/kanti-assurance-vie-2026.pdf", image: imgAssuranceVie },
+  { id: "scpi-selection", category: "Investir", eyebrow: "Étude · 22 pages", title: "SCPI : sélectionner sans se tromper", description: "Notre grille d'analyse en 12 critères : TOF, RAN, capitalisation, géographie, secteurs. Les 8 SCPI que nous suivons en 2026 et celles à éviter.", storagePath: "/resources/kanti-scpi-selection.pdf", image: imgScpi },
+  { id: "expatriation-fiscale", category: "International", eyebrow: "Guide PDF · 28 pages", title: "Expatriation : anticiper sa fiscalité", description: "Exit tax, conventions fiscales, comptes à l'étranger, IFI, retour en France. Le mode d'emploi pour les Français qui s'installent ou reviennent.", storagePath: "/resources/kanti-expatriation-fiscale.pdf", image: imgExpat },
+  { id: "ifi-optimisation", category: "Fiscalité", eyebrow: "Mémo · 8 pages", title: "IFI 2026 : les leviers d'optimisation", description: "Démembrement, dette déductible, nue-propriété de SCPI, foncières non cotées. Réduire son IFI sans dégrader son patrimoine.", storagePath: "/resources/kanti-ifi-optimisation.pdf", image: imgIfi },
+  { id: "investissement-responsable", category: "Investir", eyebrow: "Rapport · 16 pages", title: "Investissement responsable & ISR", description: "Labels ISR, Greenfin, Finansol : décrypter les promesses. Comment construire un portefeuille à impact sans sacrifier la performance.", storagePath: "/resources/kanti-investissement-responsable.pdf", image: imgIsr },
 ];
 
 const categories: Category[] = ["Tous", "Fiscalité", "Transmission", "Dirigeants", "Investir", "International"];
@@ -54,19 +74,40 @@ export default function RessourcesPage() {
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const imageY = useTransform(scrollYProgress, [0, 1], ["0%", "22%"]);
 
+  const { data: dbRessources } = useQuery({ queryKey: ["ressources"], queryFn: getRessources });
+
+  const resources: DisplayResource[] = useMemo(() => {
+    if (!dbRessources || dbRessources.length === 0) return RESOURCES_FALLBACK;
+    return dbRessources.map((r) => ({
+      id: r.id,
+      category: r.category,
+      eyebrow: r.pages ? `${r.category} · ${r.pages} pages` : r.category,
+      title: r.title,
+      description: r.description,
+      storagePath: r.storage_path,
+      image: CATEGORY_IMAGES[r.category] ?? imgDefisc,
+    }));
+  }, [dbRessources]);
+
   const activeResource = resources.find((r) => r.id === openId);
 
   const filtered = useMemo(
     () => activeCategory === "Tous" ? resources : resources.filter((r) => r.category === activeCategory),
-    [activeCategory]
+    [activeCategory, resources]
   );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const parsed = emailSchema.safeParse(form);
     if (!parsed.success) { toast.error(parsed.error.issues[0].message); return; }
+    if (!activeResource) return;
     setLoading(true);
-    console.info("[KANTI mock] Lead magnet request:", { ...parsed.data, resource: activeResource?.id });
+    try {
+      const fileUrl = await getDownloadUrl(activeResource.storagePath);
+      console.info("[KANTI] Lead magnet request:", { ...parsed.data, resource: activeResource.id, fileUrl });
+    } catch {
+      /* non-blocking */
+    }
     await new Promise((r) => setTimeout(r, 900));
     setLoading(false);
     setOpenId(null);
