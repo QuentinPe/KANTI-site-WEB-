@@ -70,6 +70,9 @@ export const uploadPDF = async (file: File): Promise<string> => {
 };
 
 export const getDownloadUrl = async (storagePath: string): Promise<string> => {
+  if (storagePath.startsWith("/") || storagePath.startsWith("http")) {
+    return storagePath;
+  }
   const { data, error } = await supabase.storage
     .from("ressources")
     .createSignedUrl(storagePath, 3600);

@@ -3,6 +3,7 @@ import { useState, useMemo, useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PageCTA from "@/components/PageCTA";
@@ -13,6 +14,7 @@ const CATEGORIES = ["Toutes", "Investissement", "Épargne", "Transmission", "Fis
 /* ─── Page ─── */
 export default function ActualitesPage() {
   useScrollReveal();
+  const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState("Toutes");
 
   const { data: articles = [], isLoading } = useQuery({
@@ -164,6 +166,7 @@ export default function ActualitesPage() {
               border: "1px solid hsl(224 20% 12% / 0.07)",
               boxShadow: "0 8px 32px -8px hsl(224 60% 12% / 0.10)",
             }}
+            onClick={() => navigate(`/actualites/${featured.id}`)}
           >
             {/* Image */}
             <div className="relative aspect-[4/3] lg:aspect-auto overflow-hidden">
@@ -269,6 +272,7 @@ export default function ActualitesPage() {
                   border: "1px solid hsl(224 20% 12% / 0.07)",
                   boxShadow: "0 2px 12px -4px hsl(224 60% 12% / 0.06)",
                 }}
+                onClick={() => navigate(`/actualites/${a.id}`)}
                 onMouseEnter={(e) => {
                   (e.currentTarget as HTMLElement).style.boxShadow =
                     "0 20px 48px -12px hsl(224 60% 12% / 0.13), 0 4px 16px -4px hsl(224 60% 12% / 0.07)";
