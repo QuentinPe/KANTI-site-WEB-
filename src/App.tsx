@@ -36,9 +36,16 @@ import MerciPage from "./pages/MerciPage.tsx";
 import RessourcesPage from "./pages/RessourcesPage.tsx";
 import ProfilRisquePage from "./pages/ProfilRisquePage.tsx";
 import LoginPage from "./pages/LoginPage.tsx";
+import ArticleDetailPage from "./pages/ArticleDetailPage.tsx";
 import AdminLayout from "./pages/admin/AdminLayout.tsx";
 import AdminArticlesList from "./pages/admin/AdminArticlesList.tsx";
 import AdminArticleForm from "./pages/admin/AdminArticleForm.tsx";
+import AdminResourcesList from "./pages/admin/AdminResourcesList.tsx";
+import AdminResourceForm from "./pages/admin/AdminResourceForm.tsx";
+import AdminCasClientsList from "./pages/admin/AdminCasClientsList.tsx";
+import AdminCasClientsForm from "./pages/admin/AdminCasClientsForm.tsx";
+import AdminFAQList from "./pages/admin/AdminFAQList.tsx";
+import AdminFAQForm from "./pages/admin/AdminFAQForm.tsx";
 
 const queryClient = new QueryClient();
 
@@ -61,6 +68,7 @@ const AppShell = () => {
           <Route path="/patrimoine-professionnel" element={<PatrimoineProPage />} />
           <Route path="/financement" element={<FinancementPage />} />
           <Route path="/actualites" element={<ActualitesPage />} />
+          <Route path="/actualites/:id" element={<ArticleDetailPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/bilan-patrimonial-bordeaux" element={<BilanPatrimonialPage />} />
           <Route path="/gestion-patrimoine-chef-entreprise" element={<ChefEntreprisePage />} />
@@ -81,6 +89,15 @@ const AppShell = () => {
             <Route index element={<AdminArticlesList />} />
             <Route path="articles/new" element={<AdminArticleForm />} />
             <Route path="articles/:id/edit" element={<AdminArticleForm />} />
+            <Route path="ressources" element={<AdminResourcesList />} />
+            <Route path="ressources/new" element={<AdminResourceForm />} />
+            <Route path="ressources/:id/edit" element={<AdminResourceForm />} />
+            <Route path="cas-clients" element={<AdminCasClientsList />} />
+            <Route path="cas-clients/new" element={<AdminCasClientsForm />} />
+            <Route path="cas-clients/:id/edit" element={<AdminCasClientsForm />} />
+            <Route path="faq" element={<AdminFAQList />} />
+            <Route path="faq/new" element={<AdminFAQForm />} />
+            <Route path="faq/:id/edit" element={<AdminFAQForm />} />
           </Route>
           {/* Dynamic product / solution sub-pages */}
           <Route path="/:categorySlug/:productSlug" element={<ProductDetailPage />} />

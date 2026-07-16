@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
-import { FileText, LogOut, Plus } from "lucide-react";
+import { FileText, LogOut, Plus, BookOpen, Users, HelpCircle } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import logoWhite from "@/assets/logo-kanti-white.png.asset.json";
 
@@ -13,7 +13,10 @@ export default function AdminLayout() {
     navigate("/login");
   };
 
-  const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + "/");
+  const isActive = (path: string) =>
+    path === "/admin"
+      ? location.pathname === "/admin"
+      : location.pathname.startsWith(path);
 
   return (
     <div className="min-h-screen flex" style={{ background: "hsl(220 25% 97%)" }}>
@@ -35,25 +38,60 @@ export default function AdminLayout() {
 
         {/* Nav */}
         <nav className="flex-1 px-3 py-5 space-y-1">
+          <p className="px-3 pb-2 text-[9px] tracking-[0.3em] uppercase font-medium" style={{ color: "hsl(0 0% 100% / 0.22)" }}>
+            Contenu
+          </p>
           <NavItem
             to="/admin"
             icon={<FileText className="w-4 h-4" />}
             label="Articles"
             active={isActive("/admin")}
           />
+          <NavItem
+            to="/admin/ressources"
+            icon={<BookOpen className="w-4 h-4" />}
+            label="Ressources PDF"
+            active={isActive("/admin/ressources")}
+          />
+
+          <p className="px-3 pb-2 pt-5 text-[9px] tracking-[0.3em] uppercase font-medium" style={{ color: "hsl(0 0% 100% / 0.22)" }}>
+            Site
+          </p>
+          <NavItem
+            to="/admin/cas-clients"
+            icon={<Users className="w-4 h-4" />}
+            label="Cas clients"
+            active={isActive("/admin/cas-clients")}
+          />
+          <NavItem
+            to="/admin/faq"
+            icon={<HelpCircle className="w-4 h-4" />}
+            label="FAQ"
+            active={isActive("/admin/faq")}
+          />
         </nav>
 
         {/* Quick action */}
-        <div className="px-3 pb-4">
+        <div className="px-3 pb-4 space-y-2">
           <Link
             to="/admin/articles/new"
-            className="flex items-center gap-2 w-full px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200"
+            className="flex items-center gap-2 w-full px-3 py-2.5 rounded-xl text-[12px] font-medium transition-all duration-200"
             style={{ background: "hsl(0 0% 100% / 0.10)", color: "hsl(0 0% 100% / 0.80)" }}
             onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(0 0% 100% / 0.16)"; }}
             onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(0 0% 100% / 0.10)"; }}
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-3.5 h-3.5" />
             Nouvel article
+          </Link>
+          <Link
+            to="/admin/ressources/new"
+            className="flex items-center gap-2 w-full px-3 py-2.5 rounded-xl text-[12px] font-medium transition-all duration-200"
+            style={{ background: "hsl(0 0% 100% / 0.06)", color: "hsl(0 0% 100% / 0.55)" }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(0 0% 100% / 0.10)"; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(0 0% 100% / 0.06)"; }}
+          >
+            <Plus className="w-3.5 h-3.5" />
+            Nouvelle ressource
           </Link>
         </div>
 

@@ -7,6 +7,7 @@ export interface Article {
   tag: string;
   title: string;
   excerpt: string;
+  body?: string;
   image: string;
   featured: boolean;
   created_at: string;
@@ -14,6 +15,16 @@ export interface Article {
 }
 
 export type ArticleInput = Omit<Article, "id" | "created_at" | "updated_at">;
+
+export const getArticleById = async (id: string): Promise<Article | null> => {
+  const { data, error } = await supabase
+    .from("articles")
+    .select("*")
+    .eq("id", id)
+    .single();
+  if (error) return null;
+  return data;
+};
 
 export const getArticles = async (): Promise<Article[]> => {
   const { data, error } = await supabase
