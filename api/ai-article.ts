@@ -17,9 +17,9 @@ export default async function handler(req: Request): Promise<Response> {
   if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: CORS });
   if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
 
-  const apiKey = process.env.XAI_API_KEY;
+  const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
-    return json({ error: "XAI_API_KEY non configurée dans Vercel Environment Variables" }, 500);
+    return json({ error: "ANTHROPIC_API_KEY non configurée dans Vercel Environment Variables" }, 500);
   }
 
   let body: { action?: string; content?: string; title?: string };
@@ -68,30 +68,28 @@ export default async function handler(req: Request): Promise<Response> {
   if (!prompt) return json({ error: `Action inconnue : ${action}` }, 400);
 
   try {
-    const aiRes = await fetch("https://api.x.ai/v1/chat/completions", {
+    const aiRes = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${apiKey}`,
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01",
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "grok-3-mini",
-        messages: [
-          { role: "system", content: prompt.system },
-          { role: "user", content: prompt.user },
-        ],
+        model: "claude-haiku-4-5-20251001",
         max_tokens: 2000,
-        temperature: 0.65,
+        system: prompt.system,
+        messages: [{ role: "user", content: prompt.user }],
       }),
     });
 
     if (!aiRes.ok) {
       const errText = await aiRes.text();
-      return json({ error: `Erreur Grok (${aiRes.status}) : ${errText}` }, 502);
+      return json({ error: `Erreur Claude (${aiRes.status}) : ${errText}` }, 502);
     }
 
-    const data = (await aiRes.json()) as { choices: { message: { content: string } }[] };
-    const result = data.choices?.[0]?.message?.content ?? "";
+    const data = (await aiRes.json()) as { content: { type: string; text: string }[] };
+    const result = data.content?.find((b) => b.type === "text")?.text ?? "";
     return json({ result });
   } catch (e) {
     return json({ error: String(e) }, 500);
