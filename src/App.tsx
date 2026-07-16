@@ -13,8 +13,10 @@ import AdminLayout from "./pages/admin/AdminLayout.tsx";
 
 // ─── Global UI (non-critical, lazy with null fallback) ───────────────────────
 const PremiumCursor = lazy(() => import("@/components/PremiumCursor"));
+// CookieBanner uses <Link> → must stay inside BrowserRouter
 const CookieBanner  = lazy(() => import("@/components/CookieBanner"));
 const MobileChrome  = lazy(() => import("@/components/mobile/MobileChrome"));
+const SkipToContent = lazy(() => import("@/components/SkipToContent"));
 
 // ─── Public pages ─────────────────────────────────────────────────────────────
 const Index                     = lazy(() => import("./pages/Index"));
@@ -91,12 +93,13 @@ const AppShell = () => {
       <Sonner />
       <Suspense fallback={null}>
         <PremiumCursor />
-        <CookieBanner />
       </Suspense>
       <BrowserRouter>
         <AuthProvider>
           <Suspense fallback={null}>
+            <SkipToContent />
             <MobileChrome />
+            <CookieBanner />
           </Suspense>
           <Suspense fallback={<PageLoader />}>
             <Routes>
