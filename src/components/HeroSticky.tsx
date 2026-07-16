@@ -32,7 +32,7 @@ export default function HeroSticky() {
     offset: ["start start", "end end"],
   });
 
-  const titleOpacity = useTransform(scrollYProgress, [0, 0.7, 0.95], [1, 0.85, 0]);
+  const titleOpacity = useTransform(scrollYProgress, [0, 0.15, 0.7, 0.95], [1, 1, 0.85, 0]);
   const titleY = useTransform(scrollYProgress, [0, 1], reduce ? [0, 0] : [0, -60]);
 
   // Preload all frames as <img> elements + drive canvas from scroll
@@ -229,9 +229,9 @@ export default function HeroSticky() {
         >
           <div className="max-w-3xl">
             <div
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-dark mb-8 opacity-0"
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-dark mb-8"
               style={{
-                animation: "fade-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.2s forwards",
+                animation: "fade-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both",
                 backgroundColor: "hsl(224 60% 5% / 0.4)",
                 backdropFilter: "blur(12px)",
                 WebkitBackdropFilter: "blur(12px)",
@@ -244,9 +244,9 @@ export default function HeroSticky() {
             </div>
 
             <h1
-              className="text-5xl md:text-6xl lg:text-7xl font-heading font-light text-white leading-[1.05] mb-10 tracking-tight opacity-0"
+              className="text-5xl md:text-6xl lg:text-7xl font-heading font-light text-white leading-[1.05] mb-10 tracking-tight"
               style={{
-                animation: "fade-in-up 1s cubic-bezier(0.22, 1, 0.36, 1) 0.4s forwards",
+                animation: "fade-in-up 1s cubic-bezier(0.22, 1, 0.36, 1) 0.4s both",
                 textShadow:
                   "0 2px 24px hsl(224 60% 5% / 0.55), 0 1px 2px hsl(224 60% 5% / 0.4)",
               }}
@@ -259,9 +259,9 @@ export default function HeroSticky() {
             </h1>
 
             <p
-              className="text-base md:text-lg text-white/65 max-w-xl leading-relaxed mb-12 font-light opacity-0"
+              className="text-base md:text-lg text-white/65 max-w-xl leading-relaxed mb-12 font-light"
               style={{
-                animation: "fade-in-up 1s cubic-bezier(0.22, 1, 0.36, 1) 0.7s forwards",
+                animation: "fade-in-up 1s cubic-bezier(0.22, 1, 0.36, 1) 0.7s both",
                 textShadow: "0 1px 12px hsl(224 60% 5% / 0.6)",
               }}
             >
@@ -271,8 +271,8 @@ export default function HeroSticky() {
             </p>
 
             <div
-              className="flex flex-col sm:flex-row gap-4 opacity-0"
-              style={{ animation: "fade-in-up 1s cubic-bezier(0.22, 1, 0.36, 1) 1s forwards" }}
+              className="flex flex-col sm:flex-row gap-4"
+              style={{ animation: "fade-in-up 1s cubic-bezier(0.22, 1, 0.36, 1) 1s both" }}
             >
               <Link
                 to="/bilan-patrimonial-bordeaux"
@@ -294,9 +294,9 @@ export default function HeroSticky() {
             </div>
 
             <div
-              className="mt-16 flex flex-wrap gap-x-8 gap-y-3 opacity-0"
+              className="mt-16 flex flex-wrap gap-x-8 gap-y-3"
               style={{
-                animation: "fade-in 1s ease-out 1.4s forwards",
+                animation: "fade-in 1s ease-out 1.4s both",
                 textShadow: "0 1px 10px hsl(224 60% 5% / 0.6)",
               }}
             >
