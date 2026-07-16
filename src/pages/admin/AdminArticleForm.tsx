@@ -125,12 +125,13 @@ export default function AdminArticleForm() {
     const payload: ArticleInput = {
       title: data.title,
       excerpt: data.excerpt,
-      body: data.body,
       tag: data.tag,
       date: data.date,
       reading_time: data.reading_time,
       image: data.image,
       featured: data.featured,
+      // body uniquement si non vide (nécessite ALTER TABLE articles ADD COLUMN body TEXT)
+      ...(data.body && data.body !== "<p></p>" ? { body: data.body } : {}),
     };
     if (isEdit) {
       updateMutation.mutate(payload);
