@@ -17,9 +17,9 @@ export default async function handler(req: Request): Promise<Response> {
   if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: CORS });
   if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const apiKey = process.env.XAI_API_KEY;
   if (!apiKey) {
-    return json({ error: "ANTHROPIC_API_KEY non configurée dans Vercel Environment Variables" }, 500);
+    return json({ error: "XAI_API_KEY non configurée dans Vercel Environment Variables" }, 500);
   }
 
   let body: { action?: string; content?: string; title?: string };
@@ -49,7 +49,7 @@ export default async function handler(req: Request): Promise<Response> {
       system:
         "Tu es rédacteur expert en contenu patrimonial et financier pour le cabinet KANTI. " +
         "Tu maîtrises les meilleures pratiques rédactionnelles : hiérarchie claire, paragraphes aérés, " +
-        "formulations percutantes, style éditorial professionnel et accessible.",
+        "formulations percutants, style éditorial professionnel et accessible.",
       user:
         `Reformate et améliore ce contenu HTML d'article. Consignes strictes :\n` +
         `- Utilise des balises h2 et h3 pour structurer\n` +
@@ -68,28 +68,30 @@ export default async function handler(req: Request): Promise<Response> {
   if (!prompt) return json({ error: `Action inconnue : ${action}` }, 400);
 
   try {
-    const aiRes = await fetch("https://api.anthropic.com/v1/messages", {
+    const aiRes = await fetch("https://api.x.ai/v1/chat/completions", {
       method: "POST",
       headers: {
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
+        Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "claude-haiku-4-5-20251001",
+        model: "grok-3-mini",
+        messages: [
+          { role: "system", content: prompt.system },
+          { role: "user", content: prompt.user },
+        ],
         max_tokens: 2000,
-        system: prompt.system,
-        messages: [{ role: "user", content: prompt.user }],
+        temperature: 0.65,
       }),
     });
 
     if (!aiRes.ok) {
       const errText = await aiRes.text();
-      return json({ error: `Erreur Claude (${aiRes.status}) : ${errText}` }, 502);
+      return json({ error: `Erreur Grok (${aiRes.status}) : ${errText}` }, 502);
     }
 
-    const data = (await aiRes.json()) as { content: { type: string; text: string }[] };
-    const result = data.content?.find((b) => b.type === "text")?.text ?? "";
+    const data = (await aiRes.json()) as { choices: { message: { content: string } }[] };
+    const result = data.choices?.[0]?.message?.content ?? "";
     return json({ result });
   } catch (e) {
     return json({ error: String(e) }, 500);
