@@ -1,14 +1,14 @@
-import { useMemo, useState, useRef } from "react";
+import { useMemo, useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import {
   Briefcase, Building2, Globe2, Home, Stethoscope, Users,
-  ShieldCheck, TrendingDown, TrendingUp, Coins,
+  ShieldCheck, TrendingDown, TrendingUp, Coins, X, ArrowRight,
+  ChevronLeft, ChevronRight,
 } from "lucide-react";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PageCTA from "@/components/PageCTA";
-import ParallaxImage from "@/components/ParallaxImage";
 import Seo, { breadcrumbJsonLd } from "@/components/Seo";
 import heroBg from "@/assets/contact-advisors.jpg";
 import casCadre from "@/assets/cas-cadre.jpg";
@@ -18,9 +18,8 @@ import casLiberal from "@/assets/cas-liberal.jpg";
 import casImmobilier from "@/assets/cas-immobilier.jpg";
 import casExpatrie from "@/assets/cas-expatrie.jpg";
 
-/* ─── Types & données ─── */
+/* ─── Types ─────────────────────────────────────────────────────── */
 type Category = "particulier" | "dirigeant" | "liberal" | "investisseur" | "expatrie";
-
 interface KPI { label: string; value: string; icon: typeof TrendingDown; }
 interface CasClient {
   category: Category; categoryLabel: string; expertise: string; profil: string;
@@ -29,13 +28,19 @@ interface CasClient {
   kpis: KPI[]; vigilance: string; verbatim?: { quote: string; author: string };
 }
 
-const categories: { id: Category | "tous"; label: string; icon: typeof Users }[] = [
-  { id: "tous", label: "Tous les cas", icon: Briefcase },
-  { id: "particulier", label: "Particulier & Famille", icon: Users },
-  { id: "dirigeant", label: "Chef d'entreprise", icon: Building2 },
-  { id: "liberal", label: "Profession libérale", icon: Stethoscope },
-  { id: "investisseur", label: "Investisseur", icon: Home },
-  { id: "expatrie", label: "Expatrié", icon: Globe2 },
+/* ─── Données ───────────────────────────────────────────────────── */
+const CATEGORY_ICONS: Record<Category, typeof Users> = {
+  particulier: Users, dirigeant: Building2, liberal: Stethoscope,
+  investisseur: Home, expatrie: Globe2,
+};
+
+const categories = [
+  { id: "tous" as const,         label: "Tous",         icon: Briefcase   },
+  { id: "particulier" as const,  label: "Particulier",  icon: Users       },
+  { id: "dirigeant" as const,    label: "Dirigeant",    icon: Building2   },
+  { id: "liberal" as const,      label: "Libéral",      icon: Stethoscope },
+  { id: "investisseur" as const, label: "Investisseur", icon: Home        },
+  { id: "expatrie" as const,     label: "Expatrié",     icon: Globe2      },
 ];
 
 const casClients: CasClient[] = [
@@ -48,7 +53,11 @@ const casClients: CasClient[] = [
     diagnostic: ["Aucun PER ouvert malgré une déduction fiscale potentielle de 32 000 € par an", "Frais de gestion du contrat actuel : 1,1 % vs 0,55 % en architecture ouverte", "Clause bénéficiaire standard : transmission inefficace, fiscalité aux enfants surévaluée"],
     strategie: ["Ouverture d'un PER individuel avec versements déductibles calibrés", "Transfert vers des contrats d'assurance-vie en architecture ouverte, allocation diversifiée", "Démembrement de la clause bénéficiaire pour optimiser la transmission", "Investissement en nue-propriété de SCPI pour réduire l'IFI"],
     resultat: "Restructuration complète menée en 6 mois. Le client conserve sa liquidité tout en réduisant durablement sa pression fiscale et en organisant la transmission à ses enfants.",
-    kpis: [{ label: "Économie d'IR / an", value: "−14 400 €", icon: TrendingDown }, { label: "Réduction des frais", value: "−50 %", icon: TrendingDown }, { label: "Capital transmis", value: "+220 k€", icon: TrendingUp }],
+    kpis: [
+      { label: "Économie d'IR / an", value: "−14 400 €", icon: TrendingDown },
+      { label: "Réduction des frais", value: "−50 %",    icon: TrendingDown },
+      { label: "Capital transmis",    value: "+220 k€",  icon: TrendingUp   },
+    ],
     vigilance: "Le passage d'un contrat bancaire vers un contrat en architecture ouverte nécessite une analyse des éventuels droits acquis (taux garanti sur le fonds en euros).",
     verbatim: { quote: "J'avais l'impression d'être bien suivi par ma banque. En réalité, je laissais filer chaque année l'équivalent du salaire net mensuel d'un cadre.", author: "Cadre dirigeant, 48 ans, secteur industriel" },
   },
@@ -61,7 +70,11 @@ const casClients: CasClient[] = [
     diagnostic: ["Droits de succession estimés à 380 000 € en l'état", "Aucune utilisation des abattements de donation (100 000 € par enfant tous les 15 ans)", "Conjoint survivant insuffisamment protégé sur le bien locatif principal"],
     strategie: ["Donation-partage de la nue-propriété des biens locatifs aux enfants", "Clause bénéficiaire démembrée sur les contrats d'assurance-vie", "Donation entre époux (donation au dernier vivant)", "Simulation successorale complète avec scenarii croisés"],
     resultat: "La transmission est cadrée juridiquement et fiscalement. Le couple conserve les revenus locatifs via l'usufruit, les enfants reçoivent la pleine propriété au second décès sans droits supplémentaires.",
-    kpis: [{ label: "Droits évités", value: "−180 k€", icon: TrendingDown }, { label: "Patrimoine sécurisé", value: "1,8 M€", icon: ShieldCheck }, { label: "Délai succession", value: "−40 %", icon: TrendingDown }],
+    kpis: [
+      { label: "Droits évités",       value: "−180 k€", icon: TrendingDown },
+      { label: "Patrimoine sécurisé", value: "1,8 M€",  icon: ShieldCheck  },
+      { label: "Délai succession",    value: "−40 %",   icon: TrendingDown },
+    ],
     vigilance: "La donation de biens locatifs impose de bien évaluer l'impact fiscal pour les enfants (revenus fonciers, IFI) et de prévoir les modalités de gestion pendant la période de démembrement.",
   },
   {
@@ -73,7 +86,11 @@ const casClients: CasClient[] = [
     diagnostic: ["Trésorerie placée à 0 % alors que le rendement net potentiel atteint 3,5 %", "Coût social de la rémunération : 47 % vs 28 % via dividendes optimisés", "Cession future : risque fiscal majeur sans structure de holding"],
     strategie: ["Placement de la trésorerie sur des contrats de capitalisation personne morale", "Mix rémunération / dividendes optimisé fiscalement et socialement", "Création d'une holding par apport de titres (article 150-0 B ter)", "Mise en place d'un contrat retraite et d'une assurance homme-clé"],
     resultat: "Structure patrimoniale prête pour une cession optimisée. La trésorerie travaille, la rémunération est calibrée et la holding ouvre les portes du Pacte Dutreil et de l'apport-cession.",
-    kpis: [{ label: "Rendement trésorerie", value: "+3,2 %/an", icon: TrendingUp }, { label: "Charges sociales", value: "−18 k€/an", icon: TrendingDown }, { label: "Économie cession", value: "−420 k€", icon: Coins }],
+    kpis: [
+      { label: "Rendement trésorerie", value: "+3,2 %/an", icon: TrendingUp   },
+      { label: "Charges sociales",     value: "−18 k€/an", icon: TrendingDown },
+      { label: "Économie cession",     value: "−420 k€",   icon: Coins        },
+    ],
     vigilance: "Le placement de trésorerie en société doit respecter les contraintes comptables (provision pour dépréciation) et la cohérence avec l'objet social de l'entreprise.",
     verbatim: { quote: "Je pensais m'occuper de mon patrimoine après la cession. KANTI m'a démontré que c'était trois ans avant qu'il fallait commencer.", author: "Dirigeant SARL, 52 ans, services B2B" },
   },
@@ -86,7 +103,11 @@ const casClients: CasClient[] = [
     diagnostic: ["Taux de remplacement retraite estimé à 38 % seulement", "Plafond PER non utilisé sur 3 ans : 78 000 € de déduction perdue", "Madelin ancien : performance nette annualisée de 1,1 %"],
     strategie: ["Ouverture d'un PER avec versements déductibles optimisés (3 ans rattrapage)", "Transfert du contrat Madelin vers un PER plus performant", "Portefeuille d'assurance-vie diversifié en complément", "Investissement locatif en LMNP pour générer des revenus faiblement fiscalisés"],
     resultat: "Trois ans après le démarrage, le client a constitué 240 k€ d'épargne retraite supplémentaire et sécurisé un revenu LMNP de 18 000 € annuels nets pour ses années de transition.",
-    kpis: [{ label: "Capital retraite", value: "+240 k€", icon: TrendingUp }, { label: "Revenus LMNP", value: "18 k€/an", icon: Coins }, { label: "Économie d'IR", value: "−26 k€/an", icon: TrendingDown }],
+    kpis: [
+      { label: "Capital retraite", value: "+240 k€",    icon: TrendingUp   },
+      { label: "Revenus LMNP",     value: "18 k€/an",  icon: Coins        },
+      { label: "Économie d'IR",    value: "−26 k€/an", icon: TrendingDown },
+    ],
     vigilance: "Le médecin libéral doit anticiper la baisse de revenus liée au ralentissement d'activité et prévoir une liquidité suffisante pour les années de transition.",
   },
   {
@@ -97,8 +118,12 @@ const casClients: CasClient[] = [
     contexte: "Investisseur ayant constitué un parc de 6 biens locatifs en nom propre. Revenus fonciers importants, tranche marginale à 41 %, prélèvements sociaux significatifs. Gestion chronophage, peu de diversification.",
     diagnostic: ["Fiscalité totale sur revenus fonciers : 58,2 % (IR + PS)", "Concentration immobilière : 92 % du patrimoine global", "Aucune préparation de la transmission du parc aux enfants"],
     strategie: ["Apport des biens à une SCI à l'IS pour lisser la fiscalité", "Arbitrage partiel vers des SCPI en assurance-vie (revenus capitalisés)", "Donation de parts de SCI en nue-propriété aux enfants", "Constitution d'un portefeuille financier diversifié"],
-    resultat: "Bascule progressive vers une structure plus simple à transmettre, fiscalement allégée, et un patrimoine financier représentant désormais 28 % du total, concentration ramenée sous le seuil critique.",
-    kpis: [{ label: "Pression fiscale", value: "−22 pts", icon: TrendingDown }, { label: "Diversification", value: "+28 %", icon: TrendingUp }, { label: "Droits transmission", value: "−95 k€", icon: Coins }],
+    resultat: "Bascule progressive vers une structure plus simple à transmettre, fiscalement allégée, et un patrimoine financier représentant désormais 28 % du total.",
+    kpis: [
+      { label: "Pression fiscale",    value: "−22 pts", icon: TrendingDown },
+      { label: "Diversification",     value: "+28 %",   icon: TrendingUp   },
+      { label: "Droits transmission", value: "−95 k€",  icon: Coins        },
+    ],
     vigilance: "L'apport de biens à une SCI génère des droits d'enregistrement et une plus-value d'apport. L'analyse du bilan fiscal global est indispensable avant toute opération.",
     verbatim: { quote: "Je gérais mon parc comme un deuxième métier. Aujourd'hui je décide, je ne gère plus. Et la fiscalité a fondu.", author: "Investisseur immobilier, 45 ans" },
   },
@@ -111,32 +136,371 @@ const casClients: CasClient[] = [
     diagnostic: ["Obligations déclaratives 3916 et IFI non encore préparées", "Régime des impatriés (article 155 B CGI) éligible mais non activé", "Détention directe des actifs étrangers : risque fiscal et successoral majeur"],
     strategie: ["Audit complet des obligations déclaratives", "Activation du régime impatriés (exonération partielle 8 ans)", "Structuration de la détention via SCI / holding", "Rapatriement progressif des avoirs vers contrats français/luxembourgeois"],
     resultat: "Atterrissage fiscal sécurisé. Le client bénéficie pleinement du régime impatriés tout en conservant la flexibilité de ses placements luxembourgeois et asiatiques.",
-    kpis: [{ label: "Économie sur 8 ans", value: "−310 k€", icon: TrendingDown }, { label: "Conformité", value: "100 %", icon: ShieldCheck }, { label: "Délai sécurisation", value: "9 mois", icon: TrendingUp }],
-    vigilance: "Le retour en France impose des déclarations spécifiques (formulaire 3916, déclaration de patrimoine IFI). Le non-respect de ces obligations expose à des pénalités significatives.",
+    kpis: [
+      { label: "Économie sur 8 ans", value: "−310 k€", icon: TrendingDown },
+      { label: "Conformité",         value: "100 %",   icon: ShieldCheck  },
+      { label: "Délai sécurisation", value: "9 mois",  icon: TrendingUp   },
+    ],
+    vigilance: "Le retour en France impose des déclarations spécifiques (formulaire 3916, déclaration de patrimoine IFI). Le non-respect expose à des pénalités significatives.",
   },
 ];
 
-/* ─── Composants ─── */
-function CategoryFilter({ active, onChange, counts }: { active: Category | "tous"; onChange: (id: Category | "tous") => void; counts: Record<string, number>; }) {
+/* ─── FloatingCard ──────────────────────────────────────────────── */
+function FloatingCard({ cas, index, onClick }: { cas: CasClient; index: number; onClick: () => void }) {
+  const Icon    = CATEGORY_ICONS[cas.category];
+  const mainKpi = cas.kpis[0];
+
+  const floatY        = 7 + (index % 3) * 3;
+  const floatDuration = 8.5 + index * 0.9;
+  const floatDelay    = index * 1.2;
+  const floatRotate   = 0.18 + (index % 2) * 0.12;
+
   return (
-    <div className="flex flex-wrap gap-2 md:gap-2.5">
+    <motion.div
+      initial={{ opacity: 0, y: 36 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.94, y: -12 }}
+      transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1], delay: index * 0.08 }}
+    >
+      <motion.button
+        type="button"
+        onClick={onClick}
+        animate={{ y: [0, -floatY, 0], rotate: [-floatRotate, floatRotate, -floatRotate] }}
+        transition={{ duration: floatDuration, repeat: Infinity, delay: floatDelay, ease: "easeInOut" }}
+        whileHover={{ y: -20, rotate: 0, scale: 1.025, transition: { duration: 0.38, ease: [0.22, 1, 0.36, 1] } }}
+        whileTap={{ scale: 0.975, transition: { duration: 0.12 } }}
+        className="group w-full text-left flex flex-col p-7 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(224_55%_32%)]"
+        style={{
+          background: "linear-gradient(145deg, hsl(0 0% 100% / 0.84) 0%, hsl(218 28% 97% / 0.74) 100%)",
+          backdropFilter: "blur(28px) saturate(180%)",
+          WebkitBackdropFilter: "blur(28px) saturate(180%)",
+          border: "1px solid hsl(0 0% 100% / 0.68)",
+          boxShadow:
+            "0 8px 32px -8px hsl(224 40% 18% / 0.13)," +
+            "0 0 0 0.5px hsl(224 20% 28% / 0.06)," +
+            "inset 0 1px 0 hsl(0 0% 100% / 0.92)",
+          borderRadius: "28px",
+          minHeight: "230px",
+        }}
+      >
+        {/* Top row */}
+        <div className="flex items-start justify-between mb-5">
+          <span
+            className="text-[10px] tracking-[0.26em] uppercase font-medium px-2.5 py-1.5 rounded-full"
+            style={{ background: "hsl(224 55% 18% / 0.07)", color: "hsl(224 50% 32%)" }}
+          >
+            {cas.categoryLabel}
+          </span>
+          <div
+            className="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 transition-colors duration-300 group-hover:bg-[hsl(224_55%_18%/0.10)]"
+            style={{ background: "hsl(224 55% 18% / 0.06)", border: "1px solid hsl(224 28% 30% / 0.10)" }}
+          >
+            <Icon className="w-[18px] h-[18px]" style={{ color: "hsl(224 55% 32%)" }} strokeWidth={1.5} />
+          </div>
+        </div>
+
+        {/* Title + expertise */}
+        <h3
+          className="font-heading text-[17px] md:text-[19px] font-light leading-snug tracking-tight mb-2 transition-colors duration-300 group-hover:text-[hsl(224_55%_22%)]"
+          style={{ color: "hsl(224 60% 10%)" }}
+        >
+          {cas.profil}
+        </h3>
+        <p className="text-[12px] font-light leading-relaxed mb-6" style={{ color: "hsl(224 20% 50%)" }}>
+          {cas.expertise}
+        </p>
+
+        {/* Bottom: KPI + link */}
+        <div
+          className="mt-auto w-full pt-5 flex items-end justify-between"
+          style={{ borderTop: "1px solid hsl(224 20% 12% / 0.07)" }}
+        >
+          <div>
+            <p className="text-[9px] tracking-[0.22em] uppercase font-medium mb-1" style={{ color: "hsl(224 15% 58%)" }}>
+              {mainKpi.label}
+            </p>
+            <p className="font-heading text-2xl font-light tracking-tight tabular-nums leading-none" style={{ color: "hsl(224 55% 12%)" }}>
+              {mainKpi.value}
+            </p>
+          </div>
+          <div
+            className="flex items-center gap-1.5 text-[11px] font-medium tracking-wide opacity-45 transition-opacity duration-300 group-hover:opacity-100"
+            style={{ color: "hsl(224 50% 30%)" }}
+          >
+            <span>Voir le cas</span>
+            <ArrowRight className="w-3 h-3 transition-transform duration-300 group-hover:translate-x-0.5" strokeWidth={2} />
+          </div>
+        </div>
+      </motion.button>
+    </motion.div>
+  );
+}
+
+/* ─── CaseModal ─────────────────────────────────────────────────── */
+function CaseModal({
+  cas, index, total, onClose, onPrev, onNext,
+}: {
+  cas: CasClient; index: number; total: number;
+  onClose: () => void; onPrev: () => void; onNext: () => void;
+}) {
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = ""; };
+  }, []);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape")     onClose();
+      if (e.key === "ArrowRight") onNext();
+      if (e.key === "ArrowLeft")  onPrev();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose, onNext, onPrev]);
+
+  const caseNumber = String(casClients.indexOf(cas) + 1).padStart(2, "0");
+
+  const stagger = {
+    container: { hidden: {}, visible: { transition: { staggerChildren: 0.065, delayChildren: 0.18 } } },
+    item: { hidden: { opacity: 0, y: 14 }, visible: { opacity: 1, y: 0, transition: { duration: 0.48, ease: [0.22, 1, 0.36, 1] } } },
+  };
+
+  return (
+    <>
+      {/* Backdrop */}
+      <motion.div
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+        transition={{ duration: 0.28 }}
+        className="fixed inset-0 z-50"
+        style={{ background: "hsl(224 30% 8% / 0.52)", backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)" }}
+        onClick={onClose}
+        aria-hidden
+      />
+
+      {/* Centering shell */}
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 md:p-8 lg:p-14">
+        <motion.div
+          key={cas.profil}
+          initial={{ opacity: 0, scale: 0.92, y: 24 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.94, y: 16 }}
+          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+          className="relative w-full overflow-hidden"
+          style={{
+            maxWidth: "1080px",
+            maxHeight: "90vh",
+            background: "linear-gradient(145deg, hsl(0 0% 100% / 0.95) 0%, hsl(218 22% 98% / 0.92) 100%)",
+            backdropFilter: "blur(40px) saturate(200%)",
+            WebkitBackdropFilter: "blur(40px) saturate(200%)",
+            border: "1px solid hsl(0 0% 100% / 0.72)",
+            boxShadow:
+              "0 40px 120px -20px hsl(224 50% 12% / 0.28)," +
+              "0 0 0 0.5px hsl(224 20% 28% / 0.07)," +
+              "inset 0 1px 0 hsl(0 0% 100% / 0.96)",
+            borderRadius: "32px",
+          }}
+          role="dialog"
+          aria-modal
+          aria-label={cas.profil}
+        >
+          {/* Close */}
+          <button
+            onClick={onClose}
+            className="absolute top-5 right-5 z-20 w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 hover:bg-[hsl(224_20%_12%/0.10)]"
+            style={{ background: "hsl(224 20% 12% / 0.06)", border: "1px solid hsl(224 20% 12% / 0.09)" }}
+            aria-label="Fermer (Échap)"
+          >
+            <X className="w-3.5 h-3.5" style={{ color: "hsl(224 20% 42%)" }} strokeWidth={1.8} />
+          </button>
+
+          {/* Counter + nav */}
+          <div className="absolute top-5 left-1/2 -translate-x-1/2 z-20 flex items-center gap-3">
+            {index > 0 ? (
+              <button onClick={(e) => { e.stopPropagation(); onPrev(); }}
+                className="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110"
+                style={{ background: "hsl(224 20% 12% / 0.06)", border: "1px solid hsl(224 20% 12% / 0.09)" }}
+                aria-label="Cas précédent (←)">
+                <ChevronLeft className="w-3.5 h-3.5" style={{ color: "hsl(224 20% 42%)" }} strokeWidth={1.8} />
+              </button>
+            ) : <div className="w-8" />}
+            <span className="text-[10px] tracking-[0.22em] uppercase font-medium" style={{ color: "hsl(224 20% 52%)" }}>
+              {index + 1} / {total}
+            </span>
+            {index < total - 1 ? (
+              <button onClick={(e) => { e.stopPropagation(); onNext(); }}
+                className="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110"
+                style={{ background: "hsl(224 20% 12% / 0.06)", border: "1px solid hsl(224 20% 12% / 0.09)" }}
+                aria-label="Cas suivant (→)">
+                <ChevronRight className="w-3.5 h-3.5" style={{ color: "hsl(224 20% 42%)" }} strokeWidth={1.8} />
+              </button>
+            ) : <div className="w-8" />}
+          </div>
+
+          {/* Two-column body */}
+          <div className="grid lg:grid-cols-5" style={{ maxHeight: "90vh" }}>
+
+            {/* Image */}
+            <motion.div
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.55, delay: 0.05 }}
+              className="lg:col-span-2 relative"
+              style={{ minHeight: "220px", borderRadius: "32px 0 0 32px", overflow: "hidden" }}
+            >
+              <img src={cas.image} alt="" aria-hidden
+                className="w-full h-full object-cover object-center"
+                style={{ minHeight: "220px", maxHeight: "90vh" }} />
+              <div className="absolute inset-0" style={{
+                background:
+                  "linear-gradient(to right, hsl(224 40% 12% / 0.18) 0%, transparent 55%)," +
+                  "linear-gradient(to top, hsl(224 40% 12% / 0.75) 0%, transparent 52%)",
+              }} />
+              <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
+                <p className="text-[10px] tracking-[0.26em] uppercase font-medium text-white/65 mb-2">
+                  Cas {caseNumber} · {cas.categoryLabel}
+                </p>
+                <p className="font-heading text-xl md:text-2xl font-light leading-snug tracking-tight">{cas.profil}</p>
+                <p className="text-[11px] text-white/60 mt-1.5 font-light tracking-wide">{cas.age} · {cas.duration}</p>
+              </div>
+            </motion.div>
+
+            {/* Scrollable content */}
+            <motion.div
+              variants={stagger.container} initial="hidden" animate="visible"
+              className="lg:col-span-3 overflow-y-auto flex flex-col"
+              style={{ maxHeight: "90vh", padding: "clamp(28px, 4vw, 44px)" }}
+            >
+              {/* KPIs */}
+              <motion.div variants={stagger.item}
+                className="grid grid-cols-3 gap-5 mb-8 pb-8"
+                style={{ borderBottom: "1px solid hsl(224 20% 12% / 0.08)" }}>
+                {cas.kpis.map((k) => {
+                  const KIcon = k.icon;
+                  return (
+                    <div key={k.label}>
+                      <div className="flex items-center gap-1.5 mb-1.5" style={{ color: "hsl(224 15% 58%)" }}>
+                        <KIcon className="w-3 h-3" />
+                        <span className="text-[9px] tracking-[0.18em] uppercase font-medium">{k.label}</span>
+                      </div>
+                      <p className="font-heading text-2xl md:text-3xl font-light tracking-tight tabular-nums leading-none" style={{ color: "hsl(224 55% 12%)" }}>
+                        {k.value}
+                      </p>
+                    </div>
+                  );
+                })}
+              </motion.div>
+
+              {/* Expertise */}
+              <motion.p variants={stagger.item}
+                className="text-[10px] tracking-[0.26em] uppercase font-medium mb-7"
+                style={{ color: "hsl(224 38% 42%)" }}>
+                {cas.expertise}
+              </motion.p>
+
+              {/* 01 Contexte */}
+              <motion.div variants={stagger.item} className="mb-7">
+                <p className="text-[9px] tracking-[0.22em] uppercase font-medium mb-2.5" style={{ color: "hsl(224 18% 56%)" }}>01 · Contexte</p>
+                <p className="text-[13px] md:text-[14px] font-light leading-relaxed" style={{ color: "hsl(224 15% 35%)" }}>{cas.contexte}</p>
+              </motion.div>
+
+              {/* 02 Diagnostic */}
+              <motion.div variants={stagger.item} className="mb-7">
+                <p className="text-[9px] tracking-[0.22em] uppercase font-medium mb-2.5" style={{ color: "hsl(224 18% 56%)" }}>02 · Diagnostic</p>
+                <ul className="space-y-2">
+                  {cas.diagnostic.map((d) => (
+                    <li key={d} className="flex items-start gap-2.5 text-[13px] font-light leading-relaxed" style={{ color: "hsl(224 15% 38%)" }}>
+                      <span className="mt-[7px] w-1 h-1 rounded-full flex-shrink-0" style={{ background: "hsl(224 15% 62%)" }} />
+                      {d}
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+
+              {/* 03 Stratégie */}
+              <motion.div variants={stagger.item} className="mb-7">
+                <p className="text-[9px] tracking-[0.22em] uppercase font-medium mb-2.5" style={{ color: "hsl(224 38% 42%)" }}>03 · Stratégie</p>
+                <ul className="space-y-2">
+                  {cas.strategie.map((s) => (
+                    <li key={s} className="flex items-start gap-2.5 text-[13px] font-light leading-relaxed" style={{ color: "hsl(224 15% 38%)" }}>
+                      <span className="mt-[7px] w-1 h-1 rounded-full flex-shrink-0" style={{ background: "hsl(224 55% 38%)" }} />
+                      {s}
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+
+              {/* 04 Résultat */}
+              <motion.div variants={stagger.item}
+                className="rounded-2xl p-5 mb-7"
+                style={{ background: "hsl(224 55% 18% / 0.04)", border: "1px solid hsl(224 28% 30% / 0.08)" }}>
+                <p className="text-[9px] tracking-[0.22em] uppercase font-medium mb-2.5" style={{ color: "hsl(224 38% 42%)" }}>04 · Résultat</p>
+                <p className="text-[13px] md:text-[14px] font-light leading-relaxed" style={{ color: "hsl(224 30% 26%)" }}>{cas.resultat}</p>
+              </motion.div>
+
+              {/* Vigilance */}
+              <motion.div variants={stagger.item} className="flex items-start gap-2.5 mb-7">
+                <span className="mt-[5px] w-1 h-1 rounded-full flex-shrink-0" style={{ background: "hsl(224 55% 35%)" }} />
+                <div>
+                  <p className="text-[9px] tracking-[0.22em] uppercase font-medium mb-1.5" style={{ color: "hsl(224 20% 52%)" }}>Point de vigilance</p>
+                  <p className="text-[12px] leading-relaxed font-light italic" style={{ color: "hsl(224 15% 47%)" }}>{cas.vigilance}</p>
+                </div>
+              </motion.div>
+
+              {/* Verbatim */}
+              {cas.verbatim && (
+                <motion.div variants={stagger.item}
+                  className="mb-8 pt-6"
+                  style={{ borderTop: "1px solid hsl(224 20% 12% / 0.08)" }}>
+                  <span className="font-heading text-5xl leading-none select-none block mb-1" style={{ color: "hsl(224 20% 88%)" }}>"</span>
+                  <p className="font-heading text-[17px] md:text-[19px] font-light leading-snug tracking-tight italic pl-8 mb-4" style={{ color: "hsl(224 30% 26%)" }}>
+                    {cas.verbatim.quote}
+                  </p>
+                  <p className="text-[10px] tracking-[0.22em] uppercase font-medium pl-8" style={{ color: "hsl(224 18% 56%)" }}>
+                    — {cas.verbatim.author}
+                  </p>
+                </motion.div>
+              )}
+
+              {/* CTA */}
+              <motion.div variants={stagger.item} className="mt-auto pb-1">
+                <a href="/contact"
+                  className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-full text-[13px] font-medium tracking-wide transition-all duration-300 hover:gap-4"
+                  style={{ background: "hsl(224 60% 18%)", color: "white", boxShadow: "0 8px 24px -6px hsl(224 60% 18% / 0.32)" }}>
+                  Prendre rendez-vous
+                  <ArrowRight className="w-4 h-4" strokeWidth={1.5} />
+                </a>
+              </motion.div>
+            </motion.div>
+          </div>
+        </motion.div>
+      </div>
+    </>
+  );
+}
+
+/* ─── CategoryFilter ────────────────────────────────────────────── */
+function CategoryFilter({ active, onChange, counts }: {
+  active: Category | "tous"; onChange: (id: Category | "tous") => void; counts: Record<string, number>;
+}) {
+  return (
+    <div className="flex flex-wrap gap-2">
       {categories.map((cat) => {
-        const Icon = cat.icon;
+        const Icon     = cat.icon;
         const isActive = active === cat.id;
-        const count = cat.id === "tous" ? casClients.length : (counts[cat.id] ?? 0);
+        const count    = cat.id === "tous" ? casClients.length : (counts[cat.id] ?? 0);
         return (
           <button key={cat.id} type="button" onClick={() => onChange(cat.id)} aria-pressed={isActive}
-            className="group inline-flex items-center gap-2.5 px-4 md:px-5 py-2.5 rounded-full text-[12px] md:text-[13px] font-medium tracking-wide transition-all duration-300"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-[12px] font-medium tracking-wide transition-all duration-300"
             style={{
-              background: isActive ? "hsl(224 60% 18%)" : "transparent",
+              background: isActive ? "hsl(224 60% 18%)" : "hsl(0 0% 100% / 0.68)",
               color: isActive ? "white" : "hsl(224 25% 40%)",
-              border: `1px solid ${isActive ? "hsl(224 60% 18%)" : "hsl(224 20% 12% / 0.18)"}`,
-              boxShadow: isActive ? "0 4px 12px -4px hsl(224 60% 18% / 0.30)" : "none",
+              border: `1px solid ${isActive ? "hsl(224 60% 18%)" : "hsl(0 0% 100% / 0.65)"}`,
+              backdropFilter: "blur(12px)",
+              WebkitBackdropFilter: "blur(12px)",
+              boxShadow: isActive ? "0 4px 14px -4px hsl(224 60% 18% / 0.30)" : "0 2px 8px -4px hsl(224 20% 20% / 0.07)",
             }}>
             <Icon className="w-3.5 h-3.5" />
             <span>{cat.label}</span>
             <span className="text-[10px] tabular-nums px-1.5 py-0.5 rounded-full"
-              style={{ background: isActive ? "hsl(0 0% 100% / 0.18)" : "hsl(224 20% 12% / 0.05)", color: isActive ? "hsl(0 0% 100% / 0.85)" : "hsl(224 20% 55%)" }}>
+              style={{ background: isActive ? "hsl(0 0% 100% / 0.18)" : "hsl(224 20% 12% / 0.07)", color: isActive ? "hsl(0 0% 100% / 0.85)" : "hsl(224 20% 55%)" }}>
               {count}
             </span>
           </button>
@@ -146,133 +510,28 @@ function CategoryFilter({ active, onChange, counts }: { active: Category | "tous
   );
 }
 
-function Chapter({ num, title, body, items, variant, highlight }: { num: string; title: string; body?: string; items?: string[]; variant?: "diagnostic" | "strategie"; highlight?: boolean; }) {
-  return (
-    <div>
-      <div className="flex items-baseline gap-3 mb-3">
-        <span className="text-[10px] tabular-nums font-medium tracking-[0.2em]" style={{ color: "hsl(224 15% 65%)" }}>{num}</span>
-        <p className={`text-[10px] tracking-[0.28em] uppercase font-medium`} style={{ color: highlight ? "hsl(224 55% 32%)" : "hsl(224 20% 52%)" }}>{title}</p>
-      </div>
-      {body && <p className={`text-sm leading-relaxed font-light`} style={{ color: highlight ? "hsl(224 30% 25%)" : "hsl(224 15% 38%)" }}>{body}</p>}
-      {items && (
-        <ul className="space-y-2">
-          {items.map((it) => (
-            <li key={it} className="text-sm font-light flex items-start gap-3 leading-relaxed" style={{ color: "hsl(224 15% 38%)" }}>
-              <span aria-hidden className={`mt-2 w-1 h-1 rounded-full flex-shrink-0`}
-                style={{ background: variant === "strategie" ? "hsl(224 55% 32%)" : "hsl(224 15% 60%)" }} />
-              <span>{it}</span>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
-}
-
-function CaseCard({ cas, index }: { cas: CasClient; index: number }) {
-  return (
-    <motion.article layout
-      initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }}
-      transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-      className="group relative overflow-hidden rounded-[22px]"
-      style={{ border: "1px solid hsl(224 20% 12% / 0.08)", background: "white", boxShadow: "0 8px 32px -8px hsl(224 60% 12% / 0.09)" }}>
-      <div className="grid lg:grid-cols-12 gap-0">
-        {/* Colonne visuelle */}
-        <div className="lg:col-span-4 relative min-h-[260px] lg:min-h-full">
-          <ParallaxImage src={cas.image} alt="" className="absolute inset-0 w-full h-full" rounded="rounded-none" intensity={120}
-            overlayClassName="bg-gradient-to-br from-foreground/30 via-foreground/10 to-transparent" />
-          <div className="absolute inset-0 p-7 md:p-8 flex flex-col justify-between text-white z-10">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] tracking-[0.32em] uppercase font-medium text-white/85">Cas {String(index + 1).padStart(2, "0")}</span>
-              <span className="text-[10px] tracking-[0.18em] uppercase font-medium px-2.5 py-1 rounded-full"
-                style={{ background: "hsl(0 0% 100% / 0.15)", backdropFilter: "blur(12px)" }}>
-                {cas.categoryLabel}
-              </span>
-            </div>
-            <div>
-              <p className="text-[10px] tracking-[0.3em] uppercase text-white/70 mb-2 font-medium">{cas.expertise}</p>
-              <h3 className="font-heading text-xl md:text-2xl font-light leading-snug tracking-tight mb-2">{cas.profil}</h3>
-              <p className="text-[11px] text-white/75 font-light tracking-wide">{cas.age} · {cas.duration}</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Colonne contenu */}
-        <div className="lg:col-span-8 p-7 md:p-10">
-          {/* KPIs */}
-          <div className="grid grid-cols-3 gap-4 md:gap-6 mb-8 pb-8" style={{ borderBottom: "1px solid hsl(224 20% 12% / 0.09)" }}>
-            {cas.kpis.map((k) => {
-              const Icon = k.icon;
-              return (
-                <div key={k.label}>
-                  <div className="flex items-center gap-1.5 mb-1.5" style={{ color: "hsl(224 15% 58%)" }}>
-                    <Icon className="w-3 h-3" />
-                    <span className="text-[9px] md:text-[10px] tracking-[0.2em] uppercase font-medium">{k.label}</span>
-                  </div>
-                  <p className="font-heading text-xl md:text-3xl font-light tracking-tight tabular-nums leading-none" style={{ color: "hsl(224 55% 12%)" }}>{k.value}</p>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* 4 chapitres */}
-          <div className="grid md:grid-cols-2 gap-x-10 gap-y-7">
-            <Chapter num="01" title="Contexte" body={cas.contexte} />
-            <Chapter num="02" title="Diagnostic" items={cas.diagnostic} variant="diagnostic" />
-            <Chapter num="03" title="Stratégie" items={cas.strategie} variant="strategie" />
-            <Chapter num="04" title="Résultat" body={cas.resultat} highlight />
-          </div>
-
-          {/* Vigilance */}
-          <div className="mt-8 pt-6" style={{ borderTop: "1px solid hsl(224 20% 12% / 0.09)" }}>
-            <div className="flex items-start gap-3">
-              <div className="mt-1 w-1 h-1 rounded-full flex-shrink-0" style={{ background: "hsl(224 55% 32%)" }} />
-              <div>
-                <p className="text-[10px] tracking-[0.25em] uppercase mb-1.5 font-medium" style={{ color: "hsl(224 20% 52%)" }}>Point de vigilance</p>
-                <p className="text-xs md:text-[13px] leading-relaxed font-light italic" style={{ color: "hsl(224 15% 44%)" }}>{cas.vigilance}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </motion.article>
-  );
-}
-
-function VerbatimBlock({ verbatim }: { verbatim: { quote: string; author: string } }) {
-  return (
-    <motion.figure initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-80px" }} transition={{ duration: 0.7 }}
-      className="relative max-w-3xl mx-auto py-10">
-      <span aria-hidden className="absolute -top-2 left-0 font-heading text-7xl md:text-8xl leading-none select-none" style={{ color: "hsl(224 20% 90%)" }}>"</span>
-      <blockquote className="pl-12 md:pl-16">
-        <p className="font-heading text-xl md:text-2xl lg:text-3xl font-light leading-snug tracking-tight italic" style={{ color: "hsl(224 30% 25%)" }}>
-          {verbatim.quote}
-        </p>
-        <figcaption className="mt-5 text-[11px] tracking-[0.25em] uppercase font-medium" style={{ color: "hsl(224 18% 55%)" }}>
-          — {verbatim.author}
-        </figcaption>
-      </blockquote>
-    </motion.figure>
-  );
-}
-
-/* ─── Page ─── */
+/* ─── Page ──────────────────────────────────────────────────────── */
 export default function CasClientsPage() {
   useScrollReveal();
-  const [active, setActive] = useState<Category | "tous">("tous");
+  const [active, setActive]     = useState<Category | "tous">("tous");
+  const [selected, setSelected] = useState<CasClient | null>(null);
 
   const heroRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const imageY = useTransform(scrollYProgress, [0, 1], ["0%", "22%"]);
 
-  const counts = useMemo(() => casClients.reduce<Record<string, number>>((acc, c) => { acc[c.category] = (acc[c.category] ?? 0) + 1; return acc; }, {}), []);
+  const counts   = useMemo(() => casClients.reduce<Record<string, number>>((acc, c) => { acc[c.category] = (acc[c.category] ?? 0) + 1; return acc; }, {}), []);
   const filtered = useMemo(() => active === "tous" ? casClients : casClients.filter((c) => c.category === active), [active]);
 
+  const selectedIndex = selected ? filtered.indexOf(selected) : -1;
+  const onPrev = () => { if (selectedIndex > 0) setSelected(filtered[selectedIndex - 1]); };
+  const onNext = () => { if (selectedIndex < filtered.length - 1) setSelected(filtered[selectedIndex + 1]); };
+
   const stats = [
-    { value: "180+", label: "Familles accompagnées" },
-    { value: "12 ans", label: "D'expérience moyenne" },
-    { value: "97 %", label: "Taux de fidélisation" },
-    { value: "30+", label: "Partenaires institutionnels" },
+    { value: "180+",   label: "Familles accompagnées"       },
+    { value: "12 ans", label: "D'expérience moyenne"        },
+    { value: "97 %",   label: "Taux de fidélisation"        },
+    { value: "30+",    label: "Partenaires institutionnels" },
   ];
 
   return (
@@ -289,23 +548,15 @@ export default function CasClientsPage() {
         <motion.div className="absolute inset-0 will-change-transform" style={{ y: imageY, scale: 1.14 }}>
           <img src={heroBg} alt="" aria-hidden className="w-full h-full object-cover object-center" fetchPriority="high" />
         </motion.div>
-
-        <div aria-hidden className="absolute inset-0 pointer-events-none" style={{
-          background: "linear-gradient(105deg, hsl(0 0% 100% / 0.98) 0%, hsl(0 0% 100% / 0.92) 28%, hsl(0 0% 100% / 0.60) 52%, hsl(0 0% 100% / 0.08) 70%, transparent 82%)"
-        }} />
+        <div aria-hidden className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(105deg, hsl(0 0% 100% / 0.98) 0%, hsl(0 0% 100% / 0.92) 28%, hsl(0 0% 100% / 0.60) 52%, hsl(0 0% 100% / 0.08) 70%, transparent 82%)" }} />
         <div aria-hidden className="absolute inset-x-0 bottom-0 h-36 pointer-events-none" style={{ background: "linear-gradient(to top, hsl(0 0% 100%) 0%, transparent 100%)" }} />
-
         <div className="relative z-10 flex items-center min-h-[68vh] py-28 lg:py-36">
           <div className="max-w-6xl mx-auto px-8 md:px-14 w-full">
             <div className="max-w-[520px]">
-
               <motion.div className="flex items-center gap-2 mb-7" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 0.1 }}>
                 <span className="w-5 h-[2px]" style={{ background: "hsl(224 60% 22%)" }} />
-                <p className="text-[11px] tracking-[0.32em] uppercase font-medium" style={{ color: "hsl(224 60% 22%)" }}>
-                  Études de cas · Transparence
-                </p>
+                <p className="text-[11px] tracking-[0.32em] uppercase font-medium" style={{ color: "hsl(224 60% 22%)" }}>Études de cas · Transparence</p>
               </motion.div>
-
               <motion.h1 className="font-heading font-light leading-[1.04] tracking-tight mb-6"
                 style={{ fontSize: "clamp(2.6rem, 5.5vw, 4rem)", color: "hsl(224 60% 12%)" }}
                 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
@@ -313,20 +564,15 @@ export default function CasClientsPage() {
                 Six situations<br />
                 <span className="italic" style={{ color: "hsl(224 55% 30%)" }}>réelles.</span>
               </motion.h1>
-
-              <motion.p className="text-[15px] font-light leading-relaxed mb-8"
-                style={{ color: "hsl(224 25% 32%)" }}
+              <motion.p className="text-[15px] font-light leading-relaxed mb-8" style={{ color: "hsl(224 25% 32%)" }}
                 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}>
                 Contexte, diagnostic, stratégie et résultats chiffrés. Pour comprendre comment KANTI construit une solution patrimoniale sur mesure.
               </motion.p>
-
-              <motion.p className="text-[12px] font-light tracking-wide"
-                style={{ color: "hsl(224 18% 55%)" }}
+              <motion.p className="text-[12px] font-light tracking-wide" style={{ color: "hsl(224 18% 55%)" }}
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 0.5 }}>
                 6 cas · Anonymisés · Chiffrés
               </motion.p>
-
             </div>
           </div>
         </div>
@@ -338,9 +584,7 @@ export default function CasClientsPage() {
           <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 items-end mb-16 reveal">
             <div className="lg:col-span-6">
               <div className="electric-line mb-6" />
-              <p className="text-[11px] tracking-[0.3em] uppercase font-medium mb-5" style={{ color: "hsl(224 25% 52%)" }}>
-                Méthodologie éditoriale
-              </p>
+              <p className="text-[11px] tracking-[0.3em] uppercase font-medium mb-5" style={{ color: "hsl(224 25% 52%)" }}>Méthodologie éditoriale</p>
               <h2 className="text-3xl md:text-5xl font-heading font-light leading-[1.05] tracking-tight" style={{ color: "hsl(224 55% 12%)" }}>
                 Des situations réelles,<br />
                 <span className="italic" style={{ color: "hsl(224 25% 40%)" }}>rigoureusement anonymisées</span>.
@@ -352,8 +596,6 @@ export default function CasClientsPage() {
               </p>
             </div>
           </div>
-
-          {/* Stats */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-px rounded-2xl overflow-hidden reveal"
             style={{ background: "hsl(224 20% 12% / 0.07)", border: "1px solid hsl(224 20% 12% / 0.07)" }}>
             {stats.map((s) => (
@@ -366,23 +608,37 @@ export default function CasClientsPage() {
         </div>
       </section>
 
-      {/* ── Filtres + cas ── */}
-      <section className="bg-white pb-24 md:pb-32">
-        <div className="max-w-6xl mx-auto px-8 md:px-14">
-          <div className="mb-10 reveal">
-            <p className="text-[11px] tracking-[0.3em] uppercase font-medium mb-4" style={{ color: "hsl(224 25% 52%)" }}>
+      {/* ── Floating glass cards ── */}
+      <section
+        className="relative overflow-hidden pb-24 md:pb-32"
+        style={{ background: "linear-gradient(155deg, hsl(214 55% 94%) 0%, hsl(220 38% 96.5%) 50%, hsl(210 50% 93.5%) 100%)" }}
+      >
+        {/* Background orbs — give depth to the glass blur */}
+        <div aria-hidden className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-24 left-1/4 w-96 h-96 rounded-full opacity-35"
+            style={{ background: "radial-gradient(circle, hsl(214 75% 84%) 0%, transparent 70%)", filter: "blur(70px)" }} />
+          <div className="absolute top-64 right-[20%] w-80 h-80 rounded-full opacity-28"
+            style={{ background: "radial-gradient(circle, hsl(220 65% 80%) 0%, transparent 70%)", filter: "blur(55px)" }} />
+          <div className="absolute bottom-24 left-[30%] w-72 h-72 rounded-full opacity-22"
+            style={{ background: "radial-gradient(circle, hsl(210 72% 86%) 0%, transparent 70%)", filter: "blur(48px)" }} />
+          <div className="absolute top-40 right-[35%] w-60 h-60 rounded-full opacity-18"
+            style={{ background: "radial-gradient(circle, hsl(200 60% 88%) 0%, transparent 70%)", filter: "blur(44px)" }} />
+        </div>
+
+        <div className="relative max-w-6xl mx-auto px-8 md:px-14 pt-16 md:pt-20">
+          {/* Filters */}
+          <div className="mb-12 reveal">
+            <p className="text-[11px] tracking-[0.3em] uppercase font-medium mb-4" style={{ color: "hsl(224 28% 45%)" }}>
               Filtrer par profil
             </p>
-            <CategoryFilter active={active} onChange={setActive} counts={counts} />
+            <CategoryFilter active={active} onChange={(id) => { setActive(id); setSelected(null); }} counts={counts} />
           </div>
 
-          <div className="space-y-20 md:space-y-28 lg:space-y-32">
+          {/* Grid */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
             <AnimatePresence mode="popLayout">
               {filtered.map((cas, i) => (
-                <div key={cas.profil} className="space-y-20 md:space-y-28">
-                  <CaseCard cas={cas} index={casClients.indexOf(cas)} />
-                  {cas.verbatim && (i + 1) % 2 === 0 && <VerbatimBlock verbatim={cas.verbatim} />}
-                </div>
+                <FloatingCard key={cas.profil} cas={cas} index={i} onClick={() => setSelected(cas)} />
               ))}
             </AnimatePresence>
           </div>
@@ -392,20 +648,22 @@ export default function CasClientsPage() {
               Aucun cas ne correspond à ce filtre pour le moment.
             </p>
           )}
+
+          <p className="text-center mt-10 text-[11px] font-light tracking-wide" style={{ color: "hsl(224 22% 55%)" }}>
+            Cliquez sur une carte · Navigation clavier&nbsp;: ← → Échap
+          </p>
         </div>
       </section>
 
       {/* ── Disclaimer ── */}
-      <section className="px-6 pb-16">
+      <section className="px-6 pb-16 bg-white">
         <div className="max-w-4xl mx-auto">
           <div className="rounded-2xl p-6 md:p-8"
             style={{ border: "1px solid hsl(224 20% 12% / 0.08)", background: "hsl(224 30% 12% / 0.02)" }}>
             <div className="flex items-start gap-4">
               <ShieldCheck className="w-4 h-4 mt-1 flex-shrink-0" strokeWidth={1.5} style={{ color: "hsl(224 15% 55%)" }} />
               <div>
-                <p className="text-[10px] tracking-[0.28em] uppercase mb-2 font-medium" style={{ color: "hsl(224 20% 52%)" }}>
-                  Mention de transparence
-                </p>
+                <p className="text-[10px] tracking-[0.28em] uppercase mb-2 font-medium" style={{ color: "hsl(224 20% 52%)" }}>Mention de transparence</p>
                 <p className="text-[12px] md:text-[13px] font-light leading-relaxed" style={{ color: "hsl(224 12% 48%)" }}>
                   Les cas présentés sont des illustrations à valeur pédagogique, inspirés de missions réelles et intégralement anonymisés (identités, montants, secteurs, dates). Les résultats chiffrés correspondent à des situations spécifiques et ne préjugent pas de performances futures. Toute recommandation patrimoniale donne lieu à une lettre de mission préalable et à une analyse personnalisée. Les performances passées ne sont pas un indicateur fiable des performances futures. Données conformes aux exigences AMF et CNCEF.
                 </p>
@@ -414,6 +672,21 @@ export default function CasClientsPage() {
           </div>
         </div>
       </section>
+
+      {/* ── Modal ── */}
+      <AnimatePresence>
+        {selected && (
+          <CaseModal
+            key={selected.profil}
+            cas={selected}
+            index={selectedIndex >= 0 ? selectedIndex : 0}
+            total={filtered.length}
+            onClose={() => setSelected(null)}
+            onPrev={onPrev}
+            onNext={onNext}
+          />
+        )}
+      </AnimatePresence>
 
       <PageCTA
         title="Votre situation ressemble à l'un de ces cas ?"
