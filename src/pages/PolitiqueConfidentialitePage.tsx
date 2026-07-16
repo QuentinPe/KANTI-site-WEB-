@@ -1,19 +1,37 @@
+import { useQuery } from "@tanstack/react-query";
 import LegalLayout from "@/components/LegalLayout";
+import { getLegalContent } from "@/lib/legalService";
 
 export default function PolitiqueConfidentialitePage() {
+  const { data: cms } = useQuery({
+    queryKey: ["legal", "confidentialite"],
+    queryFn: () => getLegalContent("confidentialite"),
+  });
+
+  const subtitle = cms?.subtitle || "Engagement de KANTI sur la protection de vos données personnelles, conformément au Règlement Général sur la Protection des Données (RGPD) et à la loi Informatique et Libertés.";
+
+  const cmsSections = cms?.content_html
+    ? [{ id: "content", title: "", content: (
+        <div
+          className="prose prose-slate prose-headings:font-heading prose-headings:font-light prose-headings:tracking-tight prose-a:text-[hsl(218_45%_38%)] prose-a:no-underline hover:prose-a:underline max-w-none"
+          dangerouslySetInnerHTML={{ __html: cms.content_html }}
+        />
+      )}]
+    : null;
+
   return (
     <LegalLayout
       eyebrow="Données personnelles"
       title="Politique de"
       highlight="confidentialité"
-      subtitle="Engagement de KANTI sur la protection de vos données personnelles, conformément au Règlement Général sur la Protection des Données (RGPD) et à la loi Informatique et Libertés."
+      subtitle={subtitle}
       breadcrumb="Confidentialité"
-      updatedAt="Avril 2026"
+      updatedAt={cms?.updated_at ? new Date(cms.updated_at).toLocaleDateString("fr-FR", { month: "long", year: "numeric" }) : "Avril 2026"}
       relatedLinks={[
         { label: "Mentions légales", to: "/mentions-legales" },
         { label: "Réclamations & médiation", to: "/reclamations" },
       ]}
-      sections={[
+      sections={cmsSections ?? [
         {
           id: "preambule",
           title: "Préambule",

@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
-import { FileText, LogOut, Plus, BookOpen, Users, HelpCircle } from "lucide-react";
+import { FileText, LogOut, Plus, BookOpen, Users, HelpCircle, UserSquare2, Scale } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import logoWhite from "@/assets/logo-kanti-white.png.asset.json";
 
@@ -68,6 +68,18 @@ export default function AdminLayout() {
             icon={<HelpCircle className="w-4 h-4" />}
             label="FAQ"
             active={isActive("/admin/faq")}
+          />
+          <NavItem
+            to="/admin/equipe"
+            icon={<UserSquare2 className="w-4 h-4" />}
+            label="Équipe"
+            active={isActive("/admin/equipe")}
+          />
+          <NavItem
+            to="/admin/legal"
+            icon={<Scale className="w-4 h-4" />}
+            label="Mentions légales"
+            active={isActive("/admin/legal")}
           />
         </nav>
 

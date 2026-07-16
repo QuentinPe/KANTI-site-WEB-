@@ -1,19 +1,37 @@
+import { useQuery } from "@tanstack/react-query";
 import LegalLayout from "@/components/LegalLayout";
+import { getLegalContent } from "@/lib/legalService";
 
 export default function ReclamationsPage() {
+  const { data: cms } = useQuery({
+    queryKey: ["legal", "reclamations"],
+    queryFn: () => getLegalContent("reclamations"),
+  });
+
+  const subtitle = cms?.subtitle || "Procédure de traitement des réclamations et voies de recours en cas de désaccord, conformément aux exigences de l'AMF, de l'ACPR et de la CNCEF.";
+
+  const cmsSections = cms?.content_html
+    ? [{ id: "content", title: "", content: (
+        <div
+          className="prose prose-slate prose-headings:font-heading prose-headings:font-light prose-headings:tracking-tight prose-a:text-[hsl(218_45%_38%)] prose-a:no-underline hover:prose-a:underline max-w-none"
+          dangerouslySetInnerHTML={{ __html: cms.content_html }}
+        />
+      )}]
+    : null;
+
   return (
     <LegalLayout
       eyebrow="Relation client"
       title="Réclamations &"
       highlight="médiation"
-      subtitle="Procédure de traitement des réclamations et voies de recours en cas de désaccord, conformément aux exigences de l'AMF, de l'ACPR et de la CNCEF."
+      subtitle={subtitle}
       breadcrumb="Réclamations"
-      updatedAt="Avril 2026"
+      updatedAt={cms?.updated_at ? new Date(cms.updated_at).toLocaleDateString("fr-FR", { month: "long", year: "numeric" }) : "Avril 2026"}
       relatedLinks={[
         { label: "Mentions légales", to: "/mentions-legales" },
         { label: "Politique de confidentialité", to: "/politique-de-confidentialite" },
       ]}
-      sections={[
+      sections={cmsSections ?? [
         {
           id: "principe",
           title: "Notre engagement",

@@ -2,12 +2,14 @@ import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { motion, useReducedMotion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Shield, Clock, Network } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PageCTA from "@/components/PageCTA";
 import VirtualTourFAB from "@/components/VirtualTourFAB";
 import CabinetHeroSticky from "@/components/cabinet/CabinetHeroSticky";
 import CabinetAdresse from "@/components/cabinet/CabinetAdresse";
+import { getTeamMembers } from "@/lib/teamService";
 
 const ADN = [
   {
@@ -27,7 +29,7 @@ const ADN = [
   },
 ];
 
-const EQUIPE = [
+const EQUIPE_FALLBACK = [
   {
     name: "Quentin Perromat",
     role: "Associé Fondateur",
@@ -50,6 +52,8 @@ const EQUIPE = [
 export default function CabinetPage() {
   useScrollReveal();
   const reduce = useReducedMotion();
+  const { data: teamFromDB } = useQuery({ queryKey: ["team"], queryFn: getTeamMembers });
+  const EQUIPE = teamFromDB && teamFromDB.length > 0 ? teamFromDB : EQUIPE_FALLBACK;
 
   return (
     <>

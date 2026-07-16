@@ -46,6 +46,10 @@ import AdminCasClientsList from "./pages/admin/AdminCasClientsList.tsx";
 import AdminCasClientsForm from "./pages/admin/AdminCasClientsForm.tsx";
 import AdminFAQList from "./pages/admin/AdminFAQList.tsx";
 import AdminFAQForm from "./pages/admin/AdminFAQForm.tsx";
+import AdminTeamList from "./pages/admin/AdminTeamList.tsx";
+import AdminTeamForm from "./pages/admin/AdminTeamForm.tsx";
+import AdminLegalList from "./pages/admin/AdminLegalList.tsx";
+import AdminLegalForm from "./pages/admin/AdminLegalForm.tsx";
 
 const queryClient = new QueryClient();
 
@@ -98,6 +102,11 @@ const AppShell = () => {
             <Route path="faq" element={<AdminFAQList />} />
             <Route path="faq/new" element={<AdminFAQForm />} />
             <Route path="faq/:id/edit" element={<AdminFAQForm />} />
+            <Route path="equipe" element={<AdminTeamList />} />
+            <Route path="equipe/new" element={<AdminTeamForm />} />
+            <Route path="equipe/:id/edit" element={<AdminTeamForm />} />
+            <Route path="legal" element={<AdminLegalList />} />
+            <Route path="legal/:pageKey/edit" element={<AdminLegalForm />} />
           </Route>
           {/* Dynamic product / solution sub-pages */}
           <Route path="/:categorySlug/:productSlug" element={<ProductDetailPage />} />

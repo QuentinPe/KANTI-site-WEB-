@@ -1,19 +1,37 @@
+import { useQuery } from "@tanstack/react-query";
 import LegalLayout from "@/components/LegalLayout";
+import { getLegalContent } from "@/lib/legalService";
 
 export default function MentionsLegalesPage() {
+  const { data: cms } = useQuery({
+    queryKey: ["legal", "mentions-legales"],
+    queryFn: () => getLegalContent("mentions-legales"),
+  });
+
+  const subtitle = cms?.subtitle || "Informations relatives à l'éditeur du site, à l'hébergement, aux statuts réglementaires du cabinet et aux conditions d'utilisation.";
+
+  const cmsSections = cms?.content_html
+    ? [{ id: "content", title: "", content: (
+        <div
+          className="prose prose-slate prose-headings:font-heading prose-headings:font-light prose-headings:tracking-tight prose-a:text-[hsl(218_45%_38%)] prose-a:no-underline hover:prose-a:underline max-w-none"
+          dangerouslySetInnerHTML={{ __html: cms.content_html }}
+        />
+      )}]
+    : null;
+
   return (
     <LegalLayout
       eyebrow="Informations légales"
       title="Mentions"
       highlight="légales"
-      subtitle="Informations relatives à l'éditeur du site, à l'hébergement, aux statuts réglementaires du cabinet et aux conditions d'utilisation."
+      subtitle={subtitle}
       breadcrumb="Mentions légales"
-      updatedAt="Avril 2026"
+      updatedAt={cms?.updated_at ? new Date(cms.updated_at).toLocaleDateString("fr-FR", { month: "long", year: "numeric" }) : "Avril 2026"}
       relatedLinks={[
         { label: "Politique de confidentialité", to: "/politique-de-confidentialite" },
         { label: "Réclamations & médiation", to: "/reclamations" },
       ]}
-      sections={[
+      sections={cmsSections ?? [
         {
           id: "editeur",
           title: "Éditeur du site",
