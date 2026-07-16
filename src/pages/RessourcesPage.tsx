@@ -1,9 +1,8 @@
 import { useState, useMemo, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import { z } from "zod";
 import { toast } from "sonner";
-import { Download, Mail, X, ArrowUpRight, FileText } from "lucide-react";
+import { Download, Mail, X, ArrowUpRight, FileText, Phone } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -57,9 +56,8 @@ const RESOURCES_FALLBACK: DisplayResource[] = [
 
 const categories: Category[] = ["Tous", "Fiscalité", "Transmission", "Dirigeants", "Investir", "International"];
 
-const emailSchema = z.object({
-  name: z.string().trim().min(2, "Indiquez votre prénom et nom").max(100),
-  email: z.string().trim().email("Email invalide").max(255),
+const downloadSchema = z.object({
+  contact: z.string().trim().min(2, "Indiquez votre téléphone ou adresse postale").max(200),
 });
 
 // Column stagger: col 0 = no offset, col 1 = down, col 2 = slight down
@@ -69,10 +67,9 @@ const spring = { type: "spring" as const, stiffness: 360, damping: 32, mass: 0.9
 
 export default function RessourcesPage() {
   useScrollReveal();
-  const navigate = useNavigate();
   const [openId, setOpenId] = useState<string | null>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
-  const [form, setForm] = useState({ name: "", email: "" });
+  const [form, setForm] = useState({ contact: "" });
   const [loading, setLoading] = useState(false);
   const [activeCategory, setActiveCategory] = useState<Category>("Tous");
 
@@ -110,22 +107,32 @@ export default function RessourcesPage() {
   }, [loading]);
 
   // Reset form when resource changes
-  useEffect(() => { setForm({ name: "", email: "" }); }, [openId]);
+  useEffect(() => { setForm({ contact: "" }); }, [openId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const parsed = emailSchema.safeParse(form);
+    const parsed = downloadSchema.safeParse(form);
     if (!parsed.success) { toast.error(parsed.error.issues[0].message); return; }
     if (!activeResource) return;
     setLoading(true);
     try {
-      const fileUrl = await getDownloadUrl(activeResource.storagePath);
-      console.info("[KANTI] Lead magnet request:", { ...parsed.data, resource: activeResource.id, fileUrl });
-    } catch { /* non-blocking */ }
-    await new Promise((r) => setTimeout(r, 900));
+      const url = await getDownloadUrl(activeResource.storagePath);
+      console.info("[KANTI] Resource download:", { contact: parsed.data.contact, resource: activeResource.id });
+      // Trigger browser download directly
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = activeResource.id + ".pdf";
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      toast.success("Téléchargement en cours…");
+      setOpenId(null);
+    } catch {
+      toast.error("Impossible de télécharger. Veuillez réessayer.");
+    }
     setLoading(false);
-    setOpenId(null);
-    navigate("/merci", { state: { name: parsed.data.name.split(" ")[0], subject: "ressource", resourceTitle: activeResource?.title } });
   };
 
   return (
@@ -439,48 +446,39 @@ export default function RessourcesPage() {
 
                       <div className="flex items-center gap-2 mb-5">
                         <div className="w-5 h-5 rounded-full flex items-center justify-center" style={{ background: "hsl(224 60% 12%)" }}>
-                          <Mail className="w-2.5 h-2.5 text-white" strokeWidth={2} />
+                          <Download className="w-2.5 h-2.5 text-white" strokeWidth={2} />
                         </div>
                         <p className="text-[11px] font-medium tracking-wide" style={{ color: "hsl(224 30% 30%)" }}>
-                          Recevoir ce document gratuitement
+                          Téléchargement gratuit et immédiat
                         </p>
                       </div>
 
                       <form onSubmit={handleSubmit} className="space-y-3.5">
                         <div>
-                          <label htmlFor="lm-name" className="block text-[10px] font-medium mb-1.5 tracking-[0.18em] uppercase" style={{ color: "hsl(224 20% 52%)" }}>
-                            Nom complet
+                          <label htmlFor="lm-contact" className="block text-[10px] font-medium mb-1.5 tracking-[0.18em] uppercase" style={{ color: "hsl(224 20% 52%)" }}>
+                            Téléphone ou adresse postale
                           </label>
-                          <input
-                            id="lm-name" type="text" value={form.name}
-                            onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
-                            required maxLength={100} disabled={loading} placeholder="Votre nom"
-                            className="w-full px-4 py-3 rounded-xl text-[13px] focus:outline-none transition-all duration-200 disabled:opacity-50"
-                            style={{
-                              background: "hsl(220 25% 97%)",
-                              border: "1px solid hsl(224 20% 86%)",
-                              color: "hsl(224 55% 12%)",
-                            }}
-                          />
-                        </div>
-                        <div>
-                          <label htmlFor="lm-email" className="block text-[10px] font-medium mb-1.5 tracking-[0.18em] uppercase" style={{ color: "hsl(224 20% 52%)" }}>
-                            Email
-                          </label>
-                          <input
-                            id="lm-email" type="email" value={form.email}
-                            onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))}
-                            required maxLength={255} disabled={loading} placeholder="votre@email.fr"
-                            className="w-full px-4 py-3 rounded-xl text-[13px] focus:outline-none transition-all duration-200 disabled:opacity-50"
-                            style={{
-                              background: "hsl(220 25% 97%)",
-                              border: "1px solid hsl(224 20% 86%)",
-                              color: "hsl(224 55% 12%)",
-                            }}
-                          />
+                          <div className="relative">
+                            <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" strokeWidth={1.5} style={{ color: "hsl(224 30% 55%)" }} />
+                            <input
+                              id="lm-contact" type="text" value={form.contact}
+                              onChange={(e) => setForm((p) => ({ ...p, contact: e.target.value }))}
+                              required maxLength={200} disabled={loading}
+                              placeholder="06 12 34 56 78 ou 12 rue de la Paix, Bordeaux"
+                              className="w-full pl-9 pr-4 py-3 rounded-xl text-[13px] focus:outline-none transition-all duration-200 disabled:opacity-50"
+                              style={{
+                                background: "hsl(220 25% 97%)",
+                                border: "1px solid hsl(224 20% 86%)",
+                                color: "hsl(224 55% 12%)",
+                              }}
+                            />
+                          </div>
+                          <p className="mt-1.5 text-[10px] font-light" style={{ color: "hsl(224 15% 58%)" }}>
+                            Pour que nos conseillers puissent vous contacter si besoin.
+                          </p>
                         </div>
 
-                        <div className="flex items-center justify-between gap-3 pt-1">
+                        <div className="flex items-center justify-between gap-3 pt-2">
                           <button type="button" onClick={() => setOpenId(null)} disabled={loading}
                             className="px-4 py-2.5 text-[11px] font-medium transition-colors duration-150 disabled:opacity-50"
                             style={{ color: "hsl(224 15% 55%)" }}>
@@ -495,13 +493,9 @@ export default function RessourcesPage() {
                               boxShadow: "0 4px 16px -4px hsl(224 60% 18% / 0.40)",
                             }}>
                             <Download className="w-3.5 h-3.5" strokeWidth={2} />
-                            {loading ? "Envoi en cours…" : "Recevoir le PDF"}
+                            {loading ? "Préparation…" : "Télécharger le PDF"}
                           </motion.button>
                         </div>
-
-                        <p className="text-[10px] font-light leading-relaxed" style={{ color: "hsl(224 12% 60%)" }}>
-                          En soumettant, vous acceptez de recevoir occasionnellement nos analyses. Désinscription en 1 clic.
-                        </p>
                       </form>
                     </motion.div>
                   </div>
