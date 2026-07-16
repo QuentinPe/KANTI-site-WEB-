@@ -57,16 +57,16 @@ export default function Header() {
   }, [location.pathname]);
 
   // On home, header is transparent over the dark hero until scroll
-  // On internal pages, always use light glass nav
+  // On internal pages, always use ivory glass nav (cabinet DA)
   const useDarkGlass = isHome && !scrolled;
-  const textColor = useDarkGlass ? "text-white" : "text-foreground";
-  const textMuted = useDarkGlass ? "text-white/75" : "text-foreground/70";
+  const textColor = useDarkGlass ? "text-white" : "text-[hsl(224_60%_12%)]";
+  const textMuted = useDarkGlass ? "text-white/75" : "text-[hsl(224_55%_30%)]";
 
-  const bubbleClass = useDarkGlass ? "glass-dark" : scrolled ? "glass-strong" : "glass";
-  // Bubble (hover pill), same visual family as the KANTI bubble
+  const bubbleClass = useDarkGlass ? "glass-dark" : "glass-ivory";
+  // Hover pill — navy-tinted on interior, white-frosted on home dark
   const hoverPillClass = useDarkGlass
     ? "bg-white/12 backdrop-blur-md ring-1 ring-white/15"
-    : "bg-white/70 backdrop-blur-md ring-1 ring-foreground/10 shadow-[0_4px_20px_-8px_hsl(var(--foreground)/0.15)]";
+    : "bg-[hsl(224_60%_12%/0.05)] ring-1 ring-[hsl(224_60%_12%/0.12)]";
 
   return (
     <>
@@ -216,10 +216,10 @@ export default function Header() {
             )}
             <Link
               to="/contact"
-              className={`ml-2 px-5 py-2 rounded-full text-[13px] font-medium tracking-wide ${
+              className={`ml-2 px-5 py-2 rounded-full text-[13px] font-medium tracking-wide transition-all duration-300 ${
                 useDarkGlass
                   ? "btn-glass text-white"
-                  : "btn-primary-glass"
+                  : "bg-[hsl(224_60%_18%)] text-white hover:bg-[hsl(224_60%_12%)] shadow-sm hover:shadow-md"
               }`}
             >
               Prendre rendez-vous
@@ -227,8 +227,10 @@ export default function Header() {
             <button
               type="button"
               onClick={() => setClientSpaceOpen(true)}
-              className={`ml-2 inline-flex items-center gap-2 px-5 py-2 rounded-full text-[13px] font-medium tracking-wide ${
-                useDarkGlass ? "btn-glass text-white" : "btn-primary-glass"
+              className={`ml-2 inline-flex items-center gap-2 px-5 py-2 rounded-full text-[13px] font-medium tracking-wide transition-all duration-300 ${
+                useDarkGlass
+                  ? "btn-glass text-white"
+                  : "border border-[hsl(224_60%_22%/0.3)] text-[hsl(224_55%_26%)] hover:border-[hsl(224_60%_18%/0.6)] hover:text-[hsl(224_60%_14%)]"
               }`}
             >
               <UserRound className="w-4 h-4" strokeWidth={1.75} />
