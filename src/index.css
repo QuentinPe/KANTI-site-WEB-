@@ -749,3 +749,7 @@
 
 /* Ensure interactive content stays above ambient bg */
 header, main, footer, section { position: relative; z-index: 1; }
+
+/* Hide scrollbar utility */
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.hide-scrollbar::-webkit-scrollbar { display: none; }

@@ -28,6 +28,16 @@ interface CasClient {
   kpis: KPI[]; vigilance: string; verbatim?: { quote: string; author: string };
 }
 
+/* ─── 3D config par position de carte ───────────────────────────── */
+const CARD_3D = [
+  { ry: -10, rx:  6, z: -12 }, // 0 – haut gauche  (incliné arrière-gauche)
+  { ry:   0, rx:  4, z:  26 }, // 1 – haut centre   (avant)
+  { ry:  10, rx:  6, z: -12 }, // 2 – haut droite   (incliné arrière-droite)
+  { ry:  -8, rx: -6, z:  -6 }, // 3 – bas gauche
+  { ry:   0, rx: -4, z:  32 }, // 4 – bas centre    (avant, le plus proche)
+  { ry:   8, rx: -6, z:  -6 }, // 5 – bas droite
+];
+
 /* ─── Données ───────────────────────────────────────────────────── */
 const CATEGORY_ICONS: Record<Category, typeof Users> = {
   particulier: Users, dirigeant: Building2, liberal: Stethoscope,
@@ -145,76 +155,90 @@ const casClients: CasClient[] = [
   },
 ];
 
-/* ─── FloatingCard ──────────────────────────────────────────────── */
+/* ─── FloatingCard — style "ecosystem 3D" ──────────────────────── */
 function FloatingCard({ cas, index, onClick }: { cas: CasClient; index: number; onClick: () => void }) {
   const Icon    = CATEGORY_ICONS[cas.category];
   const mainKpi = cas.kpis[0];
+  const cfg     = CARD_3D[index % CARD_3D.length];
 
-  const floatY        = 7 + (index % 3) * 3;
+  const floatY        = 6 + (index % 3) * 3;
   const floatDuration = 8.5 + index * 0.9;
   const floatDelay    = index * 1.2;
-  const floatRotate   = 0.18 + (index % 2) * 0.12;
+
+  /* Shadow varies with Z depth */
+  const shadowDepth = (cfg.z + 15) / 50; // 0→1
+  const shadowSize  = 18 + shadowDepth * 28;
+  const shadowAlpha = (0.10 + shadowDepth * 0.12).toFixed(2);
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 36 }}
+      initial={{ opacity: 0, y: 40 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.94, y: -12 }}
-      transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1], delay: index * 0.08 }}
+      exit={{ opacity: 0, scale: 0.92 }}
+      transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1], delay: index * 0.09 }}
     >
       <motion.button
         type="button"
         onClick={onClick}
-        animate={{ y: [0, -floatY, 0], rotate: [-floatRotate, floatRotate, -floatRotate] }}
-        transition={{ duration: floatDuration, repeat: Infinity, delay: floatDelay, ease: "easeInOut" }}
-        whileHover={{ y: -20, rotate: 0, scale: 1.025, transition: { duration: 0.38, ease: [0.22, 1, 0.36, 1] } }}
-        whileTap={{ scale: 0.975, transition: { duration: 0.12 } }}
-        className="group w-full text-left flex flex-col p-7 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(224_55%_32%)]"
+        /* 3D base position + continuous float */
+        animate={{
+          y: [0, -floatY, 0],
+          rotateY: cfg.ry,
+          rotateX: cfg.rx,
+          z: cfg.z,
+        }}
+        transition={{
+          y:       { duration: floatDuration, repeat: Infinity, delay: floatDelay, ease: "easeInOut" },
+          rotateY: { duration: 0.01 },
+          rotateX: { duration: 0.01 },
+          z:       { duration: 0.01 },
+        }}
+        /* Hover: flatten + surge forward */
+        whileHover={{
+          y: -22, rotateY: 0, rotateX: 0, z: 60, scale: 1.04,
+          transition: { duration: 0.42, ease: [0.22, 1, 0.36, 1] },
+        }}
+        whileTap={{ scale: 0.97, transition: { duration: 0.1 } }}
+        className="group w-full text-left flex flex-col focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(224_55%_32%)]"
         style={{
-          background: "linear-gradient(145deg, hsl(0 0% 100% / 0.84) 0%, hsl(218 28% 97% / 0.74) 100%)",
+          transformPerspective: 900,
+          padding: "28px",
+          minHeight: "236px",
+          borderRadius: "28px",
+          background: "linear-gradient(145deg, hsl(0 0% 100% / 0.86) 0%, hsl(218 28% 97% / 0.76) 100%)",
           backdropFilter: "blur(28px) saturate(180%)",
           WebkitBackdropFilter: "blur(28px) saturate(180%)",
-          border: "1px solid hsl(0 0% 100% / 0.68)",
+          border: "none",
           boxShadow:
-            "0 8px 32px -8px hsl(224 40% 18% / 0.13)," +
-            "0 0 0 0.5px hsl(224 20% 28% / 0.06)," +
-            "inset 0 1px 0 hsl(0 0% 100% / 0.92)",
-          borderRadius: "28px",
-          minHeight: "230px",
+            `0 ${shadowSize * 0.55}px ${shadowSize}px -8px hsl(224 40% 18% / ${shadowAlpha}),` +
+            "inset 0 1px 0 hsl(0 0% 100% / 0.94)," +
+            "inset 0 -1px 0 hsl(224 30% 60% / 0.06)",
         }}
       >
-        {/* Top row */}
+        {/* Category badge + icon */}
         <div className="flex items-start justify-between mb-5">
-          <span
-            className="text-[10px] tracking-[0.26em] uppercase font-medium px-2.5 py-1.5 rounded-full"
-            style={{ background: "hsl(224 55% 18% / 0.07)", color: "hsl(224 50% 32%)" }}
-          >
+          <span className="text-[10px] tracking-[0.26em] uppercase font-medium px-2.5 py-1.5 rounded-full"
+            style={{ background: "hsl(224 55% 18% / 0.07)", color: "hsl(224 50% 32%)" }}>
             {cas.categoryLabel}
           </span>
-          <div
-            className="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 transition-colors duration-300 group-hover:bg-[hsl(224_55%_18%/0.10)]"
-            style={{ background: "hsl(224 55% 18% / 0.06)", border: "1px solid hsl(224 28% 30% / 0.10)" }}
-          >
+          <div className="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 transition-colors duration-300 group-hover:bg-[hsl(224_55%_18%/0.10)]"
+            style={{ background: "hsl(224 55% 18% / 0.06)", border: "1px solid hsl(224 28% 30% / 0.10)" }}>
             <Icon className="w-[18px] h-[18px]" style={{ color: "hsl(224 55% 32%)" }} strokeWidth={1.5} />
           </div>
         </div>
 
         {/* Title + expertise */}
-        <h3
-          className="font-heading text-[17px] md:text-[19px] font-light leading-snug tracking-tight mb-2 transition-colors duration-300 group-hover:text-[hsl(224_55%_22%)]"
-          style={{ color: "hsl(224 60% 10%)" }}
-        >
+        <h3 className="font-heading text-[17px] md:text-[19px] font-light leading-snug tracking-tight mb-2 transition-colors duration-300 group-hover:text-[hsl(224_55%_22%)]"
+          style={{ color: "hsl(224 60% 10%)" }}>
           {cas.profil}
         </h3>
         <p className="text-[12px] font-light leading-relaxed mb-6" style={{ color: "hsl(224 20% 50%)" }}>
           {cas.expertise}
         </p>
 
-        {/* Bottom: KPI + link */}
-        <div
-          className="mt-auto w-full pt-5 flex items-end justify-between"
-          style={{ borderTop: "1px solid hsl(224 20% 12% / 0.07)" }}
-        >
+        {/* Bottom: main KPI + link */}
+        <div className="mt-auto w-full pt-5 flex items-end justify-between"
+          style={{ borderTop: "1px solid hsl(224 20% 12% / 0.07)" }}>
           <div>
             <p className="text-[9px] tracking-[0.22em] uppercase font-medium mb-1" style={{ color: "hsl(224 15% 58%)" }}>
               {mainKpi.label}
@@ -223,10 +247,8 @@ function FloatingCard({ cas, index, onClick }: { cas: CasClient; index: number; 
               {mainKpi.value}
             </p>
           </div>
-          <div
-            className="flex items-center gap-1.5 text-[11px] font-medium tracking-wide opacity-45 transition-opacity duration-300 group-hover:opacity-100"
-            style={{ color: "hsl(224 50% 30%)" }}
-          >
+          <div className="flex items-center gap-1.5 text-[11px] font-medium tracking-wide opacity-40 transition-opacity duration-300 group-hover:opacity-100"
+            style={{ color: "hsl(224 50% 30%)" }}>
             <span>Voir le cas</span>
             <ArrowRight className="w-3 h-3 transition-transform duration-300 group-hover:translate-x-0.5" strokeWidth={2} />
           </div>
@@ -243,11 +265,14 @@ function CaseModal({
   cas: CasClient; index: number; total: number;
   onClose: () => void; onPrev: () => void; onNext: () => void;
 }) {
+  /* Lock background scroll */
   useEffect(() => {
+    const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    return () => { document.body.style.overflow = ""; };
+    return () => { document.body.style.overflow = prev; };
   }, []);
 
+  /* Keyboard */
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape")     onClose();
@@ -261,112 +286,112 @@ function CaseModal({
   const caseNumber = String(casClients.indexOf(cas) + 1).padStart(2, "0");
 
   const stagger = {
-    container: { hidden: {}, visible: { transition: { staggerChildren: 0.065, delayChildren: 0.18 } } },
-    item: { hidden: { opacity: 0, y: 14 }, visible: { opacity: 1, y: 0, transition: { duration: 0.48, ease: [0.22, 1, 0.36, 1] } } },
+    container: { hidden: {}, visible: { transition: { staggerChildren: 0.06, delayChildren: 0.15 } } },
+    item: { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0, transition: { duration: 0.46, ease: [0.22, 1, 0.36, 1] } } },
   };
 
   return (
     <>
-      {/* Backdrop */}
+      {/* Backdrop — stops page scroll on click */}
       <motion.div
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-        transition={{ duration: 0.28 }}
+        transition={{ duration: 0.25 }}
         className="fixed inset-0 z-50"
-        style={{ background: "hsl(224 30% 8% / 0.52)", backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)" }}
+        style={{ background: "hsl(224 30% 6% / 0.60)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}
         onClick={onClose}
         aria-hidden
       />
 
       {/* Centering shell */}
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 md:p-8 lg:p-14">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-10 lg:p-16">
+
+        {/* Prev arrow — outside the window on the left */}
+        <motion.button
+          initial={{ opacity: 0, x: -12 }} animate={{ opacity: index > 0 ? 1 : 0, x: 0 }}
+          transition={{ duration: 0.3, delay: 0.3 }}
+          onClick={(e) => { e.stopPropagation(); onPrev(); }}
+          disabled={index === 0}
+          className="absolute left-2 md:left-4 lg:left-8 z-10 w-11 h-11 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 disabled:pointer-events-none"
+          style={{ background: "hsl(0 0% 100% / 0.18)", border: "1px solid hsl(0 0% 100% / 0.30)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}
+          aria-label="Cas précédent (←)"
+        >
+          <ChevronLeft className="w-5 h-5 text-white" strokeWidth={1.8} />
+        </motion.button>
+
+        {/* Modal window */}
         <motion.div
           key={cas.profil}
-          initial={{ opacity: 0, scale: 0.92, y: 24 }}
+          initial={{ opacity: 0, scale: 0.92, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.94, y: 16 }}
-          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+          exit={{ opacity: 0, scale: 0.94, y: 14 }}
+          transition={{ duration: 0.44, ease: [0.22, 1, 0.36, 1] }}
           className="relative w-full overflow-hidden"
           style={{
             maxWidth: "1080px",
-            maxHeight: "90vh",
-            background: "linear-gradient(145deg, hsl(0 0% 100% / 0.95) 0%, hsl(218 22% 98% / 0.92) 100%)",
+            maxHeight: "88vh",
+            background: "linear-gradient(145deg, hsl(0 0% 100% / 0.94) 0%, hsl(218 22% 98% / 0.91) 100%)",
             backdropFilter: "blur(40px) saturate(200%)",
             WebkitBackdropFilter: "blur(40px) saturate(200%)",
-            border: "1px solid hsl(0 0% 100% / 0.72)",
-            boxShadow:
-              "0 40px 120px -20px hsl(224 50% 12% / 0.28)," +
-              "0 0 0 0.5px hsl(224 20% 28% / 0.07)," +
-              "inset 0 1px 0 hsl(0 0% 100% / 0.96)",
+            border: "none",
+            boxShadow: "0 40px 120px -20px hsl(224 50% 10% / 0.35), 0 0 0 0.5px hsl(224 20% 15% / 0.08)",
             borderRadius: "32px",
           }}
           role="dialog"
           aria-modal
           aria-label={cas.profil}
         >
-          {/* Close */}
-          <button
-            onClick={onClose}
-            className="absolute top-5 right-5 z-20 w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 hover:bg-[hsl(224_20%_12%/0.10)]"
-            style={{ background: "hsl(224 20% 12% / 0.06)", border: "1px solid hsl(224 20% 12% / 0.09)" }}
-            aria-label="Fermer (Échap)"
-          >
-            <X className="w-3.5 h-3.5" style={{ color: "hsl(224 20% 42%)" }} strokeWidth={1.8} />
-          </button>
-
-          {/* Counter + nav */}
-          <div className="absolute top-5 left-1/2 -translate-x-1/2 z-20 flex items-center gap-3">
-            {index > 0 ? (
-              <button onClick={(e) => { e.stopPropagation(); onPrev(); }}
-                className="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110"
-                style={{ background: "hsl(224 20% 12% / 0.06)", border: "1px solid hsl(224 20% 12% / 0.09)" }}
-                aria-label="Cas précédent (←)">
-                <ChevronLeft className="w-3.5 h-3.5" style={{ color: "hsl(224 20% 42%)" }} strokeWidth={1.8} />
-              </button>
-            ) : <div className="w-8" />}
-            <span className="text-[10px] tracking-[0.22em] uppercase font-medium" style={{ color: "hsl(224 20% 52%)" }}>
+          {/* Close + counter — inside the image panel top-right */}
+          <div className="absolute top-5 right-5 z-20 flex items-center gap-2">
+            <span className="text-[10px] tracking-[0.22em] uppercase font-medium px-2.5 py-1 rounded-full"
+              style={{ background: "hsl(224 20% 12% / 0.06)", color: "hsl(224 20% 50%)", border: "1px solid hsl(224 20% 12% / 0.08)" }}>
               {index + 1} / {total}
             </span>
-            {index < total - 1 ? (
-              <button onClick={(e) => { e.stopPropagation(); onNext(); }}
-                className="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110"
-                style={{ background: "hsl(224 20% 12% / 0.06)", border: "1px solid hsl(224 20% 12% / 0.09)" }}
-                aria-label="Cas suivant (→)">
-                <ChevronRight className="w-3.5 h-3.5" style={{ color: "hsl(224 20% 42%)" }} strokeWidth={1.8} />
-              </button>
-            ) : <div className="w-8" />}
+            <button
+              onClick={onClose}
+              className="w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110"
+              style={{ background: "hsl(224 20% 12% / 0.06)", border: "1px solid hsl(224 20% 12% / 0.09)" }}
+              aria-label="Fermer (Échap)"
+            >
+              <X className="w-3.5 h-3.5" style={{ color: "hsl(224 20% 42%)" }} strokeWidth={1.8} />
+            </button>
           </div>
 
           {/* Two-column body */}
-          <div className="grid lg:grid-cols-5" style={{ maxHeight: "90vh" }}>
+          <div className="grid lg:grid-cols-5" style={{ maxHeight: "88vh" }}>
 
             {/* Image */}
             <motion.div
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.55, delay: 0.05 }}
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.06 }}
               className="lg:col-span-2 relative"
               style={{ minHeight: "220px", borderRadius: "32px 0 0 32px", overflow: "hidden" }}
             >
               <img src={cas.image} alt="" aria-hidden
                 className="w-full h-full object-cover object-center"
-                style={{ minHeight: "220px", maxHeight: "90vh" }} />
+                style={{ minHeight: "220px", maxHeight: "88vh" }} />
               <div className="absolute inset-0" style={{
                 background:
-                  "linear-gradient(to right, hsl(224 40% 12% / 0.18) 0%, transparent 55%)," +
-                  "linear-gradient(to top, hsl(224 40% 12% / 0.75) 0%, transparent 52%)",
+                  "linear-gradient(to right, hsl(224 40% 12% / 0.15) 0%, transparent 55%)," +
+                  "linear-gradient(to top, hsl(224 40% 12% / 0.78) 0%, transparent 50%)",
               }} />
-              <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
-                <p className="text-[10px] tracking-[0.26em] uppercase font-medium text-white/65 mb-2">
+              <div className="absolute bottom-0 left-0 right-0 p-7 text-white">
+                <p className="text-[10px] tracking-[0.26em] uppercase font-medium text-white/60 mb-1.5">
                   Cas {caseNumber} · {cas.categoryLabel}
                 </p>
                 <p className="font-heading text-xl md:text-2xl font-light leading-snug tracking-tight">{cas.profil}</p>
-                <p className="text-[11px] text-white/60 mt-1.5 font-light tracking-wide">{cas.age} · {cas.duration}</p>
+                <p className="text-[11px] text-white/55 mt-1.5 font-light tracking-wide">{cas.age} · {cas.duration}</p>
               </div>
             </motion.div>
 
-            {/* Scrollable content */}
+            {/* Scrollable content — scrollbar hidden */}
             <motion.div
               variants={stagger.container} initial="hidden" animate="visible"
-              className="lg:col-span-3 overflow-y-auto flex flex-col"
-              style={{ maxHeight: "90vh", padding: "clamp(28px, 4vw, 44px)" }}
+              className="lg:col-span-3 hide-scrollbar flex flex-col"
+              style={{
+                overflowY: "auto",
+                overscrollBehavior: "contain",
+                maxHeight: "88vh",
+                padding: "clamp(24px, 4vw, 42px)",
+              }}
             >
               {/* KPIs */}
               <motion.div variants={stagger.item}
@@ -388,7 +413,6 @@ function CaseModal({
                 })}
               </motion.div>
 
-              {/* Expertise */}
               <motion.p variants={stagger.item}
                 className="text-[10px] tracking-[0.26em] uppercase font-medium mb-7"
                 style={{ color: "hsl(224 38% 42%)" }}>
@@ -471,6 +495,20 @@ function CaseModal({
             </motion.div>
           </div>
         </motion.div>
+
+        {/* Next arrow — outside the window on the right */}
+        <motion.button
+          initial={{ opacity: 0, x: 12 }} animate={{ opacity: index < total - 1 ? 1 : 0, x: 0 }}
+          transition={{ duration: 0.3, delay: 0.3 }}
+          onClick={(e) => { e.stopPropagation(); onNext(); }}
+          disabled={index >= total - 1}
+          className="absolute right-2 md:right-4 lg:right-8 z-10 w-11 h-11 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 disabled:pointer-events-none"
+          style={{ background: "hsl(0 0% 100% / 0.18)", border: "1px solid hsl(0 0% 100% / 0.30)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}
+          aria-label="Cas suivant (→)"
+        >
+          <ChevronRight className="w-5 h-5 text-white" strokeWidth={1.8} />
+        </motion.button>
+
       </div>
     </>
   );
@@ -492,9 +530,8 @@ function CategoryFilter({ active, onChange, counts }: {
             style={{
               background: isActive ? "hsl(224 60% 18%)" : "hsl(0 0% 100% / 0.68)",
               color: isActive ? "white" : "hsl(224 25% 40%)",
-              border: `1px solid ${isActive ? "hsl(224 60% 18%)" : "hsl(0 0% 100% / 0.65)"}`,
-              backdropFilter: "blur(12px)",
-              WebkitBackdropFilter: "blur(12px)",
+              border: `1px solid ${isActive ? "hsl(224 60% 18%)" : "hsl(0 0% 100% / 0.55)"}`,
+              backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)",
               boxShadow: isActive ? "0 4px 14px -4px hsl(224 60% 18% / 0.30)" : "0 2px 8px -4px hsl(224 20% 20% / 0.07)",
             }}>
             <Icon className="w-3.5 h-3.5" />
@@ -538,7 +575,7 @@ export default function CasClientsPage() {
     <>
       <Seo
         title="Cas clients, études patrimoniales anonymisées | KANTI"
-        description="Six études de cas patrimoniales : cadre dirigeant, couple, chef d'entreprise, profession libérale, investisseur immobilier, expatrié. Contexte, diagnostic, stratégie et résultats chiffrés."
+        description="Six études de cas patrimoniales : cadre dirigeant, couple, chef d'entreprise, profession libérale, investisseur immobilier, expatrié."
         jsonLd={breadcrumbJsonLd([{ name: "Accueil", url: "/" }, { name: "Cas clients", url: "/cas-clients" }])}
       />
       <Header />
@@ -608,12 +645,12 @@ export default function CasClientsPage() {
         </div>
       </section>
 
-      {/* ── Floating glass cards ── */}
+      {/* ── Ecosystem 3D floating cards ── */}
       <section
         className="relative overflow-hidden pb-24 md:pb-32"
         style={{ background: "linear-gradient(155deg, hsl(214 55% 94%) 0%, hsl(220 38% 96.5%) 50%, hsl(210 50% 93.5%) 100%)" }}
       >
-        {/* Background orbs — give depth to the glass blur */}
+        {/* Depth orbs */}
         <div aria-hidden className="absolute inset-0 pointer-events-none">
           <div className="absolute top-24 left-1/4 w-96 h-96 rounded-full opacity-35"
             style={{ background: "radial-gradient(circle, hsl(214 75% 84%) 0%, transparent 70%)", filter: "blur(70px)" }} />
@@ -627,20 +664,22 @@ export default function CasClientsPage() {
 
         <div className="relative max-w-6xl mx-auto px-8 md:px-14 pt-16 md:pt-20">
           {/* Filters */}
-          <div className="mb-12 reveal">
+          <div className="mb-14 reveal">
             <p className="text-[11px] tracking-[0.3em] uppercase font-medium mb-4" style={{ color: "hsl(224 28% 45%)" }}>
               Filtrer par profil
             </p>
             <CategoryFilter active={active} onChange={(id) => { setActive(id); setSelected(null); }} counts={counts} />
           </div>
 
-          {/* Grid */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
-            <AnimatePresence mode="popLayout">
-              {filtered.map((cas, i) => (
-                <FloatingCard key={cas.profil} cas={cas} index={i} onClick={() => setSelected(cas)} />
-              ))}
-            </AnimatePresence>
+          {/* 3D perspective container */}
+          <div style={{ perspective: "1400px", perspectiveOrigin: "50% 30%" }}>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-7">
+              <AnimatePresence mode="popLayout">
+                {filtered.map((cas, i) => (
+                  <FloatingCard key={cas.profil} cas={cas} index={i} onClick={() => setSelected(cas)} />
+                ))}
+              </AnimatePresence>
+            </div>
           </div>
 
           {filtered.length === 0 && (
@@ -649,27 +688,9 @@ export default function CasClientsPage() {
             </p>
           )}
 
-          <p className="text-center mt-10 text-[11px] font-light tracking-wide" style={{ color: "hsl(224 22% 55%)" }}>
+          <p className="text-center mt-10 text-[11px] font-light tracking-wide" style={{ color: "hsl(224 22% 52%)" }}>
             Cliquez sur une carte · Navigation clavier&nbsp;: ← → Échap
           </p>
-        </div>
-      </section>
-
-      {/* ── Disclaimer ── */}
-      <section className="px-6 pb-16 bg-white">
-        <div className="max-w-4xl mx-auto">
-          <div className="rounded-2xl p-6 md:p-8"
-            style={{ border: "1px solid hsl(224 20% 12% / 0.08)", background: "hsl(224 30% 12% / 0.02)" }}>
-            <div className="flex items-start gap-4">
-              <ShieldCheck className="w-4 h-4 mt-1 flex-shrink-0" strokeWidth={1.5} style={{ color: "hsl(224 15% 55%)" }} />
-              <div>
-                <p className="text-[10px] tracking-[0.28em] uppercase mb-2 font-medium" style={{ color: "hsl(224 20% 52%)" }}>Mention de transparence</p>
-                <p className="text-[12px] md:text-[13px] font-light leading-relaxed" style={{ color: "hsl(224 12% 48%)" }}>
-                  Les cas présentés sont des illustrations à valeur pédagogique, inspirés de missions réelles et intégralement anonymisés (identités, montants, secteurs, dates). Les résultats chiffrés correspondent à des situations spécifiques et ne préjugent pas de performances futures. Toute recommandation patrimoniale donne lieu à une lettre de mission préalable et à une analyse personnalisée. Les performances passées ne sont pas un indicateur fiable des performances futures. Données conformes aux exigences AMF et CNCEF.
-                </p>
-              </div>
-            </div>
-          </div>
         </div>
       </section>
 
