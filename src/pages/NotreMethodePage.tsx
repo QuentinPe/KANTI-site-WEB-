@@ -4,7 +4,7 @@ import { useScrollReveal } from "@/hooks/useScrollReveal";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PageCTA from "@/components/PageCTA";
-import heroBg from "@/assets/cabinet-seq-01-bordeaux.jpg";
+import heroBg from "@/assets/notre-methode-hero.png";
 import {
   Scale,
   Layers,
