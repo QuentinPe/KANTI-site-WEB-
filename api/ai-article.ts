@@ -17,9 +17,9 @@ export default async function handler(req: Request): Promise<Response> {
   if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: CORS });
   if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
 
-  const apiKey = process.env.GEMINI_API_KEY;
+  const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
-    return json({ error: "GEMINI_API_KEY non configurée dans Vercel Environment Variables" }, 500);
+    return json({ error: "GROQ_API_KEY non configurée dans Vercel Environment Variables" }, 500);
   }
 
   let body: { action?: string; content?: string; title?: string };
@@ -67,28 +67,31 @@ export default async function handler(req: Request): Promise<Response> {
   const prompt = prompts[action ?? ""];
   if (!prompt) return json({ error: `Action inconnue : ${action}` }, 400);
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
   try {
-    const aiRes = await fetch(url, {
+    const aiRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
-        system_instruction: { parts: [{ text: prompt.system }] },
-        contents: [{ role: "user", parts: [{ text: prompt.user }] }],
-        generationConfig: { maxOutputTokens: 2000, temperature: 0.65 },
+        model: "llama-3.3-70b-versatile",
+        messages: [
+          { role: "system", content: prompt.system },
+          { role: "user", content: prompt.user },
+        ],
+        max_tokens: 2000,
+        temperature: 0.65,
       }),
     });
 
     if (!aiRes.ok) {
       const errText = await aiRes.text();
-      return json({ error: `Erreur Gemini (${aiRes.status}) : ${errText}` }, 502);
+      return json({ error: `Erreur Groq (${aiRes.status}) : ${errText}` }, 502);
     }
 
-    const data = (await aiRes.json()) as {
-      candidates: { content: { parts: { text: string }[] } }[];
-    };
-    const result = data.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+    const data = (await aiRes.json()) as { choices: { message: { content: string } }[] };
+    const result = data.choices?.[0]?.message?.content ?? "";
     return json({ result });
   } catch (e) {
     return json({ error: String(e) }, 500);
