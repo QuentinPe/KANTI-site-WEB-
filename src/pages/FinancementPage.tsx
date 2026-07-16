@@ -9,6 +9,7 @@ import StickyImageBand from "@/components/StickyImageBand";
 import ScrollRevealText from "@/components/ScrollRevealText";
 import ProcessStepper from "@/components/ProcessStepper";
 import StatsBand from "@/components/StatsBand";
+import CreditCharts from "@/components/CreditCharts";
 import { getCategory } from "@/data/productsCatalog";
 
 import heroImg from "@/assets/expertise-financement.jpg";
@@ -130,7 +131,10 @@ export default function FinancementPage() {
         ]}
       />
 
-      {/* §7 — ProductGrid */}
+      {/* §7 — Graphiques marché */}
+      <CreditCharts />
+
+      {/* §8 — ProductGrid (6 cards = 3×2 équilibré avec la CTA card) */}
       <ProductGrid
         eyebrow="Solutions de financement"
         title="Les financements que nous structurons"
@@ -138,6 +142,12 @@ export default function FinancementPage() {
         categorySlug={category.slug}
         products={category.products}
         hideLinks
+        ctaCard={{
+          title: "Votre projet ne rentre dans aucune case ?",
+          description: "Chaque situation patrimoniale est unique. Nous étudions tout dossier sur-mesure, même les plus complexes.",
+          href: "/contact",
+          buttonText: "Prendre rendez-vous",
+        }}
       />
 
       <PageCTA

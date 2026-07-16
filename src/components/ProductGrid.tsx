@@ -1,5 +1,13 @@
+import { Link } from "react-router-dom";
 import FlipCard from "./FlipCard";
 import type { Product } from "@/data/productsCatalog";
+
+interface CtaCard {
+  title: string;
+  description: string;
+  href: string;
+  buttonText?: string;
+}
 
 interface ProductGridProps {
   eyebrow?: string;
@@ -8,12 +16,9 @@ interface ProductGridProps {
   categorySlug: string;
   products: Product[];
   hideLinks?: boolean;
+  ctaCard?: CtaCard;
 }
 
-/**
- * Grid of liquid-glass FlipCards used on each expertise page
- * to present the underlying products & solutions.
- */
 export default function ProductGrid({
   eyebrow = "Solutions & produits",
   title,
@@ -21,6 +26,7 @@ export default function ProductGrid({
   categorySlug,
   products,
   hideLinks = false,
+  ctaCard,
 }: ProductGridProps) {
   return (
     <section className="section-padding section-glass relative">
@@ -42,10 +48,7 @@ export default function ProductGrid({
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {products.map((p, i) => (
-            <div
-              key={p.slug}
-              className={`reveal reveal-delay-${(i % 3) + 1}`}
-            >
+            <div key={p.slug} className={`reveal reveal-delay-${(i % 3) + 1}`}>
               <FlipCard
                 tag={p.tag}
                 title={p.title}
@@ -59,6 +62,43 @@ export default function ProductGrid({
               />
             </div>
           ))}
+
+          {ctaCard && (
+            <div className={`reveal reveal-delay-${(products.length % 3) + 1}`}>
+              <Link
+                to={ctaCard.href}
+                className="group flex flex-col justify-between h-[420px] rounded-[var(--radius)] p-7 md:p-8 transition-all duration-500 hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--electric))]"
+                style={{
+                  background: "linear-gradient(145deg, hsl(224 60% 14%) 0%, hsl(224 62% 8%) 100%)",
+                  boxShadow: "0 8px 40px -12px hsl(224 60% 8% / 0.5), inset 0 1px 0 hsl(0 0% 100% / 0.08)",
+                }}
+              >
+                <div>
+                  <p className="text-[10px] tracking-[0.28em] uppercase text-white/40 mb-6 font-medium">
+                    Sur mesure
+                  </p>
+                  <h3 className="font-heading text-2xl md:text-[26px] font-light text-white leading-[1.15] tracking-tight mb-4">
+                    {ctaCard.title}
+                  </h3>
+                  <p className="text-white/55 text-[14.5px] leading-relaxed font-light">
+                    {ctaCard.description}
+                  </p>
+                </div>
+
+                <div className="flex items-center justify-between pt-5 border-t border-white/10">
+                  <span className="text-white/60 text-[13px] font-medium tracking-wide group-hover:text-white transition-colors duration-300">
+                    {ctaCard.buttonText ?? "Prendre rendez-vous"}
+                  </span>
+                  <span
+                    className="w-9 h-9 rounded-full flex items-center justify-center bg-white/10 group-hover:bg-white/20 transition-colors duration-300 text-white/80 group-hover:translate-x-1"
+                    style={{ transition: "background 0.3s, transform 0.3s" }}
+                  >
+                    →
+                  </span>
+                </div>
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     </section>
