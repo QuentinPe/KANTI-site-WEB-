@@ -1,6 +1,6 @@
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { FileText, LogOut, Plus, BookOpen, Users, HelpCircle, UserSquare2, Scale, LayoutDashboard, Inbox, Settings, Image, ShieldCheck, ExternalLink } from "lucide-react";
+import { FileText, LogOut, Plus, BookOpen, Users, HelpCircle, UserSquare2, Scale, LayoutDashboard, Inbox, Settings, Image, ShieldCheck, ExternalLink, Tags } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { getLeads } from "@/lib/leadsService";
 import logoWhite from "@/assets/logo-kanti-white.png.asset.json";
@@ -62,6 +62,12 @@ export default function AdminLayout() {
             icon={<FileText className="w-4 h-4" />}
             label="Articles"
             active={isActive("/admin/articles")}
+          />
+          <NavItem
+            to="/admin/categories"
+            icon={<Tags className="w-4 h-4" />}
+            label="Catégories"
+            active={isActive("/admin/categories")}
           />
           <NavItem
             to="/admin/ressources"

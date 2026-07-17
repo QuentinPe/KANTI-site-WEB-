@@ -7,9 +7,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft, ImageOff, Sparkles, Wand2, ChevronDown, Search, Eye, Link2, X, Maximize2, Minimize2 } from "lucide-react";
 import { getArticles, createArticle, updateArticle } from "@/lib/articlesService";
 import type { ArticleInput } from "@/lib/articlesService";
+import { getCategories } from "@/lib/categoriesService";
 import RichEditor from "@/components/admin/RichEditor";
 
-const CATEGORIES = ["Investissement", "Épargne", "Transmission", "Fiscalité", "Retraite", "Immobilier", "Dirigeants", "Allocation", "Prévoyance"];
+const FALLBACK_CATEGORIES = ["Investissement", "Épargne", "Transmission", "Fiscalité", "Retraite", "Immobilier", "Dirigeants", "Allocation", "Prévoyance"];
 
 function slugify(s: string) {
   return s
@@ -82,6 +83,15 @@ export default function AdminArticleForm() {
     enabled: isEdit,
   });
 
+  const { data: dbCategories = [] } = useQuery({
+    queryKey: ["categories", "article"],
+    queryFn: () => getCategories("article"),
+  });
+
+  const categoryNames = dbCategories.length > 0
+    ? dbCategories.map((c) => c.name)
+    : FALLBACK_CATEGORIES;
+
   const existing = isEdit ? articles.find((a) => a.id === id) : null;
 
   const [seoOpen, setSeoOpen] = useState(false);
@@ -96,7 +106,7 @@ export default function AdminArticleForm() {
       title: "",
       excerpt: "",
       body: "",
-      tag: CATEGORIES[0],
+      tag: FALLBACK_CATEGORIES[0],
       date: "",
       reading_time: "",
       image: "",
@@ -415,7 +425,7 @@ export default function AdminArticleForm() {
               onFocus={(e) => Object.assign((e.target as HTMLElement).style, inputFocus)}
               onBlur={(e) => Object.assign((e.target as HTMLElement).style, inputBlur)}
             >
-              {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+              {categoryNames.map((c) => <option key={c} value={c}>{c}</option>)}
             </select>
           </Field>
 

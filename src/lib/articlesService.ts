@@ -15,6 +15,7 @@ export interface Article {
   meta_description?: string | null;
   author_name?: string | null;
   related_article_ids?: string[] | null;
+  sort_order?: number;
   created_at: string;
   updated_at: string;
 }
@@ -35,9 +36,20 @@ export const getArticles = async (): Promise<Article[]> => {
   const { data, error } = await supabase
     .from("articles")
     .select("*")
+    .order("sort_order", { ascending: true })
     .order("created_at", { ascending: false });
   if (error) throw error;
   return data ?? [];
+};
+
+export const reorderArticles = async (
+  updates: { id: string; sort_order: number }[]
+): Promise<void> => {
+  await Promise.all(
+    updates.map(({ id, sort_order }) =>
+      supabase.from("articles").update({ sort_order }).eq("id", id)
+    )
+  );
 };
 
 export const createArticle = async (input: ArticleInput): Promise<Article> => {

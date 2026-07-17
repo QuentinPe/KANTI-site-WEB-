@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { Plus, Pencil, Trash2, Star } from "lucide-react";
-import { getArticles, deleteArticle } from "@/lib/articlesService";
+import { Plus, Pencil, Trash2, Star, ChevronUp, ChevronDown } from "lucide-react";
+import { getArticles, deleteArticle, reorderArticles } from "@/lib/articlesService";
 import type { Article } from "@/lib/articlesService";
 
 export default function AdminArticlesList() {
@@ -16,9 +16,39 @@ export default function AdminArticlesList() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["articles"] }),
   });
 
+  const reorderMutation = useMutation({
+    mutationFn: reorderArticles,
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["articles"] }),
+  });
+
   const handleDelete = (article: Article) => {
     if (!window.confirm(`Supprimer "${article.title}" ? Cette action est irréversible.`)) return;
     deleteMutation.mutate(article.id);
+  };
+
+  const moveArticle = (article: Article, direction: "up" | "down") => {
+    const idx = articles.findIndex((a) => a.id === article.id);
+    const swapIdx = direction === "up" ? idx - 1 : idx + 1;
+    if (swapIdx < 0 || swapIdx >= articles.length) return;
+
+    const a = articles[idx];
+    const b = articles[swapIdx];
+    const aOrder = a.sort_order ?? 0;
+    const bOrder = b.sort_order ?? 0;
+
+    if (aOrder === bOrder) {
+      // First-time ordering: assign sequential values to all, then swap
+      const updates = articles.map((art, i) => ({ id: art.id, sort_order: (i + 1) * 10 }));
+      const aUpd = updates.find((u) => u.id === a.id)!;
+      const bUpd = updates.find((u) => u.id === b.id)!;
+      [aUpd.sort_order, bUpd.sort_order] = [bUpd.sort_order, aUpd.sort_order];
+      reorderMutation.mutate(updates);
+    } else {
+      reorderMutation.mutate([
+        { id: a.id, sort_order: bOrder },
+        { id: b.id, sort_order: aOrder },
+      ]);
+    }
   };
 
   return (
@@ -30,7 +60,7 @@ export default function AdminArticlesList() {
             Articles
           </h1>
           <p className="text-[13px] font-light mt-1" style={{ color: "hsl(224 18% 50%)" }}>
-            {articles.length} article{articles.length !== 1 ? "s" : ""} publié{articles.length !== 1 ? "s" : ""}
+            {articles.length} article{articles.length !== 1 ? "s" : ""} · utilisez ↑↓ pour modifier l'ordre d'affichage
           </p>
         </div>
         <Link
@@ -71,11 +101,12 @@ export default function AdminArticlesList() {
           <table className="w-full">
             <thead>
               <tr style={{ borderBottom: "1px solid hsl(224 20% 12% / 0.07)", background: "hsl(220 25% 98%)" }}>
-                <th className="text-left px-5 py-3 text-[11px] tracking-[0.22em] uppercase font-medium" style={{ color: "hsl(224 18% 50%)" }}>
+                <th className="w-12 px-3 py-3" />
+                <th className="text-left px-4 py-3 text-[11px] tracking-[0.22em] uppercase font-medium" style={{ color: "hsl(224 18% 50%)" }}>
                   Titre
                 </th>
                 <th className="text-left px-4 py-3 text-[11px] tracking-[0.22em] uppercase font-medium hidden md:table-cell" style={{ color: "hsl(224 18% 50%)" }}>
-                  Tag
+                  Catégorie
                 </th>
                 <th className="text-left px-4 py-3 text-[11px] tracking-[0.22em] uppercase font-medium hidden lg:table-cell" style={{ color: "hsl(224 18% 50%)" }}>
                   Date
@@ -87,14 +118,37 @@ export default function AdminArticlesList() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y" style={{ borderColor: "hsl(224 20% 12% / 0.05)" }}>
-              {articles.map((a) => (
+              {articles.map((a, idx) => (
                 <tr
                   key={a.id}
-                  className="transition-colors duration-150"
+                  className="transition-colors duration-150 group"
                   onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(220 30% 99%)"; }}
                   onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "white"; }}
                 >
-                  <td className="px-5 py-3.5">
+                  {/* Reorder */}
+                  <td className="px-3 py-2">
+                    <div className="flex flex-col gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button
+                        type="button"
+                        onClick={() => moveArticle(a, "up")}
+                        disabled={idx === 0 || reorderMutation.isPending}
+                        className="p-0.5 rounded transition-all disabled:opacity-20"
+                        style={{ color: "hsl(224 20% 60%)" }}
+                      >
+                        <ChevronUp className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => moveArticle(a, "down")}
+                        disabled={idx === articles.length - 1 || reorderMutation.isPending}
+                        className="p-0.5 rounded transition-all disabled:opacity-20"
+                        style={{ color: "hsl(224 20% 60%)" }}
+                      >
+                        <ChevronDown className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3.5">
                     <p className="text-[13px] font-medium line-clamp-1" style={{ color: "hsl(224 55% 12%)" }}>
                       {a.title}
                     </p>

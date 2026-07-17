@@ -7,8 +7,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft } from "lucide-react";
 import { getAllFaq, createFaqItem, updateFaqItem } from "@/lib/faqService";
 import type { FaqInput } from "@/lib/faqService";
+import { getCategories } from "@/lib/categoriesService";
 
-const CATEGORIES = [
+const FALLBACK_CATEGORIES = [
   { value: "cabinet", label: "Le cabinet" },
   { value: "rendez-vous", label: "Premier rendez-vous" },
   { value: "accompagnement", label: "Accompagnement" },
@@ -55,11 +56,20 @@ export default function AdminFAQForm() {
     enabled: isEdit,
   });
 
+  const { data: dbCategories = [] } = useQuery({
+    queryKey: ["categories", "faq"],
+    queryFn: () => getCategories("faq"),
+  });
+
+  const categoryOptions = dbCategories.length > 0
+    ? dbCategories.map((c) => ({ value: c.slug, label: c.name }))
+    : FALLBACK_CATEGORIES;
+
   const existing = isEdit ? items.find((i) => i.id === id) : null;
 
   const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: { category: CATEGORIES[0].value, question: "", answer: "", sort_order: 0, active: true },
+    defaultValues: { category: FALLBACK_CATEGORIES[0].value, question: "", answer: "", sort_order: 0, active: true },
   });
 
   useEffect(() => {
@@ -126,7 +136,7 @@ export default function AdminFAQForm() {
             {...register("category")}
             onFocus={(e) => Object.assign((e.target as HTMLElement).style, inputFocus)}
             onBlur={(e) => Object.assign((e.target as HTMLElement).style, inputBlur)}>
-            {CATEGORIES.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
+            {categoryOptions.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
           </select>
         </Field>
 

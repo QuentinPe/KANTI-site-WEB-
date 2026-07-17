@@ -72,6 +72,7 @@ const AdminTeamList     = lazy(() => import("./pages/admin/AdminTeamList"));
 const AdminTeamForm     = lazy(() => import("./pages/admin/AdminTeamForm"));
 const AdminLegalList    = lazy(() => import("./pages/admin/AdminLegalList"));
 const AdminLegalForm    = lazy(() => import("./pages/admin/AdminLegalForm"));
+const AdminCategoriesList = lazy(() => import("./pages/admin/AdminCategoriesList"));
 
 // ─── QueryClient — 5 min stale, no refetch on focus ─────────────────────────
 const queryClient = new QueryClient({
@@ -159,6 +160,7 @@ const AppShell = () => {
                 <Route path="equipe/:id/edit" element={<AdminTeamForm />} />
                 <Route path="legal" element={<AdminLegalList />} />
                 <Route path="legal/:pageKey/edit" element={<AdminLegalForm />} />
+                <Route path="categories" element={<AdminCategoriesList />} />
               </Route>
               <Route path="/:categorySlug/:productSlug" element={<ProductDetailPage />} />
               <Route path="*" element={<NotFound />} />

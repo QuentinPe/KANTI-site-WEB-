@@ -3,9 +3,10 @@ import { Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus, Pencil, Trash2, HelpCircle, ChevronDown, ChevronUp } from "lucide-react";
 import { getAllFaq, deleteFaqItem, reorderFaqItems } from "@/lib/faqService";
+import { getCategories } from "@/lib/categoriesService";
 import type { FaqItem } from "@/lib/faqService";
 
-const CATEGORY_LABELS: Record<string, string> = {
+const FALLBACK_LABELS: Record<string, string> = {
   cabinet: "Le cabinet",
   "rendez-vous": "Premier rendez-vous",
   accompagnement: "Accompagnement",
@@ -23,6 +24,19 @@ export default function AdminFAQList() {
     queryKey: ["faq-admin"],
     queryFn: getAllFaq,
   });
+
+  const { data: dbCategories = [] } = useQuery({
+    queryKey: ["categories", "faq"],
+    queryFn: () => getCategories("faq"),
+  });
+
+  const categoryLabel = (slug: string): string => {
+    if (dbCategories.length > 0) {
+      const found = dbCategories.find((c) => c.slug === slug);
+      if (found) return found.name;
+    }
+    return FALLBACK_LABELS[slug] ?? slug;
+  };
 
   const deleteMutation = useMutation({
     mutationFn: deleteFaqItem,
@@ -108,7 +122,7 @@ export default function AdminFAQList() {
         <div className="flex flex-col gap-3">
           {Object.entries(grouped).map(([cat, catItems]) => {
             const isExpanded = expandedCategories.has(cat);
-            const label = CATEGORY_LABELS[cat] ?? cat;
+            const label = categoryLabel(cat);
             return (
               <div key={cat} className="rounded-2xl overflow-hidden"
                 style={{ background: "white", border: "1px solid hsl(224 20% 12% / 0.07)", boxShadow: "0 2px 8px -4px hsl(224 60% 12% / 0.05)" }}>
