@@ -1,11 +1,14 @@
+import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { FileText, Users, BookOpen, HelpCircle, Inbox, ArrowRight, Clock } from "lucide-react";
+import { FileText, Users, BookOpen, HelpCircle, Inbox, ArrowRight, Clock, Maximize2, X } from "lucide-react";
 import { getArticles } from "@/lib/articlesService";
 import { getLeads } from "@/lib/leadsService";
 import type { Lead } from "@/lib/leadsService";
 import { getCasClients } from "@/lib/casClientsService";
 import { getRessources } from "@/lib/ressourcesService";
+import { VolumeChart, StatusBars, bucketLeadsByDay, PERIODS } from "@/components/admin/LeadsVolumeChart";
+import type { PeriodKey } from "@/components/admin/LeadsVolumeChart";
 
 function StatCard({ label, value, sub, icon: Icon, to, color }: {
   label: string; value: string | number; sub?: string;
@@ -57,7 +60,113 @@ function fmtDate(iso: string) {
   }
 }
 
-function LeadsSparkline({ leads }: { leads: Lead[] }) {
+function LeadsChartModal({ leads, onClose }: { leads: Lead[]; onClose: () => void }) {
+  const [period, setPeriod] = useState<PeriodKey>("30j");
+  const days = PERIODS.find((p) => p.key === period)?.days ?? 30;
+  const buckets = useMemo(() => bucketLeadsByDay(leads, days), [leads, days]);
+  const totalInPeriod = buckets.reduce((s, b) => s + b.total, 0);
+  const convertiInPeriod = buckets.reduce((s, b) => s + b.converti, 0);
+  const maxBucket = Math.max(...buckets.map((b) => b.total), 1);
+  const tauxConversion = totalInPeriod === 0 ? 0 : Math.round((convertiInPeriod / totalInPeriod) * 100);
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ background: "hsl(224 60% 6% / 0.55)", backdropFilter: "blur(6px)" }}
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <div className="relative w-full max-w-3xl rounded-2xl overflow-hidden"
+        style={{ background: "white", boxShadow: "0 32px 80px -20px hsl(224 60% 12% / 0.22)" }}>
+
+        {/* Header */}
+        <div className="flex items-center justify-between px-7 py-5"
+          style={{ borderBottom: "1px solid hsl(224 20% 12% / 0.08)" }}>
+          <div>
+            <h2 className="text-lg font-heading font-light" style={{ color: "hsl(224 55% 12%)" }}>
+              Historique des leads
+            </h2>
+            <p className="text-[12px] font-light mt-0.5" style={{ color: "hsl(224 15% 52%)" }}>
+              {totalInPeriod} leads · {convertiInPeriod} convertis · {tauxConversion}% de conversion
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            {/* Period selector */}
+            <div className="flex items-center gap-1 p-1 rounded-lg" style={{ background: "hsl(220 25% 97%)" }}>
+              {PERIODS.map((p) => (
+                <button key={p.key} onClick={() => setPeriod(p.key)}
+                  className="px-2.5 py-1 rounded-md text-[11px] font-medium transition-all"
+                  style={{
+                    background: period === p.key ? "white" : "transparent",
+                    color: period === p.key ? "hsl(218 48% 38%)" : "hsl(224 15% 52%)",
+                    boxShadow: period === p.key ? "0 1px 3px -1px hsl(224 20% 12% / 0.12)" : "none",
+                  }}>
+                  {p.label}
+                </button>
+              ))}
+            </div>
+            <button onClick={onClose} className="p-2 rounded-lg transition-colors hover:bg-[hsl(224_20%_12%/0.06)]">
+              <X className="w-4 h-4" style={{ color: "hsl(224 20% 45%)" }} />
+            </button>
+          </div>
+        </div>
+
+        <div className="p-7 space-y-8">
+          {/* Volume chart */}
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-[11px] font-medium tracking-wide uppercase" style={{ color: "hsl(224 15% 52%)" }}>
+                Volume de leads reçus
+              </p>
+              <div className="flex items-center gap-4 text-[10px]" style={{ color: "hsl(224 15% 55%)" }}>
+                <span className="flex items-center gap-1.5">
+                  <span className="inline-block w-6 h-0.5 rounded" style={{ background: "hsl(218 45% 42%)" }} /> Total
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="inline-block w-6 rounded" style={{ height: 1, background: "hsl(142 50% 40%)", borderTop: "2px dashed hsl(142 50% 40%)" }} /> Convertis
+                </span>
+              </div>
+            </div>
+            <div className="relative" style={{ height: 160 }}>
+              <VolumeChart leads={leads} days={days} height={140} showConverti />
+              <div className="flex justify-between mt-1 px-1">
+                {buckets
+                  .filter((_, i) => i === 0 || i === Math.floor(buckets.length / 2) || i === buckets.length - 1)
+                  .map((b, i) => (
+                    <span key={i} className="text-[9px]" style={{ color: "hsl(224 15% 58%)" }}>{b.label}</span>
+                  ))}
+              </div>
+            </div>
+            {/* Mini-stats */}
+            <div className="grid grid-cols-4 gap-3 mt-5">
+              {[
+                { label: "Total période",   value: totalInPeriod },
+                { label: "Convertis",       value: convertiInPeriod },
+                { label: "Taux conversion", value: `${tauxConversion}%` },
+                { label: "Max / jour",      value: maxBucket },
+              ].map((s) => (
+                <div key={s.label} className="rounded-xl p-3 text-center"
+                  style={{ background: "hsl(220 25% 97%)", border: "1px solid hsl(224 20% 12% / 0.07)" }}>
+                  <p className="text-xl font-heading font-light tabular-nums" style={{ color: "hsl(224 55% 12%)" }}>{s.value}</p>
+                  <p className="text-[10px] font-light mt-0.5" style={{ color: "hsl(224 15% 55%)" }}>{s.label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Status breakdown */}
+          <div>
+            <p className="text-[11px] font-medium tracking-wide uppercase mb-4" style={{ color: "hsl(224 15% 52%)" }}>
+              Répartition actuelle
+            </p>
+            <StatusBars leads={leads} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function LeadsSparkline({ leads, onExpand }: { leads: Lead[]; onExpand: () => void }) {
   const now = new Date();
   const days = Array.from({ length: 7 }, (_, i) => {
     const d = new Date(now);
@@ -98,15 +207,27 @@ function LeadsSparkline({ leads }: { leads: Lead[] }) {
             {thisWeek}
           </p>
         </div>
-        {trend !== null && (
-          <span className="text-[11px] font-medium px-2.5 py-1 rounded-full mt-1"
-            style={{
-              background: trend >= 0 ? "hsl(142 55% 38% / 0.10)" : "hsl(0 65% 48% / 0.10)",
-              color: trend >= 0 ? "hsl(142 50% 30%)" : "hsl(0 60% 40%)",
-            }}>
-            {trend >= 0 ? "↑" : "↓"} {Math.abs(Math.round(trend))}% vs sem. préc.
-          </span>
-        )}
+        <div className="flex items-center gap-2 mt-1">
+          {trend !== null && (
+            <span className="text-[11px] font-medium px-2.5 py-1 rounded-full"
+              style={{
+                background: trend >= 0 ? "hsl(142 55% 38% / 0.10)" : "hsl(0 65% 48% / 0.10)",
+                color: trend >= 0 ? "hsl(142 50% 30%)" : "hsl(0 60% 40%)",
+              }}>
+              {trend >= 0 ? "↑" : "↓"} {Math.abs(Math.round(trend))}% vs sem. préc.
+            </span>
+          )}
+          <button
+            onClick={onExpand}
+            className="p-1.5 rounded-lg transition-all duration-150"
+            style={{ color: "hsl(224 20% 55%)", background: "transparent" }}
+            title="Voir l'historique complet"
+            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(224 20% 12% / 0.07)"; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}
+          >
+            <Maximize2 className="w-3.5 h-3.5" />
+          </button>
+        </div>
       </div>
 
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full mt-3" style={{ height: 52 }} aria-hidden>
@@ -134,6 +255,7 @@ function LeadsSparkline({ leads }: { leads: Lead[] }) {
 }
 
 export default function AdminDashboard() {
+  const [chartOpen, setChartOpen] = useState(false);
   const { data: articles = [] } = useQuery({ queryKey: ["articles"], queryFn: getArticles });
   const { data: leads = [] } = useQuery({ queryKey: ["leads"], queryFn: getLeads });
   const { data: casClients = [] } = useQuery({ queryKey: ["cas-clients-all"], queryFn: getCasClients });
@@ -200,8 +322,10 @@ export default function AdminDashboard() {
 
       {/* Sparkline leads */}
       <div className="mb-6">
-        <LeadsSparkline leads={leads} />
+        <LeadsSparkline leads={leads} onExpand={() => setChartOpen(true)} />
       </div>
+
+      {chartOpen && <LeadsChartModal leads={leads} onClose={() => setChartOpen(false)} />}
 
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Activité récente */}

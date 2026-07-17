@@ -1,12 +1,22 @@
 import { Navigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
+import { getAdminUsers } from "@/lib/adminUsersService";
 
-const ADMIN_EMAILS = ["quentin@adnfamily.com", "m.delorme@adnfamily.com", "t.robert@adnfamily.com"];
+const FALLBACK_EMAILS = ["quentin@adnfamily.com", "m.delorme@adnfamily.com"];
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
 
-  if (loading) {
+  const { data: adminUsers, isLoading: adminsLoading, isError } = useQuery({
+    queryKey: ["admin-users"],
+    queryFn: getAdminUsers,
+    enabled: Boolean(user),
+    staleTime: 5 * 60 * 1000,
+    retry: 1,
+  });
+
+  if (loading || (user && adminsLoading)) {
     return (
       <div className="fixed inset-0 flex items-center justify-center" style={{ background: "hsl(224 60% 6%)" }}>
         <div className="w-8 h-8 rounded-full border-2 border-white/20 border-t-white/80 animate-spin" />
@@ -15,7 +25,12 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
   }
 
   if (!user) return <Navigate to="/login" replace />;
-  if (!ADMIN_EMAILS.includes(user.email ?? "")) return <Navigate to="/" replace />;
+
+  const allowedEmails = isError || !adminUsers || adminUsers.length === 0
+    ? FALLBACK_EMAILS
+    : adminUsers.filter((a) => a.active).map((a) => a.email);
+
+  if (!allowedEmails.includes(user.email ?? "")) return <Navigate to="/" replace />;
 
   return <>{children}</>;
 }
