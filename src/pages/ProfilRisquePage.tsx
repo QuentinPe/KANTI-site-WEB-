@@ -517,8 +517,9 @@ function ResultView({
     try {
       await generatePdf(profile, answers);
     } catch (e: unknown) {
+      const errMsg = e instanceof Error ? e.message : String(e);
       console.error("[PDF] generatePdf failed:", e);
-      setPdfError("Erreur lors de la génération du PDF. Réessayez.");
+      setPdfError(`Erreur PDF : ${errMsg.slice(0, 180)}`);
     } finally {
       setPdfGenerating(false);
     }
@@ -710,11 +711,15 @@ function SendModal({ profile, onClose }: { profile: SriProfile; onClose: () => v
       const message = `${profile.description}\n\nScore précis : ${(profile.sriPrecise ?? profile.sri).toFixed(2)}/7`;
       await createLead({ nom: fullNom, email: email.trim(), telephone: telephone.trim() || null, sujet, message });
       try {
-        await fetch("/api/notify-telegram", {
+        await fetch("/api/contact", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            message: `<b>🎯 Nouveau profil de risque</b>\n\n<b>Nom :</b> ${fullNom}\n<b>Email :</b> ${email.trim()}\n<b>Tél :</b> ${telephone.trim() || "—"}\n<b>SRI :</b> ${profile.sri}/7 — ${profile.shortLabel}\n<b>Score précis :</b> ${(profile.sriPrecise ?? profile.sri).toFixed(2)}/7\n\n<i>${profile.description.slice(0, 200)}…</i>`,
+            nom: fullNom,
+            email: email.trim(),
+            telephone: telephone.trim() || "",
+            sujet,
+            message,
           }),
         });
       } catch {}
@@ -1480,6 +1485,7 @@ async function generatePdf(
 
   y = sectionLabel(y, "Ce que cela signifie pour vous");
   const cumThis = distribution.find((d) => d.sri === profile.sri)?.pct ?? 0;
+  const cumLower = distribution.filter((d) => d.sri < profile.sri).reduce((s, d) => s + d.pct, 0);
   const positionText =
     `Avec un SRI de ${scoreStr} sur 7, vous appartenez aux ${cumThis} % d'épargnants français de profil « ${profile.shortLabel.toLowerCase()} ». ` +
     `Environ ${cumLower} % des épargnants ont un profil plus prudent que le vôtre, et ${100 - cumLower - cumThis} % un profil plus offensif.`;
