@@ -1,7 +1,7 @@
 import { ShieldCheck, ExternalLink, Info } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
-const ADMIN_EMAILS = ["quentin@adnfamily.com", "m.delorme@adnfamily.com"];
+const ADMIN_EMAILS = ["quentin@adnfamily.com", "m.delorme@adnfamily.com", "t.robert@adnfamily.com"];
 
 export default function AdminAccessList() {
   const { user } = useAuth();
@@ -87,7 +87,7 @@ CREATE POLICY "admin read" ON leads FOR SELECT
   USING (auth.jwt()->>'email' IN (
     'quentin@adnfamily.com',
     'm.delorme@adnfamily.com',
-    'nouvel.admin@email.com'  -- ajouter ici
+    't.robert@adnfamily.com'
   ));`}
         </pre>
       </div>

@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import logoWhite from "@/assets/logo-kanti-white.png.asset.json";
 
-const ADMIN_EMAILS = ["quentin@adnfamily.com", "m.delorme@adnfamily.com"];
+const ADMIN_EMAILS = ["quentin@adnfamily.com", "m.delorme@adnfamily.com", "t.robert@adnfamily.com"];
 
 const loginSchema = z.object({
   email: z.string().min(1, "Email requis").email("Adresse email invalide"),
@@ -184,7 +184,9 @@ export default function LoginPage() {
           ? "Email ou mot de passe incorrect."
           : msg.includes("Email not confirmed")
           ? "Vérifiez votre email avant de vous connecter."
-          : "Une erreur est survenue. Réessayez."
+          : msg.includes("security purposes") || msg.includes("rate limit")
+          ? "Trop de tentatives. Attendez quelques secondes puis réessayez."
+          : msg || "Une erreur est survenue. Réessayez."
       );
       return;
     }

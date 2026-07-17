@@ -1,7 +1,7 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 
-const ADMIN_EMAILS = ["quentin@adnfamily.com", "m.delorme@adnfamily.com"];
+const ADMIN_EMAILS = ["quentin@adnfamily.com", "m.delorme@adnfamily.com", "t.robert@adnfamily.com"];
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
