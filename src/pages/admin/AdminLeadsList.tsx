@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
   Search, Download, BarChart3, X, Phone, Mail,
-  Trash2, Clock, TrendingUp, Users, CheckCircle2, ExternalLink,
+  Trash2, Clock, TrendingUp, Users, CheckCircle2, ExternalLink, Archive,
 } from "lucide-react";
 import {
   getLeads, updateLeadStatus, updateLeadNotes, deleteLead, exportLeadsCSV, createLead,
@@ -207,8 +207,8 @@ function ChartsModal({ leads, onClose }: { leads: Lead[]; onClose: () => void })
   const taux = totalInPeriod === 0 ? 0 : Math.round((convertiInPeriod / totalInPeriod) * 100);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ background: "hsl(224 60% 6% / 0.55)", backdropFilter: "blur(6px)" }}
+    <div className="fixed inset-0 flex items-center justify-center p-4"
+      style={{ zIndex: 300, background: "hsl(224 60% 6% / 0.55)", backdropFilter: "blur(6px)" }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
       <div className="w-full max-w-3xl rounded-2xl overflow-hidden"
         style={{ background: "white", boxShadow: "0 32px 80px -20px hsl(224 60% 12% / 0.22)" }}>
@@ -292,8 +292,8 @@ function NewLeadModal({ onClose }: { onClose: () => void }) {
   const inputSt = { background: "hsl(220 25% 97%)", border: "1px solid hsl(224 20% 12% / 0.10)", color: "hsl(224 30% 25%)" };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ background: "hsl(224 60% 6% / 0.50)", backdropFilter: "blur(5px)" }}
+    <div className="fixed inset-0 flex items-center justify-center p-4"
+      style={{ zIndex: 300, background: "hsl(224 60% 6% / 0.50)", backdropFilter: "blur(5px)" }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
       <div className="w-full max-w-lg rounded-2xl overflow-hidden"
         style={{ background: "white", boxShadow: "0 24px 60px -16px hsl(224 60% 12% / 0.22)" }}>
@@ -398,10 +398,12 @@ function LeadDetailPanel({ lead, onClose }: { lead: Lead; onClose: () => void })
   const hue = avatarHue(lead.nom);
 
   return (
-    <div className="fixed inset-0 z-40 flex justify-end" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
-      <div className="fixed inset-0" style={{ background: "hsl(224 60% 6% / 0.30)" }} onClick={onClose} />
-      <div className="relative w-full max-w-md h-full flex flex-col"
-        style={{ background: "white", borderLeft: "1px solid hsl(224 20% 12% / 0.10)", boxShadow: "-24px 0 60px -20px hsl(224 60% 12% / 0.14)" }}>
+    <>
+      {/* Backdrop */}
+      <div className="fixed inset-0" style={{ zIndex: 200, background: "hsl(224 60% 6% / 0.30)" }} onClick={onClose} />
+      {/* Panel */}
+      <div className="fixed right-0 top-0 h-full w-full max-w-md flex flex-col"
+        style={{ zIndex: 201, background: "white", borderLeft: "1px solid hsl(224 20% 12% / 0.10)", boxShadow: "-24px 0 60px -20px hsl(224 60% 12% / 0.14)" }}>
         <div className="flex items-start justify-between px-6 py-5" style={{ borderBottom: "1px solid hsl(224 20% 12% / 0.08)" }}>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full flex items-center justify-center text-[13px] font-semibold flex-shrink-0"
@@ -511,7 +513,18 @@ function LeadDetailPanel({ lead, onClose }: { lead: Lead; onClose: () => void })
             style={{ background: "hsl(220 25% 97%)", color: "hsl(224 30% 38%)", border: "1px solid hsl(224 20% 12% / 0.10)" }}>
             <Mail className="w-4 h-4" />Email
           </a>
+          {lead.status !== "archive" && (
+            <button onClick={() => { statusMut.mutate("archive"); onClose(); }}
+              title="Archiver ce lead"
+              className="p-2.5 rounded-xl transition-colors"
+              style={{ color: "hsl(38 65% 38%)", border: "1px solid hsl(38 65% 42% / 0.20)" }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(38 65% 42% / 0.10)"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
+              <Archive className="w-4 h-4" />
+            </button>
+          )}
           <button onClick={() => { if (confirm(`Supprimer le lead de ${lead.nom} ?`)) deleteMut.mutate(); }}
+            title="Supprimer définitivement"
             className="p-2.5 rounded-xl transition-colors"
             style={{ color: "hsl(0 55% 48%)", border: "1px solid hsl(0 55% 52% / 0.18)" }}
             onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(0 55% 96%)"; }}
@@ -520,7 +533,7 @@ function LeadDetailPanel({ lead, onClose }: { lead: Lead; onClose: () => void })
           </button>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
@@ -651,6 +664,7 @@ function LeadTableRow({ lead, onClick, selected, onSelect }: {
 type SortKey = "date_desc" | "date_asc" | "urgent" | "score_desc";
 
 export default function AdminLeadsList() {
+  const qc = useQueryClient();
   const [tabFilter, setTabFilter] = useState<"tous" | LeadStatus>("tous");
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<SortKey>("date_desc");
@@ -664,6 +678,27 @@ export default function AdminLeadsList() {
   const PER_PAGE = 20;
 
   const { data: leads = [], isLoading } = useQuery({ queryKey: ["leads"], queryFn: getLeads });
+
+  const handleBulkArchive = async () => {
+    const ids = [...selectedRows];
+    try {
+      await Promise.all(ids.map((id) => updateLeadStatus(id, "archive")));
+      await qc.invalidateQueries({ queryKey: ["leads"] });
+      setSelectedRows(new Set());
+      toast.success(`${ids.length} lead${ids.length > 1 ? "s" : ""} archivé${ids.length > 1 ? "s" : ""}`);
+    } catch { toast.error("Erreur lors de l'archivage"); }
+  };
+
+  const handleBulkDelete = async () => {
+    const ids = [...selectedRows];
+    if (!confirm(`Supprimer définitivement ${ids.length} lead${ids.length > 1 ? "s" : ""} ?`)) return;
+    try {
+      await Promise.all(ids.map((id) => deleteLead(id)));
+      await qc.invalidateQueries({ queryKey: ["leads"] });
+      setSelectedRows(new Set());
+      toast.success(`${ids.length} lead${ids.length > 1 ? "s" : ""} supprimé${ids.length > 1 ? "s" : ""}`);
+    } catch { toast.error("Erreur lors de la suppression"); }
+  };
   const chartDays = PERIODS.find((p) => p.key === chartPeriod)?.days ?? 30;
 
   /* Trend vs previous period */
@@ -906,6 +941,31 @@ export default function AdminLeadsList() {
               + Nouveau lead
             </button>
           </div>
+
+          {/* Bulk actions bar */}
+          {selectedRows.size > 0 && (
+            <div className="px-5 py-2.5 flex items-center gap-3 flex-wrap"
+              style={{ background: "hsl(218 55% 42% / 0.05)", borderBottom: "1px solid hsl(218 55% 42% / 0.12)" }}>
+              <span className="text-[12px] font-medium" style={{ color: "hsl(218 50% 36%)" }}>
+                {selectedRows.size} sélectionné{selectedRows.size > 1 ? "s" : ""}
+              </span>
+              <button onClick={handleBulkArchive}
+                className="flex items-center gap-1.5 text-[12px] px-3 py-1.5 rounded-lg font-medium transition-colors"
+                style={{ background: "hsl(38 65% 42% / 0.12)", color: "hsl(38 60% 30%)", border: "1px solid hsl(38 65% 42% / 0.20)" }}>
+                <Archive className="w-3.5 h-3.5" />Archiver
+              </button>
+              <button onClick={handleBulkDelete}
+                className="flex items-center gap-1.5 text-[12px] px-3 py-1.5 rounded-lg font-medium transition-colors"
+                style={{ background: "hsl(0 55% 52% / 0.08)", color: "hsl(0 55% 38%)", border: "1px solid hsl(0 55% 52% / 0.18)" }}>
+                <Trash2 className="w-3.5 h-3.5" />Supprimer
+              </button>
+              <button onClick={() => setSelectedRows(new Set())}
+                className="ml-auto text-[11px] font-light transition-opacity hover:opacity-70"
+                style={{ color: "hsl(224 15% 55%)" }}>
+                Désélectionner tout
+              </button>
+            </div>
+          )}
 
           {/* Tabs */}
           <div className="flex items-center gap-0 px-5 overflow-x-auto" style={{ borderBottom: "1px solid hsl(224 20% 12% / 0.07)" }}>
