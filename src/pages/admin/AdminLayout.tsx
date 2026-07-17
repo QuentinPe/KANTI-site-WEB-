@@ -1,12 +1,17 @@
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { FileText, LogOut, Plus, BookOpen, Users, HelpCircle, UserSquare2, Scale, LayoutDashboard, Inbox, Settings, Image, ShieldCheck } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { getLeads } from "@/lib/leadsService";
 import logoWhite from "@/assets/logo-kanti-white.png.asset.json";
 
 export default function AdminLayout() {
   const { user, signOut } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+
+  const { data: leads = [] } = useQuery({ queryKey: ["leads"], queryFn: getLeads });
+  const newLeadsCount = leads.filter((l) => l.status === "nouveau").length;
 
   const handleSignOut = async () => {
     await signOut();
@@ -46,6 +51,7 @@ export default function AdminLayout() {
             icon={<Inbox className="w-4 h-4" />}
             label="Leads"
             active={isActive("/admin/leads")}
+            badge={newLeadsCount || undefined}
           />
 
           <p className="px-3 pb-2 pt-5 text-[9px] tracking-[0.3em] uppercase font-medium" style={{ color: "hsl(0 0% 100% / 0.22)" }}>
@@ -115,7 +121,7 @@ export default function AdminLayout() {
           />
         </nav>
 
-        {/* Quick action */}
+        {/* Quick actions */}
         <div className="px-3 pb-4 space-y-2">
           <Link
             to="/admin/articles/new"
@@ -163,7 +169,15 @@ export default function AdminLayout() {
   );
 }
 
-function NavItem({ to, icon, label, active }: { to: string; icon: React.ReactNode; label: string; active: boolean }) {
+function NavItem({
+  to, icon, label, active, badge,
+}: {
+  to: string;
+  icon: React.ReactNode;
+  label: string;
+  active: boolean;
+  badge?: number;
+}) {
   return (
     <Link
       to={to}
@@ -176,6 +190,14 @@ function NavItem({ to, icon, label, active }: { to: string; icon: React.ReactNod
     >
       {icon}
       {label}
+      {badge != null && badge > 0 && (
+        <span
+          className="ml-auto text-[9px] font-bold px-1.5 py-0.5 rounded-full leading-none tabular-nums"
+          style={{ background: "hsl(38 75% 44%)", color: "white" }}
+        >
+          {badge}
+        </span>
+      )}
     </Link>
   );
 }

@@ -1,12 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Trash2, ChevronDown, ChevronUp, Mail, Phone, Calendar, Filter } from "lucide-react";
-import { getLeads, updateLeadStatus, deleteLead } from "@/lib/leadsService";
+import { toast } from "sonner";
+import { Trash2, ChevronDown, ChevronUp, Mail, Phone, Calendar, Filter, Search, Download } from "lucide-react";
+import { getLeads, updateLeadStatus, updateLeadNotes, deleteLead, exportLeadsCSV } from "@/lib/leadsService";
 import type { Lead, LeadStatus } from "@/lib/leadsService";
 
 const STATUS_CONFIG: Record<LeadStatus, { label: string; bg: string; color: string }> = {
-  nouveau:  { label: "Nouveau",  bg: "hsl(0 65% 48% / 0.10)",  color: "hsl(0 60% 40%)"   },
-  traite:   { label: "Traité",   bg: "hsl(142 55% 38% / 0.10)", color: "hsl(142 50% 32%)" },
+  nouveau:  { label: "Nouveau",  bg: "hsl(38 90% 50% / 0.12)",  color: "hsl(38 70% 34%)"  },
+  traite:   { label: "Traité",   bg: "hsl(218 55% 42% / 0.10)", color: "hsl(218 48% 38%)" },
+  converti: { label: "Converti", bg: "hsl(142 55% 38% / 0.10)", color: "hsl(142 50% 30%)" },
   archive:  { label: "Archivé",  bg: "hsl(224 12% 55% / 0.10)", color: "hsl(224 12% 45%)" },
 };
 
@@ -37,11 +39,30 @@ function StatusBadge({ status }: { status: LeadStatus }) {
 
 function LeadRow({ lead }: { lead: Lead }) {
   const [expanded, setExpanded] = useState(false);
+  const [notes, setNotes] = useState(lead.notes ?? "");
+  const [notesDirty, setNotesDirty] = useState(false);
   const qc = useQueryClient();
+
+  useEffect(() => {
+    setNotes(lead.notes ?? "");
+    setNotesDirty(false);
+  }, [lead.notes]);
 
   const statusMutation = useMutation({
     mutationFn: (status: LeadStatus) => updateLeadStatus(lead.id, status),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["leads"] }),
+  });
+
+  const notesMutation = useMutation({
+    mutationFn: (n: string) => updateLeadNotes(lead.id, n),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["leads"] });
+      setNotesDirty(false);
+      toast.success("Notes enregistrées");
+    },
+    onError: () => {
+      toast.error("Erreur — colonne notes manquante ? ALTER TABLE leads ADD COLUMN IF NOT EXISTS notes text;");
+    },
   });
 
   const deleteMutation = useMutation({
@@ -49,11 +70,15 @@ function LeadRow({ lead }: { lead: Lead }) {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["leads"] }),
   });
 
+  const handleNotesChange = (v: string) => {
+    setNotes(v);
+    setNotesDirty(v !== (lead.notes ?? ""));
+  };
+
   return (
-    <div className="rounded-xl overflow-hidden transition-all duration-200"
+    <div className="rounded-xl overflow-hidden"
       style={{ background: "white", border: "1px solid hsl(224 20% 12% / 0.08)", boxShadow: "0 1px 4px -2px hsl(224 60% 12% / 0.05)" }}>
       <div className="flex items-center gap-3 px-5 py-4">
-        {/* Infos principales */}
         <div className="flex-1 min-w-0 grid grid-cols-[1fr_1fr_auto] gap-4 items-center">
           <div className="min-w-0">
             <p className="text-[14px] font-medium truncate" style={{ color: "hsl(224 55% 12%)" }}>{lead.nom}</p>
@@ -74,7 +99,6 @@ function LeadRow({ lead }: { lead: Lead }) {
           <StatusBadge status={lead.status} />
         </div>
 
-        {/* Actions */}
         <div className="flex items-center gap-2 flex-shrink-0">
           <select
             value={lead.status}
@@ -84,6 +108,7 @@ function LeadRow({ lead }: { lead: Lead }) {
           >
             <option value="nouveau">Nouveau</option>
             <option value="traite">Traité</option>
+            <option value="converti">Converti</option>
             <option value="archive">Archivé</option>
           </select>
 
@@ -105,9 +130,9 @@ function LeadRow({ lead }: { lead: Lead }) {
         </div>
       </div>
 
-      {/* Expanded details */}
       {expanded && (
-        <div className="px-5 pb-5 pt-2 flex flex-wrap gap-6" style={{ borderTop: "1px solid hsl(224 20% 12% / 0.06)", background: "hsl(220 25% 98%)" }}>
+        <div className="px-5 pb-5 pt-3 flex flex-wrap gap-5"
+          style={{ borderTop: "1px solid hsl(224 20% 12% / 0.06)", background: "hsl(220 25% 98%)" }}>
           {lead.telephone && (
             <div>
               <p className="text-[10px] tracking-[0.2em] uppercase font-medium mb-1" style={{ color: "hsl(224 15% 58%)" }}>Téléphone</p>
@@ -141,6 +166,35 @@ function LeadRow({ lead }: { lead: Lead }) {
               <p className="text-[13px] font-light leading-relaxed" style={{ color: "hsl(224 20% 35%)" }}>{lead.message}</p>
             </div>
           )}
+          {/* Notes internes */}
+          <div className="w-full">
+            <p className="text-[10px] tracking-[0.2em] uppercase font-medium mb-1.5" style={{ color: "hsl(224 15% 58%)" }}>
+              Notes internes
+            </p>
+            <textarea
+              value={notes}
+              onChange={(e) => handleNotesChange(e.target.value)}
+              placeholder="Suivi, rappels, observations…"
+              rows={2}
+              className="w-full resize-none rounded-lg px-3 py-2 text-[13px] font-light outline-none transition-all"
+              style={{
+                background: "white",
+                border: `1px solid ${notesDirty ? "hsl(218 45% 42% / 0.4)" : "hsl(224 20% 12% / 0.10)"}`,
+                color: "hsl(224 30% 25%)",
+                boxShadow: notesDirty ? "0 0 0 3px hsl(218 45% 42% / 0.08)" : "none",
+              }}
+            />
+            {notesDirty && (
+              <button
+                onClick={() => notesMutation.mutate(notes)}
+                disabled={notesMutation.isPending}
+                className="mt-2 text-[11px] font-medium px-3 py-1.5 rounded-lg transition-opacity disabled:opacity-60"
+                style={{ background: "hsl(218 45% 42%)", color: "white" }}
+              >
+                {notesMutation.isPending ? "Enregistrement…" : "Enregistrer"}
+              </button>
+            )}
+          </div>
         </div>
       )}
     </div>
@@ -149,47 +203,87 @@ function LeadRow({ lead }: { lead: Lead }) {
 
 export default function AdminLeadsList() {
   const [filter, setFilter] = useState<"tous" | LeadStatus>("tous");
+  const [search, setSearch] = useState("");
   const { data: leads = [], isLoading } = useQuery({ queryKey: ["leads"], queryFn: getLeads });
 
-  const filtered = filter === "tous" ? leads : leads.filter((l) => l.status === filter);
+  const filtered = leads
+    .filter((l) => filter === "tous" || l.status === filter)
+    .filter((l) => {
+      if (!search.trim()) return true;
+      const q = search.toLowerCase();
+      return [l.nom, l.email, l.sujet, l.message, l.telephone, l.notes]
+        .filter(Boolean)
+        .some((v) => v!.toLowerCase().includes(q));
+    });
+
   const counts = {
     tous: leads.length,
     nouveau: leads.filter((l) => l.status === "nouveau").length,
     traite: leads.filter((l) => l.status === "traite").length,
+    converti: leads.filter((l) => l.status === "converti").length,
     archive: leads.filter((l) => l.status === "archive").length,
   };
 
   return (
     <div className="p-8 max-w-4xl mx-auto">
-      <div className="flex items-center justify-between mb-8">
+      {/* Header */}
+      <div className="flex items-start justify-between mb-6 gap-4 flex-wrap">
         <div>
-          <h1 className="text-2xl font-heading font-light tracking-tight" style={{ color: "hsl(224 55% 12%)" }}>Leads & demandes</h1>
+          <h1 className="text-2xl font-heading font-light tracking-tight" style={{ color: "hsl(224 55% 12%)" }}>
+            Leads & demandes
+          </h1>
           <p className="text-[13px] font-light mt-1" style={{ color: "hsl(224 15% 52%)" }}>
             Messages reçus via le formulaire de contact
           </p>
         </div>
-        {counts.nouveau > 0 && (
-          <span className="px-3 py-1.5 rounded-full text-[12px] font-medium"
-            style={{ background: "hsl(0 65% 48% / 0.10)", color: "hsl(0 60% 40%)" }}>
-            {counts.nouveau} non traité{counts.nouveau > 1 ? "s" : ""}
-          </span>
-        )}
+        <div className="flex items-center gap-3 flex-shrink-0">
+          {counts.nouveau > 0 && (
+            <span className="px-3 py-1.5 rounded-full text-[12px] font-medium"
+              style={{ background: "hsl(38 90% 50% / 0.12)", color: "hsl(38 70% 34%)" }}>
+              {counts.nouveau} non traité{counts.nouveau > 1 ? "s" : ""}
+            </span>
+          )}
+          <button
+            onClick={() => exportLeadsCSV(leads)}
+            disabled={leads.length === 0}
+            className="flex items-center gap-2 px-3.5 py-2 rounded-lg text-[12px] font-medium transition-colors disabled:opacity-40"
+            style={{ background: "white", border: "1px solid hsl(224 20% 12% / 0.12)", color: "hsl(224 30% 42%)" }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(220 25% 96%)"; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "white"; }}
+          >
+            <Download className="w-3.5 h-3.5" />
+            Exporter CSV
+          </button>
+        </div>
       </div>
 
-      {/* Filtres */}
-      <div className="flex items-center gap-2 mb-6">
-        <Filter className="w-4 h-4" style={{ color: "hsl(224 20% 52%)" }} />
-        {(["tous", "nouveau", "traite", "archive"] as const).map((s) => (
-          <button key={s} type="button" onClick={() => setFilter(s)}
-            className="px-3.5 py-1.5 rounded-full text-[12px] font-medium transition-all duration-150"
-            style={{
-              background: filter === s ? "hsl(224 60% 18%)" : "white",
-              color: filter === s ? "white" : "hsl(224 25% 40%)",
-              border: `1px solid ${filter === s ? "hsl(224 60% 18%)" : "hsl(224 20% 12% / 0.12)"}`,
-            }}>
-            {s === "tous" ? "Tous" : STATUS_CONFIG[s].label} ({counts[s]})
-          </button>
-        ))}
+      {/* Search + filtres */}
+      <div className="flex items-center gap-3 mb-5 flex-wrap">
+        <div className="relative min-w-[180px]">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style={{ color: "hsl(224 20% 58%)" }} />
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Rechercher…"
+            className="w-full pl-9 pr-3 py-2 text-[13px] rounded-lg outline-none"
+            style={{ background: "white", border: "1px solid hsl(224 20% 12% / 0.10)", color: "hsl(224 30% 25%)" }}
+          />
+        </div>
+        <div className="flex items-center gap-2 flex-wrap">
+          <Filter className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "hsl(224 20% 52%)" }} />
+          {(["tous", "nouveau", "traite", "converti", "archive"] as const).map((s) => (
+            <button key={s} type="button" onClick={() => setFilter(s)}
+              className="px-3.5 py-1.5 rounded-full text-[12px] font-medium transition-all duration-150 whitespace-nowrap"
+              style={{
+                background: filter === s ? "hsl(224 60% 18%)" : "white",
+                color: filter === s ? "white" : "hsl(224 25% 40%)",
+                border: `1px solid ${filter === s ? "hsl(224 60% 18%)" : "hsl(224 20% 12% / 0.12)"}`,
+              }}>
+              {s === "tous" ? "Tous" : STATUS_CONFIG[s as LeadStatus].label} ({counts[s]})
+            </button>
+          ))}
+        </div>
       </div>
 
       {isLoading ? (
@@ -199,7 +293,7 @@ export default function AdminLeadsList() {
       ) : filtered.length === 0 ? (
         <div className="text-center py-16 rounded-2xl" style={{ background: "white", border: "1px solid hsl(224 20% 12% / 0.07)" }}>
           <p className="text-[14px] font-light" style={{ color: "hsl(224 12% 55%)" }}>
-            {filter === "tous" ? "Aucun lead pour le moment" : "Aucun lead dans cette catégorie"}
+            {search ? "Aucun résultat pour cette recherche" : filter === "tous" ? "Aucun lead pour le moment" : "Aucun lead dans cette catégorie"}
           </p>
         </div>
       ) : (

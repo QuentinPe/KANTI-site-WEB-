@@ -1,6 +1,6 @@
 import { supabase } from "@/lib/supabase";
 
-export type LeadStatus = "nouveau" | "traite" | "archive";
+export type LeadStatus = "nouveau" | "traite" | "converti" | "archive";
 
 export interface Lead {
   id: string;
@@ -12,11 +12,12 @@ export interface Lead {
   timing?: string | null;
   sujet?: string | null;
   message?: string | null;
+  notes?: string | null;
   status: LeadStatus;
   created_at: string;
 }
 
-export type LeadInput = Omit<Lead, "id" | "status" | "created_at">;
+export type LeadInput = Omit<Lead, "id" | "status" | "created_at" | "notes">;
 
 export const createLead = async (input: LeadInput): Promise<void> => {
   const { error } = await supabase.from("leads").insert(input);
@@ -37,7 +38,56 @@ export const updateLeadStatus = async (id: string, status: LeadStatus): Promise<
   if (error) throw error;
 };
 
+export const updateLeadNotes = async (id: string, notes: string): Promise<void> => {
+  const { error } = await supabase.from("leads").update({ notes }).eq("id", id);
+  if (error) throw error;
+};
+
 export const deleteLead = async (id: string): Promise<void> => {
   const { error } = await supabase.from("leads").delete().eq("id", id);
   if (error) throw error;
+};
+
+export const exportLeadsCSV = (leads: Lead[]): void => {
+  const ADVISOR_LABELS: Record<string, string> = {
+    quentin: "Quentin Perromat", thomas: "Thomas Robert", any: "Peu importe",
+  };
+  const FORMAT_LABELS: Record<string, string> = {
+    cabinet: "En cabinet", visio: "Visioconférence", telephone: "Téléphone",
+  };
+  const TIMING_LABELS: Record<string, string> = {
+    asap: "Dès que possible", week: "Cette semaine", two_weeks: "Dans 2 semaines", month: "Dans le mois",
+  };
+  const STATUS_LABELS: Record<LeadStatus, string> = {
+    nouveau: "Nouveau", traite: "Traité", converti: "Converti", archive: "Archivé",
+  };
+
+  const headers = ["Nom", "Email", "Téléphone", "Sujet", "Conseiller", "Format", "Disponibilité", "Statut", "Message", "Notes", "Date"];
+  const rows = leads.map((l) => [
+    l.nom,
+    l.email,
+    l.telephone ?? "",
+    l.sujet ?? "",
+    l.conseiller ? (ADVISOR_LABELS[l.conseiller] ?? l.conseiller) : "",
+    l.format ? (FORMAT_LABELS[l.format] ?? l.format) : "",
+    l.timing ? (TIMING_LABELS[l.timing] ?? l.timing) : "",
+    STATUS_LABELS[l.status],
+    (l.message ?? "").replace(/\n/g, " "),
+    (l.notes ?? "").replace(/\n/g, " "),
+    l.created_at.slice(0, 10),
+  ]);
+
+  const csv = [headers, ...rows]
+    .map((r) => r.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(";"))
+    .join("\n");
+
+  const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `leads-kanti-${new Date().toISOString().slice(0, 10)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 };
