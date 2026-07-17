@@ -508,7 +508,21 @@ function ResultView({
   onReset: () => void;
   onSend: () => void;
 }) {
-  const handleDownload = () => generatePdf(profile, answers);
+  const [pdfError, setPdfError] = useState("");
+  const [pdfGenerating, setPdfGenerating] = useState(false);
+
+  const handleDownload = async () => {
+    setPdfError("");
+    setPdfGenerating(true);
+    try {
+      generatePdf(profile, answers);
+    } catch (e: unknown) {
+      console.error("[PDF] generatePdf failed:", e);
+      setPdfError("Erreur lors de la génération du PDF. Réessayez.");
+    } finally {
+      setPdfGenerating(false);
+    }
+  };
 
   return (
     <motion.div
@@ -624,14 +638,18 @@ function ResultView({
       </div>
 
       {/* Actions */}
+      {pdfError && (
+        <p className="text-center text-red-500 text-sm mt-2">{pdfError}</p>
+      )}
       <div className="flex flex-wrap gap-4 justify-center pt-2">
         <button
           type="button"
           onClick={handleDownload}
+          disabled={pdfGenerating}
           data-magnetic
-          className="group inline-flex items-center gap-3 pl-8 pr-2.5 py-2.5 rounded-full bg-[hsl(var(--navy-deep))] text-white text-sm font-medium tracking-wide reflection-sweep shadow-xl hover:-translate-y-0.5 transition-transform duration-300"
+          className="group inline-flex items-center gap-3 pl-8 pr-2.5 py-2.5 rounded-full bg-[hsl(var(--navy-deep))] text-white text-sm font-medium tracking-wide reflection-sweep shadow-xl hover:-translate-y-0.5 transition-transform duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          <span>Télécharger ma fiche PDF</span>
+          <span>{pdfGenerating ? "Génération…" : "Télécharger ma fiche PDF"}</span>
           <span className="w-9 h-9 rounded-full bg-white text-[hsl(var(--navy-deep))] flex items-center justify-center transition-transform duration-300 group-hover:translate-y-0.5">
             <svg
               className="w-3.5 h-3.5"
