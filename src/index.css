@@ -765,3 +765,112 @@ header, main, footer, section { position: relative; z-index: 1; }
 /* Hide scrollbar utility */
 .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 .hide-scrollbar::-webkit-scrollbar { display: none; }
+
+/* ── Article body — reading experience ──────────────────────── */
+.article-body {
+  font-size: 18.5px;
+  line-height: 1.85;
+  color: hsl(224 25% 18%);
+}
+.article-body p {
+  margin-bottom: 1.5em;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-weight: 400;
+}
+.article-body h2 {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.7em;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  color: hsl(224 55% 12%);
+  margin-top: 2.4em;
+  margin-bottom: 0.7em;
+  padding-bottom: 0.4em;
+  border-bottom: 1px solid hsl(224 20% 12% / 0.08);
+}
+.article-body h3 {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.3em;
+  font-weight: 500;
+  color: hsl(224 45% 18%);
+  margin-top: 1.8em;
+  margin-bottom: 0.5em;
+}
+/* Drop cap on first paragraph */
+.article-body > p:first-of-type::first-letter {
+  float: left;
+  font-size: 4.2em;
+  line-height: 0.82;
+  margin: 0.06em 0.12em 0 0;
+  color: hsl(218 45% 42%);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-weight: 600;
+}
+/* Pull quote */
+.article-body blockquote {
+  border-left: none;
+  position: relative;
+  padding: 1.4rem 1.4rem 1.4rem 3.2rem;
+  background: hsl(218 40% 97%);
+  border-radius: 0.875rem;
+  font-style: italic;
+  font-size: 1.08em;
+  color: hsl(218 40% 30%);
+  margin: 2em 0;
+}
+.article-body blockquote::before {
+  content: '"';
+  position: absolute;
+  left: 0.8rem;
+  top: -0.1rem;
+  font-size: 3.5em;
+  color: hsl(218 45% 55%);
+  line-height: 1;
+  font-style: normal;
+  font-family: Georgia, serif;
+  opacity: 0.6;
+}
+/* Internal article links (Wikipedia-style) */
+.article-body a[href^="/actualites/"] {
+  color: hsl(210 65% 38%);
+  text-decoration: underline;
+  text-decoration-color: hsl(210 65% 38% / 0.35);
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  font-style: normal;
+  transition: text-decoration-color 0.2s;
+}
+.article-body a[href^="/actualites/"]:hover {
+  text-decoration-color: hsl(210 65% 38%);
+}
+/* External links */
+.article-body a:not([href^="/"]):not([href^="#"]) {
+  color: hsl(218 45% 38%);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-color: hsl(218 45% 38% / 0.3);
+}
+.article-body ul, .article-body ol {
+  padding-left: 1.5em;
+  margin-bottom: 1.5em;
+}
+.article-body li {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  margin-bottom: 0.4em;
+  font-size: 1em;
+}
+.article-body strong { font-weight: 600; }
+.article-body em { font-style: italic; }
+.article-body img {
+  border-radius: 0.75rem;
+  margin: 1.5em 0;
+  max-width: 100%;
+}
+/* TOC active link */
+.toc-link { transition: color 0.2s, padding-left 0.2s; }
+.toc-link.active {
+  color: hsl(218 45% 42%);
+  padding-left: 0.5rem;
+  font-weight: 500;
+}
