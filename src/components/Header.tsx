@@ -19,6 +19,8 @@ const navLinks = [
       { label: "Fiscalité du patrimoine", href: "/fiscalite" },
       { label: "Patrimoine professionnel", href: "/patrimoine-professionnel" },
       { label: "Financement & crédit", href: "/financement" },
+      { label: "Transmission & prévoyance", href: "/transmission-patrimoine-famille" },
+      { label: "Immobilier patrimonial", href: "/patrimoine-immobilier-strategie" },
     ],
   },
   { label: "Ressources", href: "/ressources" },

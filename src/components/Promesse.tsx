@@ -9,11 +9,9 @@ const fragments = [
   { t: "Un cabinet ", em: false },
   { t: "à taille humaine", em: true },
   { t: ", une vision ", em: false },
-  { t: "globale", em: true },
-  { t: ",", em: false },
+  { t: "globale,", em: true },
   { t: " et la conviction qu'un patrimoine se construit ", em: false },
-  { t: "dans la durée", em: true },
-  { t: ".", em: false },
+  { t: "dans la durée.", em: true },
 ];
 
 export default function Promesse() {
@@ -82,7 +80,7 @@ export default function Promesse() {
                     ? "italic font-normal bg-[linear-gradient(110deg,hsl(0_0%_100%/0.7)_0%,hsl(0_0%_100%)_45%,hsl(0_0%_100%/0.7)_100%)] bg-[length:200%_100%] bg-clip-text text-transparent animate-[shimmer_3.2s_ease-in-out_1.2s_1]"
                     : "text-white/85"
                 }
-                style={{ display: "inline-block", willChange: "transform, filter, opacity" }}
+                style={{ display: "inline-block", willChange: "transform, filter, opacity", whiteSpace: "pre-wrap" }}
               >
                 {f.t}
               </motion.span>
