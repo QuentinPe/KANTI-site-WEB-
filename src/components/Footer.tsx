@@ -34,6 +34,7 @@ export default function Footer() {
               <li><Link to="/ressources" className="hover:text-white transition-colors link-underline-light">Ressources</Link></li>
               <li><Link to="/faq-patrimoniale" className="hover:text-white transition-colors link-underline-light">FAQ</Link></li>
               <li><Link to="/contact" className="hover:text-white transition-colors link-underline-light">Contact</Link></li>
+              <li><Link to="/profil-risque" className="hover:text-white transition-colors link-underline-light">Profil de risque</Link></li>
             </ul>
           </div>
           <div>

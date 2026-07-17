@@ -1,9 +1,11 @@
 import { useMemo, useState, useRef } from "react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import jsPDF from "jspdf";
+import { Send, X } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Seo from "@/components/Seo";
+import { createLead } from "@/lib/leadsService";
 import {
   RISK_QUESTIONS,
   RISK_SECTIONS,
@@ -12,7 +14,6 @@ import {
   type RiskSection,
 } from "@/data/profilRisqueQuestions";
 import {
-  COVER_BUILDING_B64,
   LOGO_KANTI_WHITE_B64,
   LOGO_KANTI_DARK_B64,
 } from "@/assets/pdf-assets";
@@ -36,6 +37,8 @@ export default function ProfilRisquePage() {
   const [phase, setPhase] = useState<Phase>("intro");
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, AnswerValue>>({});
+  const [selectedIndices, setSelectedIndices] = useState<Record<string, number>>({});
+  const [showSendModal, setShowSendModal] = useState(false);
 
   const total = RISK_QUESTIONS.length;
   const current = RISK_QUESTIONS[step];
@@ -57,8 +60,9 @@ export default function ProfilRisquePage() {
     else setPhase("result");
   };
 
-  const handleSelect = (qid: string, score: number) => {
+  const handleSelect = (qid: string, score: number, idx: number) => {
     setAnswers((p) => ({ ...p, [qid]: score }));
+    setSelectedIndices((p) => ({ ...p, [qid]: idx }));
     setTimeout(goNext, 220);
   };
 
@@ -68,6 +72,7 @@ export default function ProfilRisquePage() {
 
   const handleReset = () => {
     setAnswers({});
+    setSelectedIndices({});
     setStep(0);
     setPhase("intro");
   };
@@ -176,12 +181,12 @@ export default function ProfilRisquePage() {
                   ) : (
                     <ul className="space-y-3 mt-8">
                       {current.options?.map((opt, i) => {
-                        const selected = answers[current.id] === opt.score;
+                        const selected = selectedIndices[current.id] === i;
                         return (
                           <li key={`${current.id}-${i}`}>
                             <button
                               type="button"
-                              onClick={() => handleSelect(current.id, opt.score)}
+                              onClick={() => handleSelect(current.id, opt.score, i)}
                               className={`group w-full text-left flex items-center gap-4 p-5 rounded-[1.25rem] border transition-all duration-300 ${
                                 selected
                                   ? "border-[hsl(var(--electric))] bg-[hsl(var(--electric)/0.06)] shadow-[0_8px_24px_-8px_hsl(var(--electric)/0.25)]"
@@ -231,6 +236,7 @@ export default function ProfilRisquePage() {
                   profile={profile}
                   answers={answers}
                   onReset={handleReset}
+                  onSend={() => setShowSendModal(true)}
                 />
               )}
             </AnimatePresence>
@@ -243,6 +249,15 @@ export default function ProfilRisquePage() {
         </section>
       </main>
       <Footer />
+
+      <AnimatePresence>
+        {showSendModal && (
+          <SendModal
+            profile={profile}
+            onClose={() => setShowSendModal(false)}
+          />
+        )}
+      </AnimatePresence>
     </>
   );
 }
@@ -486,59 +501,14 @@ function ResultView({
   profile,
   answers,
   onReset,
+  onSend,
 }: {
   profile: SriProfile;
   answers: Record<string, AnswerValue>;
   onReset: () => void;
+  onSend: () => void;
 }) {
   const handleDownload = () => generatePdf(profile, answers);
-  const handleSend = () => {
-    // Future intégration : envoi vers une edge function / mailer KANTI.
-    // Pour l'instant on génère le PDF et on ouvre un mailto pré-rempli.
-    generatePdf(profile, answers);
-    const subject = encodeURIComponent(
-      `Profil investisseur, SRI ${profile.sri}/7 (${profile.shortLabel}) — demande d'échange`,
-    );
-    const body = encodeURIComponent(
-      [
-        "Bonjour,",
-        "",
-        `Je viens de réaliser le questionnaire profil investisseur sur le site KANTI. Vous trouverez ci-joint la fiche PDF générée automatiquement (SRI ${profile.sri}/7 — ${profile.shortLabel}, score précis ${(profile.sriPrecise ?? profile.sri).toFixed(2)}/7).`,
-        "",
-        "Afin que notre premier échange soit le plus utile possible, voici quelques éléments complémentaires que je peux vous partager (merci de compléter, supprimer ou préciser librement) :",
-        "",
-        "— Informations de contact —",
-        "• Nom / Prénom :",
-        "• Téléphone :",
-        "• Ville de résidence :",
-        "• Situation familiale (célibataire, marié·e, PACS, enfants…) :",
-        "• Profession / statut (salarié, TNS, dirigeant, retraité…) :",
-        "",
-        "— Ma situation patrimoniale —",
-        "• Revenus annuels nets du foyer :",
-        "• Tranche marginale d'imposition (TMI) estimée :",
-        "• Épargne disponible (livrets, comptes) :",
-        "• Placements financiers actuels (assurance-vie, PEA, PER, CTO, SCPI…) :",
-        "• Immobilier détenu (résidence principale, locatif, SCI…) :",
-        "• Crédits en cours (montant, durée restante) :",
-        "",
-        "— Mes objectifs & mon projet —",
-        "• Objectif prioritaire (préparer la retraite, transmettre, investir, réduire mes impôts, générer des revenus…) :",
-        "• Horizon d'investissement envisagé :",
-        "• Montant que je souhaite mobiliser (capital et/ou versement mensuel) :",
-        "• Sujets sur lesquels j'aimerais être accompagné·e en priorité :",
-        "",
-        "— Organisation du rendez-vous —",
-        "• Format souhaité (visio, téléphone, cabinet Bordeaux) :",
-        "• Créneaux de disponibilité dans les 15 prochains jours :",
-        "",
-        "Je reste à votre disposition pour tout complément avant notre échange.",
-        "",
-        "Bien cordialement,",
-      ].join("\n"),
-    );
-    window.location.href = `mailto:${KANTI_INFO.email}?subject=${subject}&body=${body}`;
-  };
 
   return (
     <motion.div
@@ -680,14 +650,12 @@ function ResultView({
         </button>
         <button
           type="button"
-          onClick={handleSend}
+          onClick={onSend}
           className="group inline-flex items-center gap-3 pl-8 pr-2.5 py-2.5 rounded-full border border-foreground/20 text-foreground text-sm font-medium tracking-wide hover:bg-foreground/5 transition"
         >
           <span>Envoyer à KANTI</span>
           <span className="w-9 h-9 rounded-full bg-[hsl(var(--electric))] text-white flex items-center justify-center transition-transform duration-300 group-hover:translate-x-0.5">
-            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 5.25l7.5 7.5 7.5-7.5M3.75 18.75l7.5-7.5 7.5 7.5" />
-            </svg>
+            <Send className="w-3.5 h-3.5" />
           </span>
         </button>
         <button
@@ -702,6 +670,169 @@ function ResultView({
   );
 }
 
+
+/* ───────────────── SEND MODAL ───────────────── */
+function SendModal({ profile, onClose }: { profile: SriProfile; onClose: () => void }) {
+  const [prenom, setPrenom] = useState("");
+  const [nom, setNom] = useState("");
+  const [email, setEmail] = useState("");
+  const [telephone, setTelephone] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!prenom.trim() || !nom.trim() || !email.trim()) return;
+    setSubmitting(true);
+    setError("");
+    try {
+      const fullNom = `${prenom.trim()} ${nom.trim()}`;
+      const sujet = `Profil de risque — SRI ${profile.sri}/7 (${profile.shortLabel})`;
+      const message = `${profile.description}\n\nScore précis : ${(profile.sriPrecise ?? profile.sri).toFixed(2)}/7`;
+      await createLead({ nom: fullNom, email: email.trim(), telephone: telephone.trim() || null, sujet, message });
+      try {
+        await fetch("/api/notify-telegram", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            message: `<b>🎯 Nouveau profil de risque</b>\n\n<b>Nom :</b> ${fullNom}\n<b>Email :</b> ${email.trim()}\n<b>Tél :</b> ${telephone.trim() || "—"}\n<b>SRI :</b> ${profile.sri}/7 — ${profile.shortLabel}\n<b>Score précis :</b> ${(profile.sriPrecise ?? profile.sri).toFixed(2)}/7\n\n<i>${profile.description.slice(0, 200)}…</i>`,
+          }),
+        });
+      } catch {}
+      setSent(true);
+    } catch {
+      setError("Une erreur est survenue. Réessayez ou contactez-nous par email.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ background: "hsl(224 60% 6% / 0.72)", backdropFilter: "blur(8px)" }}
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <motion.div
+        initial={{ opacity: 0, y: 24, scale: 0.97 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 12, scale: 0.97 }}
+        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+        className="relative w-full max-w-md glass-strong rounded-[2rem] p-8 lg:p-10"
+      >
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute top-5 right-5 w-8 h-8 rounded-full border border-foreground/15 flex items-center justify-center text-foreground/50 hover:text-foreground hover:border-foreground/30 transition"
+        >
+          <X className="w-4 h-4" />
+        </button>
+
+        {sent ? (
+          <div className="text-center py-4">
+            <div className="w-14 h-14 rounded-full bg-[hsl(var(--electric)/0.1)] flex items-center justify-center mx-auto mb-5">
+              <Send className="w-6 h-6 text-[hsl(var(--electric))]" />
+            </div>
+            <h3 className="font-heading text-2xl font-light text-foreground mb-3">Envoyé !</h3>
+            <p className="text-foreground/65 text-sm font-light leading-relaxed mb-6">
+              Votre profil SRI {profile.sri}/7 a bien été transmis à l'équipe KANTI. Nous vous contacterons sous 24 h.
+            </p>
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-7 py-3 rounded-full bg-[hsl(var(--navy-deep))] text-white text-sm font-medium tracking-wide hover:-translate-y-0.5 transition-transform"
+            >
+              Fermer
+            </button>
+          </div>
+        ) : (
+          <>
+            <p className="text-[10px] tracking-[0.28em] uppercase text-foreground/50 mb-2 font-medium">Transmettre mon profil</p>
+            <h3 className="font-heading text-2xl font-light text-foreground mb-1 tracking-tight">
+              Envoyer à KANTI
+            </h3>
+            <p className="text-foreground/55 text-sm font-light mb-7">
+              Profil SRI <strong className="font-medium text-foreground/80">{profile.sri}/7</strong> — {profile.shortLabel}
+            </p>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <label className="block">
+                  <span className="text-[10px] uppercase tracking-[0.2em] text-foreground/50 font-medium">Prénom *</span>
+                  <input
+                    type="text"
+                    required
+                    value={prenom}
+                    onChange={(e) => setPrenom(e.target.value)}
+                    className="mt-1.5 w-full rounded-xl border border-foreground/12 bg-white/55 px-4 py-2.5 text-sm text-foreground outline-none focus:border-[hsl(var(--electric))] focus:bg-white/80 transition placeholder:text-foreground/30"
+                    placeholder="Jean"
+                  />
+                </label>
+                <label className="block">
+                  <span className="text-[10px] uppercase tracking-[0.2em] text-foreground/50 font-medium">Nom *</span>
+                  <input
+                    type="text"
+                    required
+                    value={nom}
+                    onChange={(e) => setNom(e.target.value)}
+                    className="mt-1.5 w-full rounded-xl border border-foreground/12 bg-white/55 px-4 py-2.5 text-sm text-foreground outline-none focus:border-[hsl(var(--electric))] focus:bg-white/80 transition placeholder:text-foreground/30"
+                    placeholder="Dupont"
+                  />
+                </label>
+              </div>
+              <label className="block">
+                <span className="text-[10px] uppercase tracking-[0.2em] text-foreground/50 font-medium">Email *</span>
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="mt-1.5 w-full rounded-xl border border-foreground/12 bg-white/55 px-4 py-2.5 text-sm text-foreground outline-none focus:border-[hsl(var(--electric))] focus:bg-white/80 transition placeholder:text-foreground/30"
+                  placeholder="jean.dupont@exemple.com"
+                />
+              </label>
+              <label className="block">
+                <span className="text-[10px] uppercase tracking-[0.2em] text-foreground/50 font-medium">Téléphone</span>
+                <input
+                  type="tel"
+                  value={telephone}
+                  onChange={(e) => setTelephone(e.target.value)}
+                  className="mt-1.5 w-full rounded-xl border border-foreground/12 bg-white/55 px-4 py-2.5 text-sm text-foreground outline-none focus:border-[hsl(var(--electric))] focus:bg-white/80 transition placeholder:text-foreground/30"
+                  placeholder="06 00 00 00 00"
+                />
+              </label>
+
+              {error && (
+                <p className="text-red-500 text-xs">{error}</p>
+              )}
+
+              <button
+                type="submit"
+                disabled={submitting}
+                className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-full bg-[hsl(var(--navy-deep))] text-white text-sm font-medium tracking-wide hover:-translate-y-0.5 transition-transform disabled:opacity-60 disabled:cursor-not-allowed disabled:translate-y-0 mt-2"
+              >
+                {submitting ? "Envoi en cours…" : (
+                  <>
+                    <Send className="w-3.5 h-3.5" />
+                    Transmettre mon profil
+                  </>
+                )}
+              </button>
+            </form>
+
+            <p className="text-[10px] text-foreground/40 text-center mt-4 leading-relaxed">
+              Vos données sont traitées par KANTI conformément à notre politique de confidentialité. Aucun démarchage.
+            </p>
+          </>
+        )}
+      </motion.div>
+    </motion.div>
+  );
+}
 
 /* ───────────────── PDF GENERATION ───────────────── */
 function generatePdf(
@@ -751,34 +882,85 @@ function generatePdf(
   const sriPrecise = profile.sriPrecise ?? profile.sri;
 
   // ═══════════════════════════════════════════════════════════
-  // PAGE 1 — COUVERTURE
+  // PAGE 1 — COUVERTURE (géométrique, sans photo)
   // ═══════════════════════════════════════════════════════════
   const photoW = 210;
   const leftW = W - photoW;
   const leftInner = leftW - M * 2;
+  const scoreStr = sriPrecise.toFixed(1);
 
-  try {
-    doc.addImage(COVER_BUILDING_B64, "JPEG", W - photoW, 0, photoW, H);
-  } catch {
-    setFill(NAVY);
-    doc.rect(W - photoW, 0, photoW, H, "F");
-  }
-  // Voile navy sur la photo
-  setFill(NAVY);
-  doc.setGState(new (doc as any).GState({ opacity: 0.55 }));
-  doc.rect(W - photoW, 0, photoW, H, "F");
-  doc.setGState(new (doc as any).GState({ opacity: 1 }));
-
-  // Fond papier à gauche
+  // Panneau gauche — papier
   setFill(PAPER);
   doc.rect(0, 0, leftW, H, "F");
 
-  // Filet d'accent vertical
-  setDraw(ACCENT);
-  doc.setLineWidth(1);
-  doc.line(W - photoW, 0, W - photoW, H);
+  // Panneau droit — navy profond
+  setFill(NAVY);
+  doc.rect(leftW, 0, photoW, H, "F");
 
-  // Logo KANTI (variante navy sur fond papier)
+  // ── Éléments géométriques panneau droit ──
+  const cx = leftW + photoW / 2;
+
+  // Grand cercle fantôme centré
+  setDraw(ACCENT);
+  doc.setLineWidth(0.5);
+  doc.circle(cx, H / 2, 72, "S");
+
+  // Cercle intermédiaire
+  setDraw([44, 72, 118]);
+  doc.setLineWidth(0.4);
+  doc.circle(cx, H / 2, 50, "S");
+
+  // Ellipse décorative excentrée
+  setDraw([34, 56, 100]);
+  doc.setLineWidth(0.3);
+  doc.ellipse(cx + 18, H * 0.28, 38, 26, "S");
+
+  // Lignes horizontales fines (grille aérée)
+  doc.setLineWidth(0.25);
+  setDraw([30, 50, 90]);
+  for (let i = 0; i < 6; i++) {
+    const ly = H * 0.62 + i * 22;
+    doc.line(leftW + 20, ly, W - 20, ly);
+  }
+
+  // Filet vertical de séparation (accent)
+  setDraw(ACCENT);
+  doc.setLineWidth(1.2);
+  doc.line(leftW, 0, leftW, H);
+
+  // Score géant au centre du panneau droit
+  setText(WHITE);
+  doc.setFont(SERIF, "bold");
+  doc.setFontSize(54);
+  doc.text(scoreStr, cx, H / 2 + 18, { align: "center" });
+
+  // "/7" petit
+  doc.setFont(SANS, "normal");
+  doc.setFontSize(13);
+  setText([140, 165, 205]);
+  doc.text("/ 7", cx, H / 2 + 36, { align: "center" });
+
+  // Label du profil
+  setText([170, 195, 230]);
+  doc.setFont(SANS, "bold");
+  doc.setFontSize(7.5);
+  doc.text(profile.shortLabel.toUpperCase(), cx, H / 2 + 58, { align: "center" });
+
+  // Ligne déco sous score
+  setDraw([80, 120, 178]);
+  doc.setLineWidth(0.6);
+  doc.line(cx - 22, H / 2 - 12, cx + 22, H / 2 - 12);
+
+  // Mention bas panneau droit
+  setText([150, 175, 215]);
+  doc.setFont(SANS, "normal");
+  doc.setFontSize(6.5);
+  doc.text("SRI — ÉCHELLE PRIIPS", cx, H - 44, { align: "center" });
+  doc.text("Document pédagogique.", cx, H - 32, { align: "center" });
+
+  // ── Contenu panneau gauche ──
+
+  // Logo KANTI
   try {
     doc.addImage(LOGO_KANTI_DARK_B64, "PNG", M, 46, 78, 24);
   } catch {
@@ -803,7 +985,7 @@ function generatePdf(
   doc.setFontSize(7.5);
   doc.text("RAPPORT CONFIDENTIEL   ·   AUTO-ÉVALUATION AMF", M, 180);
 
-  // Titre éditorial (Times serif, propre et fiable)
+  // Titre éditorial
   setText(NAVY);
   doc.setFont(SERIF, "normal");
   doc.setFontSize(46);
@@ -841,7 +1023,6 @@ function generatePdf(
   setText(NAVY);
   doc.setFont(SERIF, "bold");
   doc.setFontSize(54);
-  const scoreStr = sriPrecise.toFixed(1);
   doc.text(scoreStr, M + 20, cardY + 92);
   const scoreW = doc.getTextWidth(scoreStr);
   doc.setFont(SANS, "normal");
@@ -870,7 +1051,7 @@ function generatePdf(
     cardY + 158,
   );
 
-  // Meta bas
+  // Meta bas panneau gauche
   setDraw(HAIR);
   doc.setLineWidth(0.4);
   doc.line(M, H - 100, M + leftInner, H - 100);
@@ -894,27 +1075,6 @@ function generatePdf(
     leftInner,
   );
   doc.text(contactLines, M, H - 38);
-
-  // Signature sur la photo
-  const sigX = W - photoW / 2;
-  setText(WHITE);
-  doc.setFont(SERIF, "italic");
-  doc.setFontSize(11);
-  doc.text("« La sérénité patrimoniale", sigX, H / 2 - 16, { align: "center" });
-  doc.text("se construit sur la mesure. »", sigX, H / 2 + 2, { align: "center" });
-  setDraw([220, 200, 150]);
-  doc.setLineWidth(0.6);
-  doc.line(sigX - 24, H / 2 + 20, sigX + 24, H / 2 + 20);
-  setText([220, 225, 240]);
-  doc.setFont(SANS, "bold");
-  doc.setFontSize(7);
-  doc.text("KANTI   ·   BORDEAUX", sigX, H / 2 + 36, { align: "center" });
-
-  setText([200, 210, 230]);
-  doc.setFont(SANS, "normal");
-  doc.setFontSize(6.5);
-  doc.text("Document pédagogique.", sigX, H - 50, { align: "center" });
-  doc.text("Ne constitue pas un conseil AMF.", sigX, H - 38, { align: "center" });
 
   // ═══════════════════════════════════════════════════════════
   // Helpers pour pages suivantes
@@ -1299,14 +1459,13 @@ function generatePdf(
   y += Math.ceil(kpis.length / 2) * (kpiH + 14) + 24;
 
   y = sectionLabel(y, "Ce que cela signifie pour vous");
-
-  const cumLower = distribution.filter((d) => d.sri < profile.sri).reduce((s, d) => s + d.pct, 0);
   const cumThis = distribution.find((d) => d.sri === profile.sri)?.pct ?? 0;
   const positionText =
     `Avec un SRI de ${scoreStr} sur 7, vous appartenez aux ${cumThis} % d'épargnants français de profil « ${profile.shortLabel.toLowerCase()} ». ` +
     `Environ ${cumLower} % des épargnants ont un profil plus prudent que le vôtre, et ${100 - cumLower - cumThis} % un profil plus offensif.`;
   const posLinesTxt = doc.splitTextToSize(positionText, CW - 40);
   const posBoxH = Math.max(72, posLinesTxt.length * 13 + 34);
+  y = ensureSpace(y, posBoxH + 24, () => { doc.addPage(); drawPageHeader("Votre positionnement", "02"); return 158; });
   setFill(PAPER_DEEP);
   doc.roundedRect(M, y, CW, posBoxH, 8, 8, "F");
   setFill(ACCENT);
