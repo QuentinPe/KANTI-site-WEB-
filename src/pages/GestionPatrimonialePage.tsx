@@ -1,7 +1,7 @@
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import PageHero from "@/components/PageHero";
+import GestionHeroSticky from "@/components/gestion/GestionHeroSticky";
 import PageCTA from "@/components/PageCTA";
 import ExpertiseShowcase from "@/components/ExpertiseShowcase";
 import ProductGrid from "@/components/ProductGrid";
@@ -16,18 +16,7 @@ export default function GestionPatrimonialePage() {
   return (
     <>
       <Header />
-      <PageHero
-        title="Gestion patrimoniale"
-        highlight="& placements"
-        subtitle="Construire une allocation d'actifs cohérente avec vos objectifs, votre horizon et votre tolérance au risque. En architecture ouverte."
-        breadcrumb="Gestion patrimoniale"
-        eyebrow="Allocation & placements"
-        stats={[
-          { value: "100%", label: "Architecture ouverte" },
-          { value: "0", label: "Produit maison" },
-          { value: "12+", label: "Partenaires" },
-        ]}
-      />
+      <GestionHeroSticky />
 
       <ExpertiseShowcase
         eyebrow="Notre approche"
