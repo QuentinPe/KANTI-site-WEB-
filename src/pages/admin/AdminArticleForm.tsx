@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft, ImageOff, Sparkles, Wand2, ChevronDown, Search, Eye } from "lucide-react";
+import { ArrowLeft, ImageOff, Sparkles, Wand2, ChevronDown, Search, Eye, Link2, X } from "lucide-react";
 import { getArticles, createArticle, updateArticle } from "@/lib/articlesService";
 import type { ArticleInput } from "@/lib/articlesService";
 import RichEditor from "@/components/admin/RichEditor";
@@ -84,6 +84,9 @@ export default function AdminArticleForm() {
   const existing = isEdit ? articles.find((a) => a.id === id) : null;
 
   const [seoOpen, setSeoOpen] = useState(false);
+  const [relatedOpen, setRelatedOpen] = useState(false);
+  const [relatedSearch, setRelatedSearch] = useState("");
+  const [selectedRelated, setSelectedRelated] = useState<string[]>([]);
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
 
   const { register, handleSubmit, reset, watch, setValue, formState: { errors, isSubmitting } } = useForm<FormData>({
@@ -121,6 +124,7 @@ export default function AdminArticleForm() {
         author_name: existing.author_name ?? "",
       });
       setImagePreview(existing.image);
+      setSelectedRelated(existing.related_article_ids ?? []);
       if (existing.slug) setSlugManuallyEdited(true);
     }
   }, [existing, reset]);
@@ -205,6 +209,7 @@ export default function AdminArticleForm() {
       ...(data.meta_title ? { meta_title: data.meta_title } : {}),
       ...(data.meta_description ? { meta_description: data.meta_description } : {}),
       ...(data.author_name ? { author_name: data.author_name } : {}),
+      related_article_ids: selectedRelated.length > 0 ? selectedRelated : null,
     };
     if (isEdit) {
       updateMutation.mutate(payload);
@@ -424,6 +429,127 @@ export default function AdminArticleForm() {
             Mettre cet article à la une
           </span>
         </label>
+
+        {/* ── Articles liés ── */}
+        <div className="rounded-2xl overflow-hidden" style={{ border: "1px solid hsl(224 20% 12% / 0.10)" }}>
+          <button
+            type="button"
+            onClick={() => setRelatedOpen((v) => !v)}
+            className="w-full flex items-center justify-between px-5 py-4 text-left transition-colors duration-150"
+            style={{ background: relatedOpen ? "hsl(218 55% 18%)" : "hsl(224 20% 97%)" }}
+          >
+            <div className="flex items-center gap-2.5">
+              <Link2 className="w-4 h-4" style={{ color: relatedOpen ? "hsl(0 0% 100% / 0.70)" : "hsl(218 50% 42%)" }} />
+              <span className="text-[13px] font-medium" style={{ color: relatedOpen ? "hsl(0 0% 100% / 0.85)" : "hsl(224 40% 30%)" }}>
+                Articles liés
+              </span>
+              {selectedRelated.length > 0 && (
+                <span className="text-[10px] tracking-wide px-2 py-0.5 rounded-full font-medium"
+                  style={{ background: relatedOpen ? "hsl(0 0% 100% / 0.16)" : "hsl(218 50% 42% / 0.12)", color: relatedOpen ? "hsl(0 0% 100% / 0.85)" : "hsl(218 50% 38%)" }}>
+                  {selectedRelated.length} sélectionné{selectedRelated.length > 1 ? "s" : ""}
+                </span>
+              )}
+              {selectedRelated.length === 0 && (
+                <span className="text-[10px] tracking-wide px-2 py-0.5 rounded-full"
+                  style={{ background: relatedOpen ? "hsl(0 0% 100% / 0.12)" : "hsl(224 55% 18% / 0.09)", color: relatedOpen ? "hsl(0 0% 100% / 0.55)" : "hsl(224 40% 45%)" }}>
+                  Optionnel
+                </span>
+              )}
+            </div>
+            <ChevronDown
+              className="w-4 h-4 transition-transform duration-300"
+              style={{ transform: relatedOpen ? "rotate(180deg)" : "rotate(0deg)", color: relatedOpen ? "hsl(0 0% 100% / 0.50)" : "hsl(224 20% 52%)" }}
+            />
+          </button>
+
+          {relatedOpen && (
+            <div className="px-5 py-5 flex flex-col gap-4" style={{ background: "hsl(220 30% 98%)", borderTop: "1px solid hsl(224 20% 12% / 0.07)" }}>
+              <p className="text-[12px] font-light" style={{ color: "hsl(224 15% 52%)" }}>
+                Choisissez jusqu'à 3 articles à afficher dans la section "Pour aller plus loin" en bas de cet article. Sans sélection, les articles récents sont affichés automatiquement.
+              </p>
+
+              {/* Selected pills */}
+              {selectedRelated.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {selectedRelated.map(rid => {
+                    const a = articles.find(x => x.id === rid);
+                    if (!a) return null;
+                    return (
+                      <span key={rid}
+                        className="inline-flex items-center gap-1.5 text-[11px] font-medium px-3 py-1 rounded-full"
+                        style={{ background: "hsl(218 45% 42% / 0.10)", color: "hsl(218 45% 36%)", border: "1px solid hsl(218 45% 42% / 0.20)" }}>
+                        {a.title.length > 35 ? a.title.slice(0, 35) + "…" : a.title}
+                        <button type="button" onClick={() => setSelectedRelated(prev => prev.filter(x => x !== rid))}
+                          className="hover:opacity-60 transition-opacity">
+                          <X className="w-3 h-3" />
+                        </button>
+                      </span>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Search */}
+              <div className="relative">
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style={{ color: "hsl(224 15% 55%)" }} />
+                <input
+                  value={relatedSearch}
+                  onChange={(e) => setRelatedSearch(e.target.value)}
+                  placeholder="Rechercher un article…"
+                  className={inputClass}
+                  style={{ ...inputStyle, paddingLeft: "2.25rem" }}
+                  onFocus={(e) => Object.assign((e.target as HTMLElement).style, inputFocus)}
+                  onBlur={(e) => Object.assign((e.target as HTMLElement).style, inputBlur)}
+                />
+              </div>
+
+              {/* Article list */}
+              <div className="flex flex-col gap-1.5 max-h-64 overflow-y-auto pr-1">
+                {articles
+                  .filter(a => a.id !== id)
+                  .filter(a => !relatedSearch || a.title.toLowerCase().includes(relatedSearch.toLowerCase()) || a.tag.toLowerCase().includes(relatedSearch.toLowerCase()))
+                  .map(a => {
+                    const checked = selectedRelated.includes(a.id);
+                    const maxReached = !checked && selectedRelated.length >= 3;
+                    return (
+                      <label
+                        key={a.id}
+                        className="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-150"
+                        style={{
+                          background: checked ? "hsl(218 45% 42% / 0.08)" : "white",
+                          border: `1px solid ${checked ? "hsl(218 45% 42% / 0.22)" : "hsl(224 20% 12% / 0.08)"}`,
+                          opacity: maxReached ? 0.4 : 1,
+                          cursor: maxReached ? "not-allowed" : "pointer",
+                        }}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          disabled={maxReached}
+                          onChange={() => {
+                            if (checked) {
+                              setSelectedRelated(prev => prev.filter(x => x !== a.id));
+                            } else if (!maxReached) {
+                              setSelectedRelated(prev => [...prev, a.id]);
+                            }
+                          }}
+                          className="w-3.5 h-3.5 rounded flex-shrink-0"
+                          style={{ accentColor: "hsl(218 45% 42%)" }}
+                        />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[12px] font-medium truncate" style={{ color: "hsl(224 40% 22%)" }}>{a.title}</p>
+                          <p className="text-[10px] font-light" style={{ color: "hsl(224 15% 55%)" }}>{a.tag} · {a.date}</p>
+                        </div>
+                      </label>
+                    );
+                  })}
+              </div>
+              {selectedRelated.length >= 3 && (
+                <p className="text-[11px]" style={{ color: "hsl(25 70% 45%)" }}>Maximum 3 articles liés atteint.</p>
+              )}
+            </div>
+          )}
+        </div>
 
         {/* ── SEO ── */}
         <div className="rounded-2xl overflow-hidden" style={{ border: "1px solid hsl(224 20% 12% / 0.10)" }}>

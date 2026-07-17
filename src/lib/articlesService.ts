@@ -14,6 +14,7 @@ export interface Article {
   meta_title?: string | null;
   meta_description?: string | null;
   author_name?: string | null;
+  related_article_ids?: string[] | null;
   created_at: string;
   updated_at: string;
 }

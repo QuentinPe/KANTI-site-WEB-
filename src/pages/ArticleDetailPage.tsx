@@ -137,10 +137,14 @@ export default function ArticleDetailPage() {
 
   const toc = useMemo(() => extractTOC(processedBody), [processedBody]);
 
-  const related = useMemo(
-    () => allArticles.filter(a => a.id !== id).slice(0, 3),
-    [allArticles, id]
-  );
+  const related = useMemo(() => {
+    if (article?.related_article_ids && article.related_article_ids.length > 0) {
+      return article.related_article_ids
+        .map(rid => allArticles.find(a => a.id === rid))
+        .filter((a): a is NonNullable<typeof a> => Boolean(a));
+    }
+    return allArticles.filter(a => a.id !== id).slice(0, 3);
+  }, [allArticles, id, article?.related_article_ids]);
 
   // IntersectionObserver for active TOC heading
   useEffect(() => {
@@ -273,7 +277,7 @@ export default function ArticleDetailPage() {
           {/* ── CONTENT + SIDEBAR ── */}
           <section ref={contentRef} className="bg-white pt-14 pb-24">
             <div className="max-w-6xl mx-auto px-6 md:px-12">
-              <div className="grid lg:grid-cols-[1fr_300px] gap-16 items-start">
+              <div className="grid lg:grid-cols-[1fr_300px] gap-16">
 
                 {/* Left: article body */}
                 <div>
