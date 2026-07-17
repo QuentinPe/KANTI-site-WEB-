@@ -1,13 +1,9 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('[Supabase] Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY — set these in your Vercel project settings.')
-}
+const SUPABASE_URL = 'https://zoqpsjodmlazmottqshl.supabase.co'
+const SUPABASE_ANON_KEY = 'sb_publishable_GLFFA7Uvvu7ZxM1pqWO4lQ_4XIQ2Sdy'
 
 export const supabase = createClient(
-  supabaseUrl || 'https://placeholder.supabase.co',
-  supabaseAnonKey || 'placeholder-anon-key'
+  import.meta.env.VITE_SUPABASE_URL || SUPABASE_URL,
+  import.meta.env.VITE_SUPABASE_ANON_KEY || SUPABASE_ANON_KEY
 )
