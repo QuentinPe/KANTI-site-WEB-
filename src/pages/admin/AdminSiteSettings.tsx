@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Save, Globe, Phone, BarChart3, Search } from "lucide-react";
+import { Save, Globe, Phone, BarChart3, Search, Scale } from "lucide-react";
 import { getSiteSettings, upsertSettings } from "@/lib/siteSettingsService";
 import { toast } from "sonner";
 
@@ -132,6 +132,53 @@ export default function AdminSiteSettings() {
             <Field label="Expérience moyenne"><div>{textInput("stat_experience", "12 ans")}</div></Field>
             <Field label="Taux de fidélisation"><div>{textInput("stat_fidelisation", "97 %")}</div></Field>
             <Field label="Partenaires"><div>{textInput("stat_partenaires", "30+")}</div></Field>
+          </div>
+        </SectionCard>
+
+        {/* Informations réglementaires */}
+        <SectionCard title="Informations réglementaires" icon={Scale}>
+          <p className="text-[12px] font-light -mt-2" style={{ color: "hsl(224 15% 55%)" }}>
+            Ces valeurs sont utilisées dans les mentions légales publiées sur le site. Toute modification est répercutée automatiquement.
+          </p>
+          <div className="grid grid-cols-2 gap-4">
+            <Field label="Numéro ORIAS" hint="ex : 20 000 855">
+              <div>{textInput("legal_orias", "20 000 855")}</div>
+            </Field>
+            <Field label="RCS (numéro et ville)" hint="ex : 878 821 818 Bayonne">
+              <div>{textInput("legal_rcs", "878 821 818 Bayonne")}</div>
+            </Field>
+            <Field label="Numéro de TVA intracommunautaire">
+              <div>{textInput("legal_tva", "FR34878821818")}</div>
+            </Field>
+            <Field label="Siège social">
+              <div>{textInput("legal_siege", "9 Rue de la Négresse, 64200 Biarritz")}</div>
+            </Field>
+            <Field label="Numéro La Compagnie CIF / IOBSP" hint="ex : F002635">
+              <div>{textInput("legal_compagnie_num", "F002635")}</div>
+            </Field>
+            <Field label="Numéro CNCEF Assurance" hint="ex : 25/860422">
+              <div>{textInput("legal_cncef_num", "25/860422")}</div>
+            </Field>
+            <Field label="Carte pro transaction immobilière" hint="Numéro CPI">
+              <div>{textInput("legal_carte_pro", "CPI33012020000045313")}</div>
+            </Field>
+            <Field label="Tribunal compétent">
+              <div>{textInput("legal_tribunal", "Bayonne")}</div>
+            </Field>
+          </div>
+          <div className="grid grid-cols-2 gap-4" style={{ paddingTop: "0.5rem", borderTop: "1px solid hsl(224 20% 12% / 0.07)", marginTop: "0.25rem" }}>
+            <Field label="Assureur RC Pro">
+              <div>{textInput("legal_rc_assureur", "MMA IARD Assurances Mutuelles / MMA IARD")}</div>
+            </Field>
+            <Field label="Police d'assurance RC Pro" hint="Numéro de police">
+              <div>{textInput("legal_rc_police", "112 786 342")}</div>
+            </Field>
+            <Field label="Numéro d'adhérent RC Pro">
+              <div>{textInput("legal_rc_adherent", "231 972")}</div>
+            </Field>
+            <Field label="Date de mise à jour des mentions légales">
+              <div>{textInput("legal_updated_at", "Avril 2026")}</div>
+            </Field>
           </div>
         </SectionCard>
 

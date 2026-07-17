@@ -1,40 +1,23 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
-  Search, Download, BarChart3, X, Phone, Mail, ChevronDown,
-  Trash2, Filter, Clock, TrendingUp, Users, CheckCircle2, MoreHorizontal,
+  Search, Download, BarChart3, X, Phone, Mail,
+  Trash2, Clock, TrendingUp, Users, CheckCircle2, ExternalLink,
 } from "lucide-react";
 import {
-  getLeads, updateLeadStatus, updateLeadNotes, deleteLead, exportLeadsCSV,
+  getLeads, updateLeadStatus, updateLeadNotes, deleteLead, exportLeadsCSV, createLead,
 } from "@/lib/leadsService";
-import type { Lead, LeadStatus } from "@/lib/leadsService";
+import type { Lead, LeadStatus, LeadInput } from "@/lib/leadsService";
+import { ADVISOR_LABELS, ADVISOR_INITIALS, FORMAT_LABELS, TIMING_LABELS } from "@/lib/leadsConfig";
 import {
   StatusBars, PipelineHealth, bucketLeadsByDay, PERIODS, STATUS_CONFIG, STATUS_ORDER,
 } from "@/components/admin/LeadsVolumeChart";
 import type { PeriodKey } from "@/components/admin/LeadsVolumeChart";
 
-/* ─── Config ─── */
-const ADVISOR_LABELS: Record<string, string> = {
-  quentin: "Quentin Perromat", thomas: "Thomas Robert", any: "Peu importe",
-};
-const ADVISOR_INITIALS: Record<string, string> = {
-  quentin: "QP", thomas: "TR", any: "—",
-};
-const FORMAT_LABELS: Record<string, string> = {
-  cabinet: "En cabinet", visio: "Visioconférence", telephone: "Téléphone",
-};
-const TIMING_LABELS: Record<string, string> = {
-  asap: "Dès que possible", week: "Cette semaine", two_weeks: "Dans 2 semaines", month: "Dans le mois",
-};
-
 /* ─── Helpers ─── */
 function fmtDate(iso: string) {
   return new Intl.DateTimeFormat("fr-FR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }).format(new Date(iso));
-}
-function fmtShort(iso: string) {
-  const d = new Date(iso);
-  return `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}`;
 }
 function getInitials(nom: string) {
   return nom.split(" ").map((w) => w[0]).filter(Boolean).slice(0, 2).join("").toUpperCase();
@@ -66,15 +49,20 @@ function computeScore(lead: Lead): { score: number; level: "Élevé" | "Moyen" |
   const score = Math.min(s, 100);
   return { score, level: score >= 70 ? "Élevé" : score >= 40 ? "Moyen" : "Faible" };
 }
+function scoreMeta(level: "Élevé" | "Moyen" | "Faible") {
+  if (level === "Élevé") return { color: "hsl(142 50% 35%)", bg: "hsl(142 50% 35% / 0.10)" };
+  if (level === "Moyen") return { color: "hsl(38 65% 36%)", bg: "hsl(38 65% 36% / 0.10)" };
+  return { color: "hsl(224 15% 50%)", bg: "hsl(224 15% 90%)" };
+}
 
-/* ─── Multi-line chart with real dates ─── */
+/* ─── Multi-line chart ─── */
 function MultiLineChart({ leads, days }: { leads: Lead[]; days: number }) {
-  const now = Date.now();
   const useWeeks = days > 60;
   const count = useWeeks ? Math.ceil(days / 7) : days;
 
   const buckets = useMemo(() => {
-    const arr = Array.from({ length: count }, (_, i) => {
+    const now = Date.now();
+    return Array.from({ length: count }, (_, i) => {
       const bucketStart = now - (count - i) * (useWeeks ? 7 : 1) * 86_400_000;
       const bucketEnd = bucketStart + (useWeeks ? 7 : 1) * 86_400_000;
       const d = new Date(bucketEnd - 86_400_000);
@@ -91,8 +79,7 @@ function MultiLineChart({ leads, days }: { leads: Lead[]; days: number }) {
         converti: inBucket.filter((l) => l.status === "converti").length,
       };
     });
-    return arr;
-  }, [leads, days, count, useWeeks, now]);
+  }, [leads, days, count, useWeeks]);
 
   const maxY = Math.max(...buckets.map((b) => b.total), 1);
   const W = 500, H = 120, padX = 2, padY = 8;
@@ -113,7 +100,6 @@ function MultiLineChart({ leads, days }: { leads: Lead[]; days: number }) {
   const totalLine = line("total");
   const traiteLine = line("traite");
   const convertiLine = line("converti");
-
   const xLabels = buckets.length <= 12
     ? buckets.map((b, i) => ({ label: b.label, i }))
     : [0, Math.floor(count / 4), Math.floor(count / 2), Math.floor(count * 3 / 4), count - 1]
@@ -132,25 +118,20 @@ function MultiLineChart({ leads, days }: { leads: Lead[]; days: number }) {
             <stop offset="100%" stopColor="hsl(200 65% 52%)" stopOpacity="0.01" />
           </linearGradient>
         </defs>
-        {/* Grid lines */}
         {[0.25, 0.5, 0.75, 1].map((f) => (
           <line key={f} x1={0} y1={H - padY - f * (H - padY * 2)} x2={W} y2={H - padY - f * (H - padY * 2)}
             stroke="hsl(224 20% 12% / 0.05)" strokeWidth="0.8" />
         ))}
-        {/* Areas */}
         {totalLine.area && <path d={totalLine.area} fill="url(#mlg-total)" />}
         {traiteLine.area && <path d={traiteLine.area} fill="url(#mlg-traite)" />}
-        {/* Lines */}
         {totalLine.path && <path d={totalLine.path} fill="none" stroke="hsl(218 55% 48%)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />}
         {traiteLine.path && <path d={traiteLine.path} fill="none" stroke="hsl(200 65% 52%)" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />}
         {convertiLine.path && <path d={convertiLine.path} fill="none" stroke="hsl(142 52% 42%)" strokeWidth="1.4" strokeDasharray="4 2" strokeLinecap="round" />}
-        {/* Dots on last point */}
         {totalLine.pts.length > 0 && (
           <circle cx={totalLine.pts[totalLine.pts.length - 1].x} cy={totalLine.pts[totalLine.pts.length - 1].y}
             r="3" fill="white" stroke="hsl(218 55% 48%)" strokeWidth="1.8" />
         )}
       </svg>
-      {/* X-axis labels */}
       <div className="relative" style={{ height: 18 }}>
         {xLabels.map(({ label, i }) => (
           <span key={i} className="absolute text-[9px] -translate-x-1/2 tabular-nums"
@@ -168,10 +149,7 @@ function DonutChart({ leads }: { leads: Lead[] }) {
   const COLORS = ["hsl(218 55% 52%)", "hsl(38 75% 48%)", "hsl(142 50% 42%)", "hsl(280 50% 52%)", "hsl(0 55% 52%)"];
   const groups = useMemo(() => {
     const map = new Map<string, number>();
-    leads.forEach((l) => {
-      const src = getSource(l);
-      map.set(src, (map.get(src) ?? 0) + 1);
-    });
+    leads.forEach((l) => { const src = getSource(l); map.set(src, (map.get(src) ?? 0) + 1); });
     return [...map.entries()].sort((a, b) => b[1] - a[1]).map(([label, count], i) => ({
       label, count, color: COLORS[i % COLORS.length],
     }));
@@ -187,11 +165,10 @@ function DonutChart({ leads }: { leads: Lead[] }) {
     const end = angle + sweep;
     const path = sweep >= 2 * Math.PI - 0.001
       ? `M ${cx + R},${cy} A ${R},${R},0,1,1,${cx + R - 0.001},${cy} Z M ${cx + r},${cy} A ${r},${r},0,1,0,${cx + r - 0.001},${cy} Z`
-      : [
-          `M ${cx + R * Math.cos(angle)},${cy + R * Math.sin(angle)}`,
-          `A ${R},${R},0,${sweep > Math.PI ? 1 : 0},1,${cx + R * Math.cos(end)},${cy + R * Math.sin(end)}`,
-          `L ${cx + r * Math.cos(end)},${cy + r * Math.sin(end)}`,
-          `A ${r},${r},0,${sweep > Math.PI ? 1 : 0},0,${cx + r * Math.cos(angle)},${cy + r * Math.sin(angle)} Z`,
+      : [`M ${cx + R * Math.cos(angle)},${cy + R * Math.sin(angle)}`,
+         `A ${R},${R},0,${sweep > Math.PI ? 1 : 0},1,${cx + R * Math.cos(end)},${cy + R * Math.sin(end)}`,
+         `L ${cx + r * Math.cos(end)},${cy + r * Math.sin(end)}`,
+         `A ${r},${r},0,${sweep > Math.PI ? 1 : 0},0,${cx + r * Math.cos(angle)},${cy + r * Math.sin(angle)} Z`,
         ].join(" ");
     const result = { ...g, path };
     angle = end;
@@ -219,7 +196,7 @@ function DonutChart({ leads }: { leads: Lead[] }) {
   );
 }
 
-/* ─── Charts Modal (analyse) ─── */
+/* ─── Charts modal ─── */
 function ChartsModal({ leads, onClose }: { leads: Lead[]; onClose: () => void }) {
   const [period, setPeriod] = useState<PeriodKey>("30j");
   const days = PERIODS.find((p) => p.key === period)?.days ?? 30;
@@ -291,13 +268,116 @@ function ChartsModal({ leads, onClose }: { leads: Lead[]; onClose: () => void })
   );
 }
 
-/* ─── Lead Detail Panel ─── */
+/* ─── New Lead Modal ─── */
+function NewLeadModal({ onClose }: { onClose: () => void }) {
+  const qc = useQueryClient();
+  const [form, setForm] = useState<Partial<LeadInput>>({ conseiller: "any", format: "visio", timing: "asap" });
+  const [saving, setSaving] = useState(false);
+
+  const set = (k: keyof LeadInput, v: string) => setForm((p) => ({ ...p, [k]: v }));
+
+  const handleSave = async () => {
+    if (!form.nom?.trim() || !form.email?.trim()) { toast.error("Nom et email obligatoires"); return; }
+    setSaving(true);
+    try {
+      await createLead({ nom: form.nom, email: form.email, telephone: form.telephone || null, conseiller: form.conseiller || "any", format: form.format || "visio", timing: form.timing || "asap", sujet: form.sujet || null, message: form.message || null });
+      await qc.invalidateQueries({ queryKey: ["leads"] });
+      toast.success("Lead créé");
+      onClose();
+    } catch { toast.error("Erreur lors de la création"); }
+    finally { setSaving(false); }
+  };
+
+  const inputCls = "w-full px-3 py-2 rounded-lg text-[13px] outline-none";
+  const inputSt = { background: "hsl(220 25% 97%)", border: "1px solid hsl(224 20% 12% / 0.10)", color: "hsl(224 30% 25%)" };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ background: "hsl(224 60% 6% / 0.50)", backdropFilter: "blur(5px)" }}
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div className="w-full max-w-lg rounded-2xl overflow-hidden"
+        style={{ background: "white", boxShadow: "0 24px 60px -16px hsl(224 60% 12% / 0.22)" }}>
+        <div className="flex items-center justify-between px-6 py-5" style={{ borderBottom: "1px solid hsl(224 20% 12% / 0.08)" }}>
+          <h2 className="text-[16px] font-medium" style={{ color: "hsl(224 55% 12%)" }}>Nouveau lead</h2>
+          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-[hsl(224_20%_12%/0.06)]">
+            <X className="w-4 h-4" style={{ color: "hsl(224 20% 45%)" }} />
+          </button>
+        </div>
+        <div className="px-6 py-5 space-y-4">
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-[11px] font-medium mb-1.5" style={{ color: "hsl(224 20% 48%)" }}>Nom *</label>
+              <input className={inputCls} style={inputSt} placeholder="Jean Dupont"
+                value={form.nom ?? ""} onChange={(e) => set("nom", e.target.value)} />
+            </div>
+            <div>
+              <label className="block text-[11px] font-medium mb-1.5" style={{ color: "hsl(224 20% 48%)" }}>Email *</label>
+              <input type="email" className={inputCls} style={inputSt} placeholder="jean@example.com"
+                value={form.email ?? ""} onChange={(e) => set("email", e.target.value)} />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-[11px] font-medium mb-1.5" style={{ color: "hsl(224 20% 48%)" }}>Téléphone</label>
+              <input className={inputCls} style={inputSt} placeholder="06 XX XX XX XX"
+                value={form.telephone ?? ""} onChange={(e) => set("telephone", e.target.value)} />
+            </div>
+            <div>
+              <label className="block text-[11px] font-medium mb-1.5" style={{ color: "hsl(224 20% 48%)" }}>Sujet</label>
+              <input className={inputCls} style={inputSt} placeholder="Retraite, immobilier…"
+                value={form.sujet ?? ""} onChange={(e) => set("sujet", e.target.value)} />
+            </div>
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            <div>
+              <label className="block text-[11px] font-medium mb-1.5" style={{ color: "hsl(224 20% 48%)" }}>Conseiller</label>
+              <select className={inputCls} style={inputSt} value={form.conseiller ?? "any"} onChange={(e) => set("conseiller", e.target.value)}>
+                {Object.entries(ADVISOR_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-[11px] font-medium mb-1.5" style={{ color: "hsl(224 20% 48%)" }}>Format</label>
+              <select className={inputCls} style={inputSt} value={form.format ?? "visio"} onChange={(e) => set("format", e.target.value)}>
+                {Object.entries(FORMAT_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-[11px] font-medium mb-1.5" style={{ color: "hsl(224 20% 48%)" }}>Disponibilité</label>
+              <select className={inputCls} style={inputSt} value={form.timing ?? "asap"} onChange={(e) => set("timing", e.target.value)}>
+                {Object.entries(TIMING_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+              </select>
+            </div>
+          </div>
+          <div>
+            <label className="block text-[11px] font-medium mb-1.5" style={{ color: "hsl(224 20% 48%)" }}>Message</label>
+            <textarea className={inputCls} style={{ ...inputSt, resize: "vertical", minHeight: 72 }} rows={3}
+              placeholder="Contexte ou besoin du prospect…"
+              value={form.message ?? ""} onChange={(e) => set("message", e.target.value)} />
+          </div>
+        </div>
+        <div className="flex justify-end gap-3 px-6 py-4" style={{ borderTop: "1px solid hsl(224 20% 12% / 0.08)" }}>
+          <button onClick={onClose} className="px-4 py-2 rounded-xl text-[13px]"
+            style={{ background: "hsl(220 25% 97%)", color: "hsl(224 20% 45%)", border: "1px solid hsl(224 20% 12% / 0.10)" }}>
+            Annuler
+          </button>
+          <button onClick={handleSave} disabled={saving}
+            className="px-5 py-2 rounded-xl text-[13px] font-medium disabled:opacity-50"
+            style={{ background: "hsl(224 60% 18%)", color: "white" }}>
+            {saving ? "Création…" : "Créer le lead"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Lead detail panel ─── */
 function LeadDetailPanel({ lead, onClose }: { lead: Lead; onClose: () => void }) {
   const qc = useQueryClient();
   const [notes, setNotes] = useState(lead.notes ?? "");
   const [notesDirty, setNotesDirty] = useState(false);
 
-  useEffect(() => { setNotes(lead.notes ?? ""); setNotesDirty(false); }, [lead.notes]);
+  useEffect(() => { setNotes(lead.notes ?? ""); setNotesDirty(false); }, [lead.id, lead.notes]);
 
   const statusMut = useMutation({
     mutationFn: (s: LeadStatus) => updateLeadStatus(lead.id, s),
@@ -313,7 +393,7 @@ function LeadDetailPanel({ lead, onClose }: { lead: Lead; onClose: () => void })
   });
 
   const { score, level } = computeScore(lead);
-  const levelColor = level === "Élevé" ? "hsl(142 50% 35%)" : level === "Moyen" ? "hsl(38 65% 36%)" : "hsl(224 15% 50%)";
+  const { color: levelColor } = scoreMeta(level);
   const cfg = STATUS_CONFIG[lead.status];
   const hue = avatarHue(lead.nom);
 
@@ -322,8 +402,6 @@ function LeadDetailPanel({ lead, onClose }: { lead: Lead; onClose: () => void })
       <div className="fixed inset-0" style={{ background: "hsl(224 60% 6% / 0.30)" }} onClick={onClose} />
       <div className="relative w-full max-w-md h-full flex flex-col"
         style={{ background: "white", borderLeft: "1px solid hsl(224 20% 12% / 0.10)", boxShadow: "-24px 0 60px -20px hsl(224 60% 12% / 0.14)" }}>
-
-        {/* Header */}
         <div className="flex items-start justify-between px-6 py-5" style={{ borderBottom: "1px solid hsl(224 20% 12% / 0.08)" }}>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full flex items-center justify-center text-[13px] font-semibold flex-shrink-0"
@@ -343,27 +421,24 @@ function LeadDetailPanel({ lead, onClose }: { lead: Lead; onClose: () => void })
         </div>
 
         <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
-          {/* Score + statut */}
           <div className="flex items-center gap-3">
             <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium"
               style={{ background: cfg.bg, color: cfg.color }}>
-              <span className="w-1.5 h-1.5 rounded-full" style={{ background: cfg.dot }} />
-              {cfg.label}
+              <span className="w-1.5 h-1.5 rounded-full" style={{ background: cfg.dot }} />{cfg.label}
             </span>
             <span className="text-[12px] font-medium" style={{ color: levelColor }}>
               Score {score} · <span style={{ fontWeight: 400 }}>{level}</span>
             </span>
           </div>
 
-          {/* Details grid */}
           <div className="grid grid-cols-2 gap-4">
             {[
-              { label: "Source", value: getSource(lead) },
-              { label: "Téléphone", value: lead.telephone ?? "—" },
-              { label: "Format", value: lead.format ? (FORMAT_LABELS[lead.format] ?? lead.format) : "—" },
-              { label: "Disponibilité", value: lead.timing ? (TIMING_LABELS[lead.timing] ?? lead.timing) : "—" },
-              { label: "Conseiller", value: lead.conseiller ? (ADVISOR_LABELS[lead.conseiller] ?? lead.conseiller) : "—" },
-              { label: "Reçu le", value: fmtDate(lead.created_at) },
+              { label: "Source",       value: getSource(lead) },
+              { label: "Téléphone",    value: lead.telephone ?? "—" },
+              { label: "Format",       value: lead.format ? (FORMAT_LABELS[lead.format] ?? lead.format) : "—" },
+              { label: "Disponibilité",value: lead.timing ? (TIMING_LABELS[lead.timing] ?? lead.timing) : "—" },
+              { label: "Conseiller",   value: lead.conseiller ? (ADVISOR_LABELS[lead.conseiller] ?? lead.conseiller) : "—" },
+              { label: "Reçu le",      value: fmtDate(lead.created_at) },
             ].map((f) => (
               <div key={f.label}>
                 <p className="text-[10px] uppercase tracking-[0.18em] font-medium mb-0.5" style={{ color: "hsl(224 15% 58%)" }}>{f.label}</p>
@@ -378,7 +453,6 @@ function LeadDetailPanel({ lead, onClose }: { lead: Lead; onClose: () => void })
             ))}
           </div>
 
-          {/* Message */}
           {lead.message && (
             <div>
               <p className="text-[10px] uppercase tracking-[0.18em] font-medium mb-2" style={{ color: "hsl(224 15% 58%)" }}>Message</p>
@@ -386,15 +460,13 @@ function LeadDetailPanel({ lead, onClose }: { lead: Lead; onClose: () => void })
             </div>
           )}
 
-          {/* Change status */}
           <div>
             <p className="text-[10px] uppercase tracking-[0.18em] font-medium mb-2" style={{ color: "hsl(224 15% 58%)" }}>Changer le statut</p>
             <div className="flex flex-wrap gap-1.5">
               {STATUS_ORDER.filter((s) => s !== lead.status).map((s) => {
                 const c = STATUS_CONFIG[s];
                 return (
-                  <button key={s} onClick={() => statusMut.mutate(s)}
-                    disabled={statusMut.isPending}
+                  <button key={s} onClick={() => statusMut.mutate(s)} disabled={statusMut.isPending}
                     className="px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all disabled:opacity-50"
                     style={{ background: c.bg, color: c.color, border: `1px solid ${c.dot}33` }}>
                     {c.label}
@@ -404,14 +476,11 @@ function LeadDetailPanel({ lead, onClose }: { lead: Lead; onClose: () => void })
             </div>
           </div>
 
-          {/* Notes */}
           <div>
             <p className="text-[10px] uppercase tracking-[0.18em] font-medium mb-2" style={{ color: "hsl(224 15% 58%)" }}>Notes internes</p>
-            <textarea
-              value={notes}
+            <textarea value={notes} rows={3}
               onChange={(e) => { setNotes(e.target.value); setNotesDirty(e.target.value !== (lead.notes ?? "")); }}
               placeholder="Suivi, rappels, observations…"
-              rows={3}
               className="w-full resize-none rounded-xl px-3.5 py-2.5 text-[13px] font-light outline-none transition-all"
               style={{
                 background: "hsl(220 25% 97%)",
@@ -420,7 +489,7 @@ function LeadDetailPanel({ lead, onClose }: { lead: Lead; onClose: () => void })
               }} />
             {notesDirty && (
               <button onClick={() => notesMut.mutate(notes)} disabled={notesMut.isPending}
-                className="mt-2 text-[11px] font-medium px-3 py-1.5 rounded-lg transition-opacity disabled:opacity-60"
+                className="mt-2 text-[11px] font-medium px-3 py-1.5 rounded-lg disabled:opacity-60"
                 style={{ background: "hsl(218 45% 42%)", color: "white" }}>
                 {notesMut.isPending ? "Enregistrement…" : "Enregistrer"}
               </button>
@@ -428,7 +497,6 @@ function LeadDetailPanel({ lead, onClose }: { lead: Lead; onClose: () => void })
           </div>
         </div>
 
-        {/* Actions footer */}
         <div className="px-6 py-4 flex items-center gap-3" style={{ borderTop: "1px solid hsl(224 20% 12% / 0.08)" }}>
           {lead.telephone && (
             <a href={`tel:${lead.telephone}`}
@@ -456,17 +524,15 @@ function LeadDetailPanel({ lead, onClose }: { lead: Lead; onClose: () => void })
   );
 }
 
-/* ─── Table Row ─── */
+/* ─── Table row ─── */
 function LeadTableRow({ lead, onClick, selected, onSelect }: {
-  lead: Lead; onClick: () => void;
-  selected: boolean; onSelect: (v: boolean) => void;
+  lead: Lead; onClick: () => void; selected: boolean; onSelect: (v: boolean) => void;
 }) {
   const qc = useQueryClient();
   const { score, level } = computeScore(lead);
   const cfg = STATUS_CONFIG[lead.status];
   const hue = avatarHue(lead.nom);
-  const levelColor = level === "Élevé" ? "hsl(142 50% 35%)" : level === "Moyen" ? "hsl(38 65% 36%)" : "hsl(224 15% 50%)";
-  const levelBg   = level === "Élevé" ? "hsl(142 50% 35% / 0.10)" : level === "Moyen" ? "hsl(38 65% 36% / 0.10)" : "hsl(224 15% 90%)";
+  const { color: levelColor, bg: levelBg } = scoreMeta(level);
 
   const statusMut = useMutation({
     mutationFn: (s: LeadStatus) => updateLeadStatus(lead.id, s),
@@ -474,13 +540,12 @@ function LeadTableRow({ lead, onClick, selected, onSelect }: {
   });
 
   return (
-    <tr
-      className="group transition-colors cursor-pointer"
-      style={{ borderBottom: "1px solid hsl(224 20% 12% / 0.06)" }}
-      onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(220 30% 99%)"; }}
+    <tr className="group transition-colors cursor-pointer"
+      style={{ borderBottom: "1px solid hsl(224 20% 12% / 0.06)", background: selected ? "hsl(218 55% 42% / 0.04)" : "white" }}
+      onMouseEnter={(e) => { if (!selected) (e.currentTarget as HTMLElement).style.background = "hsl(220 30% 99%)"; }}
       onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = selected ? "hsl(218 55% 42% / 0.04)" : "white"; }}
-      onClick={onClick}
-    >
+      onClick={onClick}>
+
       {/* Checkbox */}
       <td className="pl-5 pr-2 py-3.5 w-8" onClick={(e) => e.stopPropagation()}>
         <input type="checkbox" checked={selected} onChange={(e) => onSelect(e.target.checked)}
@@ -509,35 +574,25 @@ function LeadTableRow({ lead, onClick, selected, onSelect }: {
         </span>
       </td>
 
-      {/* Statut */}
+      {/* Statut — native select styled as badge */}
       <td className="py-3.5 pr-4" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center gap-1.5">
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium"
-            style={{ background: cfg.bg, color: cfg.color }}>
-            <span className="w-1.5 h-1.5 rounded-full" style={{ background: cfg.dot }} />
-            {cfg.label}
-          </span>
-          <button
-            onClick={(e) => { e.stopPropagation(); }}
-            className="p-0.5 rounded transition-colors"
-            style={{ color: "hsl(224 15% 58%)" }}
-          >
-            <select
-              value={lead.status}
-              onChange={(e) => { e.stopPropagation(); statusMut.mutate(e.target.value as LeadStatus); }}
-              className="appearance-none bg-transparent outline-none text-[11px] cursor-pointer w-3 opacity-0 absolute"
-            />
-            <ChevronDown className="w-3 h-3" />
-          </button>
-        </div>
+        <select
+          value={lead.status}
+          onChange={(e) => statusMut.mutate(e.target.value as LeadStatus)}
+          disabled={statusMut.isPending}
+          className="text-[11px] font-medium px-2.5 py-1 rounded-full cursor-pointer outline-none transition-all disabled:opacity-50"
+          style={{ background: cfg.bg, color: cfg.color, border: `1px solid ${cfg.dot}44` }}>
+          {STATUS_ORDER.map((s) => (
+            <option key={s} value={s}>{STATUS_CONFIG[s].label}</option>
+          ))}
+        </select>
       </td>
 
       {/* Score */}
       <td className="py-3.5 pr-4">
         <div className="flex items-center gap-2">
           <span className="text-[13px] font-medium tabular-nums" style={{ color: "hsl(224 50% 18%)" }}>{score}</span>
-          <span className="text-[10px] font-medium px-1.5 py-0.5 rounded"
-            style={{ background: levelBg, color: levelColor }}>
+          <span className="text-[10px] font-medium px-1.5 py-0.5 rounded" style={{ background: levelBg, color: levelColor }}>
             {level}
           </span>
         </div>
@@ -586,14 +641,6 @@ function LeadTableRow({ lead, onClick, selected, onSelect }: {
             onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
             <Mail className="w-3.5 h-3.5" />
           </a>
-          <button
-            onClick={() => { }}
-            className="p-1.5 rounded-lg transition-colors"
-            style={{ color: "hsl(224 15% 55%)" }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(224 20% 12% / 0.06)"; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
-            <MoreHorizontal className="w-3.5 h-3.5" />
-          </button>
         </div>
       </td>
     </tr>
@@ -608,6 +655,7 @@ export default function AdminLeadsList() {
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<SortKey>("date_desc");
   const [showCharts, setShowCharts] = useState(false);
+  const [showNewLead, setShowNewLead] = useState(false);
   const [chartPeriod, setChartPeriod] = useState<PeriodKey>("30j");
   const [dateRange, setDateRange] = useState<"tous" | "aujourd" | "7j" | "30j">("tous");
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -616,43 +664,42 @@ export default function AdminLeadsList() {
   const PER_PAGE = 20;
 
   const { data: leads = [], isLoading } = useQuery({ queryKey: ["leads"], queryFn: getLeads });
-
   const chartDays = PERIODS.find((p) => p.key === chartPeriod)?.days ?? 30;
 
   /* Trend vs previous period */
-  const now = Date.now();
-  const periodMs = chartDays * 86_400_000;
-  const leadsInPeriod = leads.filter((l) => now - new Date(l.created_at).getTime() <= periodMs);
-  const leadsInPrev = leads.filter((l) => {
-    const age = now - new Date(l.created_at).getTime();
-    return age > periodMs && age <= 2 * periodMs;
-  });
+  const { leadsInPeriod, leadsInPrev } = useMemo(() => {
+    const now = Date.now();
+    const periodMs = chartDays * 86_400_000;
+    return {
+      leadsInPeriod: leads.filter((l) => now - new Date(l.created_at).getTime() <= periodMs),
+      leadsInPrev:   leads.filter((l) => { const age = now - new Date(l.created_at).getTime(); return age > periodMs && age <= 2 * periodMs; }),
+    };
+  }, [leads, chartDays]);
+
   function trend(curr: number, prev: number) {
     if (prev === 0) return null;
     return Math.round(((curr - prev) / prev) * 100);
   }
 
   const counts = useMemo(() => ({
-    tous: leads.length,
-    nouveau: leads.filter((l) => l.status === "nouveau").length,
-    appele: leads.filter((l) => l.status === "appele").length,
-    traite: leads.filter((l) => l.status === "traite").length,
+    tous:     leads.length,
+    nouveau:  leads.filter((l) => l.status === "nouveau").length,
+    appele:   leads.filter((l) => l.status === "appele").length,
+    traite:   leads.filter((l) => l.status === "traite").length,
     converti: leads.filter((l) => l.status === "converti").length,
-    archive: leads.filter((l) => l.status === "archive").length,
+    archive:  leads.filter((l) => l.status === "archive").length,
   }), [leads]);
 
   const conversionRate = leads.length === 0 ? 0 : Math.round((counts.converti / leads.length) * 100);
 
   const filtered = useMemo(() => {
+    const now = Date.now();
     const rangeCutoff: Record<string, number> = {
       aujourd: 86_400_000, "7j": 7 * 86_400_000, "30j": 30 * 86_400_000,
     };
     return leads
       .filter((l) => tabFilter === "tous" || l.status === tabFilter)
-      .filter((l) => {
-        if (dateRange === "tous") return true;
-        return now - new Date(l.created_at).getTime() <= rangeCutoff[dateRange];
-      })
+      .filter((l) => dateRange === "tous" || now - new Date(l.created_at).getTime() <= rangeCutoff[dateRange])
       .filter((l) => {
         if (!search.trim()) return true;
         const q = search.toLowerCase();
@@ -664,13 +711,19 @@ export default function AdminLeadsList() {
         if (sort === "score_desc") return computeScore(b).score - computeScore(a).score;
         return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
       });
-  }, [leads, tabFilter, search, sort, dateRange, now]);
+  }, [leads, tabFilter, search, sort, dateRange]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
   const paginated = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
-  const selectedLead = selectedId ? leads.find((l) => l.id === selectedId) : null;
+  const selectedLead = selectedId ? leads.find((l) => l.id === selectedId) ?? null : null;
 
-  useEffect(() => { setPage(1); }, [tabFilter, search, sort, dateRange]);
+  /* Reset page + selection on filter change */
+  useEffect(() => {
+    setPage(1);
+    setSelectedRows(new Set());
+  }, [tabFilter, search, sort, dateRange]);
+
+  const allPageSelected = paginated.length > 0 && paginated.every((l) => selectedRows.has(l.id));
 
   const TABS: { key: "tous" | LeadStatus; label: string }[] = [
     { key: "tous",     label: `Tous (${counts.tous})` },
@@ -682,26 +735,10 @@ export default function AdminLeadsList() {
   ];
 
   const statCards = [
-    {
-      label: "Total leads", value: counts.tous,
-      t: trend(leadsInPeriod.length, leadsInPrev.length),
-      icon: Users, color: "hsl(218 55% 48%)",
-    },
-    {
-      label: "Nouveaux leads", value: counts.nouveau,
-      t: trend(leadsInPeriod.filter((l) => l.status === "nouveau").length, leadsInPrev.filter((l) => l.status === "nouveau").length),
-      icon: TrendingUp, color: "hsl(200 65% 42%)",
-    },
-    {
-      label: "Convertis", value: counts.converti,
-      t: trend(leadsInPeriod.filter((l) => l.status === "converti").length, leadsInPrev.filter((l) => l.status === "converti").length),
-      icon: CheckCircle2, color: "hsl(142 50% 38%)",
-    },
-    {
-      label: "Taux de conversion", value: `${conversionRate}%`,
-      t: null,
-      icon: Clock, color: "hsl(38 70% 42%)",
-    },
+    { label: "Total leads",       value: counts.tous,       t: trend(leadsInPeriod.length, leadsInPrev.length),                                                                                          icon: Users,         color: "hsl(218 55% 48%)" },
+    { label: "Nouveaux leads",    value: counts.nouveau,    t: trend(leadsInPeriod.filter((l) => l.status === "nouveau").length,  leadsInPrev.filter((l) => l.status === "nouveau").length),             icon: TrendingUp,    color: "hsl(200 65% 42%)" },
+    { label: "Convertis",         value: counts.converti,   t: trend(leadsInPeriod.filter((l) => l.status === "converti").length, leadsInPrev.filter((l) => l.status === "converti").length),            icon: CheckCircle2,  color: "hsl(142 50% 38%)" },
+    { label: "Taux de conversion",value: `${conversionRate}%`, t: null,                                                                                                                                   icon: Clock,         color: "hsl(38 70% 42%)" },
   ];
 
   return (
@@ -717,6 +754,13 @@ export default function AdminLeadsList() {
             </p>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
+            <a href="/" target="_blank" rel="noreferrer"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-medium transition-all"
+              style={{ background: "white", border: "1px solid hsl(224 20% 12% / 0.12)", color: "hsl(224 30% 38%)" }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(220 25% 95%)"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "white"; }}>
+              <ExternalLink className="w-3.5 h-3.5" />Voir le site
+            </a>
             <button onClick={() => setShowCharts(true)}
               className="flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-medium transition-all"
               style={{ background: "white", border: "1px solid hsl(224 20% 12% / 0.12)", color: "hsl(224 30% 38%)" }}
@@ -750,7 +794,7 @@ export default function AdminLeadsList() {
                   {s.t >= 0 ? "↑" : "↓"} {Math.abs(s.t)}% vs période précédente
                 </p>
               ) : (
-                <p className="text-[11px] font-light mt-1.5" style={{ color: "hsl(224 12% 62%)" }}>—% vs période précédente</p>
+                <p className="text-[11px] font-light mt-1.5" style={{ color: "hsl(224 12% 62%)" }}>Période : {chartPeriod}</p>
               )}
             </div>
           ))}
@@ -760,9 +804,7 @@ export default function AdminLeadsList() {
         <div className="rounded-2xl" style={{ background: "white", border: "1px solid hsl(224 20% 12% / 0.07)" }}>
           <div className="px-6 py-4 flex items-center justify-between flex-wrap gap-3" style={{ borderBottom: "1px solid hsl(224 20% 12% / 0.07)" }}>
             <div className="flex items-center gap-4 flex-wrap">
-              <p className="text-[14px] font-medium" style={{ color: "hsl(224 40% 22%)" }}>
-                Évolution des leads sur la période
-              </p>
+              <p className="text-[14px] font-medium" style={{ color: "hsl(224 40% 22%)" }}>Évolution des leads</p>
               <div className="flex items-center gap-1 p-1 rounded-lg" style={{ background: "hsl(220 25% 97%)" }}>
                 {PERIODS.map((p) => (
                   <button key={p.key} onClick={() => setChartPeriod(p.key)}
@@ -777,33 +819,32 @@ export default function AdminLeadsList() {
             </div>
             <div className="flex items-center gap-4 text-[11px]" style={{ color: "hsl(224 15% 55%)" }}>
               <span className="flex items-center gap-1.5">
-                <span className="w-5 h-0.5 rounded inline-block" style={{ background: "hsl(218 55% 48%)" }} />
-                Nouveaux leads
+                <span className="w-5 h-0.5 rounded inline-block" style={{ background: "hsl(218 55% 48%)" }} />Nouveaux
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="w-5 h-0.5 rounded inline-block" style={{ background: "hsl(200 65% 52%)" }} />
-                Leads traités
+                <span className="w-5 h-0.5 rounded inline-block" style={{ background: "hsl(200 65% 52%)" }} />Traités
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="w-5 inline-block" style={{ height: 1, borderTop: "2px dashed hsl(142 52% 42%)" }} />
-                Leads convertis
+                <span className="w-5 inline-block" style={{ height: 1, borderTop: "2px dashed hsl(142 52% 42%)" }} />Convertis
               </span>
             </div>
           </div>
-
           <div className="grid lg:grid-cols-[1fr_300px]">
-            {/* Multi-line chart */}
             <div className="p-6" style={{ borderRight: "1px solid hsl(224 20% 12% / 0.06)" }}>
               <MultiLineChart leads={leads} days={chartDays} />
             </div>
-            {/* Right panel */}
             <div className="p-6 space-y-6">
-              {/* Legend counts */}
               <div className="space-y-4">
                 {[
-                  { label: "Nouveaux leads", count: counts.nouveau + counts.appele, t: trend(leadsInPeriod.filter((l) => l.status === "nouveau" || l.status === "appele").length, leadsInPrev.filter((l) => l.status === "nouveau" || l.status === "appele").length), color: "hsl(218 55% 48%)" },
-                  { label: "Leads traités", count: counts.traite, t: trend(leadsInPeriod.filter((l) => l.status === "traite").length, leadsInPrev.filter((l) => l.status === "traite").length), color: "hsl(200 65% 52%)" },
-                  { label: "Leads convertis", count: counts.converti, t: trend(leadsInPeriod.filter((l) => l.status === "converti").length, leadsInPrev.filter((l) => l.status === "converti").length), color: "hsl(142 52% 42%)" },
+                  { label: "Nouveaux / Assignés", count: counts.nouveau + counts.appele,
+                    t: trend(leadsInPeriod.filter((l) => l.status === "nouveau" || l.status === "appele").length, leadsInPrev.filter((l) => l.status === "nouveau" || l.status === "appele").length),
+                    color: "hsl(218 55% 48%)" },
+                  { label: "Traités", count: counts.traite,
+                    t: trend(leadsInPeriod.filter((l) => l.status === "traite").length, leadsInPrev.filter((l) => l.status === "traite").length),
+                    color: "hsl(200 65% 52%)" },
+                  { label: "Convertis", count: counts.converti,
+                    t: trend(leadsInPeriod.filter((l) => l.status === "converti").length, leadsInPrev.filter((l) => l.status === "converti").length),
+                    color: "hsl(142 52% 42%)" },
                 ].map((item) => (
                   <div key={item.label} className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
@@ -821,13 +862,8 @@ export default function AdminLeadsList() {
                   </div>
                 ))}
               </div>
-              {/* Donut */}
               <div style={{ borderTop: "1px solid hsl(224 20% 12% / 0.07)", paddingTop: "1.25rem" }}>
-                <div className="flex items-center justify-between mb-3">
-                  <p className="text-[11px] font-medium uppercase tracking-wide" style={{ color: "hsl(224 15% 52%)" }}>
-                    Sources des leads
-                  </p>
-                </div>
+                <p className="text-[11px] font-medium uppercase tracking-wide mb-3" style={{ color: "hsl(224 15% 52%)" }}>Sources des leads</p>
                 <DonutChart leads={leads} />
               </div>
             </div>
@@ -863,13 +899,9 @@ export default function AdminLeadsList() {
                 <option value="urgent">Urgents d'abord</option>
                 <option value="score_desc">Score décroissant</option>
               </select>
-              <button className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-[12px] font-medium transition-all"
-                style={{ background: "hsl(220 25% 97%)", border: "1px solid hsl(224 20% 12% / 0.10)", color: "hsl(224 30% 42%)" }}>
-                <Filter className="w-3.5 h-3.5" />
-                Filtres avancés
-              </button>
             </div>
-            <button className="flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-medium flex-shrink-0"
+            <button onClick={() => setShowNewLead(true)}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-medium flex-shrink-0"
               style={{ background: "hsl(224 60% 18%)", color: "white" }}>
               + Nouveau lead
             </button>
@@ -879,7 +911,7 @@ export default function AdminLeadsList() {
           <div className="flex items-center gap-0 px-5 overflow-x-auto" style={{ borderBottom: "1px solid hsl(224 20% 12% / 0.07)" }}>
             {TABS.map((tab) => (
               <button key={tab.key} onClick={() => setTabFilter(tab.key)}
-                className="px-4 py-3 text-[13px] font-medium whitespace-nowrap transition-all relative"
+                className="px-4 py-3 text-[13px] font-medium whitespace-nowrap transition-all"
                 style={{
                   color: tabFilter === tab.key ? "hsl(218 55% 40%)" : "hsl(224 15% 52%)",
                   borderBottom: tabFilter === tab.key ? "2px solid hsl(218 55% 42%)" : "2px solid transparent",
@@ -907,23 +939,19 @@ export default function AdminLeadsList() {
                 <thead>
                   <tr style={{ borderBottom: "1px solid hsl(224 20% 12% / 0.07)", background: "hsl(220 25% 98%)" }}>
                     <th className="pl-5 pr-2 py-3 w-8">
-                      <input type="checkbox"
-                        checked={selectedRows.size === paginated.length && paginated.length > 0}
+                      <input type="checkbox" checked={allPageSelected}
                         onChange={(e) => setSelectedRows(e.target.checked ? new Set(paginated.map((l) => l.id)) : new Set())}
                         className="w-3.5 h-3.5 rounded" style={{ accentColor: "hsl(218 55% 42%)" }} />
                     </th>
                     {["Lead", "Source", "Statut", "Score", "Assigné à", "Date", "Actions"].map((h) => (
-                      <th key={h} className="py-3 pr-4 text-left text-[11px] font-medium uppercase tracking-wide" style={{ color: "hsl(224 15% 50%)" }}>
-                        {h}
-                      </th>
+                      <th key={h} className="py-3 pr-4 text-left text-[11px] font-medium uppercase tracking-wide"
+                        style={{ color: "hsl(224 15% 50%)" }}>{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody style={{ background: "white" }}>
                   {paginated.map((lead) => (
-                    <LeadTableRow
-                      key={lead.id}
-                      lead={lead}
+                    <LeadTableRow key={lead.id} lead={lead}
                       selected={selectedRows.has(lead.id)}
                       onSelect={(v) => setSelectedRows((prev) => {
                         const next = new Set(prev);
@@ -940,9 +968,10 @@ export default function AdminLeadsList() {
 
           {/* Pagination */}
           {filtered.length > PER_PAGE && (
-            <div className="flex items-center justify-between px-5 py-3.5" style={{ borderTop: "1px solid hsl(224 20% 12% / 0.07)" }}>
+            <div className="flex items-center justify-between px-5 py-3.5"
+              style={{ borderTop: "1px solid hsl(224 20% 12% / 0.07)" }}>
               <p className="text-[12px] font-light" style={{ color: "hsl(224 15% 52%)" }}>
-                Affichage de {(page - 1) * PER_PAGE + 1} à {Math.min(page * PER_PAGE, filtered.length)} sur {filtered.length} leads
+                {(page - 1) * PER_PAGE + 1}–{Math.min(page * PER_PAGE, filtered.length)} sur {filtered.length} leads
               </p>
               <div className="flex items-center gap-1.5">
                 <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1}
@@ -969,13 +998,9 @@ export default function AdminLeadsList() {
         </div>
       </div>
 
-      {/* Detail panel */}
-      {selectedLead && (
-        <LeadDetailPanel lead={selectedLead} onClose={() => setSelectedId(null)} />
-      )}
-
-      {/* Charts modal */}
+      {selectedLead && <LeadDetailPanel lead={selectedLead} onClose={() => setSelectedId(null)} />}
       {showCharts && <ChartsModal leads={leads} onClose={() => setShowCharts(false)} />}
+      {showNewLead && <NewLeadModal onClose={() => setShowNewLead(false)} />}
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { FileText, LogOut, Plus, BookOpen, Users, HelpCircle, UserSquare2, Scale, LayoutDashboard, Inbox, Settings, Image, ShieldCheck } from "lucide-react";
+import { FileText, LogOut, Plus, BookOpen, Users, HelpCircle, UserSquare2, Scale, LayoutDashboard, Inbox, Settings, Image, ShieldCheck, ExternalLink } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { getLeads } from "@/lib/leadsService";
 import logoWhite from "@/assets/logo-kanti-white.png.asset.json";
@@ -145,7 +145,21 @@ export default function AdminLayout() {
           </Link>
         </div>
 
-        {/* User + logout */}
+        {/* View site + User + logout */}
+        <div className="px-3 pb-4 pt-2">
+          <a
+            href="/"
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center gap-2 w-full px-3 py-2.5 rounded-xl text-[12px] font-medium transition-all duration-200"
+            style={{ background: "hsl(0 0% 100% / 0.06)", color: "hsl(0 0% 100% / 0.55)" }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(0 0% 100% / 0.10)"; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(0 0% 100% / 0.06)"; }}
+          >
+            <ExternalLink className="w-3.5 h-3.5" />
+            Voir le site
+          </a>
+        </div>
         <div className="px-4 py-5 border-t" style={{ borderColor: "hsl(0 0% 100% / 0.08)" }}>
           <p className="text-[11px] font-light mb-3 truncate" style={{ color: "hsl(0 0% 100% / 0.40)" }}>
             {user?.email}

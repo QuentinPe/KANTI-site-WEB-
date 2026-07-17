@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import { ADVISOR_LABELS, FORMAT_LABELS, TIMING_LABELS } from "@/lib/leadsConfig";
 
 export type LeadStatus = "nouveau" | "appele" | "traite" | "converti" | "archive";
 
@@ -49,15 +50,6 @@ export const deleteLead = async (id: string): Promise<void> => {
 };
 
 export const exportLeadsCSV = (leads: Lead[]): void => {
-  const ADVISOR_LABELS: Record<string, string> = {
-    quentin: "Quentin Perromat", thomas: "Thomas Robert", any: "Peu importe",
-  };
-  const FORMAT_LABELS: Record<string, string> = {
-    cabinet: "En cabinet", visio: "Visioconférence", telephone: "Téléphone",
-  };
-  const TIMING_LABELS: Record<string, string> = {
-    asap: "Dès que possible", week: "Cette semaine", two_weeks: "Dans 2 semaines", month: "Dans le mois",
-  };
   const STATUS_LABELS: Record<LeadStatus, string> = {
     nouveau: "Nouveau", appele: "Appelé", traite: "Traité", converti: "Converti", archive: "Archivé",
   };
