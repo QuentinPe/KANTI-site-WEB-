@@ -137,6 +137,15 @@
     font-feature-settings: "ss01", "cv11";
   }
 
+  /* Hide scrollbar globally — scroll still works */
+  * {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  *::-webkit-scrollbar {
+    display: none;
+  }
+
   /* No ambient blue orbs: clean, flat page background */
 
   h1, h2, h3, h4, h5, h6 {
