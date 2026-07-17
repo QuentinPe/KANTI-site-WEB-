@@ -1,4 +1,5 @@
-import { motion } from "framer-motion";
+import { useRef } from "react";
+import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { Link } from "react-router-dom";
 
 const team = [
@@ -23,8 +24,36 @@ const team = [
 ];
 
 export default function Equipe() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const reduce = useReducedMotion();
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
+  const ghostY = useTransform(scrollYProgress, [0, 1], reduce ? [0, 0] : [-60, 60]);
+
   return (
-    <section id="equipe" className="section-padding texture-paper relative overflow-hidden">
+    <section ref={sectionRef} id="equipe" className="section-padding texture-paper relative overflow-hidden">
+      {/* Parallax ghost word */}
+      <motion.div
+        aria-hidden
+        className="absolute -left-8 top-1/2 -translate-y-1/2 pointer-events-none select-none"
+        style={{ y: ghostY }}
+      >
+        <span
+          className="font-heading font-light tracking-tighter leading-none block"
+          style={{
+            fontSize: "clamp(10rem, 22vw, 26rem)",
+            color: "hsl(var(--foreground) / 0.025)",
+            lineHeight: 1,
+            writingMode: "vertical-rl",
+          }}
+        >
+          ÉQUIPE
+        </span>
+      </motion.div>
+
       <div
         aria-hidden
         className="absolute -top-32 -right-32 w-[520px] h-[520px] rounded-full pointer-events-none opacity-40"
@@ -51,10 +80,18 @@ export default function Equipe() {
           {team.map((member, i) => (
             <motion.article
               key={member.name}
-              initial={{ opacity: 0, y: 28 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-80px" }}
-              transition={{ duration: 0.55, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
+              initial={
+                reduce
+                  ? { opacity: 0 }
+                  : { opacity: 0, y: 48, clipPath: "inset(0 0 100% 0)" }
+              }
+              whileInView={
+                reduce
+                  ? { opacity: 1 }
+                  : { opacity: 1, y: 0, clipPath: "inset(0 0 0% 0)" }
+              }
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.85, delay: i * 0.15, ease: [0.22, 1, 0.36, 1] }}
               className="group relative rounded-[2rem] overflow-hidden bg-white/40 backdrop-blur-sm border border-foreground/[0.06] hover:border-foreground/15 transition-all duration-500"
             >
               {/* Portrait */}

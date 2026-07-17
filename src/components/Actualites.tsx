@@ -59,10 +59,10 @@ export default function Actualites() {
 
           {/* Article à la une — 7 colonnes */}
           <motion.div
-            initial={{ opacity: 0, y: 28 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: 48, clipPath: "inset(0 0 60% 0)" }}
+            whileInView={{ opacity: 1, y: 0, clipPath: "inset(0 0 0% 0)" }}
             viewport={{ once: true, margin: "-60px" }}
-            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
             className="lg:col-span-7"
           >
             <Link to={`/actualites/${featured.id}`} className="group block">

@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import SplitText from "./motion/SplitText";
 import derAsset from "@/assets/der-kanti-2026.pdf.asset.json";
 
@@ -42,12 +42,38 @@ function useCountUp(target: number, suffix = "", duration = 2000, delay = 0) {
 
 export default function About() {
   const reduce = useReducedMotion();
+  const sectionRef = useRef<HTMLElement>(null);
   const years = "Depuis 2020";
   const clients = useCountUp(250, "+", 2000, 350);
   const fidelity = useCountUp(98, " %", 1800, 700);
 
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
+  const ghostY = useTransform(scrollYProgress, [0, 1], reduce ? [0, 0] : [-40, 40]);
+  const ghostOpacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0, 1, 1, 0]);
+
   return (
-    <section id="about" className="section-padding texture-paper relative overflow-hidden">
+    <section ref={sectionRef} id="about" className="section-padding texture-paper relative overflow-hidden">
+      {/* Parallax ghost word */}
+      <motion.div
+        aria-hidden
+        className="absolute -right-8 top-1/2 -translate-y-1/2 pointer-events-none select-none"
+        style={{ y: ghostY, opacity: ghostOpacity }}
+      >
+        <span
+          className="font-heading font-light tracking-tighter leading-none block"
+          style={{
+            fontSize: "clamp(12rem, 25vw, 28rem)",
+            color: "hsl(var(--foreground) / 0.028)",
+            lineHeight: 1,
+          }}
+        >
+          KANTI
+        </span>
+      </motion.div>
+
       <div className="max-w-6xl mx-auto relative z-10">
         <div className="grid lg:grid-cols-5 gap-12 lg:gap-16 items-start">
           <div className="lg:col-span-3 reveal">
