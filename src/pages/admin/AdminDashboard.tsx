@@ -9,6 +9,7 @@ import { getCasClients } from "@/lib/casClientsService";
 import { getRessources } from "@/lib/ressourcesService";
 import { VolumeChart, StatusBars, bucketLeadsByDay, PERIODS } from "@/components/admin/LeadsVolumeChart";
 import type { PeriodKey } from "@/components/admin/LeadsVolumeChart";
+import { useAuth } from "@/contexts/AuthContext";
 
 function StatCard({ label, value, sub, icon: Icon, to, color }: {
   label: string; value: string | number; sub?: string;
@@ -254,8 +255,12 @@ function LeadsSparkline({ leads, onExpand }: { leads: Lead[]; onExpand: () => vo
   );
 }
 
+/* Page background color — must match AdminLayout's main background */
+const PAGE_BG = "hsl(220 25% 97%)";
+
 export default function AdminDashboard() {
   const [chartOpen, setChartOpen] = useState(false);
+  const { user } = useAuth();
   const { data: articles = [] } = useQuery({ queryKey: ["articles"], queryFn: getArticles });
   const { data: leads = [] } = useQuery({ queryKey: ["leads"], queryFn: getLeads });
   const { data: casClients = [] } = useQuery({ queryKey: ["cas-clients-all"], queryFn: getCasClients });
@@ -265,6 +270,11 @@ export default function AdminDashboard() {
   const convertedLeads = leads.filter((l) => l.status === "converti").length;
   const todayLeads = leads.filter((l) => l.created_at.slice(0, 10) === new Date().toISOString().slice(0, 10)).length;
   const lastArticle = articles[0];
+
+  const now = new Date();
+  const hour = now.getHours();
+  const greeting = hour < 12 ? "Bonjour" : hour < 18 ? "Bon après-midi" : "Bonsoir";
+  const dateStr = now.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 
   const activity = [
     ...leads.slice(0, 4).map((l) => ({
@@ -282,116 +292,165 @@ export default function AdminDashboard() {
   ].slice(0, 7);
 
   return (
-    <div className="p-8 max-w-5xl mx-auto">
-      {/* Header */}
-      <div className="mb-8">
-        <p className="text-[11px] tracking-[0.28em] uppercase font-medium mb-1" style={{ color: "hsl(224 20% 52%)" }}>
-          Vue d'ensemble
-        </p>
-        <h1 className="text-2xl font-heading font-light tracking-tight" style={{ color: "hsl(224 55% 12%)" }}>
-          Tableau de bord
-        </h1>
-      </div>
+    <div className="min-h-screen" style={{ background: PAGE_BG }}>
 
-      {/* Alert nouveaux leads */}
-      {newLeads > 0 && (
-        <Link to="/admin/leads"
-          className="flex items-center gap-3 w-full mb-6 px-4 py-3.5 rounded-xl transition-opacity hover:opacity-85"
-          style={{ background: "hsl(38 90% 50% / 0.09)", border: "1px solid hsl(38 80% 50% / 0.22)" }}>
-          <div className="w-2 h-2 rounded-full animate-pulse" style={{ background: "hsl(38 75% 42%)" }} />
-          <p className="text-[13px] font-medium" style={{ color: "hsl(38 65% 30%)" }}>
-            {newLeads} lead{newLeads > 1 ? "s" : ""} non traité{newLeads > 1 ? "s" : ""} — cliquez pour consulter
-          </p>
-        </Link>
-      )}
-
-      {/* Stats grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <StatCard label="Articles publiés" value={articles.length} icon={FileText} to="/admin/articles" color="hsl(218 55% 42%)" />
-        <StatCard
-          label="Leads totaux"
-          value={leads.length}
-          sub={`${convertedLeads > 0 ? `${convertedLeads} converti${convertedLeads > 1 ? "s" : ""} · ` : ""}${todayLeads} aujourd'hui`}
-          icon={Inbox}
-          to="/admin/leads"
-          color="hsl(38 75% 42%)"
+      {/* ── Hero banner ── */}
+      <div className="relative w-full overflow-hidden" style={{ height: 300 }}>
+        {/* Photo */}
+        <img
+          src="/admin-hero.jpg"
+          alt=""
+          aria-hidden
+          className="absolute inset-0 w-full h-full object-cover object-center"
+          style={{ filter: "brightness(0.97) saturate(0.88)" }}
         />
-        <StatCard label="Cas clients" value={casClients.length} icon={Users} to="/admin/cas-clients" color="hsl(142 55% 38%)" />
-        <StatCard label="Ressources PDF" value={ressources.length} icon={BookOpen} to="/admin/ressources" color="hsl(218 35% 52%)" />
-      </div>
 
-      {/* Sparkline leads */}
-      <div className="mb-6">
-        <LeadsSparkline leads={leads} onExpand={() => setChartOpen(true)} />
-      </div>
+        {/* Soft warm veil — left edge bleeds into sidebar */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: "linear-gradient(to right, hsl(220 30% 96% / 0.35) 0%, transparent 40%)",
+          }}
+          aria-hidden
+        />
 
-      {chartOpen && <LeadsChartModal leads={leads} onClose={() => setChartOpen(false)} />}
+        {/* White gradient — bottom fade to page background */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: `linear-gradient(to bottom, transparent 0%, transparent 28%, ${PAGE_BG} 88%, ${PAGE_BG} 100%)`,
+          }}
+          aria-hidden
+        />
 
-      <div className="grid lg:grid-cols-3 gap-6">
-        {/* Activité récente */}
-        <div className="lg:col-span-2 rounded-2xl p-6"
-          style={{ background: "white", border: "1px solid hsl(224 20% 12% / 0.08)" }}>
-          <div className="flex items-center justify-between mb-5">
-            <h2 className="text-[14px] font-medium tracking-wide" style={{ color: "hsl(224 40% 28%)" }}>
-              Activité récente
-            </h2>
-            <Clock className="w-4 h-4" style={{ color: "hsl(224 15% 58%)" }} />
-          </div>
-          {activity.length === 0 ? (
-            <p className="text-[13px] font-light py-6 text-center" style={{ color: "hsl(224 12% 60%)" }}>
-              Aucune activité récente
+        {/* Title — sits in the gradient transition zone */}
+        <div className="absolute bottom-0 left-0 right-0 px-8 pb-7 max-w-5xl mx-auto">
+          <p
+            className="text-[10px] tracking-[0.32em] uppercase font-semibold mb-2"
+            style={{ color: "hsl(224 30% 50%)" }}
+          >
+            {greeting} · {dateStr}
+          </p>
+          <h1
+            className="text-3xl font-heading font-light tracking-tight"
+            style={{ color: "hsl(224 55% 10%)" }}
+          >
+            Tableau de bord
+          </h1>
+          {user?.email && (
+            <p className="text-[13px] font-light mt-1" style={{ color: "hsl(224 20% 48%)" }}>
+              Connecté en tant que <span style={{ color: "hsl(224 40% 30%)" }}>{user.email}</span>
             </p>
-          ) : (
-            <div>{activity.map((item, i) => <ActivityItem key={i} {...item} />)}</div>
           )}
         </div>
 
-        {/* Raccourcis + dernier article */}
-        <div className="flex flex-col gap-4">
-          <div className="rounded-2xl p-6" style={{ background: "white", border: "1px solid hsl(224 20% 12% / 0.08)" }}>
-            <h2 className="text-[14px] font-medium tracking-wide mb-4" style={{ color: "hsl(224 40% 28%)" }}>
-              Raccourcis
-            </h2>
-            <div className="flex flex-col gap-2">
-              {[
-                { to: "/admin/articles/new", label: "Nouvel article",   icon: FileText   },
-                { to: "/admin/leads",        label: "Voir les leads",   icon: Inbox      },
-                { to: "/admin/faq/new",      label: "Nouvelle FAQ",     icon: HelpCircle },
-              ].map(({ to, label, icon: Icon }) => (
-                <Link key={to} to={to}
-                  className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-150"
-                  style={{ color: "hsl(224 40% 32%)", background: "hsl(220 20% 97%)" }}
-                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(224 60% 18% / 0.08)"; }}
-                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(220 20% 97%)"; }}>
-                  <Icon className="w-4 h-4" strokeWidth={1.5} style={{ color: "hsl(224 40% 45%)" }} />
-                  {label}
-                </Link>
-              ))}
+        {/* New leads badge — top right of banner */}
+        {newLeads > 0 && (
+          <Link
+            to="/admin/leads"
+            className="absolute top-5 right-8 flex items-center gap-2 px-3.5 py-2 rounded-full text-[12px] font-medium transition-opacity hover:opacity-85"
+            style={{
+              background: "hsl(38 90% 50% / 0.92)",
+              color: "white",
+              backdropFilter: "blur(8px)",
+              boxShadow: "0 4px 16px -4px hsl(38 80% 40% / 0.35)",
+            }}
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+            {newLeads} nouveau{newLeads > 1 ? "x" : ""} lead{newLeads > 1 ? "s" : ""}
+          </Link>
+        )}
+      </div>
+
+      {/* ── Content ── */}
+      <div className="px-8 pb-10 max-w-5xl mx-auto -mt-2 space-y-6">
+
+        {/* Stats grid */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatCard label="Articles publiés" value={articles.length} icon={FileText} to="/admin/articles" color="hsl(218 55% 42%)" />
+          <StatCard
+            label="Leads totaux"
+            value={leads.length}
+            sub={`${convertedLeads > 0 ? `${convertedLeads} converti${convertedLeads > 1 ? "s" : ""} · ` : ""}${todayLeads} aujourd'hui`}
+            icon={Inbox}
+            to="/admin/leads"
+            color="hsl(38 75% 42%)"
+          />
+          <StatCard label="Cas clients" value={casClients.length} icon={Users} to="/admin/cas-clients" color="hsl(142 55% 38%)" />
+          <StatCard label="Ressources PDF" value={ressources.length} icon={BookOpen} to="/admin/ressources" color="hsl(218 35% 52%)" />
+        </div>
+
+        {/* Sparkline leads */}
+        <LeadsSparkline leads={leads} onExpand={() => setChartOpen(true)} />
+
+        {chartOpen && <LeadsChartModal leads={leads} onClose={() => setChartOpen(false)} />}
+
+        <div className="grid lg:grid-cols-3 gap-6">
+          {/* Activité récente */}
+          <div className="lg:col-span-2 rounded-2xl p-6"
+            style={{ background: "white", border: "1px solid hsl(224 20% 12% / 0.08)" }}>
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="text-[14px] font-medium tracking-wide" style={{ color: "hsl(224 40% 28%)" }}>
+                Activité récente
+              </h2>
+              <Clock className="w-4 h-4" style={{ color: "hsl(224 15% 58%)" }} />
             </div>
+            {activity.length === 0 ? (
+              <p className="text-[13px] font-light py-6 text-center" style={{ color: "hsl(224 12% 60%)" }}>
+                Aucune activité récente
+              </p>
+            ) : (
+              <div>{activity.map((item, i) => <ActivityItem key={i} {...item} />)}</div>
+            )}
           </div>
 
-          {lastArticle && (
-            <div className="rounded-2xl p-5" style={{ background: "hsl(218 55% 42% / 0.06)", border: "1px solid hsl(218 55% 42% / 0.12)" }}>
-              <p className="text-[10px] tracking-[0.22em] uppercase font-medium mb-2" style={{ color: "hsl(218 45% 45%)" }}>
-                Dernier article
-              </p>
-              <p className="text-[13px] font-light leading-snug mb-3" style={{ color: "hsl(224 40% 22%)" }}>
-                {lastArticle.title}
-              </p>
-              <div className="flex gap-2">
-                <Link to={`/admin/articles/${lastArticle.id}/edit`}
-                  className="text-[11px] font-medium px-3 py-1.5 rounded-lg"
-                  style={{ background: "hsl(218 55% 42% / 0.12)", color: "hsl(218 45% 38%)" }}>
-                  Modifier
-                </Link>
-                <a href={`/actualites/${lastArticle.slug ?? lastArticle.id}`} target="_blank" rel="noreferrer"
-                  className="text-[11px] font-medium px-3 py-1.5 rounded-lg"
-                  style={{ background: "hsl(224 20% 12% / 0.06)", color: "hsl(224 20% 45%)" }}>
-                  Voir
-                </a>
+          {/* Raccourcis + dernier article */}
+          <div className="flex flex-col gap-4">
+            <div className="rounded-2xl p-6" style={{ background: "white", border: "1px solid hsl(224 20% 12% / 0.08)" }}>
+              <h2 className="text-[14px] font-medium tracking-wide mb-4" style={{ color: "hsl(224 40% 28%)" }}>
+                Raccourcis
+              </h2>
+              <div className="flex flex-col gap-2">
+                {[
+                  { to: "/admin/articles/new", label: "Nouvel article",   icon: FileText   },
+                  { to: "/admin/leads",        label: "Voir les leads",   icon: Inbox      },
+                  { to: "/admin/faq/new",      label: "Nouvelle FAQ",     icon: HelpCircle },
+                ].map(({ to, label, icon: Icon }) => (
+                  <Link key={to} to={to}
+                    className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-150"
+                    style={{ color: "hsl(224 40% 32%)", background: "hsl(220 20% 97%)" }}
+                    onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(224 60% 18% / 0.08)"; }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(220 20% 97%)"; }}>
+                    <Icon className="w-4 h-4" strokeWidth={1.5} style={{ color: "hsl(224 40% 45%)" }} />
+                    {label}
+                  </Link>
+                ))}
               </div>
             </div>
-          )}
+
+            {lastArticle && (
+              <div className="rounded-2xl p-5" style={{ background: "hsl(218 55% 42% / 0.06)", border: "1px solid hsl(218 55% 42% / 0.12)" }}>
+                <p className="text-[10px] tracking-[0.22em] uppercase font-medium mb-2" style={{ color: "hsl(218 45% 45%)" }}>
+                  Dernier article
+                </p>
+                <p className="text-[13px] font-light leading-snug mb-3" style={{ color: "hsl(224 40% 22%)" }}>
+                  {lastArticle.title}
+                </p>
+                <div className="flex gap-2">
+                  <Link to={`/admin/articles/${lastArticle.id}/edit`}
+                    className="text-[11px] font-medium px-3 py-1.5 rounded-lg"
+                    style={{ background: "hsl(218 55% 42% / 0.12)", color: "hsl(218 45% 38%)" }}>
+                    Modifier
+                  </Link>
+                  <a href={`/actualites/${lastArticle.slug ?? lastArticle.id}`} target="_blank" rel="noreferrer"
+                    className="text-[11px] font-medium px-3 py-1.5 rounded-lg"
+                    style={{ background: "hsl(224 20% 12% / 0.06)", color: "hsl(224 20% 45%)" }}>
+                    Voir
+                  </a>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
