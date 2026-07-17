@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft, ImageOff, Sparkles, Wand2, ChevronDown, Search, Eye, Link2, X } from "lucide-react";
+import { ArrowLeft, ImageOff, Sparkles, Wand2, ChevronDown, Search, Eye, Link2, X, Maximize2, Minimize2 } from "lucide-react";
 import { getArticles, createArticle, updateArticle } from "@/lib/articlesService";
 import type { ArticleInput } from "@/lib/articlesService";
 import RichEditor from "@/components/admin/RichEditor";
@@ -74,6 +74,7 @@ export default function AdminArticleForm() {
   const [aiSummarizing, setAiSummarizing] = useState(false);
   const [aiReformatting, setAiReformatting] = useState(false);
   const [aiError, setAiError] = useState("");
+  const [fullscreen, setFullscreen] = useState(false);
 
   const { data: articles = [], isLoading: articlesLoading } = useQuery({
     queryKey: ["articles"],
@@ -161,7 +162,9 @@ export default function AdminArticleForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action, content, title: titleValue }),
       });
-      const data = await res.json();
+      const rawText = await res.text();
+      let data: { result?: string; error?: string } = {};
+      try { data = JSON.parse(rawText); } catch { throw new Error(`Serveur indisponible (${res.status})`); }
       if (!res.ok || data.error) throw new Error(data.error ?? "Erreur inconnue");
       if (action === "summarize") {
         setValue("excerpt", data.result, { shouldValidate: true });
@@ -191,7 +194,7 @@ export default function AdminArticleForm() {
       qc.invalidateQueries({ queryKey: ["articles"] });
       navigate("/admin/articles");
     },
-    onError: () => setGlobalError("Erreur lors de la mise à jour."),
+    onError: (e) => setGlobalError(`Erreur mise à jour : ${e instanceof Error ? e.message : String(e)}`),
   });
 
   const onSubmit = (data: FormData) => {
@@ -236,7 +239,11 @@ export default function AdminArticleForm() {
   }
 
   return (
-    <div className="p-8 max-w-3xl mx-auto">
+    <div
+      className={fullscreen ? "fixed inset-0 overflow-y-auto z-[400]" : "p-8 max-w-3xl mx-auto"}
+      style={fullscreen ? { background: "hsl(220 25% 97%)" } : undefined}
+    >
+    <div className={fullscreen ? "p-8 max-w-5xl mx-auto" : ""}>
       {/* Header */}
       <div className="flex items-center gap-4 mb-8">
         <Link
@@ -253,6 +260,17 @@ export default function AdminArticleForm() {
             {isEdit ? "Modifier l'article" : "Nouvel article"}
           </h1>
         </div>
+        <button
+          type="button"
+          onClick={() => setFullscreen(v => !v)}
+          title={fullscreen ? "Quitter le plein écran" : "Plein écran"}
+          className="p-2 rounded-lg transition-all duration-150"
+          style={{ color: "hsl(224 25% 45%)" }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(224 60% 18% / 0.07)"; }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}
+        >
+          {fullscreen ? <Minimize2 className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
+        </button>
         {isEdit && existing && (
           <a
             href={`/actualites/${existing.slug ?? existing.id}`}
@@ -357,6 +375,7 @@ export default function AdminArticleForm() {
           <RichEditor
             value={bodyValue}
             onChange={(html) => setValue("body", html, { shouldValidate: false })}
+            fullscreen={fullscreen}
           />
           {/* AI reformat */}
           <div className="flex items-center justify-between mt-1">
@@ -693,6 +712,7 @@ export default function AdminArticleForm() {
           </Link>
         </div>
       </form>
+    </div>
     </div>
   );
 }

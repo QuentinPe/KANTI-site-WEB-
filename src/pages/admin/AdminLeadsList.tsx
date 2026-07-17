@@ -538,14 +538,15 @@ function LeadDetailPanel({ lead, onClose }: { lead: Lead; onClose: () => void })
 }
 
 /* ─── Table row ─── */
-function LeadTableRow({ lead, onClick, selected, onSelect }: {
-  lead: Lead; onClick: () => void; selected: boolean; onSelect: (v: boolean) => void;
+function LeadTableRow({ lead, onClick, selected, onSelect, seen }: {
+  lead: Lead; onClick: () => void; selected: boolean; onSelect: (v: boolean) => void; seen: boolean;
 }) {
   const qc = useQueryClient();
   const { score, level } = computeScore(lead);
   const cfg = STATUS_CONFIG[lead.status];
   const hue = avatarHue(lead.nom);
   const { color: levelColor, bg: levelBg } = scoreMeta(level);
+  const isUnseen = lead.status === "nouveau" && !seen;
 
   const statusMut = useMutation({
     mutationFn: (s: LeadStatus) => updateLeadStatus(lead.id, s),
@@ -554,9 +555,13 @@ function LeadTableRow({ lead, onClick, selected, onSelect }: {
 
   return (
     <tr className="group transition-colors cursor-pointer"
-      style={{ borderBottom: "1px solid hsl(224 20% 12% / 0.06)", background: selected ? "hsl(218 55% 42% / 0.04)" : "white" }}
-      onMouseEnter={(e) => { if (!selected) (e.currentTarget as HTMLElement).style.background = "hsl(220 30% 99%)"; }}
-      onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = selected ? "hsl(218 55% 42% / 0.04)" : "white"; }}
+      style={{
+        borderBottom: "1px solid hsl(224 20% 12% / 0.06)",
+        background: selected ? "hsl(218 55% 42% / 0.04)" : isUnseen ? "hsl(38 75% 52% / 0.05)" : "white",
+        borderLeft: isUnseen ? "3px solid hsl(38 75% 52%)" : "3px solid transparent",
+      }}
+      onMouseEnter={(e) => { if (!selected) (e.currentTarget as HTMLElement).style.background = isUnseen ? "hsl(38 75% 52% / 0.09)" : "hsl(220 30% 99%)"; }}
+      onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = selected ? "hsl(218 55% 42% / 0.04)" : isUnseen ? "hsl(38 75% 52% / 0.05)" : "white"; }}
       onClick={onClick}>
 
       {/* Checkbox */}
@@ -573,7 +578,12 @@ function LeadTableRow({ lead, onClick, selected, onSelect }: {
             {getInitials(lead.nom)}
           </div>
           <div className="min-w-0">
-            <p className="text-[13px] font-medium truncate" style={{ color: "hsl(224 50% 15%)" }}>{lead.nom}</p>
+            <div className="flex items-center gap-2">
+              <p className="text-[13px] font-medium truncate" style={{ color: "hsl(224 50% 15%)" }}>{lead.nom}</p>
+              {isUnseen && (
+                <span className="flex-shrink-0 w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: "hsl(38 75% 52%)" }} />
+              )}
+            </div>
             <p className="text-[11px] font-light truncate" style={{ color: "hsl(224 15% 55%)" }}>{lead.email}</p>
           </div>
         </div>
@@ -675,6 +685,20 @@ export default function AdminLeadsList() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
   const [page, setPage] = useState(1);
+  const [seenIds, setSeenIds] = useState<Set<string>>(() => {
+    try { return new Set(JSON.parse(localStorage.getItem("seen-lead-ids") || "[]")); }
+    catch { return new Set(); }
+  });
+
+  const markAsSeen = (id: string) => {
+    setSeenIds(prev => {
+      if (prev.has(id)) return prev;
+      const next = new Set(prev);
+      next.add(id);
+      localStorage.setItem("seen-lead-ids", JSON.stringify([...next]));
+      return next;
+    });
+  };
   const PER_PAGE = 20;
 
   const { data: leads = [], isLoading } = useQuery({ queryKey: ["leads"], queryFn: getLeads });
@@ -1013,12 +1037,16 @@ export default function AdminLeadsList() {
                   {paginated.map((lead) => (
                     <LeadTableRow key={lead.id} lead={lead}
                       selected={selectedRows.has(lead.id)}
+                      seen={seenIds.has(lead.id)}
                       onSelect={(v) => setSelectedRows((prev) => {
                         const next = new Set(prev);
                         v ? next.add(lead.id) : next.delete(lead.id);
                         return next;
                       })}
-                      onClick={() => setSelectedId((id) => id === lead.id ? null : lead.id)}
+                      onClick={() => {
+                        markAsSeen(lead.id);
+                        setSelectedId((id) => id === lead.id ? null : lead.id);
+                      }}
                     />
                   ))}
                 </tbody>

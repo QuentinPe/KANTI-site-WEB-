@@ -1,6 +1,6 @@
-import { useRef, useCallback, useState, useEffect } from "react";
+import React, { useRef, useCallback, useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useEditor, EditorContent } from "@tiptap/react";
+import { useEditor, EditorContent, BubbleMenu } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
 import Link from "@tiptap/extension-link";
@@ -15,6 +15,7 @@ import {
   AlignLeft, AlignCenter, AlignRight, AlignJustify,
   Link as LinkIcon, ImagePlus, FileUp, FileText,
   Highlighter, Palette, BookOpen, Search, X,
+  Maximize2, Minimize2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
@@ -23,6 +24,7 @@ import { getArticles } from "@/lib/articlesService";
 interface RichEditorProps {
   value: string;
   onChange: (html: string) => void;
+  fullscreen?: boolean;
 }
 
 /* ── Toolbar button ── */
@@ -135,7 +137,7 @@ function ArticlePicker({ onSelect, onClose }: {
 }
 
 /* ── Main component ── */
-export default function RichEditor({ value, onChange }: RichEditorProps) {
+export default function RichEditor({ value, onChange, fullscreen = false }: RichEditorProps) {
   const colorInputRef = useRef<HTMLInputElement>(null);
   const imgInputRef = useRef<HTMLInputElement>(null);
   const docxInputRef = useRef<HTMLInputElement>(null);
@@ -149,7 +151,36 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
       TextStyle,
       Color,
       Highlight.configure({ multicolor: true }),
-      Image.configure({ inline: false, allowBase64: false }),
+      Image.configure({ inline: false, allowBase64: false }).extend({
+        addAttributes() {
+          return {
+            ...this.parent?.(),
+            width: {
+              default: null,
+              parseHTML: el => (el as HTMLImageElement).style.width || null,
+              renderHTML: () => ({}),
+            },
+            align: {
+              default: 'center',
+              parseHTML: el => el.getAttribute('data-align') || 'center',
+              renderHTML: attrs => ({ 'data-align': attrs.align }),
+            },
+          };
+        },
+        renderHTML({ HTMLAttributes }) {
+          const { width, align, src, alt, title, 'data-align': _da, ...rest } = HTMLAttributes;
+          const w = width || '100%';
+          let style = 'max-width:100%;height:auto;';
+          if (align === 'left') {
+            style += `width:${w};float:left;margin:0 1.5rem 0.75rem 0;clear:left;`;
+          } else if (align === 'right') {
+            style += `width:${w};float:right;margin:0 0 0.75rem 1.5rem;clear:right;`;
+          } else {
+            style += `width:${w};display:block;margin-left:auto;margin-right:auto;`;
+          }
+          return ['img', { ...rest, src, alt, title, style, 'data-align': align }];
+        },
+      }),
       Link.configure({ openOnClick: false, HTMLAttributes: { rel: "noopener noreferrer", target: "_blank" } }),
       TextAlign.configure({ types: ["heading", "paragraph"] }),
     ],
@@ -157,7 +188,7 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
     onUpdate: ({ editor }) => onChange(editor.getHTML()),
     editorProps: {
       attributes: {
-        class: "outline-none min-h-[320px] px-6 py-5 prose prose-slate max-w-none",
+        class: "outline-none px-6 py-5 prose prose-slate max-w-none",
       },
     },
   });
@@ -363,8 +394,53 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
         </div>
 
         {/* ── Editor area ── */}
-        <EditorContent editor={editor} className="flex-1" />
+        <EditorContent editor={editor} className="flex-1"
+          style={{ minHeight: fullscreen ? "calc(100vh - 280px)" : "320px" }} />
       </div>
+
+      {/* Image bubble toolbar */}
+      <BubbleMenu
+        editor={editor}
+        shouldShow={({ editor: e }) => e.isActive('image')}
+        tippyOptions={{ duration: 120, placement: 'top' }}
+      >
+        <div className="flex items-center gap-0.5 px-2 py-1.5 rounded-xl shadow-xl"
+          style={{ background: "hsl(224 55% 10%)", border: "1px solid hsl(224 50% 22%)", backdropFilter: "blur(8px)" }}>
+          {/* Width presets */}
+          {([['25%', '¼'], ['50%', '½'], ['75%', '¾'], ['100%', 'Full']] as [string, string][]).map(([w, label]) => (
+            <button key={w} type="button"
+              onClick={() => editor.chain().focus().updateAttributes('image', { width: w }).run()}
+              className="px-2 py-1 rounded-lg text-[11px] font-medium transition-colors"
+              style={{ color: "hsl(0 0% 100% / 0.65)" }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "hsl(0 0% 100% / 0.12)"; (e.currentTarget as HTMLElement).style.color = "white"; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = "hsl(0 0% 100% / 0.65)"; }}>
+              {label}
+            </button>
+          ))}
+          <span className="w-px h-4 mx-1 flex-shrink-0" style={{ background: "hsl(0 0% 100% / 0.15)" }} />
+          {/* Alignment */}
+          {([['left', <AlignLeft className="w-3.5 h-3.5" />], ['center', <AlignCenter className="w-3.5 h-3.5" />], ['right', <AlignRight className="w-3.5 h-3.5" />]] as [string, React.ReactNode][]).map(([a, icon]) => (
+            <button key={a as string} type="button"
+              onClick={() => editor.chain().focus().updateAttributes('image', { align: a }).run()}
+              className="p-1.5 rounded-lg transition-colors"
+              style={{ color: "hsl(0 0% 100% / 0.65)" }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "hsl(0 0% 100% / 0.12)"; (e.currentTarget as HTMLElement).style.color = "white"; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = "hsl(0 0% 100% / 0.65)"; }}>
+              {icon}
+            </button>
+          ))}
+          <span className="w-px h-4 mx-1 flex-shrink-0" style={{ background: "hsl(0 0% 100% / 0.15)" }} />
+          {/* Delete image */}
+          <button type="button"
+            onClick={() => editor.chain().focus().deleteSelection().run()}
+            className="p-1.5 rounded-lg transition-colors"
+            style={{ color: "hsl(0 60% 60%)" }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "hsl(0 60% 55% / 0.15)"; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      </BubbleMenu>
 
       {/* Internal article picker */}
       {showArticlePicker && (
