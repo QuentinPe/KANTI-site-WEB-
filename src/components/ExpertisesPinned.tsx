@@ -82,7 +82,7 @@ export default function ExpertisesPinned() {
           </p>
           <div className="space-y-5">
             {expertises.map((e, i) => (
-              <article key={e.title} className="glass-card rounded-[1.5rem] overflow-hidden">
+              <article key={e.title} className="glass-card glass-card-plain rounded-[1.5rem] overflow-hidden">
                 <div
                   className="aspect-[16/10] bg-cover bg-center"
                   style={{ backgroundImage: `url(${e.image})` }}
@@ -126,7 +126,7 @@ function ExpertisesPinnedDesktop() {
       id="expertises"
       className="hidden md:block section-glass texture-paper relative"
     >
-      <div ref={ref} className="relative" style={{ height: `${100 + expertises.length * 70}vh` }}>
+      <div ref={ref} className="relative" style={{ height: `${100 + expertises.length * 45}vh` }}>
         <div className="sticky top-0 h-screen flex items-center overflow-hidden">
           <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-12 w-full grid grid-cols-12 gap-10 items-center">
             {/* Left, sticky text + index list */}
@@ -236,7 +236,7 @@ function ExpertiseCard({
       }
       transition={{ duration: 0.7, ease: [0.77, 0, 0.18, 1] }}
       style={{ zIndex: index }}
-      className="absolute inset-0 glass-card rounded-[2rem] overflow-hidden flex flex-col"
+      className="absolute inset-0 glass-card glass-card-plain rounded-[2rem] overflow-hidden flex flex-col"
     >
       {/* Image, top 60% */}
       <div className="relative h-[58%] overflow-hidden">

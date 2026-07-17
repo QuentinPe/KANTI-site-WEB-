@@ -261,6 +261,9 @@
     box-shadow: var(--shadow-glass-lg), inset 0 1px 0 0 hsl(0 0% 100% / 0.5);
     border-color: hsl(0 0% 100% / 0.45);
   }
+  .glass-card-plain::before {
+    display: none;
+  }
 
   /* Floating glass panel */
   .glass-float {
