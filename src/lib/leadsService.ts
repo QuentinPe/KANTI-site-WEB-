@@ -1,6 +1,6 @@
 import { supabase } from "@/lib/supabase";
 
-export type LeadStatus = "nouveau" | "traite" | "converti" | "archive";
+export type LeadStatus = "nouveau" | "appele" | "traite" | "converti" | "archive";
 
 export interface Lead {
   id: string;
@@ -59,7 +59,7 @@ export const exportLeadsCSV = (leads: Lead[]): void => {
     asap: "Dès que possible", week: "Cette semaine", two_weeks: "Dans 2 semaines", month: "Dans le mois",
   };
   const STATUS_LABELS: Record<LeadStatus, string> = {
-    nouveau: "Nouveau", traite: "Traité", converti: "Converti", archive: "Archivé",
+    nouveau: "Nouveau", appele: "Appelé", traite: "Traité", converti: "Converti", archive: "Archivé",
   };
 
   const headers = ["Nom", "Email", "Téléphone", "Sujet", "Conseiller", "Format", "Disponibilité", "Statut", "Message", "Notes", "Date"];
