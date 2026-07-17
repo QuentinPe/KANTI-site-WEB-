@@ -918,70 +918,9 @@ async function generatePdf(
   setFill(PAPER);
   doc.rect(0, 0, leftW, H, "F");
 
-  // Panneau droit — navy profond
+  // Panneau droit — navy profond (uni)
   setFill(NAVY);
   doc.rect(leftW, 0, photoW, H, "F");
-
-  // ── Éléments géométriques panneau droit ──
-  const cx = leftW + photoW / 2;
-
-  // Grand cercle fantôme centré
-  setDraw(ACCENT);
-  doc.setLineWidth(0.5);
-  doc.circle(cx, H / 2, 72, "S");
-
-  // Cercle intermédiaire
-  setDraw([44, 72, 118]);
-  doc.setLineWidth(0.4);
-  doc.circle(cx, H / 2, 50, "S");
-
-  // Ellipse décorative excentrée
-  setDraw([34, 56, 100]);
-  doc.setLineWidth(0.3);
-  doc.ellipse(cx + 18, H * 0.28, 38, 26, "S");
-
-  // Lignes horizontales fines (grille aérée)
-  doc.setLineWidth(0.25);
-  setDraw([30, 50, 90]);
-  for (let i = 0; i < 6; i++) {
-    const ly = H * 0.62 + i * 22;
-    doc.line(leftW + 20, ly, W - 20, ly);
-  }
-
-  // Filet vertical de séparation (accent)
-  setDraw(ACCENT);
-  doc.setLineWidth(1.2);
-  doc.line(leftW, 0, leftW, H);
-
-  // Score géant au centre du panneau droit
-  setText(WHITE);
-  doc.setFont(SERIF, "bold");
-  doc.setFontSize(54);
-  doc.text(scoreStr, cx, H / 2 + 18, { align: "center" });
-
-  // "/7" petit
-  doc.setFont(SANS, "normal");
-  doc.setFontSize(13);
-  setText([140, 165, 205]);
-  doc.text("/ 7", cx, H / 2 + 36, { align: "center" });
-
-  // Label du profil
-  setText([170, 195, 230]);
-  doc.setFont(SANS, "bold");
-  doc.setFontSize(7.5);
-  doc.text(profile.shortLabel.toUpperCase(), cx, H / 2 + 58, { align: "center" });
-
-  // Ligne déco sous score
-  setDraw([80, 120, 178]);
-  doc.setLineWidth(0.6);
-  doc.line(cx - 22, H / 2 - 12, cx + 22, H / 2 - 12);
-
-  // Mention bas panneau droit
-  setText([150, 175, 215]);
-  doc.setFont(SANS, "normal");
-  doc.setFontSize(6.5);
-  doc.text("SRI — ÉCHELLE PRIIPS", cx, H - 44, { align: "center" });
-  doc.text("Document pédagogique.", cx, H - 32, { align: "center" });
 
   // ── Contenu panneau gauche ──
 
