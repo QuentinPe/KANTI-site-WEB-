@@ -3,13 +3,6 @@ import { Link } from "react-router-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { usePinnedSectionProgress } from "@/hooks/usePinnedSectionProgress";
 import SplitText from "./motion/SplitText";
-import gestionImg from "@/assets/carousel-gestion.jpg.asset.json";
-import fiscaliteImg from "@/assets/carousel-fiscalite.jpg.asset.json";
-import patrimoineProImg from "@/assets/carousel-patrimoine-pro.jpg.asset.json";
-import financementImg from "@/assets/carousel-financement.jpg.asset.json";
-import transmissionImg from "@/assets/carousel-transmission.jpg.asset.json";
-import immobilierImg from "@/assets/carousel-immobilier.jpg.asset.json";
-
 const expertises = [
   {
     tag: "Épargne & placements",
@@ -18,7 +11,7 @@ const expertises = [
       "Allocation d'actifs, assurance-vie, PER, compte-titres, SCPI, une stratégie d'épargne construite pour durer.",
     benefit: "Faire travailler votre capital en cohérence avec vos projets de vie.",
     href: "/gestion-patrimoniale",
-    image: gestionImg.url,
+    image: "https://images.unsplash.com/photo-1553877522-43269d4ea984?q=80&w=1170&auto=format&fit=crop",
   },
   {
     tag: "Fiscalité",
@@ -27,7 +20,7 @@ const expertises = [
       "Audit fiscal, IFI, revenus fonciers, structuration, réduire votre pression fiscale sans prendre de risques inutiles.",
     benefit: "Identifier vos marges de manœuvre fiscales réelles.",
     href: "/fiscalite",
-    image: fiscaliteImg.url,
+    image: "https://images.unsplash.com/photo-1554224155-a1487473ffd9?q=80&w=1170&auto=format&fit=crop",
   },
   {
     tag: "Dirigeants",
@@ -36,7 +29,7 @@ const expertises = [
       "Rémunération du dirigeant, trésorerie d'entreprise, holding, prévoyance, cession et transmission d'activité.",
     benefit: "Articuler patrimoine privé et professionnel avec méthode.",
     href: "/patrimoine-professionnel",
-    image: patrimoineProImg.url,
+    image: "https://images.unsplash.com/photo-1506787497326-c2736dde1bef?w=600&auto=format&fit=crop&q=60",
   },
   {
     tag: "Financement",
@@ -45,7 +38,7 @@ const expertises = [
       "Courtage patrimonial, négociation des meilleures conditions, montages patrimoniaux adaptés à chaque projet.",
     benefit: "Obtenir les conditions de crédit les plus compétitives.",
     href: "/financement",
-    image: financementImg.url,
+    image: "https://plus.unsplash.com/premium_photo-1689609950112-d66095626efb?w=600&auto=format&fit=crop&q=60",
   },
   {
     tag: "Succession",
@@ -54,7 +47,7 @@ const expertises = [
       "Donation, démembrement, assurance-vie, pacte Dutreil, anticiper pour protéger ceux qui comptent.",
     benefit: "Préparer la transmission en maîtrisant la fiscalité.",
     href: "/transmission-patrimoine-famille",
-    image: transmissionImg.url,
+    image: "https://images.unsplash.com/photo-1463760959829-d829ea46e191?w=600&auto=format&fit=crop&q=60",
   },
   {
     tag: "Immobilier",
@@ -63,7 +56,7 @@ const expertises = [
       "Résidence principale, locatif, SCI, nue-propriété, chaque investissement pensé dans une logique globale.",
     benefit: "Structurer vos actifs immobiliers intelligemment.",
     href: "/patrimoine-immobilier-strategie",
-    image: immobilierImg.url,
+    image: "https://images.unsplash.com/photo-1598228723793-52759bba239c?w=600&auto=format&fit=crop&q=60",
   },
 ];
 

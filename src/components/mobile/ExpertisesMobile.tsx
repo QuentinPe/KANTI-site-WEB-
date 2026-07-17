@@ -1,53 +1,46 @@
 import { Link } from "react-router-dom";
-import gestionImg from "@/assets/carousel-gestion.jpg.asset.json";
-import fiscaliteImg from "@/assets/carousel-fiscalite.jpg.asset.json";
-import patrimoineProImg from "@/assets/carousel-patrimoine-pro.jpg.asset.json";
-import financementImg from "@/assets/carousel-financement.jpg.asset.json";
-import transmissionImg from "@/assets/carousel-transmission.jpg.asset.json";
-import immobilierImg from "@/assets/carousel-immobilier.jpg.asset.json";
-
 const items = [
   {
     tag: "Épargne",
     title: "Gestion patrimoniale",
     desc: "Allocation, assurance-vie, PER, SCPI, une stratégie d'épargne qui dure.",
     href: "/gestion-patrimoniale",
-    image: gestionImg.url,
+    image: "https://images.unsplash.com/photo-1553877522-43269d4ea984?q=80&w=1170&auto=format&fit=crop",
   },
   {
     tag: "Fiscalité",
     title: "Fiscalité du patrimoine",
     desc: "Audit, IFI, revenus fonciers, réduire votre pression fiscale sans risques inutiles.",
     href: "/fiscalite",
-    image: fiscaliteImg.url,
+    image: "https://images.unsplash.com/photo-1554224155-a1487473ffd9?q=80&w=1170&auto=format&fit=crop",
   },
   {
     tag: "Dirigeants",
     title: "Patrimoine professionnel",
     desc: "Rémunération, holding, prévoyance, cession et transmission d'activité.",
     href: "/patrimoine-professionnel",
-    image: patrimoineProImg.url,
+    image: "https://images.unsplash.com/photo-1506787497326-c2736dde1bef?w=600&auto=format&fit=crop&q=60",
   },
   {
     tag: "Financement",
     title: "Financement & crédit",
     desc: "Courtage patrimonial, négociation des meilleures conditions de crédit.",
     href: "/financement",
-    image: financementImg.url,
+    image: "https://plus.unsplash.com/premium_photo-1689609950112-d66095626efb?w=600&auto=format&fit=crop&q=60",
   },
   {
     tag: "Succession",
     title: "Transmission",
     desc: "Donation, démembrement, Dutreil, anticiper pour protéger ceux qui comptent.",
     href: "/transmission-patrimoine-famille",
-    image: transmissionImg.url,
+    image: "https://images.unsplash.com/photo-1463760959829-d829ea46e191?w=600&auto=format&fit=crop&q=60",
   },
   {
     tag: "Immobilier",
     title: "Immobilier patrimonial",
     desc: "Résidence, locatif, SCI, nue-propriété, pensé dans une logique globale.",
     href: "/patrimoine-immobilier-strategie",
-    image: immobilierImg.url,
+    image: "https://images.unsplash.com/photo-1598228723793-52759bba239c?w=600&auto=format&fit=crop&q=60",
   },
 ];
 
