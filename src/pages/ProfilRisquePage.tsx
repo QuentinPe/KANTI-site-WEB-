@@ -515,7 +515,7 @@ function ResultView({
     setPdfError("");
     setPdfGenerating(true);
     try {
-      generatePdf(profile, answers);
+      await generatePdf(profile, answers);
     } catch (e: unknown) {
       console.error("[PDF] generatePdf failed:", e);
       setPdfError("Erreur lors de la génération du PDF. Réessayez.");
@@ -719,8 +719,10 @@ function SendModal({ profile, onClose }: { profile: SriProfile; onClose: () => v
         });
       } catch {}
       setSent(true);
-    } catch {
-      setError("Une erreur est survenue. Réessayez ou contactez-nous par email.");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error("[SendModal] createLead failed:", msg);
+      setError(`Erreur : ${msg.slice(0, 120)}`);
     } finally {
       setSubmitting(false);
     }
@@ -853,7 +855,7 @@ function SendModal({ profile, onClose }: { profile: SriProfile; onClose: () => v
 }
 
 /* ───────────────── PDF GENERATION ───────────────── */
-function generatePdf(
+async function generatePdf(
   profile: SriProfile,
   answers: Record<string, AnswerValue>,
 ) {
@@ -1654,5 +1656,5 @@ function generatePdf(
     doc.text(legal, M, H - 26);
   }
 
-  doc.save(`KANTI-Profil-Risque-SRI${profile.sri}.pdf`);
+  await doc.save(`KANTI-Profil-Risque-SRI${profile.sri}.pdf`);
 }

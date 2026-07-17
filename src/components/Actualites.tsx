@@ -34,10 +34,13 @@ export default function Actualites() {
             <p className="text-[11px] tracking-[0.3em] uppercase text-foreground/50 mb-5 font-medium">
               Magazine · Éclairages
             </p>
-            <h2 className="text-4xl md:text-5xl lg:text-[3.2rem] font-heading font-light text-foreground tracking-tight leading-[1.05]">
+            <h2 className="text-4xl md:text-5xl lg:text-[3.2rem] font-heading font-light text-foreground tracking-tight leading-[1.05] mb-5">
               Analyses<br />
               <span className="italic text-foreground/65">& décryptages</span>
             </h2>
+            <p className="text-foreground/60 text-base font-light leading-relaxed max-w-md">
+              Fiscalité, marchés, stratégies patrimoniales — nos analyses pour prendre les meilleures décisions au bon moment.
+            </p>
           </div>
           <Link
             to="/actualites"
@@ -62,7 +65,7 @@ export default function Actualites() {
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
             className="lg:col-span-7"
           >
-            <Link to={`/actualites/${featured.slug}`} className="group block">
+            <Link to={`/actualites/${featured.id}`} className="group block">
               <article className="glass-card glass-card-plain rounded-[2rem] overflow-hidden relative hover:shadow-[0_24px_64px_-20px_hsl(224_60%_12%/0.14)] transition-shadow duration-500">
                 {/* Image */}
                 <div className="relative aspect-[16/10] overflow-hidden">
@@ -120,7 +123,7 @@ export default function Actualites() {
                 viewport={{ once: true, margin: "-40px" }}
                 transition={{ duration: 0.55, delay: 0.1 + i * 0.09, ease: [0.22, 1, 0.36, 1] }}
               >
-                <Link to={`/actualites/${a.slug}`} className="group block">
+                <Link to={`/actualites/${a.id}`} className="group block">
                   <article className="glass-card glass-card-plain rounded-[1.5rem] overflow-hidden hover:shadow-[0_16px_40px_-12px_hsl(224_60%_12%/0.12)] transition-shadow duration-400 relative">
                     <div className="flex gap-5 p-5">
                       {/* Miniature */}
