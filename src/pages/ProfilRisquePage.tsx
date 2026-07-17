@@ -1,9 +1,8 @@
-import { useMemo, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useMemo, useState, useRef } from "react";
+import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import jsPDF from "jspdf";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import PageHero from "@/components/PageHero";
 import Seo from "@/components/Seo";
 import {
   RISK_QUESTIONS,
@@ -81,20 +80,9 @@ export default function ProfilRisquePage() {
       />
       <Header />
       <main id="main">
-        <PageHero
-          breadcrumb="Profil de risque"
-          eyebrow="Outil patrimonial"
-          title="Définir votre"
-          highlight="profil de risque."
-          subtitle="Un questionnaire conforme aux exigences AMF pour évaluer votre tolérance au risque et obtenir votre indicateur SRI sur 7."
-          stats={[
-            { value: `${total}`, label: "Questions" },
-            { value: "1 → 7", label: "Échelle SRI" },
-            { value: "PDF", label: "Export instantané" },
-          ]}
-        />
+        <ProfilRisqueHero total={total} onStart={() => setPhase("quiz")} />
 
-        <section className="section-padding relative overflow-hidden">
+        <section id="profil-risque-quiz" className="section-padding relative overflow-hidden">
           <div
             aria-hidden
             className="absolute -top-20 right-[5%] w-[420px] h-[420px] rounded-full pointer-events-none opacity-50"
@@ -256,6 +244,162 @@ export default function ProfilRisquePage() {
       </main>
       <Footer />
     </>
+  );
+}
+
+/* ───────────────── HERO ───────────────── */
+const HERO_IMG = "https://images.unsplash.com/photo-1487017159836-4e23ece2e4cf?w=1200&auto=format&fit=crop&q=80";
+
+function ProfilRisqueHero({ total, onStart }: { total: number; onStart: () => void }) {
+  const sectionRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end start"] });
+  const imageY = useTransform(scrollYProgress, [0, 1], ["0%", "28%"]);
+
+  return (
+    <section
+      ref={sectionRef}
+      className="relative overflow-hidden"
+      style={{ height: "92vh", minHeight: 560 }}
+    >
+      {/* Parallax background */}
+      <motion.div className="absolute inset-0 will-change-transform" style={{ y: imageY, scale: 1.18 }}>
+        <img
+          src={HERO_IMG}
+          alt="Espace de travail — KANTI Profil de risque"
+          className="w-full h-full object-cover object-center"
+          fetchPriority="high"
+          decoding="sync"
+        />
+      </motion.div>
+
+      {/* Ivory gradient — left readability */}
+      <div
+        aria-hidden
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            "linear-gradient(100deg, hsl(210 100% 96% / 0.93) 0%, hsl(210 100% 96% / 0.78) 28%, hsl(210 100% 96% / 0.32) 52%, transparent 72%)",
+        }}
+      />
+
+      {/* Bottom vignette */}
+      <div
+        aria-hidden
+        className="absolute inset-x-0 bottom-0 h-36 pointer-events-none"
+        style={{ background: "linear-gradient(to top, hsl(220 30% 97% / 0.92) 0%, transparent 100%)" }}
+      />
+
+      {/* Content */}
+      <div className="relative z-10 flex items-center h-full">
+        <div className="max-w-6xl mx-auto px-8 md:px-14 w-full">
+          <div className="max-w-xl">
+
+            {/* Eyebrow */}
+            <p
+              className="text-[10px] tracking-[0.32em] uppercase font-medium mb-5 opacity-0"
+              style={{ color: "hsl(224 40% 45%)", animation: "fade-in 0.8s ease 0.15s forwards" }}
+            >
+              Outil patrimonial · AMF
+            </p>
+
+            {/* Headline */}
+            <h1
+              className="font-heading font-light leading-[1.04] tracking-tight mb-6 opacity-0"
+              style={{
+                fontSize: "clamp(42px, 6vw, 68px)",
+                color: "hsl(224 60% 12%)",
+                animation: "fade-in-up 0.9s cubic-bezier(0.22,1,0.36,1) 0.25s forwards",
+              }}
+            >
+              Votre profil
+              <br />
+              <span style={{ fontStyle: "italic", color: "hsl(224 55% 30%)" }}>
+                d'investisseur.
+              </span>
+            </h1>
+
+            {/* Description */}
+            <p
+              className="font-light leading-relaxed mb-8 opacity-0"
+              style={{
+                fontSize: "clamp(14px, 1.8vw, 16px)",
+                color: "hsl(224 40% 28%)",
+                maxWidth: 440,
+                animation: "fade-in-up 0.9s cubic-bezier(0.22,1,0.36,1) 0.42s forwards",
+              }}
+            >
+              Un questionnaire de {total} questions conforme aux exigences AMF pour
+              évaluer votre tolérance au risque et obtenir votre indicateur SRI
+              sur une échelle de 1 à 7.
+            </p>
+
+            {/* Stats row */}
+            <div
+              className="flex items-center gap-6 mb-10 opacity-0"
+              style={{ animation: "fade-in 0.8s ease 0.55s forwards" }}
+            >
+              {[
+                { value: `${total}`, label: "Questions" },
+                { value: "1 → 7", label: "Échelle SRI" },
+                { value: "PDF", label: "Export instantané" },
+              ].map((s, i) => (
+                <div key={s.label} className="flex items-center gap-6">
+                  {i > 0 && <span style={{ width: 1, height: 28, background: "hsl(224 40% 22% / 0.18)", display: "block" }} />}
+                  <div>
+                    <div
+                      className="font-heading font-light tabular-nums leading-none"
+                      style={{ fontSize: 22, color: "hsl(224 60% 14%)" }}
+                    >
+                      {s.value}
+                    </div>
+                    <div
+                      className="text-[10px] uppercase tracking-[0.2em] mt-1"
+                      style={{ color: "hsl(224 25% 50%)" }}
+                    >
+                      {s.label}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* CTA */}
+            <div
+              className="flex flex-wrap gap-3 opacity-0"
+              style={{ animation: "fade-in-up 0.9s cubic-bezier(0.22,1,0.36,1) 0.68s forwards" }}
+            >
+              <button
+                type="button"
+                onClick={onStart}
+                className="group inline-flex items-center gap-2 px-6 py-3 rounded-full text-white text-sm font-medium tracking-wide transition-colors duration-300 shadow-lg"
+                style={{ background: "hsl(224 60% 18%)" }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(224 60% 12%)"; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(224 60% 18%)"; }}
+              >
+                Commencer le questionnaire
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                </svg>
+              </button>
+              <a
+                href="#profil-risque-quiz"
+                className="inline-flex items-center px-6 py-3 rounded-full text-sm font-medium tracking-wide transition-colors duration-300"
+                style={{ border: "1px solid hsl(224 60% 22% / 0.35)", color: "hsl(224 60% 20%)" }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "hsl(224 60% 22%)"; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "hsl(224 60% 22% / 0.35)"; }}
+              >
+                En savoir plus
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Scroll hint */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 opacity-35">
+        <div className="w-[1px] h-8" style={{ background: "hsl(224 60% 20%)" }} />
+      </div>
+    </section>
   );
 }
 
