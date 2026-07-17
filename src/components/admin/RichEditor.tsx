@@ -1,4 +1,4 @@
-import { useRef, useCallback, useState } from "react";
+import { useRef, useCallback, useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
@@ -12,10 +12,11 @@ import Highlight from "@tiptap/extension-highlight";
 import {
   Bold, Italic, Underline as UnderlineIcon, Strikethrough,
   Heading2, Heading3, Pilcrow, List, ListOrdered,
-  AlignLeft, AlignCenter, AlignRight,
+  AlignLeft, AlignCenter, AlignRight, AlignJustify,
   Link as LinkIcon, ImagePlus, FileUp, FileText,
   Highlighter, Palette, BookOpen, Search, X,
 } from "lucide-react";
+import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 import { getArticles } from "@/lib/articlesService";
 
@@ -161,12 +162,19 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
     },
   });
 
+  // Sync editor content when value prop changes async (e.g. on article edit load)
+  useEffect(() => {
+    if (!editor || !value) return;
+    if (editor.getHTML() === value) return;
+    editor.commands.setContent(value);
+  }, [value, editor]);
+
   const handleImageUpload = useCallback(async (file: File) => {
     if (!editor) return;
     const ext = file.name.split(".").pop() ?? "jpg";
     const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
     const { error } = await supabase.storage.from("article-images").upload(path, file, { contentType: file.type, upsert: false });
-    if (error) { alert("Erreur upload : " + error.message); return; }
+    if (error) { toast.error("Erreur upload : " + error.message); return; }
     const { data: { publicUrl } } = supabase.storage.from("article-images").getPublicUrl(path);
     editor.chain().focus().setImage({ src: publicUrl, alt: file.name }).run();
   }, [editor]);
@@ -291,6 +299,9 @@ export default function RichEditor({ value, onChange }: RichEditorProps) {
           </Btn>
           <Btn title="Aligner à droite" onClick={() => editor.chain().focus().setTextAlign("right").run()} active={editor.isActive({ textAlign: "right" })}>
             <AlignRight className="w-4 h-4" />
+          </Btn>
+          <Btn title="Justifier" onClick={() => editor.chain().focus().setTextAlign("justify").run()} active={editor.isActive({ textAlign: "justify" })}>
+            <AlignJustify className="w-4 h-4" />
           </Btn>
 
           <Divider />
