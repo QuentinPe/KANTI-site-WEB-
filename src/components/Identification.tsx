@@ -50,6 +50,108 @@ const problematics = [
 
 const N = problematics.length;
 
+/* Slot positions: -1 = exiting, 0 = active front, 1 = next, 2 = back */
+const SLOTS: Record<string, { y: number; x: number; scale: number; opacity: number; rotateZ: number }> = {
+  "-1": { y: -210, x: 0,  scale: 0.84, opacity: 0,    rotateZ: -2   },
+   "0": { y: 0,    x: 0,  scale: 1,    opacity: 1,    rotateZ: 0    },
+   "1": { y: 20,   x: 14, scale: 0.944,opacity: 0.64, rotateZ: 1.4  },
+   "2": { y: 40,   x: 28, scale: 0.889,opacity: 0.33, rotateZ: 2.8  },
+};
+const HIDDEN_SLOT = { y: 68, x: 36, scale: 0.83, opacity: 0, rotateZ: 4 };
+
+/* ── ProblemCard ─────────────────────────────────────────────────── */
+function ProblemCard({ item, slot }: { item: typeof problematics[0]; slot: number }) {
+  const isActive = slot === 0;
+  const s = SLOTS[String(slot)] ?? HIDDEN_SLOT;
+  const [titleFirst, ...titleRest] = item.title.split(" ");
+
+  return (
+    <motion.div
+      animate={{ y: s.y, x: s.x, scale: s.scale, opacity: s.opacity, rotateZ: s.rotateZ }}
+      transition={{ duration: 0.72, ease: [0.22, 1, 0.36, 1] }}
+      className="absolute inset-0"
+      style={{
+        zIndex: isActive ? 10 : slot === 1 ? 4 : 1,
+        transformOrigin: "center bottom",
+        pointerEvents: isActive ? "auto" : "none",
+      }}
+    >
+      <div
+        className="w-full h-full relative overflow-hidden"
+        style={{
+          borderRadius: 28,
+          padding: "clamp(28px, 4vw, 40px) clamp(28px, 4vw, 44px)",
+          background:
+            "linear-gradient(148deg, hsl(222 52% 10% / 0.97) 0%, hsl(224 60% 15% / 0.99) 100%)",
+          backdropFilter: "blur(32px) saturate(160%)",
+          WebkitBackdropFilter: "blur(32px) saturate(160%)",
+          boxShadow: isActive
+            ? [
+                "0 48px 100px -20px hsl(224 55% 8% / 0.65)",
+                "0 16px 40px -8px hsl(224 55% 8% / 0.28)",
+                "inset 0 1.5px 0 hsl(0 0% 100% / 0.10)",
+                "inset 1px 0 0 hsl(0 0% 100% / 0.04)",
+                "0 0 0 0.5px hsl(0 0% 100% / 0.06)",
+              ].join(", ")
+            : "0 24px 50px -14px hsl(224 40% 8% / 0.30)",
+        }}
+      >
+        {/* Ghost number — lower right */}
+        <span
+          aria-hidden
+          className="absolute pointer-events-none select-none font-heading font-light leading-none"
+          style={{
+            fontSize: "clamp(9rem, 14vw, 14rem)",
+            right: "-8px",
+            bottom: "-14px",
+            color: "hsl(0 0% 100% / 0.030)",
+            letterSpacing: "-0.04em",
+          }}
+        >
+          {item.n}
+        </span>
+
+        {/* Tag pill */}
+        <div className="mb-9">
+          <span
+            className="inline-block text-[9px] tracking-[0.35em] uppercase font-medium px-3 py-1.5 rounded-full"
+            style={{
+              background: "hsl(0 0% 100% / 0.07)",
+              border: "1px solid hsl(0 0% 100% / 0.10)",
+              color: "hsl(0 0% 100% / 0.46)",
+            }}
+          >
+            {item.tag}
+          </span>
+        </div>
+
+        {/* Title */}
+        <h2
+          className="font-heading font-light tracking-tight leading-[1.07] mb-7"
+          style={{ fontSize: "clamp(1.75rem, 2.7vw, 2.4rem)", color: "hsl(0 0% 100% / 0.92)" }}
+        >
+          <span style={{ fontStyle: "italic", color: "hsl(0 0% 100% / 0.44)" }}>
+            {titleFirst}
+          </span>{" "}
+          {titleRest.join(" ")}
+        </h2>
+
+        {/* Separator */}
+        <div style={{ height: 1, background: "hsl(0 0% 100% / 0.07)", marginBottom: 22 }} />
+
+        {/* Description */}
+        <p
+          className="font-light leading-relaxed"
+          style={{ fontSize: "0.9375rem", color: "hsl(0 0% 100% / 0.48)", maxWidth: "85%" }}
+        >
+          {item.line}
+        </p>
+      </div>
+    </motion.div>
+  );
+}
+
+/* ── DesktopIdentification ───────────────────────────────────────── */
 function DesktopIdentification() {
   const ref = useRef<HTMLElement>(null);
   const [active, setActive] = useState(0);
@@ -65,11 +167,8 @@ function DesktopIdentification() {
   });
 
   const progressWidth = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
-  // Smooth fade-in at section entry, fade-out to dark at section exit
   const contentOpacity = useTransform(scrollYProgress, [0, 0.05], [0, 1]);
   const exitOverlay = useTransform(scrollYProgress, [0.87, 1], [0, 0.88]);
-
-  const item = problematics[active];
 
   return (
     <section
@@ -82,14 +181,11 @@ function DesktopIdentification() {
         className="sticky top-0 h-screen overflow-hidden texture-paper flex flex-col"
         style={{ opacity: contentOpacity }}
       >
-        {/* Dark exit overlay — fades section to navy before MarqueeStrip */}
+        {/* Dark exit overlay */}
         <motion.div
           aria-hidden
           className="absolute inset-0 pointer-events-none z-40"
-          style={{
-            opacity: exitOverlay,
-            background: "hsl(var(--navy-deep))",
-          }}
+          style={{ opacity: exitOverlay, background: "hsl(var(--navy-deep))" }}
         />
 
         {/* Scroll progress bar */}
@@ -99,15 +195,12 @@ function DesktopIdentification() {
         >
           <motion.div
             className="h-full origin-left"
-            style={{
-              width: progressWidth,
-              background: "hsl(var(--foreground) / 0.3)",
-            }}
+            style={{ width: progressWidth, background: "hsl(var(--foreground) / 0.30)" }}
           />
         </div>
 
         {/* Header row */}
-        <div className="flex items-end justify-between px-10 lg:px-20 pt-14 pb-0 flex-shrink-0">
+        <div className="flex items-end justify-between px-10 lg:px-20 pt-14 pb-0 flex-shrink-0 z-10">
           <div>
             <div className="electric-line mb-3" />
             <p
@@ -132,93 +225,81 @@ function DesktopIdentification() {
           </AnimatePresence>
         </div>
 
-        {/* Main content area */}
-        <div className="flex-1 flex items-center w-full max-w-[1440px] mx-auto px-10 lg:px-20 gap-10 lg:gap-16">
-          {/* Ghost number — left, large */}
-          <div
-            className="hidden lg:flex w-[36%] flex-shrink-0 items-center"
-            aria-hidden
-          >
-            <AnimatePresence mode="wait">
-              <motion.span
-                key={`num-${active}`}
-                initial={{ opacity: 0, scale: 0.88, filter: "blur(32px)" }}
-                animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-                exit={{ opacity: 0, scale: 1.12, filter: "blur(32px)" }}
-                transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-                className="block font-heading font-light leading-none tracking-tighter select-none pointer-events-none"
-                style={{
-                  fontSize: "clamp(9rem, 22vw, 21rem)",
-                  color: "hsl(var(--foreground) / 0.052)",
-                  lineHeight: 0.88,
-                }}
-              >
-                {item.n}
-              </motion.span>
-            </AnimatePresence>
-          </div>
+        {/* Two-column content area */}
+        <div className="flex-1 flex items-stretch min-h-0">
 
-          {/* Content — right */}
-          <div className="flex-1 min-w-0">
+          {/* Left column — animated text, XL screens only */}
+          <div className="hidden xl:flex flex-col justify-center pl-20 pr-10 w-[40%] flex-shrink-0">
             <AnimatePresence mode="wait">
               <motion.div
-                key={`slide-${active}`}
-                initial={{ opacity: 0, y: 44, filter: "blur(10px)" }}
-                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                exit={{ opacity: 0, y: -44, filter: "blur(10px)" }}
+                key={`left-${active}`}
+                initial={{ opacity: 0, x: -24, filter: "blur(8px)" }}
+                animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+                exit={{ opacity: 0, x: 24, filter: "blur(8px)" }}
                 transition={{ duration: 0.52, ease: [0.22, 1, 0.36, 1] }}
               >
-                <h2
-                  className="font-heading font-light tracking-tight leading-[1.1] mb-9"
-                  style={{
-                    fontSize: "clamp(2.5rem, 4.5vw, 4.25rem)",
-                    color: "hsl(var(--foreground))",
-                  }}
-                >
-                  <span
-                    style={{
-                      fontStyle: "italic",
-                      color: "hsl(var(--foreground) / 0.55)",
-                    }}
-                  >
-                    {item.title.split(" ")[0]}
-                  </span>{" "}
-                  {item.title.split(" ").slice(1).join(" ")}
-                </h2>
-
-                <div
-                  className="separator-fine mb-9"
-                  style={{ opacity: 0.18 }}
-                />
-
                 <p
-                  className="font-light leading-relaxed max-w-[480px]"
-                  style={{
-                    fontSize: "clamp(1.05rem, 1.4vw, 1.25rem)",
-                    color: "hsl(var(--foreground) / 0.58)",
-                  }}
+                  className="text-[10px] tracking-[0.28em] uppercase font-medium mb-5"
+                  style={{ color: "hsl(var(--foreground) / 0.34)" }}
                 >
-                  {item.line}
+                  Votre situation
                 </p>
-
-                <div className="mt-9">
-                  <span
-                    className="text-[9px] tracking-[0.35em] uppercase font-medium px-3 py-1.5 rounded-full"
-                    style={{
-                      color: "hsl(var(--foreground) / 0.42)",
-                      border: "1px solid hsl(var(--foreground) / 0.12)",
-                    }}
-                  >
-                    {item.tag}
-                  </span>
-                </div>
+                <h3
+                  className="font-heading font-light leading-[1.09] tracking-tight"
+                  style={{ fontSize: "clamp(1.9rem, 2.5vw, 2.8rem)", color: "hsl(var(--foreground))" }}
+                >
+                  <span style={{ fontStyle: "italic", color: "hsl(var(--foreground) / 0.45)" }}>
+                    {problematics[active].title.split(" ")[0]}
+                  </span>{" "}
+                  {problematics[active].title.split(" ").slice(1).join(" ")}
+                </h3>
+                <div className="separator-fine my-7" style={{ opacity: 0.15 }} />
+                <p
+                  className="font-light leading-relaxed"
+                  style={{ fontSize: "0.9375rem", color: "hsl(var(--foreground) / 0.52)", maxWidth: 360 }}
+                >
+                  {problematics[active].line}
+                </p>
               </motion.div>
             </AnimatePresence>
           </div>
+
+          {/* Right column — card stack */}
+          <div className="flex-1 flex items-center justify-center relative py-8">
+            {/* Ambient glow behind stack */}
+            <div
+              aria-hidden
+              className="absolute inset-0 pointer-events-none flex items-center justify-center"
+            >
+              <div
+                style={{
+                  width: 480,
+                  height: 360,
+                  borderRadius: "50%",
+                  background: "radial-gradient(ellipse, hsl(224 60% 40% / 0.07) 0%, transparent 70%)",
+                  filter: "blur(50px)",
+                }}
+              />
+            </div>
+
+            {/* 3D perspective context + card stack */}
+            <div style={{ perspective: "1400px", perspectiveOrigin: "50% 40%", flexShrink: 0 }}>
+              <div
+                className="relative"
+                style={{ width: "min(520px, 85vw)", height: 420 }}
+              >
+                {problematics.map((item, i) => {
+                  const slot = i - active;
+                  if (slot < -1 || slot > 2) return null;
+                  return <ProblemCard key={item.n} item={item} slot={slot} />;
+                })}
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Progress dots — bottom */}
-        <div className="flex items-center justify-center gap-2.5 pb-10 flex-shrink-0">
+        {/* Progress dots */}
+        <div className="flex items-center justify-center gap-2.5 pb-10 flex-shrink-0 z-10">
           {problematics.map((_, i) => (
             <motion.span
               key={i}
@@ -228,7 +309,7 @@ function DesktopIdentification() {
                 height: 6,
                 backgroundColor:
                   i === active
-                    ? "hsl(var(--foreground) / 0.6)"
+                    ? "hsl(var(--foreground) / 0.60)"
                     : "hsl(var(--foreground) / 0.14)",
               }}
               transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
@@ -240,6 +321,7 @@ function DesktopIdentification() {
   );
 }
 
+/* ── MobileIdentification (unchanged) ───────────────────────────── */
 function MobileIdentification() {
   const reduce = useReducedMotion();
   return (

@@ -275,14 +275,16 @@ function FloatingCard({ cas, index, onClick }: { cas: CasClient; index: number; 
         {/* Bottom: main KPI + link */}
         <div className="mt-auto w-full pt-5 flex items-end justify-between"
           style={{ borderTop: "1px solid hsl(224 20% 12% / 0.07)" }}>
-          <div>
-            <p className="text-[9px] tracking-[0.22em] uppercase font-medium mb-1" style={{ color: "hsl(224 15% 58%)" }}>
-              {mainKpi.label}
-            </p>
-            <p className="font-heading text-2xl font-light tracking-tight tabular-nums leading-none" style={{ color: "hsl(224 55% 12%)" }}>
-              {mainKpi.value}
-            </p>
-          </div>
+          {mainKpi ? (
+            <div>
+              <p className="text-[9px] tracking-[0.22em] uppercase font-medium mb-1" style={{ color: "hsl(224 15% 58%)" }}>
+                {mainKpi.label}
+              </p>
+              <p className="font-heading text-2xl font-light tracking-tight tabular-nums leading-none" style={{ color: "hsl(224 55% 12%)" }}>
+                {mainKpi.value}
+              </p>
+            </div>
+          ) : <div />}
           <div className="flex items-center gap-1.5 text-[11px] font-medium tracking-wide opacity-40 transition-opacity duration-300 group-hover:opacity-100"
             style={{ color: "hsl(224 50% 30%)" }}>
             <span>Voir le cas</span>
@@ -551,7 +553,7 @@ function CaseModal({
 }
 
 /* ─── CategoryFilter ────────────────────────────────────────────── */
-function CategoryFilter({ active, onChange, counts }: {
+function CategoryFilter({ active, onChange, counts, total }: {
   active: Category | "tous"; onChange: (id: Category | "tous") => void; counts: Record<string, number>; total: number;
 }) {
   return (
