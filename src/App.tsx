@@ -30,6 +30,7 @@ const SkipToContent = lazy(() => import("@/components/SkipToContent"));
 const Index                     = lazy(() => import("./pages/Index"));
 const CabinetPage               = lazy(() => import("./pages/CabinetPage"));
 const GestionPatrimonialePage   = lazy(() => import("./pages/GestionPatrimonialePage"));
+const SimulateurPatrimonialPage = lazy(() => import("./pages/SimulateurPatrimonialPage"));
 const FiscalitePage             = lazy(() => import("./pages/FiscalitePage"));
 const PatrimoineProPage         = lazy(() => import("./pages/PatrimoineProPage"));
 const FinancementPage           = lazy(() => import("./pages/FinancementPage"));
@@ -116,6 +117,7 @@ const AppShell = () => {
               <Route path="/" element={<Index />} />
               <Route path="/cabinet" element={<CabinetPage />} />
               <Route path="/gestion-patrimoniale" element={<GestionPatrimonialePage />} />
+              <Route path="/gestion-patrimoniale/simulateur" element={<SimulateurPatrimonialPage />} />
               <Route path="/fiscalite" element={<FiscalitePage />} />
               <Route path="/patrimoine-professionnel" element={<PatrimoineProPage />} />
               <Route path="/financement" element={<FinancementPage />} />

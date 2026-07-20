@@ -9,6 +9,18 @@ import StickyImageBand from "@/components/StickyImageBand";
 import { getCategory } from "@/data/productsCatalog";
 import heroImg from "@/assets/expertise-gestion.jpg";
 
+// New sections
+import AllocationDonutSection from "@/components/gestion/AllocationDonutSection";
+import RiskProfileComparison from "@/components/gestion/RiskProfileComparison";
+import AssetClassMatrix from "@/components/gestion/AssetClassMatrix";
+import MacroFactorTimeline from "@/components/gestion/MacroFactorTimeline";
+import SimulationPreviewSection from "@/components/gestion/SimulationPreviewSection";
+import MethodologySteps from "@/components/gestion/MethodologySteps";
+import IndependenceSection from "@/components/gestion/IndependenceSection";
+import UseCasesSection from "@/components/gestion/UseCasesSection";
+import GestionFAQSection from "@/components/gestion/GestionFAQSection";
+import GestionFinalCTA from "@/components/gestion/GestionFinalCTA";
+
 export default function GestionPatrimonialePage() {
   useScrollReveal();
   const category = getCategory("gestion-patrimoniale")!;
@@ -48,6 +60,7 @@ export default function GestionPatrimonialePage() {
         products={category.products}
         hideLinks
       />
+
       <PageCTA
         title="Faisons le point sur votre épargne"
         subtitle="Un audit de votre allocation actuelle pour identifier les axes d'amélioration : performance, frais, diversification, fiscalité."
@@ -56,6 +69,19 @@ export default function GestionPatrimonialePage() {
         secondaryText="Demander un bilan patrimonial"
         secondaryHref="/bilan-patrimonial-bordeaux"
       />
+
+      {/* ── New sections ─────────────────────────────────────────────────────── */}
+      <AllocationDonutSection />
+      <MethodologySteps />
+      <RiskProfileComparison />
+      <AssetClassMatrix />
+      <MacroFactorTimeline />
+      <SimulationPreviewSection />
+      <IndependenceSection />
+      <UseCasesSection />
+      <GestionFAQSection />
+      <GestionFinalCTA />
+
       <Footer />
     </>
   );
