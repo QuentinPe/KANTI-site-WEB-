@@ -3,10 +3,14 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
 import { getAdminUsers } from "@/lib/adminUsersService";
 
+// Bootstrap list — used only when the admin_users table doesn't exist yet.
+// Remove once the table is created and populated in Supabase.
+const BOOTSTRAP_EMAILS = ["m.delorme@adnfamily.com"];
+
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
 
-  const { data: adminUsers, isLoading: adminsLoading } = useQuery({
+  const { data: adminUsers, isLoading: adminsLoading, isError } = useQuery({
     queryKey: ["admin-users"],
     queryFn: getAdminUsers,
     enabled: Boolean(user),
@@ -25,10 +29,13 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
 
   if (!user) return <Navigate to="/login" replace />;
 
-  // Fail closed: if the admin list failed to load, deny access
+  // If the admin_users table doesn't exist yet (isError), fall back to the bootstrap list.
+  // Once the table exists and contains rows, the real list takes over automatically.
   const allowedEmails = adminUsers
     ? adminUsers.filter((a) => a.active).map((a) => a.email)
-    : [];
+    : isError
+      ? BOOTSTRAP_EMAILS
+      : [];
 
   if (!allowedEmails.includes(user.email ?? "")) return <Navigate to="/" replace />;
 

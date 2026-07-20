@@ -263,7 +263,7 @@ export default function ProfilRisquePage() {
 }
 
 /* ───────────────── HERO ───────────────── */
-const HERO_IMG = "https://images.unsplash.com/photo-1487017159836-4e23ece2e4cf?w=1200&auto=format&fit=crop&q=80";
+const HERO_IMG = "/profil-risque-hero.png";
 
 function ProfilRisqueHero({ total, onStart }: { total: number; onStart: () => void }) {
   const sectionRef = useRef<HTMLElement>(null);
