@@ -200,7 +200,7 @@ export default function AdminArticleForm() {
       qc.invalidateQueries({ queryKey: ["articles"] });
       navigate("/admin/articles");
     },
-    onError: () => setGlobalError("Erreur lors de la création. Vérifiez vos permissions Supabase."),
+    onError: (e) => setGlobalError("Erreur lors de la création : " + (e instanceof Error ? e.message : String(e))),
   });
 
   const updateMutation = useMutation({

@@ -100,7 +100,7 @@ export default function AdminTeamForm() {
       qc.invalidateQueries({ queryKey: ["admin-team"] });
       navigate("/admin/equipe");
     },
-    onError: () => setError("Erreur lors de l'enregistrement."),
+    onError: (e) => setError("Erreur lors de l'enregistrement : " + (e instanceof Error ? e.message : String(e))),
   });
 
   const onSubmit = (values: FormValues) => {

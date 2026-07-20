@@ -44,7 +44,7 @@ export default function AdminLegalForm() {
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     },
-    onError: () => setError("Erreur lors de l'enregistrement."),
+    onError: (e) => setError("Erreur lors de l'enregistrement : " + (e instanceof Error ? e.message : String(e))),
   });
 
   const formatDate = (iso: string) =>
