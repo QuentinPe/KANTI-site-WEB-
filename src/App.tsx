@@ -1,6 +1,6 @@
 import { lazy, Suspense, useLayoutEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -122,7 +122,7 @@ const AppShell = () => {
               <Route path="/gestion-patrimoniale/simulateur" element={<SimulateurPatrimonialPage />} />
               <Route path="/fiscalite" element={<FiscalitePage />} />
               <Route path="/patrimoine-professionnel" element={<PatrimoineProPage />} />
-              <Route path="/financement" element={<FinancementPage />} />
+              <Route path="/financement" element={<Navigate to="/courtage-patrimonial" replace />} />
               <Route path="/courtage-patrimonial" element={<CourtageFinancementPage />} />
               <Route path="/courtage-patrimonial/simulateur-financement" element={<SimulateurFinancementPage />} />
               <Route path="/actualites" element={<ActualitesPage />} />

@@ -1,145 +1,101 @@
 import { motion, useReducedMotion } from "framer-motion";
 
-const NODES = [
-  "Projet",
-  "Apport",
-  "Revenus",
-  "Charges",
-  "Durée",
-  "Taux",
-  "Assurance",
-  "Garanties",
+const CONVICTIONS = [
+  {
+    number: "01",
+    headline: "Un taux bas ne fait pas un bon financement.",
+    body: "Le coût réel d'un crédit inclut l'assurance, les garanties, les indemnités de remboursement anticipé et la modularité. Optimiser un seul paramètre sans vision globale peut se révéler coûteux sur la durée.",
+  },
+  {
+    number: "02",
+    headline: "L'assurance peut coûter plus que les intérêts.",
+    body: "Sur 20 ans, le coût de l'assurance emprunteur peut dépasser celui des intérêts selon le profil et l'âge. La délégation d'assurance reste l'un des leviers les plus puissants — et les moins exploités par les emprunteurs.",
+  },
+  {
+    number: "03",
+    headline: "La structure de détention précède le financement.",
+    body: "Acquérir en nom propre, en SCI, via une holding : chaque structure modifie les critères d'analyse bancaire, les garanties exigées, la fiscalité et les conditions de sortie. Ce choix se fait avant de solliciter les établissements.",
+  },
+  {
+    number: "04",
+    headline: "Un dossier solide vaut plusieurs points de négociation.",
+    body: "La qualité de la présentation, la clarté des revenus et la cohérence du projet influencent directement les conditions obtenues. La préparation du dossier est le premier acte de la négociation bancaire.",
+  },
 ];
 
 export default function FinancingArchitectureSection() {
   const reduce = useReducedMotion();
 
   return (
-    <section
-      className="section-padding"
-      style={{ background: "hsl(220 30% 97%)" }}
-    >
+    <section style={{ background: "hsl(var(--navy-deep))" }} className="section-padding">
       <div className="max-w-7xl mx-auto">
+
         {/* Header */}
         <motion.div
-          className="text-center mb-14"
+          className="mb-16 max-w-xl"
           initial={reduce ? false : { opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.55 }}
           viewport={{ once: true, margin: "-60px" }}
         >
-          <p className="text-[10px] tracking-[0.32em] uppercase text-foreground/45 mb-4 font-medium">
-            01 · Le financement comme architecture
+          <p className="text-[10px] tracking-[0.32em] uppercase text-white/35 mb-5 font-medium">
+            01 · Convictions
           </p>
-          <h2 className="text-3xl md:text-4xl font-heading font-light text-foreground leading-[1.1] tracking-tight max-w-2xl mx-auto mb-5">
-            Un financement bien construit repose sur plusieurs équilibres.
+          <h2 className="text-3xl md:text-4xl font-heading font-light text-white leading-[1.1] tracking-tight">
+            Ce que nous savons sur le financement.
           </h2>
-          <p className="text-foreground/55 font-light text-sm max-w-xl mx-auto">
-            Chaque composante interagit avec les autres. Optimiser l'une sans
-            considérer l'ensemble peut fragiliser la cohérence globale du projet.
-          </p>
         </motion.div>
 
-        {/* Node diagram */}
-        <motion.div
-          className="relative flex items-center justify-center mb-14"
-          initial={reduce ? false : { opacity: 0, scale: 0.96 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          viewport={{ once: true, margin: "-60px" }}
-        >
-          <div className="relative w-full max-w-lg h-80 md:h-96">
-            {/* Center node */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-28 h-28 md:w-32 md:h-32 rounded-full border-2 border-foreground/15 bg-white shadow-sm flex items-center justify-center z-10">
-                <span className="text-xs font-medium text-foreground/70 text-center leading-snug px-3">
-                  Cohérence du<br />financement
-                </span>
-              </div>
-            </div>
-
-            {/* Satellite nodes */}
-            {NODES.map((node, i) => {
-              const angle = (i / NODES.length) * 2 * Math.PI - Math.PI / 2;
-              const radiusX = 44; // percent from center
-              const radiusY = 38;
-              const x = 50 + radiusX * Math.cos(angle);
-              const y = 50 + radiusY * Math.sin(angle);
-
-              // Line from center to node
-              const cx = 50;
-              const cy = 50;
-              const lineLen = Math.sqrt(
-                Math.pow((x - cx) * 4, 2) + Math.pow((y - cy) * 3.84, 2)
-              );
-
-              return (
-                <motion.div
-                  key={node}
-                  className="absolute"
-                  style={{
-                    left: `${x}%`,
-                    top: `${y}%`,
-                    transform: "translate(-50%, -50%)",
-                  }}
-                  initial={reduce ? false : { opacity: 0, scale: 0.8 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  transition={{
-                    duration: 0.4,
-                    delay: i * 0.07,
-                  }}
-                  viewport={{ once: true }}
-                >
-                  {/* Connector line */}
-                  <div
-                    className="absolute pointer-events-none"
-                    style={{
-                      left: "50%",
-                      top: "50%",
-                      width: `${lineLen}px`,
-                      height: "1px",
-                      background: "hsl(222 35% 12% / 0.10)",
-                      transformOrigin: "0 0",
-                      transform: `rotate(${Math.atan2(
-                        (cy - y) * 3.84,
-                        (cx - x) * 4
-                      )}rad)`,
-                    }}
-                    aria-hidden
-                  />
-                  <div className="relative z-10 px-3 py-1.5 rounded-full border border-foreground/12 bg-white shadow-sm text-xs font-medium text-foreground/65 whitespace-nowrap">
-                    {node}
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
-        </motion.div>
-
-        {/* Blockquote */}
-        <motion.div
-          className="max-w-2xl mx-auto"
-          initial={reduce ? false : { opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          viewport={{ once: true, margin: "-40px" }}
-        >
-          <div className="rounded-2xl border border-foreground/8 bg-white p-8 md:p-10 text-center shadow-sm">
-            <span
-              aria-hidden
-              className="block text-5xl font-heading text-foreground/15 mb-3 leading-none select-none"
+        {/* Grid 2 × 2 */}
+        <div className="grid md:grid-cols-2 gap-px bg-white/8">
+          {CONVICTIONS.map((c, i) => (
+            <motion.div
+              key={c.number}
+              initial={reduce ? false : { opacity: 0, y: 28 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: i * 0.1 }}
+              viewport={{ once: true, margin: "-50px" }}
+              className="bg-[hsl(var(--navy-deep))] p-10 md:p-12 flex flex-col gap-6 group hover:bg-white/[0.03] transition-colors duration-300"
             >
-              "
-            </span>
-            <p className="text-lg md:text-xl font-heading font-light text-foreground/75 leading-relaxed italic">
-              Une mensualité plus faible ne signifie pas nécessairement un
-              financement plus avantageux.
-            </p>
-            <p className="text-[11px] text-foreground/35 tracking-wide uppercase mt-5">
-              Courtage patrimonial KANTI
-            </p>
-          </div>
-        </motion.div>
+              {/* Number */}
+              <span
+                className="font-heading text-[56px] md:text-[72px] leading-none font-light select-none"
+                style={{ color: "hsl(215 40% 50% / 0.45)" }}
+              >
+                {c.number}
+              </span>
+
+              {/* Rule */}
+              <div className="w-8 h-px bg-white/20" />
+
+              {/* Headline */}
+              <h3 className="font-heading text-xl md:text-2xl font-light text-white leading-snug tracking-tight">
+                {c.headline}
+              </h3>
+
+              {/* Body */}
+              <p className="text-sm font-light leading-relaxed" style={{ color: "hsl(215 25% 72%)" }}>
+                {c.body}
+              </p>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Bottom quote */}
+        <motion.p
+          className="mt-14 text-center text-sm font-light italic"
+          style={{ color: "hsl(215 25% 55%)" }}
+          initial={reduce ? false : { opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          viewport={{ once: true }}
+        >
+          "Le taux est un outil. La stratégie est une posture."
+          <span className="block text-[10px] not-italic tracking-widest uppercase mt-2" style={{ color: "hsl(215 25% 40%)" }}>
+            Courtage patrimonial KANTI
+          </span>
+        </motion.p>
+
       </div>
     </section>
   );
