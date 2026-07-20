@@ -52,14 +52,14 @@ const N = problematics.length;
 
 /* Slot positions: -1 = exiting, 0 = active front, 1 = next, 2 = back */
 const SLOTS: Record<string, { y: number; x: number; scale: number; opacity: number; rotateZ: number }> = {
-  "-1": { y: -210, x: 0,  scale: 0.84, opacity: 0,    rotateZ: -2   },
+  "-1": { y: -220, x: 0,  scale: 0.84, opacity: 0,    rotateZ: -1.5 },
    "0": { y: 0,    x: 0,  scale: 1,    opacity: 1,    rotateZ: 0    },
-   "1": { y: 20,   x: 14, scale: 0.944,opacity: 0.64, rotateZ: 1.4  },
-   "2": { y: 40,   x: 28, scale: 0.889,opacity: 0.33, rotateZ: 2.8  },
+   "1": { y: 18,   x: 16, scale: 0.944,opacity: 0.60, rotateZ: 1.6  },
+   "2": { y: 36,   x: 32, scale: 0.889,opacity: 0.30, rotateZ: 3.2  },
 };
-const HIDDEN_SLOT = { y: 68, x: 36, scale: 0.83, opacity: 0, rotateZ: 4 };
+const HIDDEN_SLOT = { y: 60, x: 44, scale: 0.83, opacity: 0, rotateZ: 4.5 };
 
-/* ── ProblemCard ─────────────────────────────────────────────────── */
+/* ── ProblemCard — flat, architectural, non-generic ─────────────── */
 function ProblemCard({ item, slot }: { item: typeof problematics[0]; slot: number }) {
   const isActive = slot === 0;
   const s = SLOTS[String(slot)] ?? HIDDEN_SLOT;
@@ -77,75 +77,99 @@ function ProblemCard({ item, slot }: { item: typeof problematics[0]; slot: numbe
       }}
     >
       <div
-        className="w-full h-full relative overflow-hidden"
+        className="w-full h-full flex flex-col"
         style={{
-          borderRadius: 28,
-          padding: "clamp(28px, 4vw, 40px) clamp(28px, 4vw, 44px)",
-          background:
-            "linear-gradient(148deg, hsl(222 52% 10% / 0.97) 0%, hsl(224 60% 15% / 0.99) 100%)",
-          backdropFilter: "blur(32px) saturate(160%)",
-          WebkitBackdropFilter: "blur(32px) saturate(160%)",
+          borderRadius: 18,
+          /* Flat solid dark — no gradient, no glass */
+          background: "hsl(221 20% 9%)",
+          border: "0.5px solid hsl(0 0% 100% / 0.08)",
           boxShadow: isActive
-            ? [
-                "0 48px 100px -20px hsl(224 55% 8% / 0.65)",
-                "0 16px 40px -8px hsl(224 55% 8% / 0.28)",
-                "inset 0 1.5px 0 hsl(0 0% 100% / 0.10)",
-                "inset 1px 0 0 hsl(0 0% 100% / 0.04)",
-                "0 0 0 0.5px hsl(0 0% 100% / 0.06)",
-              ].join(", ")
-            : "0 24px 50px -14px hsl(224 40% 8% / 0.30)",
+            ? "0 44px 88px -18px hsl(221 28% 4% / 0.72), 0 0 0 0.5px hsl(0 0% 100% / 0.05)"
+            : "0 20px 44px -12px hsl(221 22% 4% / 0.44)",
+          overflow: "hidden",
         }}
       >
-        {/* Ghost number — lower right */}
-        <span
+        {/* Top edge accent — a single thin highlight line at the very top */}
+        <div
           aria-hidden
-          className="absolute pointer-events-none select-none font-heading font-light leading-none"
           style={{
-            fontSize: "clamp(9rem, 14vw, 14rem)",
-            right: "-8px",
-            bottom: "-14px",
-            color: "hsl(0 0% 100% / 0.030)",
-            letterSpacing: "-0.04em",
+            height: 1,
+            background: isActive
+              ? "linear-gradient(to right, transparent 0%, hsl(0 0% 100% / 0.10) 20%, hsl(0 0% 100% / 0.14) 50%, hsl(0 0% 100% / 0.10) 80%, transparent 100%)"
+              : "hsl(0 0% 100% / 0.05)",
+            flexShrink: 0,
           }}
-        >
-          {item.n}
-        </span>
+        />
 
-        {/* Tag pill */}
-        <div className="mb-9">
-          <span
-            className="inline-block text-[9px] tracking-[0.35em] uppercase font-medium px-3 py-1.5 rounded-full"
+        {/* Card body */}
+        <div className="flex flex-col flex-1 p-10 lg:p-12">
+
+          {/* Tag row — plain small-caps text, no pill */}
+          <div className="flex items-start justify-between mb-10">
+            <span
+              style={{
+                fontSize: "7.5px",
+                letterSpacing: "0.48em",
+                textTransform: "uppercase",
+                fontWeight: 500,
+                color: "hsl(0 0% 100% / 0.28)",
+                lineHeight: 1,
+              }}
+            >
+              {item.tag}
+            </span>
+            <span
+              style={{
+                fontSize: "9px",
+                fontFamily: "ui-monospace, monospace",
+                letterSpacing: "0.06em",
+                color: "hsl(0 0% 100% / 0.14)",
+                lineHeight: 1,
+              }}
+            >
+              {item.n}
+            </span>
+          </div>
+
+          {/* Title — brand italic-first-word style */}
+          <h2
+            className="font-heading font-light tracking-tight leading-[1.06]"
             style={{
-              background: "hsl(0 0% 100% / 0.07)",
-              border: "1px solid hsl(0 0% 100% / 0.10)",
-              color: "hsl(0 0% 100% / 0.46)",
+              fontSize: "clamp(1.8rem, 2.65vw, 2.4rem)",
+              color: "hsl(0 0% 100% / 0.90)",
+              marginBottom: "clamp(24px, 3vw, 36px)",
             }}
           >
-            {item.tag}
-          </span>
+            <span style={{ fontStyle: "italic", color: "hsl(0 0% 100% / 0.36)" }}>
+              {titleFirst}
+            </span>{" "}
+            {titleRest.join(" ")}
+          </h2>
+
+          {/* Short structural rule — 28px, not a full-width separator */}
+          <div
+            aria-hidden
+            style={{
+              width: 28,
+              height: 1,
+              background: "hsl(224 45% 52% / 0.35)",
+              marginBottom: "clamp(18px, 2.5vw, 26px)",
+              flexShrink: 0,
+            }}
+          />
+
+          {/* Description */}
+          <p
+            className="font-light leading-relaxed"
+            style={{
+              fontSize: "clamp(0.875rem, 1.05vw, 0.9625rem)",
+              color: "hsl(0 0% 100% / 0.42)",
+              maxWidth: "86%",
+            }}
+          >
+            {item.line}
+          </p>
         </div>
-
-        {/* Title */}
-        <h2
-          className="font-heading font-light tracking-tight leading-[1.07] mb-7"
-          style={{ fontSize: "clamp(1.75rem, 2.7vw, 2.4rem)", color: "hsl(0 0% 100% / 0.92)" }}
-        >
-          <span style={{ fontStyle: "italic", color: "hsl(0 0% 100% / 0.44)" }}>
-            {titleFirst}
-          </span>{" "}
-          {titleRest.join(" ")}
-        </h2>
-
-        {/* Separator */}
-        <div style={{ height: 1, background: "hsl(0 0% 100% / 0.07)", marginBottom: 22 }} />
-
-        {/* Description */}
-        <p
-          className="font-light leading-relaxed"
-          style={{ fontSize: "0.9375rem", color: "hsl(0 0% 100% / 0.48)", maxWidth: "85%" }}
-        >
-          {item.line}
-        </p>
       </div>
     </motion.div>
   );
@@ -167,7 +191,7 @@ function DesktopIdentification() {
   });
 
   const progressWidth = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
-  const contentOpacity = useTransform(scrollYProgress, [0, 0.05], [0, 1]);
+  /* No entry fade — section is fully visible from the first scroll pixel */
   const exitOverlay = useTransform(scrollYProgress, [0.87, 1], [0, 0.88]);
 
   return (
@@ -177,11 +201,10 @@ function DesktopIdentification() {
       aria-label="Vos enjeux patrimoniaux"
       style={{ height: `${N * 100}vh` }}
     >
-      <motion.div
-        className="sticky top-0 h-screen overflow-hidden texture-paper flex flex-col"
-        style={{ opacity: contentOpacity }}
-      >
-        {/* Dark exit overlay */}
+      {/* NOT wrapped in a fading motion.div — stays opaque throughout */}
+      <div className="sticky top-0 h-screen overflow-hidden texture-paper flex flex-col">
+
+        {/* Dark exit overlay — fades section to navy before MarqueeStrip */}
         <motion.div
           aria-hidden
           className="absolute inset-0 pointer-events-none z-40"
@@ -195,7 +218,7 @@ function DesktopIdentification() {
         >
           <motion.div
             className="h-full origin-left"
-            style={{ width: progressWidth, background: "hsl(var(--foreground) / 0.30)" }}
+            style={{ width: progressWidth, background: "hsl(var(--foreground) / 0.22)" }}
           />
         </div>
 
@@ -216,7 +239,7 @@ function DesktopIdentification() {
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -6 }}
-              transition={{ duration: 0.25, ease: "easeOut" }}
+              transition={{ duration: 0.22, ease: "easeOut" }}
               className="font-heading font-light tabular-nums"
               style={{ fontSize: "0.875rem", color: "hsl(var(--foreground) / 0.22)" }}
             >
@@ -228,35 +251,48 @@ function DesktopIdentification() {
         {/* Two-column content area */}
         <div className="flex-1 flex items-stretch min-h-0">
 
-          {/* Left column — animated text, XL screens only */}
-          <div className="hidden xl:flex flex-col justify-center pl-20 pr-10 w-[40%] flex-shrink-0">
+          {/* Left column — animated title text, visible on XL screens only */}
+          <div className="hidden xl:flex flex-col justify-center pl-20 pr-12 w-[38%] flex-shrink-0">
             <AnimatePresence mode="wait">
               <motion.div
                 key={`left-${active}`}
-                initial={{ opacity: 0, x: -24, filter: "blur(8px)" }}
-                animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
-                exit={{ opacity: 0, x: 24, filter: "blur(8px)" }}
-                transition={{ duration: 0.52, ease: [0.22, 1, 0.36, 1] }}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -16 }}
+                transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
               >
                 <p
-                  className="text-[10px] tracking-[0.28em] uppercase font-medium mb-5"
-                  style={{ color: "hsl(var(--foreground) / 0.34)" }}
+                  style={{
+                    fontSize: "7.5px",
+                    letterSpacing: "0.46em",
+                    textTransform: "uppercase",
+                    fontWeight: 500,
+                    color: "hsl(var(--foreground) / 0.32)",
+                    marginBottom: "1.25rem",
+                  }}
                 >
-                  Votre situation
+                  Votre enjeu
                 </p>
                 <h3
-                  className="font-heading font-light leading-[1.09] tracking-tight"
-                  style={{ fontSize: "clamp(1.9rem, 2.5vw, 2.8rem)", color: "hsl(var(--foreground))" }}
+                  className="font-heading font-light leading-[1.08] tracking-tight"
+                  style={{
+                    fontSize: "clamp(2rem, 2.6vw, 2.9rem)",
+                    color: "hsl(var(--foreground))",
+                  }}
                 >
-                  <span style={{ fontStyle: "italic", color: "hsl(var(--foreground) / 0.45)" }}>
+                  <span style={{ fontStyle: "italic", color: "hsl(var(--foreground) / 0.44)" }}>
                     {problematics[active].title.split(" ")[0]}
                   </span>{" "}
                   {problematics[active].title.split(" ").slice(1).join(" ")}
                 </h3>
-                <div className="separator-fine my-7" style={{ opacity: 0.15 }} />
+                <div className="separator-fine mt-7 mb-7" style={{ opacity: 0.14 }} />
                 <p
                   className="font-light leading-relaxed"
-                  style={{ fontSize: "0.9375rem", color: "hsl(var(--foreground) / 0.52)", maxWidth: 360 }}
+                  style={{
+                    fontSize: "0.9375rem",
+                    color: "hsl(var(--foreground) / 0.50)",
+                    maxWidth: 340,
+                  }}
                 >
                   {problematics[active].line}
                 </p>
@@ -266,27 +302,11 @@ function DesktopIdentification() {
 
           {/* Right column — card stack */}
           <div className="flex-1 flex items-center justify-center relative py-8">
-            {/* Ambient glow behind stack */}
-            <div
-              aria-hidden
-              className="absolute inset-0 pointer-events-none flex items-center justify-center"
-            >
-              <div
-                style={{
-                  width: 480,
-                  height: 360,
-                  borderRadius: "50%",
-                  background: "radial-gradient(ellipse, hsl(224 60% 40% / 0.07) 0%, transparent 70%)",
-                  filter: "blur(50px)",
-                }}
-              />
-            </div>
-
             {/* 3D perspective context + card stack */}
             <div style={{ perspective: "1400px", perspectiveOrigin: "50% 40%", flexShrink: 0 }}>
               <div
                 className="relative"
-                style={{ width: "min(520px, 85vw)", height: 420 }}
+                style={{ width: "min(500px, 84vw)", height: 400 }}
               >
                 {problematics.map((item, i) => {
                   const slot = i - active;
@@ -305,18 +325,18 @@ function DesktopIdentification() {
               key={i}
               className="rounded-full block"
               animate={{
-                width: i === active ? 32 : 6,
-                height: 6,
+                width: i === active ? 28 : 5,
+                height: 5,
                 backgroundColor:
                   i === active
-                    ? "hsl(var(--foreground) / 0.60)"
-                    : "hsl(var(--foreground) / 0.14)",
+                    ? "hsl(var(--foreground) / 0.55)"
+                    : "hsl(var(--foreground) / 0.13)",
               }}
-              transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.40, ease: [0.22, 1, 0.36, 1] }}
             />
           ))}
         </div>
-      </motion.div>
+      </div>
     </section>
   );
 }
