@@ -4,7 +4,6 @@ import Header from "@/components/Header";
 import HeroSticky from "@/components/HeroSticky";
 import Seo, { localBusinessJsonLd, organizationJsonLd } from "@/components/Seo";
 import Identification from "@/components/Identification";
-import MarqueeStrip from "@/components/MarqueeStrip";
 import Promesse from "@/components/Promesse";
 import About from "@/components/About";
 import ExpertisesPinned from "@/components/ExpertisesPinned";
@@ -54,7 +53,6 @@ const Index = () => {
           <main id="main">
             <HeroSticky />
             <Identification />
-            <MarqueeStrip />
             <Promesse />
             <About />
             <ExpertisesPinned />

@@ -80,12 +80,12 @@ function ProblemCard({ item, slot }: { item: typeof problematics[0]; slot: numbe
         className="w-full h-full flex flex-col"
         style={{
           borderRadius: 18,
-          /* Flat solid dark — no gradient, no glass */
-          background: "hsl(221 20% 9%)",
-          border: "0.5px solid hsl(0 0% 100% / 0.08)",
+          /* Navy brand color — matches the site's --navy token */
+          background: "hsl(222 50% 11%)",
+          border: "0.5px solid hsl(0 0% 100% / 0.09)",
           boxShadow: isActive
-            ? "0 44px 88px -18px hsl(221 28% 4% / 0.72), 0 0 0 0.5px hsl(0 0% 100% / 0.05)"
-            : "0 20px 44px -12px hsl(221 22% 4% / 0.44)",
+            ? "0 44px 88px -18px hsl(224 60% 4% / 0.80), 0 0 0 0.5px hsl(0 0% 100% / 0.06)"
+            : "0 20px 44px -12px hsl(224 60% 4% / 0.50)",
           overflow: "hidden",
         }}
       >
@@ -191,17 +191,18 @@ function DesktopIdentification() {
   });
 
   const progressWidth = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
-  /* No entry fade — section is fully visible from the first scroll pixel */
-  const exitOverlay = useTransform(scrollYProgress, [0.87, 1], [0, 0.88]);
+  /* Longer, earlier fade to navy-deep → smoother transition into Promesse */
+  const exitOverlay = useTransform(scrollYProgress, [0.76, 1], [0, 1]);
 
   return (
     <section
       ref={ref}
       id="problematiques"
       aria-label="Vos enjeux patrimoniaux"
-      style={{ height: `${N * 100}vh` }}
+      /* Navy-deep background on the container ensures no gap shows between
+         the sticky panel and Promesse when the section unsticks */
+      style={{ height: `${N * 100}vh`, background: "hsl(var(--navy-deep))" }}
     >
-      {/* NOT wrapped in a fading motion.div — stays opaque throughout */}
       <div className="sticky top-0 h-screen overflow-hidden texture-paper flex flex-col">
 
         {/* Dark exit overlay — fades section to navy before MarqueeStrip */}
