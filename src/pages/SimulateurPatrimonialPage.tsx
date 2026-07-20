@@ -78,7 +78,7 @@ function formatPct(v: number) {
 // ─── Step indicator ───────────────────────────────────────────────────────────
 function StepIndicator({ current, total }: { current: number; total: number }) {
   return (
-    <div className="flex items-center gap-0 mb-8">
+    <div className="flex items-center w-full overflow-hidden mb-8">
       {STEPS.map((step, i) => (
         <div key={step.id} className="flex items-center">
           <div
@@ -105,7 +105,7 @@ function StepIndicator({ current, total }: { current: number; total: number }) {
           </div>
           {i < STEPS.length - 1 && (
             <div
-              className={`h-px flex-1 w-8 md:w-12 mx-2 transition-all duration-300 ${
+              className={`h-px flex-1 min-w-[8px] max-w-[32px] mx-1 transition-all duration-300 ${
                 step.id < current ? 'bg-foreground/30' : 'bg-foreground/10'
               }`}
             />
@@ -360,34 +360,53 @@ export default function SimulateurPatrimonialPage() {
     <>
       <Header />
 
-      {/* Hero compact */}
-      <section className="pt-28 pb-10 px-4" style={{ background: 'hsl(220 30% 97%)' }}>
-        <div className="max-w-5xl mx-auto">
-          <p className="text-[10px] tracking-[0.32em] uppercase text-foreground/40 mb-4 font-medium">
-            Outil pédagogique — données simulées
-          </p>
-          <h1 className="text-3xl md:text-5xl font-heading font-light text-foreground leading-tight tracking-tight mb-4 max-w-2xl">
-            Simulateur de stratégie patrimoniale
-          </h1>
-          <p className="text-foreground/60 font-light text-base max-w-xl mb-6">
-            Explorez l'impact de différentes allocations, horizons et scénarios de marché sur la projection de votre capital. Outil illustratif uniquement.
-          </p>
-
-          {/* Disclaimer */}
-          <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl p-4 max-w-2xl mb-6">
-            <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
-            <p className="text-xs text-amber-800 leading-relaxed">
-              Les résultats présentés reposent sur des hypothèses et des données simulées. Ils ne constituent pas une prévision, une garantie de rendement ou une recommandation personnalisée. La valeur des investissements peut évoluer à la hausse comme à la baisse et un risque de perte en capital existe.
+      {/* Compact image hero */}
+      <section className="relative overflow-hidden" style={{ height: 420 }}>
+        {/* Background image */}
+        <div className="absolute inset-0">
+          <img
+            src="https://images.unsplash.com/photo-1759876741967-344a7ac3668b?w=1800&auto=format&fit=crop&q=85"
+            alt=""
+            className="w-full h-full object-cover object-center"
+            fetchPriority="high"
+            decoding="sync"
+          />
+        </div>
+        {/* Left overlay */}
+        <div
+          aria-hidden
+          className="absolute inset-0 pointer-events-none"
+          style={{ background: "linear-gradient(108deg, hsl(222 55% 8% / 0.88) 0%, hsl(222 55% 8% / 0.60) 40%, hsl(222 55% 8% / 0.15) 65%, transparent 82%)" }}
+        />
+        {/* Bottom white fade */}
+        <div
+          aria-hidden
+          className="absolute inset-x-0 bottom-0 pointer-events-none"
+          style={{ height: "50%", background: "linear-gradient(to top, hsl(220 30% 97%) 0%, hsl(220 30% 97% / 0.55) 32%, transparent 100%)" }}
+        />
+        {/* Content */}
+        <div className="relative z-10 flex items-end h-full pb-10 px-4">
+          <div className="max-w-5xl mx-auto w-full">
+            <p className="text-[10px] tracking-[0.32em] uppercase text-white/50 mb-3 font-medium">
+              Outil pédagogique — données simulées
             </p>
+            <h1 className="text-3xl md:text-4xl font-heading font-light text-white leading-tight tracking-tight mb-3 max-w-2xl">
+              Simulateur de stratégie patrimoniale
+            </h1>
+            <p className="text-white/60 font-light text-sm max-w-xl mb-3">
+              Explorez l'impact de différentes allocations, horizons et scénarios de marché sur la projection de votre capital.
+            </p>
+            <p className="text-[11px] text-white/35 italic max-w-xl mb-4">
+              Indicatif uniquement — ne constitue pas une prévision ou une recommandation personnalisée.
+            </p>
+            <Link
+              to="/profil-de-risque"
+              className="inline-flex items-center gap-2 text-sm text-white/55 hover:text-white transition-colors"
+            >
+              Déterminer mon profil de risque d'abord
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
           </div>
-
-          <Link
-            to="/profil-de-risque"
-            className="inline-flex items-center gap-2 text-sm text-foreground/55 hover:text-foreground transition-colors"
-          >
-            Déterminer mon profil de risque d'abord
-            <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
         </div>
       </section>
 

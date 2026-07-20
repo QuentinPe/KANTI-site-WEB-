@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import {
-  AlertTriangle, ArrowRight, ChevronLeft, ChevronRight, Plus, X,
+  ArrowRight, ChevronLeft, ChevronRight, Plus, X,
 } from "lucide-react";
 import {
   AreaChart, Area, LineChart, Line,
@@ -79,7 +79,7 @@ function formatPct(v: number) {
 
 function StepIndicator({ current }: { current: number }) {
   return (
-    <div className="flex items-center gap-0 mb-8">
+    <div className="flex items-center w-full overflow-hidden mb-8">
       {STEPS.map((step, i) => (
         <div key={step.id} className="flex items-center">
           <div className="flex flex-col items-center">
@@ -99,7 +99,7 @@ function StepIndicator({ current }: { current: number }) {
             </span>
           </div>
           {i < STEPS.length - 1 && (
-            <div className={`h-px flex-1 w-8 md:w-12 mx-2 transition-all duration-300 ${
+            <div className={`h-px flex-1 min-w-[8px] max-w-[32px] mx-1 transition-all duration-300 ${
               step.id < current ? "bg-foreground/30" : "bg-foreground/10"
             }`} />
           )}
@@ -283,22 +283,44 @@ export default function SimulateurFinancementPage() {
     <>
       <Header />
 
-      {/* Compact hero */}
-      <section className="pt-28 pb-10 px-4 md:px-8" style={{ background: "hsl(220 30% 97%)" }}>
-        <div className="max-w-5xl mx-auto">
-          <p className="text-[10px] tracking-[0.32em] uppercase text-foreground/40 mb-4 font-medium">
-            Outil pédagogique — données simulées
-          </p>
-          <h1 className="text-3xl md:text-5xl font-heading font-light text-foreground leading-tight tracking-tight mb-4 max-w-2xl">
-            Simulateur de financement
-          </h1>
-          <p className="text-foreground/60 font-light text-base max-w-xl mb-6">
-            Simulez mensualité, coût total et capacité d'emprunt. Comparez plusieurs stratégies et ajustez les paramètres en temps réel.
-          </p>
-          <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl p-4 max-w-2xl">
-            <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" aria-hidden />
-            <p className="text-xs text-amber-800 leading-relaxed">
-              Les résultats présentés reposent sur les informations saisies et sont fournis à titre indicatif. Ils ne constituent pas une offre de prêt, une garantie de taux ou une recommandation personnalisée.
+      {/* Compact image hero */}
+      <section className="relative overflow-hidden" style={{ height: 400 }}>
+        {/* Background image */}
+        <div className="absolute inset-0">
+          <img
+            src="/financement-hero.png"
+            alt=""
+            className="w-full h-full object-cover object-center"
+            fetchPriority="high"
+            decoding="sync"
+          />
+        </div>
+        {/* Left overlay */}
+        <div
+          aria-hidden
+          className="absolute inset-0 pointer-events-none"
+          style={{ background: "linear-gradient(108deg, hsl(220 25% 8% / 0.82) 0%, hsl(220 25% 8% / 0.55) 42%, hsl(220 25% 8% / 0.10) 68%, transparent 85%)" }}
+        />
+        {/* Bottom white fade */}
+        <div
+          aria-hidden
+          className="absolute inset-x-0 bottom-0 pointer-events-none"
+          style={{ height: "55%", background: "linear-gradient(to top, hsl(220 30% 97%) 0%, hsl(220 30% 97% / 0.65) 30%, transparent 100%)" }}
+        />
+        {/* Content */}
+        <div className="relative z-10 flex items-end h-full pb-10 px-4 md:px-8">
+          <div className="max-w-5xl mx-auto w-full">
+            <p className="text-[10px] tracking-[0.32em] uppercase text-white/50 mb-3 font-medium">
+              Outil pédagogique — données simulées
+            </p>
+            <h1 className="text-3xl md:text-4xl font-heading font-light text-white leading-tight tracking-tight mb-3 max-w-2xl">
+              Simulateur de financement
+            </h1>
+            <p className="text-white/60 font-light text-sm max-w-xl mb-2">
+              Simulez mensualité, coût total et capacité d'emprunt. Comparez plusieurs stratégies et ajustez les paramètres en temps réel.
+            </p>
+            <p className="text-[11px] text-white/35 italic max-w-xl">
+              Indicatif uniquement — ne constitue pas une offre de prêt ou une recommandation personnalisée.
             </p>
           </div>
         </div>

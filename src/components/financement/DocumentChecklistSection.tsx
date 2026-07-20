@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { CheckSquare } from "lucide-react";
+import { CheckSquare, Copy, Check } from "lucide-react";
 
 interface DocCategory {
   cat: string;
@@ -108,6 +108,21 @@ const TABS = [
 export default function DocumentChecklistSection() {
   const reduce = useReducedMotion();
   const [activeTab, setActiveTab] = useState(0);
+  const [copied, setCopied] = useState(false);
+
+  function copyList() {
+    const tab = TABS[activeTab];
+    const lines: string[] = [`${tab.label}\n`];
+    tab.docs.forEach(cat => {
+      lines.push(`— ${cat.cat}`);
+      cat.items.forEach(item => lines.push(`  · ${item}`));
+      lines.push('');
+    });
+    navigator.clipboard.writeText(lines.join('\n')).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  }
 
   const docs = TABS[activeTab].docs;
   const totalItems = docs.reduce((s, c) => s + c.items.length, 0);
@@ -138,21 +153,30 @@ export default function DocumentChecklistSection() {
           </p>
         </motion.div>
 
-        {/* Tab selector */}
-        <div className="flex flex-wrap gap-2 mb-8">
-          {TABS.map((tab, i) => (
-            <button
-              key={tab.label}
-              onClick={() => setActiveTab(i)}
-              className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-200 ${
-                activeTab === i
-                  ? "bg-foreground text-white"
-                  : "border border-foreground/15 text-foreground/60 hover:border-foreground/30 hover:text-foreground"
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
+        {/* Tab selector + copy button */}
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-8">
+          <div className="flex flex-wrap gap-2">
+            {TABS.map((tab, i) => (
+              <button
+                key={tab.label}
+                onClick={() => setActiveTab(i)}
+                className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-200 ${
+                  activeTab === i
+                    ? "bg-foreground text-white"
+                    : "border border-foreground/15 text-foreground/60 hover:border-foreground/30 hover:text-foreground"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+          <button
+            onClick={copyList}
+            className="flex items-center gap-1.5 px-4 py-2 rounded-full border border-foreground/15 text-xs font-medium text-foreground/55 hover:text-foreground hover:border-foreground/30 transition-all duration-200"
+          >
+            {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+            {copied ? "Copié !" : "Copier la liste"}
+          </button>
         </div>
 
         {/* Checklist card */}
