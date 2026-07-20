@@ -47,10 +47,10 @@ export default function AllocationDonutSection() {
   return (
     <section className="section-padding bg-background">
       <div className="max-w-7xl mx-auto">
-        <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+        <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-start">
           {/* Left editorial column */}
           <motion.div
-            className="lg:col-span-5"
+            className="lg:col-span-5 lg:sticky lg:top-24 lg:self-start"
             initial={reduce ? false : { opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, ease: 'easeOut' }}

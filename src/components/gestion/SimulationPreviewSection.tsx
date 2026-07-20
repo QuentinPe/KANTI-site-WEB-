@@ -96,7 +96,7 @@ export default function SimulationPreviewSection() {
 
           {/* Right chart */}
           <motion.div
-            className="lg:col-span-8"
+            className="lg:col-span-8 lg:sticky lg:top-24 lg:self-start"
             initial={reduce ? false : { opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, ease: 'easeOut', delay: 0.15 }}
