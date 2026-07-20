@@ -17,6 +17,14 @@ const TIMING: Record<string, string> = {
   month: "Dans le mois",
 };
 
+function escHtml(s: string): string {
+  return String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
 export default async function handler(req: Request): Promise<Response> {
   const cors = {
     "Access-Control-Allow-Origin": "*",
@@ -70,15 +78,15 @@ export default async function handler(req: Request): Promise<Response> {
     `🏷️ <b>Sujet :</b> ${data.sujet || "—"}`,
     "",
     "━━━━━━━━━━━━━━━━━",
-    `<b>Nom :</b> ${data.nom}`,
-    `<b>Email :</b> ${data.email}`,
-    `<b>Tél :</b> ${data.telephone || "—"}`,
+    `<b>Nom :</b> ${escHtml(data.nom)}`,
+    `<b>Email :</b> ${escHtml(data.email)}`,
+    `<b>Tél :</b> ${data.telephone ? escHtml(data.telephone) : "—"}`,
   ];
 
   if (data.message?.trim()) {
     lines.push("");
     lines.push(`💬 <b>Message :</b>`);
-    lines.push(`<i>${data.message.trim()}</i>`);
+    lines.push(`<i>${escHtml(data.message.trim())}</i>`);
   }
 
   lines.push("━━━━━━━━━━━━━━━━━");

@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import DOMPurify from "dompurify";
 import LegalLayout from "@/components/LegalLayout";
 import { getLegalContent } from "@/lib/legalService";
 import { getSiteSettingsMap } from "@/lib/siteSettingsService";
@@ -26,7 +27,7 @@ export default function MentionsLegalesPage() {
     ? [{ id: "content", title: "", content: (
         <div
           className="prose prose-slate prose-headings:font-heading prose-headings:font-light prose-headings:tracking-tight prose-a:text-[hsl(218_45%_38%)] prose-a:no-underline hover:prose-a:underline max-w-none"
-          dangerouslySetInnerHTML={{ __html: cms.content_html }}
+          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(cms.content_html) }}
         />
       )}]
     : null;

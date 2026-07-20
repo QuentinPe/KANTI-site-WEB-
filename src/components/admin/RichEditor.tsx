@@ -1,4 +1,5 @@
 import React, { useRef, useCallback, useState, useEffect } from "react";
+import DOMPurify from "dompurify";
 import { useQuery } from "@tanstack/react-query";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
@@ -218,7 +219,7 @@ export default function RichEditor({ value, onChange, fullscreen = false }: Rich
       const mammoth = await import("mammoth");
       const arrayBuffer = await file.arrayBuffer();
       const { value: html } = await mammoth.convertToHtml({ arrayBuffer });
-      editor.chain().focus().setContent(html).run();
+      editor.chain().focus().setContent(DOMPurify.sanitize(html)).run();
       onChange(editor.getHTML());
     } catch (err) { alert("Erreur import Word : " + String(err)); }
   }, [editor, onChange]);
@@ -236,11 +237,14 @@ export default function RichEditor({ value, onChange, fullscreen = false }: Rich
         const content = await page.getTextContent();
         fullText += content.items.map((item: unknown) => (item as { str?: string }).str ?? "").join(" ") + "\n\n";
       }
-      const paragraphs = fullText.split(/\n{2,}/).filter(p => p.trim()).map(p => `<p>${p.trim()}</p>`).join("");
+      const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      const paragraphs = fullText.split(/\n{2,}/).filter(p => p.trim()).map(p => `<p>${esc(p.trim())}</p>`).join("");
       editor.chain().focus().setContent(paragraphs || "<p>Contenu extrait vide.</p>").run();
       onChange(editor.getHTML());
     } catch (err) { alert("Erreur import PDF : " + String(err)); }
   }, [editor, onChange]);
+
+  const SAFE_PROTOCOLS = /^(https?|mailto|tel):/i;
 
   const handleLink = useCallback(() => {
     if (!editor) return;
@@ -248,6 +252,7 @@ export default function RichEditor({ value, onChange, fullscreen = false }: Rich
     const url = window.prompt("URL du lien :", prev);
     if (url === null) return;
     if (url === "") { editor.chain().focus().unsetLink().run(); return; }
+    if (!SAFE_PROTOCOLS.test(url)) { toast.error("Protocole non autorisé (utiliser http, https, mailto ou tel)"); return; }
     editor.chain().focus().setLink({ href: url }).run();
   }, [editor]);
 

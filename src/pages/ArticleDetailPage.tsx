@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Clock, Calendar, BookOpen, ExternalLink } from "lucide-react";
 import { motion, useScroll, useSpring, useMotionValueEvent } from "framer-motion";
+import DOMPurify from "dompurify";
 import { getArticleById, getArticles } from "@/lib/articlesService";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -291,7 +292,7 @@ export default function ArticleDetailPage() {
                   {processedBody ? (
                     <div
                       className="article-body"
-                      dangerouslySetInnerHTML={{ __html: processedBody }}
+                      dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(processedBody) }}
                     />
                   ) : (
                     <p className="text-[15px] font-light leading-relaxed" style={{ color: "hsl(224 15% 45%)" }}>

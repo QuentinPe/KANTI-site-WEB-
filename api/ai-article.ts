@@ -1,8 +1,10 @@
 export const config = { runtime: "edge" };
 
+const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN ?? "https://kanti.fr";
+
 const CORS = {
   "Content-Type": "application/json",
-  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
 };
 
 function json(data: unknown, status = 200) {
@@ -13,13 +15,39 @@ function stripHtml(html: string) {
   return html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
 }
 
+async function verifySupabaseToken(token: string): Promise<boolean> {
+  const supabaseUrl = process.env.VITE_SUPABASE_URL;
+  const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
+  if (!supabaseUrl || !supabaseKey) return false;
+  try {
+    const res = await fetch(`${supabaseUrl}/auth/v1/user`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        apikey: supabaseKey,
+      },
+    });
+    if (!res.ok) return false;
+    const user = await res.json();
+    return Boolean(user?.id);
+  } catch {
+    return false;
+  }
+}
+
 export default async function handler(req: Request): Promise<Response> {
   if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: CORS });
   if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
 
+  // Verify Supabase session — only authenticated admins may use the AI endpoint
+  const authHeader = req.headers.get("authorization") ?? "";
+  const token = authHeader.replace(/^Bearer\s+/i, "");
+  if (!token || !(await verifySupabaseToken(token))) {
+    return json({ error: "Unauthorized" }, 401);
+  }
+
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
-    return json({ error: "GROQ_API_KEY non configurée dans Vercel Environment Variables" }, 500);
+    return json({ error: "Service IA non configuré" }, 500);
   }
 
   let body: { action?: string; content?: string; title?: string };
@@ -87,13 +115,15 @@ export default async function handler(req: Request): Promise<Response> {
 
     if (!aiRes.ok) {
       const errText = await aiRes.text();
-      return json({ error: `Erreur Groq (${aiRes.status}) : ${errText}` }, 502);
+      console.error("[KANTI] Groq error:", errText);
+      return json({ error: "Service IA temporairement indisponible" }, 502);
     }
 
     const data = (await aiRes.json()) as { choices: { message: { content: string } }[] };
     const result = data.choices?.[0]?.message?.content ?? "";
     return json({ result });
   } catch (e) {
-    return json({ error: String(e) }, 500);
+    console.error("[KANTI] AI fetch error:", e);
+    return json({ error: "Service IA temporairement indisponible" }, 500);
   }
 }

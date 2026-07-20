@@ -1,5 +1,7 @@
 # robots.txt — KANTI
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /login
 
 Sitemap: https://kanti-patrimoine-courtage.lovable.app/sitemap.xml

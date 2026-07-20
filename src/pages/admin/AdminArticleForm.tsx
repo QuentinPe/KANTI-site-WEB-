@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/lib/supabase";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -167,9 +168,13 @@ export default function AdminArticleForm() {
     if (action === "summarize") setAiSummarizing(true);
     else setAiReformatting(true);
     try {
+      const { data: { session } } = await supabase.auth.getSession();
       const res = await fetch("/api/ai-article", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {}),
+        },
         body: JSON.stringify({ action, content, title: titleValue }),
       });
       const rawText = await res.text();
