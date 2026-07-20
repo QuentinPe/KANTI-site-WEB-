@@ -2,8 +2,7 @@ import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
 
-const IMAGE_URL =
-  "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1800&auto=format&fit=crop&q=85";
+const IMAGE_URL = "/financement-hero.png";
 
 const STATS = [
   { value: "20+", label: "Établissements partenaires" },
@@ -38,30 +37,31 @@ export default function FinancingHero() {
       >
         <img
           src={IMAGE_URL}
-          alt="Façade architecturale — financement patrimonial KANTI"
+          alt="Bureau minimaliste — financement patrimonial KANTI"
           className="w-full h-full object-cover object-center"
           fetchPriority="high"
           decoding="sync"
         />
       </motion.div>
 
-      {/* Dark left gradient */}
+      {/* Left gradient — image already dark, overlay stays light */}
       <div
         aria-hidden
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            "linear-gradient(105deg, hsl(224 60% 7% / 0.93) 0%, hsl(224 60% 7% / 0.72) 32%, hsl(224 60% 7% / 0.28) 58%, transparent 78%)",
+            "linear-gradient(108deg, hsl(220 25% 8% / 0.78) 0%, hsl(220 25% 8% / 0.52) 38%, hsl(220 25% 8% / 0.14) 62%, transparent 80%)",
         }}
       />
 
-      {/* Bottom vignette */}
+      {/* Bottom vignette — stronger to dissolve the dark desk into white */}
       <div
         aria-hidden
-        className="absolute inset-x-0 bottom-0 h-40 pointer-events-none"
+        className="absolute inset-x-0 bottom-0 pointer-events-none"
         style={{
+          height: "52%",
           background:
-            "linear-gradient(to top, hsl(220 30% 97% / 0.88) 0%, transparent 100%)",
+            "linear-gradient(to top, hsl(220 30% 97%) 0%, hsl(220 30% 97% / 0.70) 28%, hsl(220 30% 97% / 0.18) 58%, transparent 100%)",
         }}
       />
 

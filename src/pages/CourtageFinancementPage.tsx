@@ -2,7 +2,6 @@ import { useScrollReveal } from "@/hooks/useScrollReveal";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FinancingHero from "@/components/financement/FinancingHero";
-import FinancingArchitectureSection from "@/components/financement/FinancingArchitectureSection";
 import FundingPlanSection from "@/components/financement/FundingPlanSection";
 import OfferComparisonSection from "@/components/financement/OfferComparisonSection";
 import ScenarioComparatorSection from "@/components/financement/ScenarioComparatorSection";
@@ -24,7 +23,6 @@ export default function CourtageFinancementPage() {
       <Header />
       <main id="main-content">
         <FinancingHero />
-        <FinancingArchitectureSection />
         <FundingPlanSection />
         <OfferComparisonSection />
         <ScenarioComparatorSection />
