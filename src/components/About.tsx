@@ -56,6 +56,18 @@ export default function About() {
 
   return (
     <section ref={sectionRef} id="about" className="section-padding texture-paper relative overflow-hidden">
+
+      {/* Top blend — smooth transition from Promesse (navy-deep) to this light section */}
+      <div
+        aria-hidden
+        className="absolute top-0 left-0 right-0 pointer-events-none"
+        style={{
+          height: "260px",
+          background: "linear-gradient(to bottom, hsl(224 60% 7%) 0%, transparent 100%)",
+          zIndex: 5,
+        }}
+      />
+
       {/* Parallax ghost word */}
       <motion.div
         aria-hidden

@@ -67,7 +67,7 @@ function DesktopIdentification() {
 
   const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "-7%"]);
   const entryOverlay = useTransform(scrollYProgress, [0, 0.08], [1, 0]);
-  const exitOverlay = useTransform(scrollYProgress, [0.91, 1], [0, 1]);
+  const exitOverlay = useTransform(scrollYProgress, [0.97, 1], [0, 1]);
 
   const item = problematics[active];
 

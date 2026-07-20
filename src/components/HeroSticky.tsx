@@ -222,6 +222,17 @@ export default function HeroSticky() {
           }}
         />
 
+        {/* Bottom blend — erases the hard edge where Identification begins */}
+        <div
+          aria-hidden
+          className="absolute bottom-0 left-0 right-0 pointer-events-none"
+          style={{
+            height: "18vh",
+            background: "linear-gradient(to top, hsl(224 60% 7%) 0%, transparent 100%)",
+            zIndex: 2,
+          }}
+        />
+
         {/* Editorial content */}
         <motion.div
           style={{ opacity: titleOpacity, y: titleY }}
