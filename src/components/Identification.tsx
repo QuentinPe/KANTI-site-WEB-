@@ -52,14 +52,14 @@ const N = problematics.length;
 
 /* Slot positions: -1 = exiting, 0 = active front, 1 = next, 2 = back */
 const SLOTS: Record<string, { y: number; x: number; scale: number; opacity: number; rotateZ: number }> = {
-  "-1": { y: -220, x: 0,  scale: 0.84, opacity: 0,    rotateZ: -1.5 },
+  "-1": { y: -230, x: 0,  scale: 0.84, opacity: 0,    rotateZ: -1.5 },
    "0": { y: 0,    x: 0,  scale: 1,    opacity: 1,    rotateZ: 0    },
-   "1": { y: 18,   x: 16, scale: 0.944,opacity: 0.60, rotateZ: 1.6  },
-   "2": { y: 36,   x: 32, scale: 0.889,opacity: 0.30, rotateZ: 3.2  },
+   "1": { y: 18,   x: 16, scale: 0.944,opacity: 0.62, rotateZ: 1.6  },
+   "2": { y: 36,   x: 32, scale: 0.889,opacity: 0.32, rotateZ: 3.2  },
 };
 const HIDDEN_SLOT = { y: 60, x: 44, scale: 0.83, opacity: 0, rotateZ: 4.5 };
 
-/* ── ProblemCard — flat, architectural, non-generic ─────────────── */
+/* ── ProblemCard — liquid glass ──────────────────────────────────── */
 function ProblemCard({ item, slot }: { item: typeof problematics[0]; slot: number }) {
   const isActive = slot === 0;
   const s = SLOTS[String(slot)] ?? HIDDEN_SLOT;
@@ -77,42 +77,75 @@ function ProblemCard({ item, slot }: { item: typeof problematics[0]; slot: numbe
       }}
     >
       <div
-        className="w-full h-full flex flex-col"
+        className="w-full h-full flex flex-col relative overflow-hidden"
         style={{
-          borderRadius: 18,
-          /* Navy brand color — matches the site's --navy token */
-          background: "hsl(222 50% 11%)",
-          border: "0.5px solid hsl(0 0% 100% / 0.09)",
+          borderRadius: 20,
+          /* ── Liquid glass surface ── */
+          background: "hsl(0 0% 100% / 0.08)",
+          backdropFilter: "blur(28px) saturate(200%)",
+          WebkitBackdropFilter: "blur(28px) saturate(200%)",
+          border: "0.5px solid hsl(0 0% 100% / 0.18)",
           boxShadow: isActive
-            ? "0 44px 88px -18px hsl(224 60% 4% / 0.80), 0 0 0 0.5px hsl(0 0% 100% / 0.06)"
-            : "0 20px 44px -12px hsl(224 60% 4% / 0.50)",
-          overflow: "hidden",
+            ? [
+                "0 32px 72px -16px hsl(224 60% 4% / 0.70)",
+                "0 8px 24px -4px hsl(224 60% 4% / 0.30)",
+                /* Inner specular highlights — simulate glass refraction */
+                "inset 0 1.5px 0 hsl(0 0% 100% / 0.30)",
+                "inset 0 -0.5px 0 hsl(0 0% 100% / 0.05)",
+                "inset 1px 0 0 hsl(0 0% 100% / 0.08)",
+                "inset -1px 0 0 hsl(0 0% 100% / 0.08)",
+                "0 0 0 0.5px hsl(0 0% 100% / 0.09)",
+              ].join(", ")
+            : [
+                "0 20px 44px -12px hsl(224 60% 4% / 0.45)",
+                "inset 0 1px 0 hsl(0 0% 100% / 0.14)",
+                "0 0 0 0.5px hsl(0 0% 100% / 0.06)",
+              ].join(", "),
         }}
       >
-        {/* Top edge accent — a single thin highlight line at the very top */}
+        {/* Upper glass reflection — blurred light catch */}
         <div
           aria-hidden
           style={{
-            height: 1,
-            background: isActive
-              ? "linear-gradient(to right, transparent 0%, hsl(0 0% 100% / 0.10) 20%, hsl(0 0% 100% / 0.14) 50%, hsl(0 0% 100% / 0.10) 80%, transparent 100%)"
-              : "hsl(0 0% 100% / 0.05)",
-            flexShrink: 0,
+            position: "absolute",
+            top: 0, left: 0, right: 0,
+            height: "44%",
+            background:
+              "linear-gradient(180deg, hsl(0 0% 100% / 0.09) 0%, hsl(0 0% 100% / 0.02) 55%, transparent 100%)",
+            borderRadius: "20px 20px 0 0",
+            pointerEvents: "none",
+            zIndex: 0,
           }}
         />
 
-        {/* Card body */}
-        <div className="flex flex-col flex-1 p-10 lg:p-12">
+        {/* Specular line — top edge bright highlight */}
+        <div
+          aria-hidden
+          style={{
+            position: "absolute",
+            top: "0.5px",
+            left: "7%", right: "7%",
+            height: "1.5px",
+            background:
+              "linear-gradient(to right, transparent 0%, hsl(0 0% 100% / 0.50) 22%, hsl(0 0% 100% / 0.72) 50%, hsl(0 0% 100% / 0.50) 78%, transparent 100%)",
+            borderRadius: "100%",
+            pointerEvents: "none",
+            zIndex: 0,
+          }}
+        />
 
-          {/* Tag row — plain small-caps text, no pill */}
+        {/* Card content */}
+        <div className="flex flex-col flex-1 p-10 lg:p-12" style={{ position: "relative", zIndex: 1 }}>
+
+          {/* Header: tag (left) + number (right) */}
           <div className="flex items-start justify-between mb-10">
             <span
               style={{
                 fontSize: "7.5px",
-                letterSpacing: "0.48em",
+                letterSpacing: "0.50em",
                 textTransform: "uppercase",
                 fontWeight: 500,
-                color: "hsl(0 0% 100% / 0.28)",
+                color: "hsl(0 0% 100% / 0.55)",
                 lineHeight: 1,
               }}
             >
@@ -121,9 +154,9 @@ function ProblemCard({ item, slot }: { item: typeof problematics[0]; slot: numbe
             <span
               style={{
                 fontSize: "9px",
-                fontFamily: "ui-monospace, monospace",
+                fontFamily: "ui-monospace, 'Cascadia Code', monospace",
                 letterSpacing: "0.06em",
-                color: "hsl(0 0% 100% / 0.14)",
+                color: "hsl(0 0% 100% / 0.22)",
                 lineHeight: 1,
               }}
             >
@@ -131,29 +164,28 @@ function ProblemCard({ item, slot }: { item: typeof problematics[0]; slot: numbe
             </span>
           </div>
 
-          {/* Title — brand italic-first-word style */}
+          {/* Title */}
           <h2
             className="font-heading font-light tracking-tight leading-[1.06]"
             style={{
               fontSize: "clamp(1.8rem, 2.65vw, 2.4rem)",
-              color: "hsl(0 0% 100% / 0.90)",
-              marginBottom: "clamp(24px, 3vw, 36px)",
+              color: "hsl(0 0% 100% / 0.94)",
+              marginBottom: "clamp(22px, 2.8vw, 34px)",
             }}
           >
-            <span style={{ fontStyle: "italic", color: "hsl(0 0% 100% / 0.36)" }}>
+            <span style={{ fontStyle: "italic", color: "hsl(0 0% 100% / 0.46)" }}>
               {titleFirst}
             </span>{" "}
             {titleRest.join(" ")}
           </h2>
 
-          {/* Short structural rule — 28px, not a full-width separator */}
+          {/* Short structural rule */}
           <div
-            aria-hidden
             style={{
               width: 28,
               height: 1,
-              background: "hsl(224 45% 52% / 0.35)",
-              marginBottom: "clamp(18px, 2.5vw, 26px)",
+              background: "hsl(0 0% 100% / 0.24)",
+              marginBottom: "clamp(16px, 2.2vw, 24px)",
               flexShrink: 0,
             }}
           />
@@ -163,8 +195,8 @@ function ProblemCard({ item, slot }: { item: typeof problematics[0]; slot: numbe
             className="font-light leading-relaxed"
             style={{
               fontSize: "clamp(0.875rem, 1.05vw, 0.9625rem)",
-              color: "hsl(0 0% 100% / 0.42)",
-              maxWidth: "86%",
+              color: "hsl(0 0% 100% / 0.58)",
+              maxWidth: "88%",
             }}
           >
             {item.line}
@@ -191,7 +223,11 @@ function DesktopIdentification() {
   });
 
   const progressWidth = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
-  /* Longer, earlier fade to navy-deep → smoother transition into Promesse */
+  /* Subtle background parallax — waves drift slowly upward as you scroll */
+  const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "-7%"]);
+  /* Navy fade at ENTRY — starts full, reveals the scene as you scroll in */
+  const entryOverlay = useTransform(scrollYProgress, [0, 0.08], [1, 0]);
+  /* Navy fade at EXIT — smoothly blends into Promesse */
   const exitOverlay = useTransform(scrollYProgress, [0.76, 1], [0, 1]);
 
   return (
@@ -199,37 +235,62 @@ function DesktopIdentification() {
       ref={ref}
       id="problematiques"
       aria-label="Vos enjeux patrimoniaux"
-      /* Navy-deep background on the container ensures no gap shows between
-         the sticky panel and Promesse when the section unsticks */
       style={{ height: `${N * 100}vh`, background: "hsl(var(--navy-deep))" }}
     >
-      <div className="sticky top-0 h-screen overflow-hidden texture-paper flex flex-col">
+      <div className="sticky top-0 h-screen overflow-hidden flex flex-col">
 
-        {/* Dark exit overlay — fades section to navy before MarqueeStrip */}
-        <motion.div
-          aria-hidden
-          className="absolute inset-0 pointer-events-none z-40"
-          style={{ opacity: exitOverlay, background: "hsl(var(--navy-deep))" }}
-        />
-
-        {/* Scroll progress bar */}
-        <div
-          className="absolute top-0 left-0 right-0 h-[2px] z-20"
-          style={{ background: "hsl(var(--foreground) / 0.07)" }}
-        >
-          <motion.div
-            className="h-full origin-left"
-            style={{ width: progressWidth, background: "hsl(var(--foreground) / 0.22)" }}
+        {/* ── Layer 1: Background image ── */}
+        <div className="absolute inset-0 overflow-hidden">
+          <motion.img
+            src="/identification-bg.png"
+            alt=""
+            aria-hidden
+            fetchPriority="low"
+            className="w-full h-full object-cover object-center will-change-transform"
+            style={{ y: bgY, scale: 1.08 }}
+          />
+          {/* Very subtle dark scrim — image is already dark, just a whisper */}
+          <div
+            className="absolute inset-0"
+            style={{ background: "hsl(224 55% 5% / 0.18)" }}
           />
         </div>
 
-        {/* Header row */}
+        {/* ── Entry overlay — deep navy fades away as section enters ── */}
+        <motion.div
+          aria-hidden
+          className="absolute inset-0 pointer-events-none z-30"
+          style={{ opacity: entryOverlay, background: "hsl(var(--navy-deep))" }}
+        />
+
+        {/* ── Exit overlay — fades to navy-deep for seamless Promesse transition ── */}
+        <motion.div
+          aria-hidden
+          className="absolute inset-0 pointer-events-none z-30"
+          style={{ opacity: exitOverlay, background: "hsl(var(--navy-deep))" }}
+        />
+
+        {/* ── Scroll progress bar ── */}
+        <div
+          className="absolute top-0 left-0 right-0 h-[2px] z-20"
+          style={{ background: "hsl(0 0% 100% / 0.08)" }}
+        >
+          <motion.div
+            className="h-full origin-left"
+            style={{ width: progressWidth, background: "hsl(0 0% 100% / 0.35)" }}
+          />
+        </div>
+
+        {/* ── Header row ── */}
         <div className="flex items-end justify-between px-10 lg:px-20 pt-14 pb-0 flex-shrink-0 z-10">
           <div>
-            <div className="electric-line mb-3" />
+            <div
+              className="electric-line mb-3"
+              style={{ background: "hsl(0 0% 100% / 0.30)" }}
+            />
             <p
               className="text-[11px] tracking-[0.3em] uppercase font-medium"
-              style={{ color: "hsl(var(--foreground) / 0.45)" }}
+              style={{ color: "hsl(0 0% 100% / 0.50)" }}
             >
               Vous vous reconnaissez ?
             </p>
@@ -242,57 +303,73 @@ function DesktopIdentification() {
               exit={{ opacity: 0, y: -6 }}
               transition={{ duration: 0.22, ease: "easeOut" }}
               className="font-heading font-light tabular-nums"
-              style={{ fontSize: "0.875rem", color: "hsl(var(--foreground) / 0.22)" }}
+              style={{ fontSize: "0.875rem", color: "hsl(0 0% 100% / 0.26)" }}
             >
               {String(active + 1).padStart(2, "0")}&thinsp;/&thinsp;{String(N).padStart(2, "0")}
             </motion.span>
           </AnimatePresence>
         </div>
 
-        {/* Two-column content area */}
+        {/* ── Two-column content area ── */}
         <div className="flex-1 flex items-stretch min-h-0">
 
-          {/* Left column — animated title text, visible on XL screens only */}
-          <div className="hidden xl:flex flex-col justify-center pl-20 pr-12 w-[38%] flex-shrink-0">
+          {/* Left column — XL screens — white text on dark background */}
+          <div className="hidden xl:flex flex-col justify-center pl-20 pr-12 w-[38%] flex-shrink-0 z-10">
             <AnimatePresence mode="wait">
               <motion.div
                 key={`left-${active}`}
-                initial={{ opacity: 0, y: 16 }}
+                initial={{ opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -16 }}
-                transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+                exit={{ opacity: 0, y: -18 }}
+                transition={{ duration: 0.44, ease: [0.22, 1, 0.36, 1] }}
               >
+                {/* Eyebrow */}
                 <p
                   style={{
-                    fontSize: "7.5px",
-                    letterSpacing: "0.46em",
+                    fontSize: "8px",
+                    letterSpacing: "0.50em",
                     textTransform: "uppercase",
                     fontWeight: 500,
-                    color: "hsl(var(--foreground) / 0.32)",
-                    marginBottom: "1.25rem",
+                    color: "hsl(0 0% 100% / 0.42)",
+                    marginBottom: "1.5rem",
+                    lineHeight: 1,
                   }}
                 >
                   Votre enjeu
                 </p>
+
+                {/* Large title */}
                 <h3
-                  className="font-heading font-light leading-[1.08] tracking-tight"
+                  className="font-heading font-light leading-[1.07] tracking-tight"
                   style={{
-                    fontSize: "clamp(2rem, 2.6vw, 2.9rem)",
-                    color: "hsl(var(--foreground))",
+                    fontSize: "clamp(2rem, 2.55vw, 2.85rem)",
+                    color: "hsl(0 0% 100% / 0.95)",
                   }}
                 >
-                  <span style={{ fontStyle: "italic", color: "hsl(var(--foreground) / 0.44)" }}>
+                  <span style={{ fontStyle: "italic", color: "hsl(0 0% 100% / 0.48)" }}>
                     {problematics[active].title.split(" ")[0]}
                   </span>{" "}
                   {problematics[active].title.split(" ").slice(1).join(" ")}
                 </h3>
-                <div className="separator-fine mt-7 mb-7" style={{ opacity: 0.14 }} />
+
+                {/* Separator — short, white */}
+                <div
+                  style={{
+                    height: 1,
+                    background: "hsl(0 0% 100% / 0.14)",
+                    margin: "28px 0",
+                    maxWidth: 260,
+                  }}
+                />
+
+                {/* Description */}
                 <p
                   className="font-light leading-relaxed"
                   style={{
                     fontSize: "0.9375rem",
-                    color: "hsl(var(--foreground) / 0.50)",
-                    maxWidth: 340,
+                    color: "hsl(0 0% 100% / 0.60)",
+                    maxWidth: 330,
+                    lineHeight: 1.7,
                   }}
                 >
                   {problematics[active].line}
@@ -302,8 +379,7 @@ function DesktopIdentification() {
           </div>
 
           {/* Right column — card stack */}
-          <div className="flex-1 flex items-center justify-center relative py-8">
-            {/* 3D perspective context + card stack */}
+          <div className="flex-1 flex items-center justify-center relative py-8 z-10">
             <div style={{ perspective: "1400px", perspectiveOrigin: "50% 40%", flexShrink: 0 }}>
               <div
                 className="relative"
@@ -319,7 +395,7 @@ function DesktopIdentification() {
           </div>
         </div>
 
-        {/* Progress dots */}
+        {/* ── Progress dots ── */}
         <div className="flex items-center justify-center gap-2.5 pb-10 flex-shrink-0 z-10">
           {problematics.map((_, i) => (
             <motion.span
@@ -330,8 +406,8 @@ function DesktopIdentification() {
                 height: 5,
                 backgroundColor:
                   i === active
-                    ? "hsl(var(--foreground) / 0.55)"
-                    : "hsl(var(--foreground) / 0.13)",
+                    ? "hsl(0 0% 100% / 0.65)"
+                    : "hsl(0 0% 100% / 0.18)",
               }}
               transition={{ duration: 0.40, ease: [0.22, 1, 0.36, 1] }}
             />
