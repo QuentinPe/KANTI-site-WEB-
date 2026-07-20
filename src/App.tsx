@@ -34,6 +34,8 @@ const SimulateurPatrimonialPage = lazy(() => import("./pages/SimulateurPatrimoni
 const FiscalitePage             = lazy(() => import("./pages/FiscalitePage"));
 const PatrimoineProPage         = lazy(() => import("./pages/PatrimoineProPage"));
 const FinancementPage           = lazy(() => import("./pages/FinancementPage"));
+const CourtageFinancementPage   = lazy(() => import("./pages/CourtageFinancementPage"));
+const SimulateurFinancementPage = lazy(() => import("./pages/SimulateurFinancementPage"));
 const ActualitesPage            = lazy(() => import("./pages/ActualitesPage"));
 const ArticleDetailPage         = lazy(() => import("./pages/ArticleDetailPage"));
 const ContactPage               = lazy(() => import("./pages/ContactPage"));
@@ -121,6 +123,8 @@ const AppShell = () => {
               <Route path="/fiscalite" element={<FiscalitePage />} />
               <Route path="/patrimoine-professionnel" element={<PatrimoineProPage />} />
               <Route path="/financement" element={<FinancementPage />} />
+              <Route path="/courtage-patrimonial" element={<CourtageFinancementPage />} />
+              <Route path="/courtage-patrimonial/simulateur-financement" element={<SimulateurFinancementPage />} />
               <Route path="/actualites" element={<ActualitesPage />} />
               <Route path="/actualites/:id" element={<ArticleDetailPage />} />
               <Route path="/contact" element={<ContactPage />} />
