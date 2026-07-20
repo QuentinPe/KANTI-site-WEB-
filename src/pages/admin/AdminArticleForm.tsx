@@ -13,6 +13,16 @@ import RichEditor from "@/components/admin/RichEditor";
 
 const FALLBACK_CATEGORIES = ["Investissement", "Épargne", "Transmission", "Fiscalité", "Retraite", "Immobilier", "Dirigeants", "Allocation", "Prévoyance"];
 
+function errMsg(e: unknown): string {
+  if (!e) return "Erreur inconnue";
+  if (typeof e === "string") return e;
+  if (e instanceof Error) return e.message;
+  const o = e as Record<string, unknown>;
+  if (typeof o.message === "string") return o.message;
+  if (typeof o.details === "string") return o.details;
+  return JSON.stringify(e);
+}
+
 function slugify(s: string) {
   return s
     .toLowerCase()
@@ -200,7 +210,7 @@ export default function AdminArticleForm() {
       qc.invalidateQueries({ queryKey: ["articles"] });
       navigate("/admin/articles");
     },
-    onError: (e) => setGlobalError("Erreur lors de la création : " + (e instanceof Error ? e.message : String(e))),
+    onError: (e) => setGlobalError("Erreur lors de la création : " + errMsg(e)),
   });
 
   const updateMutation = useMutation({
@@ -209,7 +219,7 @@ export default function AdminArticleForm() {
       qc.invalidateQueries({ queryKey: ["articles"] });
       navigate("/admin/articles");
     },
-    onError: (e) => setGlobalError(`Erreur mise à jour : ${e instanceof Error ? e.message : String(e)}`),
+    onError: (e) => setGlobalError("Erreur mise à jour : " + errMsg(e)),
   });
 
   const onSubmit = (data: FormData) => {
