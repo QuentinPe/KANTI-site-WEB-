@@ -67,7 +67,7 @@ function DesktopIdentification() {
 
   const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "-7%"]);
   const entryOverlay = useTransform(scrollYProgress, [0, 0.08], [1, 0]);
-  const exitOverlay = useTransform(scrollYProgress, [0.76, 1], [0, 1]);
+  const exitOverlay = useTransform(scrollYProgress, [0.91, 1], [0, 1]);
 
   const item = problematics[active];
 
@@ -115,33 +115,18 @@ function DesktopIdentification() {
           style={{ padding: "clamp(2rem, 4vh, 3.5rem) clamp(2rem, 6vw, 6rem)" }}
         >
 
-          {/* Top row: eyebrow + counter */}
-          <div className="flex items-center justify-between flex-shrink-0">
-            <div>
-              <div
-                className="electric-line mb-3"
-                style={{ background: "hsl(0 0% 100% / 0.28)" }}
-              />
-              <p
-                className="text-[10px] tracking-[0.35em] uppercase font-medium"
-                style={{ color: "hsl(0 0% 100% / 0.42)" }}
-              >
-                Vos enjeux
-              </p>
-            </div>
-            <AnimatePresence mode="wait">
-              <motion.span
-                key={`n-${active}`}
-                initial={{ opacity: 0, y: 4 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -4 }}
-                transition={{ duration: 0.2 }}
-                className="font-heading font-light tabular-nums"
-                style={{ fontSize: "0.8rem", color: "hsl(0 0% 100% / 0.22)" }}
-              >
-                {String(active + 1).padStart(2, "0")}&thinsp;/&thinsp;{String(N).padStart(2, "0")}
-              </motion.span>
-            </AnimatePresence>
+          {/* Top row: eyebrow */}
+          <div className="flex-shrink-0">
+            <div
+              className="electric-line mb-3"
+              style={{ background: "hsl(0 0% 100% / 0.28)" }}
+            />
+            <p
+              className="text-[10px] tracking-[0.35em] uppercase font-medium"
+              style={{ color: "hsl(0 0% 100% / 0.42)" }}
+            >
+              Vos enjeux
+            </p>
           </div>
 
           {/* Middle: section title (left) + card (right) */}
