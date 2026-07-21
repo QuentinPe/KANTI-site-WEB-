@@ -430,7 +430,7 @@ export default function AdminDashboard() {
     <div className="min-h-screen" style={{ background: PAGE_BG }}>
 
       {/* ── Hero banner ── */}
-      <div className="relative w-full overflow-hidden" style={{ height: 272 }}>
+      <div className="relative w-full overflow-hidden" style={{ height: 300 }}>
         <img
           src="/admin-hero.jpg"
           alt=""
@@ -444,10 +444,20 @@ export default function AdminDashboard() {
           style={{
             background: `
               linear-gradient(to right, hsl(224 40% 8% / 0.28) 0%, transparent 38%),
-              linear-gradient(to bottom, transparent 0%, transparent 22%, hsl(224 55% 8% / 0.72) 100%)
+              linear-gradient(to bottom, transparent 0%, transparent 20%, hsl(224 55% 8% / 0.68) 78%, hsl(224 55% 8% / 0.72) 100%)
             `,
           }}
           aria-hidden
+        />
+
+        {/* Bottom vignette → fades photo into page background */}
+        <div
+          aria-hidden
+          className="absolute inset-x-0 bottom-0 pointer-events-none"
+          style={{
+            height: 80,
+            background: `linear-gradient(to top, ${PAGE_BG} 0%, transparent 100%)`,
+          }}
         />
 
         {/* Top-right: floating action buttons */}
@@ -483,8 +493,8 @@ export default function AdminDashboard() {
           </button>
         </div>
 
-        {/* Bottom: greeting + title + email — sits in the gradient transition */}
-        <div className="absolute bottom-0 left-0 right-0 px-8 pb-16 max-w-6xl mx-auto">
+        {/* Bottom: greeting + title + email — above the bottom vignette zone */}
+        <div className="absolute bottom-0 left-0 right-0 px-8 pb-24 max-w-6xl mx-auto">
           <p
             className="text-[10px] tracking-[0.32em] uppercase font-semibold mb-2"
             style={{ color: "hsl(0 0% 100% / 0.55)" }}
@@ -505,8 +515,8 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* ── Main content (overlaps hero bottom with negative margin) ── */}
-      <div className="px-8 pb-10 max-w-6xl mx-auto -mt-14 space-y-5">
+      {/* ── Main content ── */}
+      <div className="px-8 pb-10 max-w-6xl mx-auto mt-0 space-y-5">
 
         {/* ── 4 KPI cards (floating over photo) ── */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
