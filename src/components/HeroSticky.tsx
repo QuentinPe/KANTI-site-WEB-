@@ -33,13 +33,13 @@ export default function HeroSticky() {
   });
 
   const titleContainerRef = useRef<HTMLDivElement>(null);
-  const titleOpacity = useTransform(scrollYProgress, [0, 0.76, 0.87, 0.92], [1, 1, 0.1, 0]);
-  const titleY = useTransform(scrollYProgress, [0, 0.93], reduce ? [0, 0] : [0, -40]);
+  const titleOpacity = useTransform(scrollYProgress, [0, 0.90, 0.95, 0.98], [1, 1, 0.1, 0]);
+  const titleY = useTransform(scrollYProgress, [0, 0.98], reduce ? [0, 0] : [0, -30]);
 
   useEffect(() => {
     return scrollYProgress.on("change", (p) => {
       if (titleContainerRef.current) {
-        titleContainerRef.current.style.visibility = p > 0.92 ? "hidden" : "visible";
+        titleContainerRef.current.style.visibility = p > 0.98 ? "hidden" : "visible";
       }
     });
   }, [scrollYProgress]);
