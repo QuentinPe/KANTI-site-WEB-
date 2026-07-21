@@ -25,7 +25,6 @@ export default function HeroSticky() {
   const reduce = useReducedMotion();
   const isMobile = useIsMobile();
   const [ready, setReady] = useState(false);
-  const [loadedCount, setLoadedCount] = useState(0);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -115,7 +114,6 @@ export default function HeroSticky() {
         img.onload = () => {
           images[i] = img;
           loaded += 1;
-          setLoadedCount(loaded);
           if (!firstReady && i === 0) {
             firstReady = true;
             setReady(true);
@@ -125,7 +123,6 @@ export default function HeroSticky() {
         };
         img.onerror = () => {
           loaded += 1;
-          setLoadedCount(loaded);
           resolve();
         };
         img.src = frameSrc(dir, i + 1);
@@ -291,10 +288,7 @@ export default function HeroSticky() {
               depuis plus de quinze ans.
             </p>
 
-            <div
-              className="flex flex-col sm:flex-row gap-4"
-              style={{ animation: "fade-in-up 1s cubic-bezier(0.22, 1, 0.36, 1) 0.5s both" }}
-            >
+            <div className="flex flex-col sm:flex-row gap-4">
               <Link
                 to="/bilan-patrimonial-bordeaux"
                 data-magnetic
