@@ -5,7 +5,8 @@ import { supabase } from "@/lib/supabase";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft, ImageOff, Sparkles, Wand2, ChevronDown, Search, Eye, Link2, X, Maximize2, Minimize2 } from "lucide-react";
+import { ArrowLeft, Sparkles, Wand2, ChevronDown, Search, Eye, Link2, X, Maximize2, Minimize2 } from "lucide-react";
+import ImagePicker from "@/components/admin/ImagePicker";
 import { getArticles, createArticle, updateArticle } from "@/lib/articlesService";
 import type { ArticleInput } from "@/lib/articlesService";
 import { getCategories } from "@/lib/categoriesService";
@@ -83,7 +84,6 @@ export default function AdminArticleForm() {
   const qc = useQueryClient();
   const isEdit = Boolean(id);
   const [globalError, setGlobalError] = useState("");
-  const [imagePreview, setImagePreview] = useState("");
   const [aiSummarizing, setAiSummarizing] = useState(false);
   const [aiReformatting, setAiReformatting] = useState(false);
   const [aiError, setAiError] = useState("");
@@ -152,16 +152,11 @@ export default function AdminArticleForm() {
         meta_description: existing.meta_description ?? "",
         author_name: existing.author_name ?? "",
       });
-      setImagePreview(existing.image);
       setSelectedRelated(existing.related_article_ids ?? []);
       if (existing.slug) setSlugManuallyEdited(true);
+      setReadingTimeManuallyEdited(true);
     }
   }, [existing, reset]);
-
-  const imageUrl = watch("image");
-  useEffect(() => {
-    if (imageUrl && imageUrl.startsWith("http")) setImagePreview(imageUrl);
-  }, [imageUrl]);
 
   const bodyValue = watch("body") ?? "";
   const titleValue = watch("title") ?? "";
@@ -330,29 +325,17 @@ export default function AdminArticleForm() {
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
-        {/* Image preview */}
-        <div
-          className="w-full aspect-[16/7] rounded-2xl overflow-hidden flex items-center justify-center"
-          style={{ background: "hsl(220 25% 96%)", border: "1px solid hsl(224 20% 12% / 0.08)" }}
-        >
-          {imagePreview ? (
-            <img src={imagePreview} alt="" className="w-full h-full object-cover"
-              onError={() => setImagePreview("")} />
-          ) : (
-            <ImageOff className="w-8 h-8" style={{ color: "hsl(224 18% 70%)" }} />
-          )}
-        </div>
-
-        <Field label="URL de l'image *" error={errors.image?.message}>
-          <input
-            className={inputClass}
-            style={inputStyle}
-            placeholder="https://images.unsplash.com/..."
-            {...register("image")}
-            onFocus={(e) => Object.assign((e.target as HTMLElement).style, inputFocus)}
-            onBlur={(e) => Object.assign((e.target as HTMLElement).style, inputBlur)}
+        {/* Image de couverture */}
+        <div className="flex flex-col gap-1.5">
+          <p className="text-[12px] font-medium tracking-wide" style={{ color: "hsl(224 25% 38%)" }}>
+            Image de couverture *
+          </p>
+          <ImagePicker
+            value={watch("image")}
+            onChange={(url) => setValue("image", url, { shouldValidate: true })}
+            error={errors.image?.message}
           />
-        </Field>
+        </div>
 
         <Field label="Titre *" error={errors.title?.message}>
           <input
