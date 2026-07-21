@@ -33,13 +33,13 @@ export default function HeroSticky() {
   });
 
   const titleContainerRef = useRef<HTMLDivElement>(null);
-  const titleOpacity = useTransform(scrollYProgress, [0, 0.38, 0.56, 0.66], [1, 1, 0.1, 0]);
-  const titleY = useTransform(scrollYProgress, [0, 0.68], reduce ? [0, 0] : [0, -80]);
+  const titleOpacity = useTransform(scrollYProgress, [0, 0.62, 0.75, 0.82], [1, 1, 0.1, 0]);
+  const titleY = useTransform(scrollYProgress, [0, 0.84], reduce ? [0, 0] : [0, -60]);
 
   useEffect(() => {
     return scrollYProgress.on("change", (p) => {
       if (titleContainerRef.current) {
-        titleContainerRef.current.style.visibility = p > 0.66 ? "hidden" : "visible";
+        titleContainerRef.current.style.visibility = p > 0.82 ? "hidden" : "visible";
       }
     });
   }, [scrollYProgress]);
@@ -293,7 +293,7 @@ export default function HeroSticky() {
 
             <div
               className="flex flex-col sm:flex-row gap-4"
-              style={{ animation: "fade-in-up 1s cubic-bezier(0.22, 1, 0.36, 1) 1s both" }}
+              style={{ animation: "fade-in-up 1s cubic-bezier(0.22, 1, 0.36, 1) 0.5s both" }}
             >
               <Link
                 to="/bilan-patrimonial-bordeaux"
@@ -317,7 +317,7 @@ export default function HeroSticky() {
             <div
               className="mt-16 flex flex-wrap gap-x-8 gap-y-3"
               style={{
-                animation: "fade-in 1s ease-out 1.4s both",
+                animation: "fade-in 1s ease-out 0.9s both",
                 textShadow: "0 1px 10px hsl(224 60% 5% / 0.6)",
               }}
             >
