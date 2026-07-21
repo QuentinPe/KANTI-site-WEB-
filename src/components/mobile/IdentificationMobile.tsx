@@ -15,10 +15,6 @@ export default function IdentificationMobile() {
       aria-label="Vos enjeux patrimoniaux"
     >
       <div className="max-w-md mx-auto">
-        <div className="electric-line mb-4" />
-        <p className="text-[10px] tracking-[0.32em] uppercase text-foreground/50 mb-3 font-medium">
-          Vos enjeux
-        </p>
         <h2 className="font-heading font-light text-foreground tracking-tight leading-[1.1] text-[32px] mb-10">
           Vous vous reconnaissez
           <br />

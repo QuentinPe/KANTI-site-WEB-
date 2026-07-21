@@ -69,10 +69,6 @@ export default function ExpertisesPinned() {
         className="md:hidden section-glass texture-paper section-padding"
       >
         <div className="max-w-2xl mx-auto">
-          <div className="electric-line mb-5" />
-          <p className="text-[11px] tracking-[0.3em] uppercase text-foreground/50 mb-5 font-medium">
-            Nos expertises
-          </p>
           <h2 className="text-4xl font-heading font-light text-foreground mb-6 leading-[1.1] tracking-tight">
             Ce que nous faisons,<br />
             <span className="italic text-foreground/70">concrètement</span>
@@ -131,10 +127,6 @@ function ExpertisesPinnedDesktop() {
           <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-12 w-full grid grid-cols-12 gap-10 items-center">
             {/* Left, sticky text + index list */}
             <div className="col-span-5">
-              <div className="electric-line mb-5" />
-              <p className="text-[11px] tracking-[0.3em] uppercase text-foreground/50 mb-5 font-medium">
-                Nos expertises
-              </p>
               <h2 className="text-4xl lg:text-5xl xl:text-6xl font-heading font-light text-foreground mb-6 leading-[1.05] tracking-tight">
                 <SplitText text="Ce que nous faisons," by="word" stagger={0.06} />
                 <br />

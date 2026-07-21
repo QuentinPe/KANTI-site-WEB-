@@ -34,10 +34,6 @@ export default function HomeFAQMobile() {
       className="md:hidden relative section-padding-mobile texture-paper"
     >
       <div className="max-w-md mx-auto">
-        <div className="electric-line mb-4" />
-        <p className="text-[10px] tracking-[0.32em] uppercase text-foreground/50 mb-3 font-medium">
-          Questions fréquentes
-        </p>
         <h2 className="font-heading text-[32px] font-light text-foreground tracking-tight leading-[1.1] mb-8">
           Les réponses
           <br />

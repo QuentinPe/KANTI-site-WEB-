@@ -30,16 +30,11 @@ export default function Actualites() {
         {/* En-tête */}
         <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-14 gap-6 reveal">
           <div>
-            <div className="electric-line mb-5" />
-            <p className="text-[11px] tracking-[0.3em] uppercase text-foreground/50 mb-5 font-medium">
-              Magazine · Éclairages
-            </p>
-            <h2 className="text-4xl md:text-5xl lg:text-[3.2rem] font-heading font-light text-foreground tracking-tight leading-[1.05] mb-5">
-              Analyses<br />
-              <span className="italic text-foreground/65">& décryptages</span>
+            <h2 className="text-4xl md:text-5xl lg:text-[3.2rem] font-heading font-semibold text-foreground tracking-tight leading-[1.05] mb-5">
+              Actualités
             </h2>
             <p className="text-foreground/60 text-base font-light leading-relaxed max-w-md">
-              Fiscalité, marchés, stratégies patrimoniales · nos analyses pour prendre les meilleures décisions au bon moment.
+              Analyses, décryptages et points de marché · pour prendre les meilleures décisions au bon moment.
             </p>
           </div>
           <Link

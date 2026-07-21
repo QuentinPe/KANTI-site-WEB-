@@ -51,10 +51,6 @@ export default function ExpertisesMobile() {
       className="md:hidden relative section-padding-mobile section-glass texture-paper"
     >
       <div className="max-w-md mx-auto">
-        <div className="electric-line mb-4" />
-        <p className="text-[10px] tracking-[0.32em] uppercase text-foreground/50 mb-3 font-medium">
-          Nos expertises
-        </p>
         <h2 className="font-heading text-[32px] font-light text-foreground tracking-tight leading-[1.1] mb-10">
           Six métiers,
           <br />

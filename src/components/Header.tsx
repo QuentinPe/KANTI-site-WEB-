@@ -34,6 +34,7 @@ export default function Header() {
   const [navExpanded, setNavExpanded] = useState(false);
   const [hoveredKey, setHoveredKey] = useState<string | null>(null);
   const [clientSpaceOpen, setClientSpaceOpen] = useState(false);
+  const [clientDropdownOpen, setClientDropdownOpen] = useState(false);
   const location = useLocation();
   const isHome = location.pathname === "/";
 
@@ -226,18 +227,58 @@ export default function Header() {
             >
               Prendre rendez-vous
             </Link>
-            <button
-              type="button"
-              onClick={() => setClientSpaceOpen(true)}
-              className={`ml-2 inline-flex items-center gap-2 px-5 py-2 rounded-full text-[13px] font-medium tracking-wide transition-all duration-300 ${
-                useDarkGlass
-                  ? "btn-glass text-white"
-                  : "border border-[hsl(224_60%_22%/0.3)] text-[hsl(224_55%_26%)] hover:border-[hsl(224_60%_18%/0.6)] hover:text-[hsl(224_60%_14%)]"
-              }`}
+            <div
+              className="relative ml-2"
+              onMouseEnter={() => setClientDropdownOpen(true)}
+              onMouseLeave={() => setClientDropdownOpen(false)}
             >
-              <UserRound className="w-4 h-4" strokeWidth={1.75} />
-              Espace client
-            </button>
+              <button
+                type="button"
+                className={`inline-flex items-center gap-2 px-5 py-2 rounded-full text-[13px] font-medium tracking-wide transition-all duration-300 ${
+                  useDarkGlass
+                    ? "btn-glass text-white"
+                    : "border border-[hsl(224_60%_22%/0.3)] text-[hsl(224_55%_26%)] hover:border-[hsl(224_60%_18%/0.6)] hover:text-[hsl(224_60%_14%)]"
+                }`}
+              >
+                <UserRound className="w-4 h-4" strokeWidth={1.75} />
+                Espace client
+                <svg
+                  className={`w-3 h-3 transition-transform duration-300 ${clientDropdownOpen ? "rotate-180" : ""}`}
+                  fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              <div
+                className={`absolute top-full right-0 pt-3 transition-all duration-300 z-50 ${
+                  clientDropdownOpen ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-2 pointer-events-none"
+                }`}
+              >
+                <div className="glass-strong rounded-2xl overflow-hidden ring-1 ring-foreground/5 shadow-[0_20px_60px_-20px_hsl(var(--foreground)/0.25)] w-52 py-1.5">
+                  <div className="px-4 pt-2 pb-2.5 mb-0.5 border-b border-foreground/[0.06]">
+                    <p className="text-[10px] tracking-[0.28em] uppercase font-medium text-foreground/45">Accès sécurisé</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => { setClientDropdownOpen(false); setClientSpaceOpen(true); }}
+                    className="w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl text-[13px] font-medium text-foreground/75 hover:text-foreground hover:bg-foreground/[0.04] transition-all duration-200 mx-0"
+                  >
+                    <UserRound className="w-4 h-4 text-foreground/40" strokeWidth={1.5} />
+                    Espace client
+                  </button>
+                  <Link
+                    to="/admin"
+                    onClick={() => setClientDropdownOpen(false)}
+                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-[13px] font-medium text-foreground/75 hover:text-foreground hover:bg-foreground/[0.04] transition-all duration-200"
+                  >
+                    <svg className="w-4 h-4 text-foreground/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.955 11.955 0 003 12c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    Espace conseiller
+                  </Link>
+                </div>
+              </div>
+            </div>
             </nav>
           </div>
 
@@ -319,6 +360,13 @@ export default function Header() {
           <UserRound className="w-4 h-4" strokeWidth={1.75} />
           Espace client
         </button>
+        <Link
+          to="/admin"
+          onClick={() => setMenuOpen(false)}
+          className="mt-1 px-8 py-3 rounded-full ring-1 ring-white/10 text-white/60 text-sm tracking-wide inline-flex items-center gap-2 hover:text-white/90 transition-colors"
+        >
+          Espace conseiller
+        </Link>
       </div>
     </header>
 

@@ -164,9 +164,6 @@ export default function NotreMethodePage() {
       {/* ── Manifeste ── */}
       <section className="section-padding bg-white">
         <div className="max-w-5xl mx-auto text-center reveal">
-          <p className="text-[11px] tracking-[0.3em] uppercase font-medium mb-6" style={{ color: "hsl(224 25% 52%)" }}>
-            Notre conviction
-          </p>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading font-light tracking-tight leading-[1.1] mb-8" style={{ color: "hsl(224 60% 10%)" }}>
             Le conseil patrimonial mérite mieux qu'une recommandation produit.
           </h2>
@@ -181,9 +178,6 @@ export default function NotreMethodePage() {
       <section className="section-padding section-ivory">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-14 reveal">
-            <p className="text-[11px] tracking-[0.3em] uppercase font-medium mb-4" style={{ color: "hsl(224 25% 52%)" }}>
-              Nos engagements
-            </p>
             <h2 className="text-3xl md:text-4xl font-heading font-light tracking-tight leading-[1.1]" style={{ color: "hsl(224 60% 10%)" }}>
               Six règles qui structurent chaque mission.
             </h2>
@@ -211,10 +205,6 @@ export default function NotreMethodePage() {
       <section className="section-padding bg-white">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16 reveal">
-            <div className="electric-line mb-5 mx-auto w-fit" />
-            <p className="text-[11px] tracking-[0.3em] uppercase font-medium mb-4" style={{ color: "hsl(224 25% 52%)" }}>
-              Déroulement
-            </p>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading font-light tracking-tight leading-[1.05] mb-5" style={{ color: "hsl(224 60% 10%)" }}>
               De la première écoute au suivi annuel.
             </h2>
@@ -278,7 +268,6 @@ export default function NotreMethodePage() {
         <div className="max-w-6xl mx-auto">
           <div className="grid lg:grid-cols-5 gap-12 lg:gap-16 items-start">
             <div className="lg:col-span-2 reveal lg:sticky lg:top-32 lg:self-start">
-              <p className="text-[11px] tracking-[0.3em] uppercase font-medium mb-4" style={{ color: "hsl(224 25% 52%)" }}>Livrables écrits</p>
               <h2 className="text-3xl md:text-4xl font-heading font-light tracking-tight leading-[1.1] mb-5" style={{ color: "hsl(224 55% 12%)" }}>
                 Tout est écrit. Tout est conservé.
               </h2>
@@ -313,7 +302,6 @@ export default function NotreMethodePage() {
       <section className="section-padding bg-white">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-14 reveal">
-            <p className="text-[11px] tracking-[0.3em] uppercase font-medium mb-4" style={{ color: "hsl(224 25% 52%)" }}>Gouvernance</p>
             <h2 className="text-3xl md:text-4xl font-heading font-light tracking-tight leading-[1.05]" style={{ color: "hsl(224 55% 12%)" }}>
               Un cadre réglementaire strict, des contrôles indépendants.
             </h2>
@@ -343,7 +331,6 @@ export default function NotreMethodePage() {
         <div className="max-w-6xl mx-auto">
           <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-start">
             <div className="lg:col-span-4 reveal lg:sticky lg:top-32 lg:self-start">
-              <p className="text-[11px] tracking-[0.3em] uppercase font-medium mb-4" style={{ color: "hsl(224 25% 52%)" }}>Questions fréquentes</p>
               <h2 className="text-3xl md:text-4xl font-heading font-light tracking-tight leading-[1.1]" style={{ color: "hsl(224 55% 12%)" }}>
                 Ce que vous nous demandez avant de commencer.
               </h2>

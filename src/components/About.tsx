@@ -89,10 +89,6 @@ export default function About() {
       <div className="max-w-6xl mx-auto relative z-10">
         <div className="grid lg:grid-cols-5 gap-12 lg:gap-16 items-start">
           <div className="lg:col-span-3 reveal">
-            <div className="electric-line mb-5" />
-            <p className="text-[11px] tracking-[0.3em] uppercase text-foreground/50 mb-5 font-medium">
-              Le cabinet
-            </p>
             <h2 className="text-4xl md:text-5xl font-heading font-light text-foreground leading-[1.1] mb-8 tracking-tight">
               <SplitText text="Un regard global" by="word" stagger={0.07} />
               <br />

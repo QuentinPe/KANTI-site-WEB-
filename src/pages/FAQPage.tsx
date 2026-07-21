@@ -179,10 +179,6 @@ export default function FAQPage() {
             {/* Sticky sidebar, categories nav */}
             <aside className="lg:col-span-4 reveal mb-2 lg:mb-0">
               <div className="lg:sticky lg:top-32">
-                <div className="electric-line mb-5" />
-                <p className="text-[11px] tracking-[0.3em] uppercase text-foreground/50 mb-5 font-medium">
-                  Sommaire
-                </p>
                 <h2 className="text-3xl md:text-4xl font-heading font-light text-foreground mb-6 tracking-tight leading-[1.05]">
                   Tout ce que vous<br />
                   <span className="italic text-foreground/70">vouliez savoir</span>

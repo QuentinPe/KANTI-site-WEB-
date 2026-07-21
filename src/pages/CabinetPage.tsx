@@ -64,10 +64,6 @@ export default function CabinetPage() {
       <section id="adn" className="section-padding section-ivory">
         <div className="max-w-6xl mx-auto">
           <div className="mb-14 reveal max-w-2xl">
-            <div className="electric-line mb-5" />
-            <p className="text-[11px] tracking-[0.3em] uppercase text-foreground/50 mb-4 font-medium">
-              Notre ADN
-            </p>
             <h2 className="text-4xl md:text-5xl font-heading font-light text-foreground mb-5 tracking-tight leading-[1.05]">
               Un cabinet bâti sur<br />
               <span className="italic text-foreground/70">trois convictions.</span>
@@ -106,10 +102,6 @@ export default function CabinetPage() {
       <section id="equipe" className="section-padding bg-background">
         <div className="max-w-6xl mx-auto">
           <div className="mb-14 reveal max-w-2xl">
-            <div className="electric-line mb-5" />
-            <p className="text-[11px] tracking-[0.3em] uppercase text-foreground/50 mb-4 font-medium">
-              L'équipe
-            </p>
             <h2 className="text-4xl md:text-5xl font-heading font-light text-foreground mb-5 tracking-tight leading-[1.05]">
               À votre écoute,<br />
               <span className="italic text-foreground/70">à chaque étape.</span>

@@ -75,10 +75,6 @@ export default function FinancementPage() {
       {/* §2 · Manifeste éditorial */}
       <section className="section-padding bg-background">
         <div className="max-w-5xl mx-auto">
-          <div className="electric-line mb-8" />
-          <p className="text-[10px] tracking-[0.32em] uppercase text-foreground/40 mb-10 font-medium">
-            Crédit patrimonial
-          </p>
           <ScrollRevealText
             text="Le crédit n'est pas qu'une question de taux. C'est un outil patrimonial · structuré pour accélérer votre capital, optimiser votre fiscalité et préserver votre capacité d'investissement."
             className="font-heading font-light text-foreground leading-[1.2] tracking-tight"

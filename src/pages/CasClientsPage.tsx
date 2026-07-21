@@ -665,8 +665,6 @@ export default function CasClientsPage() {
         <div className="max-w-6xl mx-auto">
           <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 items-end mb-16 reveal">
             <div className="lg:col-span-6">
-              <div className="electric-line mb-6" />
-              <p className="text-[11px] tracking-[0.3em] uppercase font-medium mb-5" style={{ color: "hsl(224 25% 52%)" }}>Méthodologie éditoriale</p>
               <h2 className="text-3xl md:text-5xl font-heading font-light leading-[1.05] tracking-tight" style={{ color: "hsl(224 55% 12%)" }}>
                 Des situations réelles,<br />
                 <span className="italic" style={{ color: "hsl(224 25% 40%)" }}>rigoureusement anonymisées</span>.

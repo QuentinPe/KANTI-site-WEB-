@@ -2,8 +2,7 @@
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
 
-const IMAGE_URL =
-  "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1800&auto=format&fit=crop&q=85";
+const IMAGE_URL = "/images/hero-bilan.png";
 
 const STATS = [
   { value: "360°", label: "Vision patrimoniale" },

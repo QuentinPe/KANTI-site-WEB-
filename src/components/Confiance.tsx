@@ -40,10 +40,6 @@ export default function Confiance() {
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 mb-16 items-end">
           <div className="lg:col-span-7 reveal">
-            <div className="electric-line mb-5" />
-            <p className="text-[11px] tracking-[0.3em] uppercase text-foreground/50 mb-5 font-medium">
-              Réassurance · Cadre réglementaire
-            </p>
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-heading font-light text-foreground tracking-tight leading-[1.05]">
               Un exercice encadré,<br />
               <span className="italic text-foreground/70">une transparence totale</span>

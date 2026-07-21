@@ -222,10 +222,6 @@ export default function ActualitesPage() {
 
           {/* En-tête */}
           <div className="mb-10 reveal">
-            <div className="electric-line mb-5" />
-            <p className="text-[11px] tracking-[0.3em] uppercase font-medium mb-3" style={{ color: "hsl(224 25% 50%)" }}>
-              Toutes les analyses
-            </p>
             <h2
               className="font-heading text-3xl md:text-4xl font-light tracking-tight leading-[1.05]"
               style={{ color: "hsl(224 55% 12%)" }}

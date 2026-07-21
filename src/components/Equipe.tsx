@@ -64,10 +64,6 @@ export default function Equipe() {
       />
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="mb-20 reveal max-w-2xl">
-          <div className="electric-line mb-5" />
-          <p className="text-[11px] tracking-[0.3em] uppercase text-foreground/50 mb-5 font-medium">
-            L'équipe · Bordeaux
-          </p>
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-heading font-light text-foreground mb-6 tracking-tight leading-[1.05]">
             L'équipe,<br />
             <span className="italic text-foreground/70">à votre service</span>

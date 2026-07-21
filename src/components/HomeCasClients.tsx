@@ -29,10 +29,6 @@ export default function HomeCasClients() {
     <section className="section-padding section-glass relative">
       <div className="max-w-6xl mx-auto relative z-10">
         <div className="mb-16 reveal max-w-2xl">
-          <div className="electric-line mb-5" />
-          <p className="text-[11px] tracking-[0.3em] uppercase text-foreground/50 mb-5 font-medium">
-            Situations concrètes
-          </p>
           <h2 className="text-4xl md:text-5xl font-heading font-light text-foreground mb-6 tracking-tight leading-[1.1]">
             <SplitText text="Des cas" by="word" stagger={0.07} />
             <br />

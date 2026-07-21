@@ -36,10 +36,6 @@ export default function HomeProfilRisque() {
       <div className="max-w-7xl mx-auto relative z-10 grid lg:grid-cols-12 gap-10 lg:gap-16 items-center">
         {/* Left, Editorial copy */}
         <div className="lg:col-span-7 reveal">
-          <div className="electric-line mb-6" />
-          <p className="text-[11px] tracking-[0.3em] uppercase text-foreground/50 mb-5 font-medium">
-            Outil patrimonial · Conforme aux exigences réglementaires
-          </p>
           <h2 className="text-4xl md:text-5xl lg:text-[3.5rem] font-heading font-light text-foreground mb-8 tracking-tight leading-[1.05] text-balance">
             Définir votre <br />
             <span className="italic text-foreground/70">profil de risque.</span>

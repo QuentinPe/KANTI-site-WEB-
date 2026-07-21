@@ -41,10 +41,6 @@ export default function HomeFAQ() {
       <div className="max-w-6xl mx-auto relative z-10">
         <div className="grid lg:grid-cols-12 gap-8 md:gap-10 lg:gap-16 items-start">
           <aside className="lg:col-span-5 reveal lg:sticky lg:top-32 lg:self-start mb-2 lg:mb-0">
-            <div className="electric-line mb-5" />
-            <p className="text-[11px] tracking-[0.3em] uppercase text-foreground/50 mb-5 font-medium">
-              Questions fréquentes
-            </p>
             <h2 className="text-4xl md:text-5xl lg:text-[3.5rem] font-heading font-light text-foreground mb-6 tracking-tight leading-[1.05]">
               Les réponses<br />
               <span className="italic text-foreground/70">avant d'avancer</span>

@@ -407,10 +407,6 @@ export default function ProductDetailPage() {
         <section className="section-padding section-glass">
           <div className="max-w-6xl mx-auto">
             <div className="mb-12 reveal">
-              <div className="electric-line mb-5" />
-              <p className="text-[11px] tracking-[0.3em] uppercase text-foreground/50 mb-4 font-medium">
-                Solutions liées
-              </p>
               <h2 className="font-heading text-3xl md:text-4xl font-light text-foreground tracking-tight">
                 Dans la même expertise
               </h2>
