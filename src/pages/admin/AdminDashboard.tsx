@@ -75,9 +75,9 @@ function RingProgress({ pct, color, size = 48 }: { pct: number; color: string; s
   return (
     <svg width={size} height={size} style={{ transform: "rotate(-90deg)", flexShrink: 0 }} aria-hidden>
       <circle cx={size / 2} cy={size / 2} r={r} fill="none"
-        stroke="hsl(224 20% 12% / 0.09)" strokeWidth={3.5} />
+        stroke="hsl(224 20% 12% / 0.09)" strokeWidth={4} />
       <circle cx={size / 2} cy={size / 2} r={r} fill="none"
-        stroke={color} strokeWidth={3.5}
+        stroke={color} strokeWidth={4}
         strokeDasharray={`${filled.toFixed(1)} ${circ.toFixed(1)}`}
         strokeLinecap="round" />
     </svg>
@@ -136,36 +136,45 @@ function KpiCard({
   return (
     <Link
       to={to}
-      className="group flex flex-col gap-3.5 p-5 rounded-2xl transition-all duration-200 hover:-translate-y-0.5"
-      style={{ ...CARD_STYLE }}
+      className="group flex flex-col gap-3.5 rounded-2xl overflow-hidden transition-all duration-200 hover:-translate-y-1"
+      style={{
+        background: "white",
+        border: "1px solid hsl(224 20% 12% / 0.08)",
+        boxShadow: "0 4px 20px -6px hsl(224 60% 12% / 0.12)",
+      }}
       onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = CARD_HOVER_SHADOW; }}
-      onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = CARD_STYLE.boxShadow as string; }}
+      onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = "0 4px 20px -6px hsl(224 60% 12% / 0.12)"; }}
     >
-      <div className="flex items-start justify-between">
-        <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-          style={{ background: color + "18" }}>
-          <Icon className="w-4 h-4" style={{ color }} strokeWidth={1.5} />
+      {/* Accent top stripe */}
+      <div style={{ height: 3, background: color, opacity: 0.75 }} />
+
+      <div className="flex flex-col gap-3.5 px-5 pb-5">
+        <div className="flex items-start justify-between">
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+            style={{ background: color + "16" }}>
+            <Icon className="w-4 h-4" style={{ color }} strokeWidth={1.5} />
+          </div>
+          <div className="relative flex items-center justify-center" style={{ width: 46, height: 46 }}>
+            <RingProgress pct={pct} color={color} size={46} />
+            <span className="absolute text-[9px] font-bold tabular-nums leading-none"
+              style={{ color }}>{Math.round(pct)}%</span>
+          </div>
         </div>
-        <div className="relative flex items-center justify-center" style={{ width: 44, height: 44 }}>
-          <RingProgress pct={pct} color={color} size={44} />
-          <span className="absolute text-[9px] font-bold tabular-nums leading-none"
-            style={{ color }}>{Math.round(pct)}%</span>
+        <div>
+          <p className="text-[32px] font-heading font-light tabular-nums leading-none"
+            style={{ color: "hsl(224 55% 12%)" }}>{value}</p>
+          <p className="text-[11px] font-medium tracking-wide mt-0.5"
+            style={{ color: "hsl(224 20% 52%)" }}>{label}</p>
         </div>
-      </div>
-      <div>
-        <p className="text-[30px] font-heading font-light tabular-nums leading-none"
-          style={{ color: "hsl(224 55% 12%)" }}>{value}</p>
-        <p className="text-[11px] font-medium tracking-wide mt-0.5"
-          style={{ color: "hsl(224 20% 52%)" }}>{label}</p>
-      </div>
-      <div className="flex items-end justify-between">
-        <div className="flex flex-col gap-1">
-          <DeltaBadge pct={delta.pct} />
-          <p className="text-[9px] font-light leading-none" style={{ color: "hsl(224 15% 62%)" }}>
-            {goalLabel}
-          </p>
+        <div className="flex items-end justify-between">
+          <div className="flex flex-col gap-1">
+            <DeltaBadge pct={delta.pct} />
+            <p className="text-[9px] font-light leading-none" style={{ color: "hsl(224 15% 62%)" }}>
+              {goalLabel}
+            </p>
+          </div>
+          <MiniSparkline vals={sparkVals} color={color} gradId={gradId} />
         </div>
-        <MiniSparkline vals={sparkVals} color={color} gradId={gradId} />
       </div>
     </Link>
   );
@@ -419,51 +428,87 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen" style={{ background: PAGE_BG }}>
-      <div className="px-8 py-8 max-w-6xl mx-auto space-y-5">
 
-        {/* ── Header ── */}
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <p className="text-[10px] tracking-[0.28em] uppercase font-semibold mb-1.5"
-              style={{ color: "hsl(224 30% 52%)" }}>
-              {greeting} · {dateStr}
-            </p>
-            <h1 className="text-2xl font-heading font-light tracking-tight"
-              style={{ color: "hsl(224 55% 10%)" }}>
-              Tableau de bord
-            </h1>
-            {user?.email && (
-              <p className="text-[12px] font-light mt-0.5" style={{ color: "hsl(224 18% 54%)" }}>
-                {user.email}
-              </p>
-            )}
-          </div>
-          <div className="flex items-center gap-2 mt-1 flex-shrink-0">
-            {newLeads > 0 && (
-              <Link
-                to="/admin/leads"
-                className="flex items-center gap-2 px-3 py-2 rounded-full text-[11px] font-medium transition-opacity hover:opacity-80"
-                style={{ background: "hsl(38 90% 50% / 0.12)", color: "hsl(38 70% 30%)", border: "1px solid hsl(38 80% 60% / 0.22)" }}
-              >
-                <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: "hsl(38 80% 48%)" }} />
-                {newLeads} nouveau{newLeads > 1 ? "x" : ""}
-              </Link>
-            )}
-            <button
-              type="button"
-              onClick={() => exportLeadsCSV(leads)}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-[12px] font-medium transition-all duration-150"
-              style={{ background: "white", color: "hsl(224 40% 35%)", border: "1px solid hsl(224 20% 12% / 0.10)" }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(224 20% 96%)"; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "white"; }}
+      {/* ── Hero banner ── */}
+      <div className="relative w-full overflow-hidden" style={{ height: 272 }}>
+        <img
+          src="/admin-hero.jpg"
+          alt=""
+          aria-hidden
+          className="absolute inset-0 w-full h-full object-cover object-center"
+          style={{ filter: "brightness(0.86) saturate(0.80)" }}
+        />
+        {/* Multi-layer gradient: soft left veil + rich dark bottom */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: `
+              linear-gradient(to right, hsl(224 40% 8% / 0.28) 0%, transparent 38%),
+              linear-gradient(to bottom, transparent 0%, transparent 22%, hsl(224 55% 8% / 0.72) 100%)
+            `,
+          }}
+          aria-hidden
+        />
+
+        {/* Top-right: floating action buttons */}
+        <div className="absolute top-5 right-8 flex items-center gap-2">
+          {newLeads > 0 && (
+            <Link
+              to="/admin/leads"
+              className="flex items-center gap-2 px-3.5 py-2 rounded-full text-[11px] font-medium transition-opacity hover:opacity-85"
+              style={{
+                background: "hsl(38 90% 50% / 0.92)",
+                color: "white",
+                backdropFilter: "blur(8px)",
+                boxShadow: "0 4px 16px -4px hsl(38 80% 40% / 0.40)",
+              }}
             >
-              <Download className="w-3.5 h-3.5" />
-              Exporter CSV
-            </button>
-          </div>
+              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+              {newLeads} nouveau{newLeads > 1 ? "x" : ""} lead{newLeads > 1 ? "s" : ""}
+            </Link>
+          )}
+          <button
+            type="button"
+            onClick={() => exportLeadsCSV(leads)}
+            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full text-[11px] font-medium transition-opacity hover:opacity-85"
+            style={{
+              background: "hsl(0 0% 100% / 0.13)",
+              color: "white",
+              backdropFilter: "blur(8px)",
+              border: "1px solid hsl(0 0% 100% / 0.20)",
+            }}
+          >
+            <Download className="w-3.5 h-3.5" />
+            Exporter CSV
+          </button>
         </div>
 
-        {/* ── 4 KPI cards ── */}
+        {/* Bottom: greeting + title + email — sits in the gradient transition */}
+        <div className="absolute bottom-0 left-0 right-0 px-8 pb-16 max-w-6xl mx-auto">
+          <p
+            className="text-[10px] tracking-[0.32em] uppercase font-semibold mb-2"
+            style={{ color: "hsl(0 0% 100% / 0.55)" }}
+          >
+            {greeting} · {dateStr}
+          </p>
+          <h1
+            className="text-[28px] font-heading font-light tracking-tight"
+            style={{ color: "white", textShadow: "0 2px 20px hsl(224 60% 6% / 0.45)" }}
+          >
+            Tableau de bord
+          </h1>
+          {user?.email && (
+            <p className="text-[12px] font-light mt-1" style={{ color: "hsl(0 0% 100% / 0.50)" }}>
+              {user.email}
+            </p>
+          )}
+        </div>
+      </div>
+
+      {/* ── Main content (overlaps hero bottom with negative margin) ── */}
+      <div className="px-8 pb-10 max-w-6xl mx-auto -mt-14 space-y-5">
+
+        {/* ── 4 KPI cards (floating over photo) ── */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <KpiCard
             label="Articles publiés" value={articles.length}
@@ -498,10 +543,13 @@ export default function AdminDashboard() {
           <div className="lg:col-span-2 rounded-2xl p-6" style={{ ...CARD_STYLE }}>
             <div className="flex items-center justify-between mb-4">
               <div>
-                <p className="text-[13px] font-medium" style={{ color: "hsl(224 40% 28%)" }}>
-                  Leads sur la période
-                </p>
-                <p className="text-[11px] font-light mt-0.5" style={{ color: "hsl(224 15% 55%)" }}>
+                <div className="flex items-center gap-2 mb-0.5">
+                  <div className="w-1 h-3.5 rounded-full" style={{ background: "hsl(218 55% 42%)" }} />
+                  <p className="text-[12px] font-medium tracking-wide" style={{ color: "hsl(224 40% 28%)" }}>
+                    Leads sur la période
+                  </p>
+                </div>
+                <p className="text-[11px] font-light pl-3" style={{ color: "hsl(224 15% 55%)" }}>
                   {chartTotal} reçus · {chartConverti} convertis
                 </p>
               </div>
@@ -560,19 +608,26 @@ export default function AdminDashboard() {
           {/* Résumé + Actions */}
           <div className="flex flex-col gap-4">
             <div className="rounded-2xl p-5" style={{ ...CARD_STYLE }}>
-              <p className="text-[12px] font-medium tracking-wide mb-4" style={{ color: "hsl(224 40% 28%)" }}>
-                Résumé rapide
-              </p>
-              <div className="grid grid-cols-2 gap-2.5">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-1 h-3.5 rounded-full" style={{ background: "hsl(218 55% 42%)" }} />
+                <p className="text-[12px] font-medium tracking-wide" style={{ color: "hsl(224 40% 28%)" }}>
+                  Résumé rapide
+                </p>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
                 {[
-                  { label: "Nouveaux leads",  value: newLeads,          color: "hsl(38 80% 48%)"  },
-                  { label: "À relancer",       value: staleLeads.length, color: "hsl(0 60% 50%)"   },
+                  { label: "Nouveaux leads",  value: newLeads,             color: "hsl(38 80% 48%)"  },
+                  { label: "À relancer",       value: staleLeads.length,    color: "hsl(0 60% 50%)"   },
                   { label: "Taux conversion",  value: `${conversionRate}%`, color: "hsl(142 52% 36%)" },
-                  { label: "Convertis",        value: convertedLeads,    color: "hsl(218 55% 42%)" },
+                  { label: "Convertis",        value: convertedLeads,       color: "hsl(218 55% 42%)" },
                 ].map((s) => (
-                  <div key={s.label} className="rounded-xl p-3"
-                    style={{ background: "hsl(220 25% 97%)", border: "1px solid hsl(224 20% 12% / 0.07)" }}>
-                    <p className="text-[20px] font-heading font-light tabular-nums leading-none"
+                  <div key={s.label} className="rounded-xl p-3 overflow-hidden"
+                    style={{
+                      background: "hsl(220 25% 97%)",
+                      border: "1px solid hsl(224 20% 12% / 0.07)",
+                      borderLeft: `3px solid ${s.color}`,
+                    }}>
+                    <p className="text-[22px] font-heading font-light tabular-nums leading-none"
                       style={{ color: s.color }}>{s.value}</p>
                     <p className="text-[10px] font-light leading-tight mt-0.5"
                       style={{ color: "hsl(224 15% 52%)" }}>{s.label}</p>
@@ -582,9 +637,12 @@ export default function AdminDashboard() {
             </div>
 
             <div className="rounded-2xl p-5" style={{ ...CARD_STYLE }}>
-              <p className="text-[12px] font-medium tracking-wide mb-3" style={{ color: "hsl(224 40% 28%)" }}>
-                Actions rapides
-              </p>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-1 h-3.5 rounded-full" style={{ background: "hsl(218 55% 42%)" }} />
+                <p className="text-[12px] font-medium tracking-wide" style={{ color: "hsl(224 40% 28%)" }}>
+                  Actions rapides
+                </p>
+              </div>
               <div className="flex flex-col gap-1.5">
                 {[
                   { to: "/admin/articles/new",  label: "Nouvel article",   icon: FileText   },
@@ -615,10 +673,13 @@ export default function AdminDashboard() {
           {/* Activité récente */}
           <div className="rounded-2xl p-6" style={{ ...CARD_STYLE }}>
             <div className="flex items-center justify-between mb-4">
-              <p className="text-[13px] font-medium" style={{ color: "hsl(224 40% 28%)" }}>
-                Activité récente
-              </p>
-              <Clock className="w-3.5 h-3.5" style={{ color: "hsl(224 15% 60%)" }} />
+              <div className="flex items-center gap-2">
+                <div className="w-1 h-3.5 rounded-full" style={{ background: "hsl(38 75% 42%)" }} />
+                <p className="text-[12px] font-medium tracking-wide" style={{ color: "hsl(224 40% 28%)" }}>
+                  Activité récente
+                </p>
+              </div>
+              <Clock className="w-3.5 h-3.5" style={{ color: "hsl(224 15% 62%)" }} />
             </div>
             {activity.length === 0 ? (
               <p className="text-[12px] font-light py-4 text-center" style={{ color: "hsl(224 12% 60%)" }}>
@@ -628,15 +689,16 @@ export default function AdminDashboard() {
               <div className="flex flex-col">
                 {activity.map((item, i) => (
                   <Link key={i} to={item.to}
-                    className="flex items-start gap-2.5 py-2.5 transition-colors"
+                    className="flex items-start gap-2.5 py-2.5 group transition-opacity hover:opacity-70"
                     style={{ borderBottom: i < activity.length - 1 ? "1px solid hsl(224 20% 12% / 0.05)" : "none" }}>
-                    <div className="w-6 h-6 rounded-lg flex-shrink-0 flex items-center justify-center mt-0.5"
-                      style={{ background: item.color + "14" }}>
+                    {/* Icon badge with initials for leads */}
+                    <div className="w-7 h-7 rounded-lg flex-shrink-0 flex items-center justify-center mt-0.5 text-[10px] font-semibold"
+                      style={{ background: item.color + "18", color: item.color }}>
                       <item.icon className="w-3 h-3" style={{ color: item.color }} strokeWidth={1.5} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-[11px] font-medium truncate leading-tight"
-                        style={{ color: "hsl(224 30% 28%)" }}>{item.text}</p>
+                        style={{ color: "hsl(224 30% 25%)" }}>{item.text}</p>
                       {item.sub && (
                         <p className="text-[10px] font-light truncate" style={{ color: "hsl(224 15% 55%)" }}>
                           {item.sub}
@@ -646,6 +708,7 @@ export default function AdminDashboard() {
                         {fmtRelative(item.time)}
                       </p>
                     </div>
+                    <ArrowRight className="w-3 h-3 flex-shrink-0 mt-1 opacity-0 group-hover:opacity-30 transition-opacity" />
                   </Link>
                 ))}
               </div>
@@ -655,9 +718,12 @@ export default function AdminDashboard() {
           {/* Pipeline des leads */}
           <div className="rounded-2xl p-6" style={{ ...CARD_STYLE }}>
             <div className="flex items-center justify-between mb-4">
-              <p className="text-[13px] font-medium" style={{ color: "hsl(224 40% 28%)" }}>
-                Pipeline des leads
-              </p>
+              <div className="flex items-center gap-2">
+                <div className="w-1 h-3.5 rounded-full" style={{ background: "hsl(218 55% 42%)" }} />
+                <p className="text-[12px] font-medium tracking-wide" style={{ color: "hsl(224 40% 28%)" }}>
+                  Pipeline des leads
+                </p>
+              </div>
               <Link to="/admin/leads" className="text-[10px] font-medium hover:opacity-75"
                 style={{ color: "hsl(218 55% 42%)" }}>
                 Voir tout →
@@ -683,9 +749,12 @@ export default function AdminDashboard() {
           {/* Derniers articles */}
           <div className="rounded-2xl p-6" style={{ ...CARD_STYLE }}>
             <div className="flex items-center justify-between mb-4">
-              <p className="text-[13px] font-medium" style={{ color: "hsl(224 40% 28%)" }}>
-                Derniers articles
-              </p>
+              <div className="flex items-center gap-2">
+                <div className="w-1 h-3.5 rounded-full" style={{ background: "hsl(218 55% 42%)" }} />
+                <p className="text-[12px] font-medium tracking-wide" style={{ color: "hsl(224 40% 28%)" }}>
+                  Derniers articles
+                </p>
+              </div>
               <Link to="/admin/articles" className="text-[10px] font-medium hover:opacity-75"
                 style={{ color: "hsl(218 55% 42%)" }}>
                 Voir tout →
@@ -735,9 +804,12 @@ export default function AdminDashboard() {
 
           {/* Sources des leads */}
           <div className="rounded-2xl p-6" style={{ ...CARD_STYLE }}>
-            <p className="text-[13px] font-medium mb-5" style={{ color: "hsl(224 40% 28%)" }}>
-              Sources des leads
-            </p>
+            <div className="flex items-center gap-2 mb-5">
+              <div className="w-1 h-3.5 rounded-full" style={{ background: "hsl(258 55% 52%)" }} />
+              <p className="text-[12px] font-medium tracking-wide" style={{ color: "hsl(224 40% 28%)" }}>
+                Sources des leads
+              </p>
+            </div>
             <div className="flex items-center gap-6">
               <DonutChart
                 segments={
@@ -778,9 +850,12 @@ export default function AdminDashboard() {
           {/* Tâches à traiter */}
           <div className="rounded-2xl p-6" style={{ ...CARD_STYLE }}>
             <div className="flex items-center justify-between mb-4">
-              <p className="text-[13px] font-medium" style={{ color: "hsl(224 40% 28%)" }}>
-                Tâches à traiter
-              </p>
+              <div className="flex items-center gap-2">
+                <div className="w-1 h-3.5 rounded-full" style={{ background: "hsl(38 80% 48%)" }} />
+                <p className="text-[12px] font-medium tracking-wide" style={{ color: "hsl(224 40% 28%)" }}>
+                  Tâches à traiter
+                </p>
+              </div>
               <span className="text-[10px] font-medium px-2 py-0.5 rounded-full"
                 style={{
                   background: tasks.every((t) => t.done)
