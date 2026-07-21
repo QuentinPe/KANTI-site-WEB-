@@ -174,8 +174,8 @@
     .section-padding {
       padding-left: 1.25rem;
       padding-right: 1.25rem;
-      padding-top: 4rem;
-      padding-bottom: 4rem;
+      padding-top: 5rem;
+      padding-bottom: 5rem;
     }
 
     /* PageHero compaction, premium, readable, frictionless */
@@ -191,7 +191,7 @@
 
 @layer components {
   .section-padding {
-    @apply px-6 py-24 md:px-12 lg:px-20 lg:py-32;
+    @apply px-6 py-36 md:px-12 lg:px-20 lg:py-52;
   }
 
   /* ───── LIQUID GLASS SURFACES ───── */
