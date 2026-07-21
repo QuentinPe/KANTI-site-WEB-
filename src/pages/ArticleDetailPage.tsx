@@ -1,13 +1,35 @@
-﻿import { useRef, useState, useEffect, useMemo } from "react";
+﻿import { useRef, useState, useEffect, useMemo, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Clock, Calendar, BookOpen, ExternalLink } from "lucide-react";
-import { motion, useScroll, useSpring, useMotionValueEvent } from "framer-motion";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { ArrowLeft, Clock, Calendar, BookOpen, ExternalLink, Eye, Heart } from "lucide-react";
+import { motion, useScroll, useSpring, useMotionValueEvent, AnimatePresence } from "framer-motion";
 import DOMPurify from "dompurify";
-import { getArticleById, getArticles } from "@/lib/articlesService";
+import { getArticleById, getArticles, incrementArticleViews, toggleArticleLike } from "@/lib/articlesService";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Seo, { blogPostingJsonLd, breadcrumbJsonLd, SITE_URL } from "@/components/Seo";
+
+/* ── Visitor ID (anonymous like tracking) ───────────────────────── */
+function getVisitorId(): string {
+  const key = "kanti_vid";
+  let id = localStorage.getItem(key);
+  if (!id) {
+    id = crypto.randomUUID();
+    localStorage.setItem(key, id);
+  }
+  return id;
+}
+
+function getLikedArticles(): string[] {
+  try { return JSON.parse(localStorage.getItem("kanti_liked") ?? "[]"); }
+  catch { return []; }
+}
+
+function setLikedArticle(id: string, liked: boolean) {
+  const arr = getLikedArticles();
+  const next = liked ? [...new Set([...arr, id])] : arr.filter(x => x !== id);
+  localStorage.setItem("kanti_liked", JSON.stringify(next));
+}
 
 /* ── Helpers ──────────────────────────────────────────────────── */
 
@@ -107,9 +129,13 @@ function RelatedCard({ article }: { article: { id: string; slug?: string | null;
 /* ── Main ────────────────────────────────────────────────────── */
 export default function ArticleDetailPage() {
   const { id } = useParams<{ id: string }>();
+  const qc = useQueryClient();
   const contentRef = useRef<HTMLElement>(null);
   const [readPct, setReadPct] = useState(0);
   const [activeId, setActiveId] = useState("");
+  const [liked, setLiked] = useState(false);
+  const [likesCount, setLikesCount] = useState(0);
+  const [likeAnim, setLikeAnim] = useState(false);
 
   const { scrollYProgress } = useScroll({
     target: contentRef,
@@ -146,6 +172,40 @@ export default function ArticleDetailPage() {
     }
     return allArticles.filter(a => a.id !== id).slice(0, 3);
   }, [allArticles, id, article?.related_article_ids]);
+
+  // Track view once per session
+  useEffect(() => {
+    if (!article?.id) return;
+    const key = `kanti_viewed_${article.id}`;
+    if (sessionStorage.getItem(key)) return;
+    sessionStorage.setItem(key, "1");
+    incrementArticleViews(article.id);
+  }, [article?.id]);
+
+  // Init like state from server + localStorage
+  useEffect(() => {
+    if (!article) return;
+    setLikesCount(article.likes ?? 0);
+    setLiked(getLikedArticles().includes(article.id));
+  }, [article]);
+
+  const handleLike = useCallback(async () => {
+    if (!article) return;
+    const nextLiked = !liked;
+    const delta = nextLiked ? 1 : -1;
+    setLiked(nextLiked);
+    setLikesCount(n => Math.max(0, n + delta));
+    setLikeAnim(true);
+    setTimeout(() => setLikeAnim(false), 600);
+    setLikedArticle(article.id, nextLiked);
+    const serverCount = await toggleArticleLike(article.id, delta as 1 | -1);
+    if (serverCount !== null) {
+      setLikesCount(serverCount);
+      qc.setQueryData(["article", id], (old: typeof article) =>
+        old ? { ...old, likes: serverCount } : old
+      );
+    }
+  }, [article, liked, id, qc]);
 
   // IntersectionObserver for active TOC heading
   useEffect(() => {
@@ -254,6 +314,40 @@ export default function ArticleDetailPage() {
                     par <span className="font-medium" style={{ color: "hsl(224 35% 35%)" }}>{article.author_name}</span>
                   </span>
                 )}
+                {/* Views */}
+                {(article.views ?? 0) > 0 && (
+                  <span className="flex items-center gap-1.5 text-[12px] font-light" style={{ color: "hsl(224 15% 50%)" }}>
+                    <Eye className="w-3.5 h-3.5" />{article.views} lecture{(article.views ?? 0) > 1 ? "s" : ""}
+                  </span>
+                )}
+                {/* Like button */}
+                <button
+                  onClick={handleLike}
+                  aria-label={liked ? "Retirer votre like" : "Liker cet article"}
+                  className="flex items-center gap-1.5 rounded-full px-3 py-1 transition-all duration-200 text-[12px] font-medium"
+                  style={{
+                    background: liked ? "hsl(350 70% 54% / 0.10)" : "hsl(224 20% 12% / 0.06)",
+                    color: liked ? "hsl(350 65% 48%)" : "hsl(224 15% 50%)",
+                    border: `1px solid ${liked ? "hsl(350 60% 52% / 0.25)" : "hsl(224 20% 12% / 0.10)"}`,
+                  }}
+                >
+                  <AnimatePresence mode="wait">
+                    <motion.span
+                      key={likeAnim ? "anim" : "idle"}
+                      initial={likeAnim ? { scale: 0.6, opacity: 0.5 } : false}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                      style={{ display: "flex" }}
+                    >
+                      <Heart
+                        className="w-3.5 h-3.5"
+                        fill={liked ? "currentColor" : "none"}
+                        strokeWidth={liked ? 0 : 1.5}
+                      />
+                    </motion.span>
+                  </AnimatePresence>
+                  <span>{likesCount > 0 ? likesCount : ""} {liked ? "Aimé" : "Aimer"}</span>
+                </button>
               </div>
 
               {/* Headline */}
@@ -362,6 +456,35 @@ export default function ArticleDetailPage() {
                         style={{ background: "white", color: "hsl(224 55% 18%)" }}>
                         Prendre rendez-vous
                       </Link>
+                    </div>
+
+                    {/* Engagement stats */}
+                    <div className="rounded-2xl p-5"
+                      style={{ background: "hsl(220 30% 98%)", border: "1px solid hsl(224 20% 12% / 0.07)" }}>
+                      <p className="text-[10px] tracking-[0.22em] uppercase font-medium mb-4" style={{ color: "hsl(224 15% 55%)" }}>
+                        Engagement
+                      </p>
+                      <div className="flex items-center justify-around">
+                        <div className="text-center">
+                          <div className="flex items-center justify-center gap-1 mb-1">
+                            <Eye className="w-3.5 h-3.5" style={{ color: "hsl(218 45% 42%)" }} />
+                          </div>
+                          <p className="text-[18px] font-heading font-light tabular-nums" style={{ color: "hsl(224 55% 14%)" }}>
+                            {article.views ?? 0}
+                          </p>
+                          <p className="text-[10px] font-light mt-0.5" style={{ color: "hsl(224 15% 55%)" }}>lectures</p>
+                        </div>
+                        <div className="w-px h-8 self-center" style={{ background: "hsl(224 20% 12% / 0.08)" }} />
+                        <div className="text-center">
+                          <div className="flex items-center justify-center gap-1 mb-1">
+                            <Heart className="w-3.5 h-3.5" style={{ color: "hsl(350 65% 52%)" }} fill="currentColor" />
+                          </div>
+                          <p className="text-[18px] font-heading font-light tabular-nums" style={{ color: "hsl(224 55% 14%)" }}>
+                            {likesCount}
+                          </p>
+                          <p className="text-[10px] font-light mt-0.5" style={{ color: "hsl(224 15% 55%)" }}>j'aime</p>
+                        </div>
+                      </div>
                     </div>
 
                     {/* Tag context */}

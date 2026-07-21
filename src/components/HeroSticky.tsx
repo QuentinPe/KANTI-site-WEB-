@@ -32,8 +32,8 @@ export default function HeroSticky() {
     offset: ["start start", "end end"],
   });
 
-  const titleOpacity = useTransform(scrollYProgress, [0, 0.15, 0.7, 0.95], [1, 1, 0.85, 0]);
-  const titleY = useTransform(scrollYProgress, [0, 1], reduce ? [0, 0] : [0, -60]);
+  const titleOpacity = useTransform(scrollYProgress, [0, 0.12, 0.42, 0.62], [1, 1, 0.55, 0]);
+  const titleY = useTransform(scrollYProgress, [0, 0.65], reduce ? [0, 0] : [0, -48]);
 
   // Preload all frames as <img> elements + drive canvas from scroll
   useEffect(() => {

@@ -16,6 +16,8 @@ export interface Article {
   author_name?: string | null;
   related_article_ids?: string[] | null;
   sort_order?: number;
+  views?: number;
+  likes?: number;
   created_at: string;
   updated_at: string;
 }
@@ -76,4 +78,17 @@ export const updateArticle = async (id: string, input: Partial<ArticleInput>): P
 export const deleteArticle = async (id: string): Promise<void> => {
   const { error } = await supabase.from("articles").delete().eq("id", id);
   if (error) throw error;
+};
+
+export const incrementArticleViews = async (id: string): Promise<void> => {
+  await supabase.rpc("increment_article_views", { article_id: id });
+};
+
+export const toggleArticleLike = async (id: string, delta: 1 | -1): Promise<number | null> => {
+  const { data, error } = await supabase.rpc("toggle_article_like", {
+    article_id: id,
+    delta,
+  });
+  if (error) return null;
+  return data as number;
 };
