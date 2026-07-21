@@ -24,7 +24,6 @@ const navLinks = [
     ],
   },
   { label: "Ressources", href: "/ressources" },
-  { label: "Contact", href: "/contact" },
 ];
 
 export default function Header() {
