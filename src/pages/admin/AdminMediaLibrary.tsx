@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Upload, Copy, Trash2, Image as ImageIcon, Check, AlertCircle } from "lucide-react";
+import { Upload, Copy, Trash2, Image as ImageIcon, Check, AlertCircle, X } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 
@@ -45,6 +45,7 @@ async function deleteMedia(name: string): Promise<void> {
 
 function FileCard({ file, onDelete }: { file: MediaFile; onDelete: () => void }) {
   const [copied, setCopied] = useState(false);
+  const [confirming, setConfirming] = useState(false);
 
   const copy = async () => {
     await navigator.clipboard.writeText(file.url);
@@ -59,7 +60,7 @@ function FileCard({ file, onDelete }: { file: MediaFile; onDelete: () => void })
     <div className="group rounded-xl overflow-hidden flex flex-col transition-all duration-200"
       style={{ background: "white", border: "1px solid hsl(224 20% 12% / 0.08)", boxShadow: "0 1px 4px -2px hsl(224 60% 12% / 0.05)" }}
       onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = "0 8px 24px -8px hsl(224 60% 12% / 0.12)"; }}
-      onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = "0 1px 4px -2px hsl(224 60% 12% / 0.05)"; }}>
+      onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = "0 1px 4px -2px hsl(224 60% 12% / 0.05)"; (e.currentTarget as HTMLElement) && setConfirming(false); }}>
       {/* Image */}
       <div className="relative aspect-[16/9] overflow-hidden" style={{ background: "hsl(220 20% 95%)" }}>
         <img src={file.url} alt={file.name} className="w-full h-full object-cover" loading="lazy"
@@ -67,18 +68,37 @@ function FileCard({ file, onDelete }: { file: MediaFile; onDelete: () => void })
         {/* Overlay actions */}
         <div className="absolute inset-0 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
           style={{ background: "hsl(224 40% 8% / 0.45)" }}>
-          <button onClick={copy}
-            className="w-9 h-9 rounded-full flex items-center justify-center backdrop-blur-sm transition-transform duration-150 hover:scale-110"
-            style={{ background: "white", color: "hsl(224 55% 20%)" }}
-            title="Copier l'URL">
-            {copied ? <Check className="w-4 h-4" style={{ color: "hsl(142 55% 38%)" }} /> : <Copy className="w-4 h-4" />}
-          </button>
-          <button onClick={() => { if (confirm(`Supprimer "${file.name}" ?`)) onDelete(); }}
-            className="w-9 h-9 rounded-full flex items-center justify-center backdrop-blur-sm transition-transform duration-150 hover:scale-110"
-            style={{ background: "hsl(0 60% 50%)", color: "white" }}
-            title="Supprimer">
-            <Trash2 className="w-4 h-4" />
-          </button>
+          {confirming ? (
+            <>
+              <button onClick={() => { setConfirming(false); onDelete(); }}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-medium backdrop-blur-sm transition-transform duration-150 hover:scale-105"
+                style={{ background: "hsl(0 65% 48%)", color: "white" }}
+                title="Confirmer la suppression">
+                <Check className="w-3.5 h-3.5" /> Supprimer
+              </button>
+              <button onClick={() => setConfirming(false)}
+                className="w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-sm transition-transform duration-150 hover:scale-110"
+                style={{ background: "white", color: "hsl(224 40% 30%)" }}
+                title="Annuler">
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </>
+          ) : (
+            <>
+              <button onClick={copy}
+                className="w-9 h-9 rounded-full flex items-center justify-center backdrop-blur-sm transition-transform duration-150 hover:scale-110"
+                style={{ background: "white", color: "hsl(224 55% 20%)" }}
+                title="Copier l'URL">
+                {copied ? <Check className="w-4 h-4" style={{ color: "hsl(142 55% 38%)" }} /> : <Copy className="w-4 h-4" />}
+              </button>
+              <button onClick={() => setConfirming(true)}
+                className="w-9 h-9 rounded-full flex items-center justify-center backdrop-blur-sm transition-transform duration-150 hover:scale-110"
+                style={{ background: "hsl(0 60% 50%)", color: "white" }}
+                title="Supprimer">
+                <Trash2 className="w-4 h-4" />
+              </button>
+            </>
+          )}
         </div>
       </div>
       {/* Meta */}

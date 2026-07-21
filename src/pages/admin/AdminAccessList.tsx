@@ -238,11 +238,8 @@ CREATE POLICY "Admin can write" ON admin_users FOR ALL TO authenticated
     SELECT email FROM admin_users WHERE active = true))
   WITH CHECK (auth.jwt()->>'email' IN (
     SELECT email FROM admin_users WHERE active = true));
-INSERT INTO admin_users (email, display_name, role) VALUES
-  ('quentin@adnfamily.com', 'Quentin', 'super_admin'),
-  ('m.delorme@adnfamily.com', 'Matthieu', 'super_admin'),
-  ('t.robert@adnfamily.com', 'Thomas', 'admin')
-ON CONFLICT (email) DO NOTHING;`}
+-- Insérez vos administrateurs initiaux via l'interface ci-dessus
+-- ou directement dans Supabase Dashboard > Table Editor > admin_users`}
         </pre>
       </div>
 

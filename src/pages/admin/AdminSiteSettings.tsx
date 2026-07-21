@@ -11,12 +11,21 @@ const inputFocus = { borderColor: "hsl(224 60% 18% / 0.40)", boxShadow: "0 0 0 3
 const inputBlur  = { boxShadow: "none", borderColor: "hsl(224 20% 12% / 0.12)" };
 
 const SEO_PAGES = [
-  { key: "home",      label: "Accueil",          path: "/" },
-  { key: "cabinet",   label: "Le Cabinet",        path: "/cabinet" },
-  { key: "methode",   label: "Notre Méthode",     path: "/notre-methode" },
-  { key: "contact",   label: "Contact",           path: "/contact" },
-  { key: "actualites",label: "Actualités",        path: "/actualites" },
-  { key: "ressources",label: "Ressources",        path: "/ressources" },
+  { key: "home",             label: "Accueil",                    path: "/" },
+  { key: "cabinet",          label: "Le Cabinet",                 path: "/cabinet" },
+  { key: "methode",          label: "Notre Méthode",              path: "/notre-methode" },
+  { key: "contact",          label: "Contact",                    path: "/contact" },
+  { key: "actualites",       label: "Actualités",                 path: "/actualites" },
+  { key: "ressources",       label: "Ressources",                 path: "/ressources" },
+  { key: "cas_clients",      label: "Cas clients",                path: "/cas-clients" },
+  { key: "faq",              label: "FAQ",                        path: "/faq" },
+  { key: "bilan",            label: "Bilan patrimonial",          path: "/bilan-patrimonial-bordeaux" },
+  { key: "gestion",          label: "Gestion patrimoniale",       path: "/gestion-patrimoniale" },
+  { key: "fiscalite",        label: "Fiscalité",                  path: "/fiscalite" },
+  { key: "patrimoine_pro",   label: "Patrimoine professionnel",   path: "/patrimoine-professionnel" },
+  { key: "financement",      label: "Financement & crédit",       path: "/financement" },
+  { key: "transmission",     label: "Transmission & prévoyance",  path: "/transmission-patrimoine-famille" },
+  { key: "immobilier",       label: "Immobilier patrimonial",     path: "/patrimoine-immobilier-strategie" },
 ];
 
 function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
@@ -140,9 +149,14 @@ export default function AdminSiteSettings() {
       <div className="flex flex-col gap-6">
 
         {/* Contact */}
-        <SectionCard title="Coordonnées" icon={Phone}>
-          <Field label="Téléphone"><div>{textInput("phone", "+33 6 63 32 48 09")}</div></Field>
-          <Field label="Email"><div>{textInput("email", "kanti@adnfamily.com")}</div></Field>
+        <SectionCard title="Coordonnées & Domaine" icon={Phone}>
+          <Field label="Domaine du site" hint="Utilisé dans l'aperçu Google des articles (sans https://)">
+            <div>{textInput("site_domain", "kanti-patrimoine.fr")}</div>
+          </Field>
+          <div className="grid grid-cols-2 gap-4">
+            <Field label="Téléphone"><div>{textInput("phone", "+33 6 63 32 48 09")}</div></Field>
+            <Field label="Email"><div>{textInput("email", "kanti@adnfamily.com")}</div></Field>
+          </div>
           <Field label="Adresse"><div>{textInput("address", "12 rue Ferrere, 33000 Bordeaux")}</div></Field>
         </SectionCard>
 

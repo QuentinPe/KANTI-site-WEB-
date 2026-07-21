@@ -9,6 +9,7 @@ import { ArrowLeft, ImageOff, Sparkles, Wand2, ChevronDown, Search, Eye, Link2, 
 import { getArticles, createArticle, updateArticle } from "@/lib/articlesService";
 import type { ArticleInput } from "@/lib/articlesService";
 import { getCategories } from "@/lib/categoriesService";
+import { getSiteSettingsMap } from "@/lib/siteSettingsService";
 import RichEditor from "@/components/admin/RichEditor";
 
 const FALLBACK_CATEGORIES = ["Investissement", "Épargne", "Transmission", "Fiscalité", "Retraite", "Immobilier", "Dirigeants", "Allocation", "Prévoyance"];
@@ -99,6 +100,11 @@ export default function AdminArticleForm() {
     queryFn: () => getCategories("article"),
   });
 
+  const { data: settingsMap = {} } = useQuery({
+    queryKey: ["site-settings-map"],
+    queryFn: getSiteSettingsMap,
+  });
+
   const categoryNames = dbCategories.length > 0
     ? dbCategories.map((c) => c.name)
     : FALLBACK_CATEGORIES;
@@ -110,6 +116,7 @@ export default function AdminArticleForm() {
   const [relatedSearch, setRelatedSearch] = useState("");
   const [selectedRelated, setSelectedRelated] = useState<string[]>([]);
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
+  const [readingTimeManuallyEdited, setReadingTimeManuallyEdited] = useState(false);
 
   const { register, handleSubmit, reset, watch, setValue, formState: { errors, isSubmitting } } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -167,6 +174,16 @@ export default function AdminArticleForm() {
       setValue("slug", slugify(titleValue), { shouldValidate: false });
     }
   }, [titleValue, slugManuallyEdited, setValue]);
+
+  /* Auto-compute reading time from body word count */
+  useEffect(() => {
+    if (readingTimeManuallyEdited || !bodyValue) return;
+    const text = bodyValue.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+    const words = text.split(" ").filter(Boolean).length;
+    if (words < 30) return;
+    const mins = Math.max(1, Math.round(words / 200));
+    setValue("reading_time", `${mins} min`, { shouldValidate: false });
+  }, [bodyValue, readingTimeManuallyEdited, setValue]);
 
   const callAI = async (action: "summarize" | "reformat") => {
     setAiError("");
@@ -405,7 +422,7 @@ export default function AdminArticleForm() {
           {/* AI reformat */}
           <div className="flex items-center justify-between mt-1">
             <p className="text-[11px] font-light" style={{ color: "hsl(224 15% 60%)" }}>
-              Grok analyse et restructure votre contenu selon les normes rédactionnelles
+              L'IA analyse et restructure votre contenu selon les normes rédactionnelles
             </p>
             <button
               type="button"
@@ -413,14 +430,14 @@ export default function AdminArticleForm() {
               disabled={aiSummarizing || aiReformatting}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all duration-200 disabled:opacity-50 flex-shrink-0 ml-4"
               style={{ background: "hsl(218 55% 42% / 0.10)", color: "hsl(218 55% 35%)", border: "1px solid hsl(218 55% 50% / 0.20)" }}
-              title="Améliorer la structure et le style de l'article avec Grok"
+              title="Améliorer la structure et le style de l'article avec l'IA"
             >
               {aiReformatting ? (
                 <span className="w-3 h-3 rounded-full border border-current border-t-transparent animate-spin" />
               ) : (
                 <Wand2 className="w-3 h-3" />
               )}
-              {aiReformatting ? "Amélioration…" : "Améliorer avec Grok"}
+              {aiReformatting ? "Amélioration…" : "Améliorer avec l'IA"}
             </button>
           </div>
           {aiError && (
@@ -448,7 +465,7 @@ export default function AdminArticleForm() {
             <input
               className={inputClass}
               style={inputStyle}
-              placeholder="ex: Juillet 2026"
+              placeholder="ex: Juillet 2025"
               {...register("date")}
               onFocus={(e) => Object.assign((e.target as HTMLElement).style, inputFocus)}
               onBlur={(e) => Object.assign((e.target as HTMLElement).style, inputBlur)}
@@ -456,12 +473,13 @@ export default function AdminArticleForm() {
           </Field>
         </div>
 
-        <Field label="Temps de lecture *" error={errors.reading_time?.message}>
+        <Field label="Temps de lecture *" hint="Calculé automatiquement à partir du contenu" error={errors.reading_time?.message}>
           <input
             className={inputClass}
             style={inputStyle}
             placeholder="ex: 5 min"
             {...register("reading_time")}
+            onInput={() => setReadingTimeManuallyEdited(true)}
             onFocus={(e) => Object.assign((e.target as HTMLElement).style, inputFocus)}
             onBlur={(e) => Object.assign((e.target as HTMLElement).style, inputBlur)}
           />
@@ -668,7 +686,7 @@ export default function AdminArticleForm() {
                     {metaTitleValue || titleValue || "Titre de l'article"}, KANTI
                   </p>
                   <p className="text-[12px] leading-snug" style={{ color: "hsl(130 30% 28%)" }}>
-                    kanti-patrimoine-courtage.lovable.app › actualites › {watch("slug") || "slug"}
+                    {settingsMap["site_domain"] || "votre-domaine.fr"} › actualites › {watch("slug") || "slug"}
                   </p>
                   <p className="text-[13px] leading-snug mt-1" style={{ color: "hsl(224 10% 38%)" }}>
                     {metaDescValue || watch("excerpt") || "Description de l'article..."}
@@ -701,7 +719,7 @@ export default function AdminArticleForm() {
                 <input
                   className={inputClass}
                   style={inputStyle}
-                  placeholder="ex: Quentin Perromat"
+                  placeholder="ex: Nom Prénom"
                   {...register("author_name")}
                   onFocus={(e) => Object.assign((e.target as HTMLElement).style, inputFocus)}
                   onBlur={(e) => Object.assign((e.target as HTMLElement).style, inputBlur)}

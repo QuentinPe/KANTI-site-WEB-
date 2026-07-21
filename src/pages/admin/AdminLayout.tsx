@@ -11,7 +11,7 @@ export default function AdminLayout() {
   const navigate = useNavigate();
 
   const { data: leads = [] } = useQuery({ queryKey: ["leads"], queryFn: getLeads });
-  const newLeadsCount = leads.filter((l) => l.status === "nouveau" || l.status === "appele").length;
+  const newLeadsCount = leads.filter((l) => l.status === "nouveau").length;
 
   const handleSignOut = async () => {
     await signOut();
