@@ -412,93 +412,88 @@ export default function ArticleDetailPage() {
 
                 {/* Right: sticky sidebar */}
                 <aside className="hidden lg:block">
-                  <div className="sticky top-28 space-y-8">
+                  <div className="sticky top-28 space-y-4">
 
                     {/* TOC */}
                     {toc.length > 0 && (
-                      <div className="rounded-2xl p-6"
-                        style={{ background: "hsl(220 30% 98%)", border: "1px solid hsl(224 20% 12% / 0.07)" }}>
+                      <div className="glass rounded-2xl p-5 ring-1 ring-foreground/[0.06]">
                         <TableOfContents items={toc} activeId={activeId} />
                       </div>
                     )}
 
                     {/* Reading progress */}
-                    <div className="rounded-2xl p-5"
-                      style={{ background: "hsl(218 45% 42% / 0.05)", border: "1px solid hsl(218 45% 42% / 0.12)" }}>
+                    <div className="glass rounded-2xl p-5 ring-1 ring-foreground/[0.06]">
                       <div className="flex items-center justify-between mb-3">
-                        <span className="text-[11px] font-medium tracking-wide uppercase" style={{ color: "hsl(218 40% 42%)" }}>
-                          <BookOpen className="w-3.5 h-3.5 inline mr-1.5 -mt-0.5" />
-                          Progression
-                        </span>
-                        <span className="text-[13px] font-medium tabular-nums" style={{ color: "hsl(218 45% 36%)" }}>
+                        <div className="flex items-center gap-2 text-foreground/50">
+                          <BookOpen className="w-3.5 h-3.5" strokeWidth={1.5} />
+                          <span className="text-[11px] font-medium tracking-[0.12em] uppercase">Progression</span>
+                        </div>
+                        <span className="text-[13px] font-semibold tabular-nums" style={{ color: "hsl(218 45% 40%)" }}>
                           {readPct}%
                         </span>
                       </div>
-                      <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "hsl(218 30% 88%)" }}>
-                        <motion.div className="h-full rounded-full origin-left"
-                          style={{ scaleX: scrollYProgress, background: "linear-gradient(90deg, hsl(218 45% 42%), hsl(218 60% 60%))", transformOrigin: "left" }} />
+                      <div className="h-[3px] rounded-full overflow-hidden bg-foreground/[0.07]">
+                        <motion.div
+                          className="h-full rounded-full"
+                          style={{ scaleX: scrollYProgress, background: "linear-gradient(90deg, hsl(218 45% 42%), hsl(222 60% 58%))", transformOrigin: "left" }}
+                        />
+                      </div>
+                      <div className="flex items-center justify-between mt-3">
+                        <span className="text-[11px] text-foreground/35">{article.reading_time}</span>
+                        <span className="text-[11px] text-foreground/35">{article.date}</span>
                       </div>
                     </div>
 
                     {/* CTA */}
-                    <div className="rounded-2xl p-6"
-                      style={{ background: "hsl(224 60% 12%)" }}>
-                      <p className="text-[11px] tracking-[0.22em] uppercase font-medium mb-3"
-                        style={{ color: "hsl(220 30% 70%)" }}>
-                        Prêt à agir ?
+                    <div className="rounded-2xl p-6 overflow-hidden relative"
+                      style={{ background: "linear-gradient(145deg, hsl(224 60% 9%) 0%, hsl(222 50% 16%) 100%)" }}>
+                      <div className="absolute -top-8 -right-8 w-28 h-28 rounded-full pointer-events-none"
+                        style={{ background: "hsl(218 80% 65% / 0.12)", filter: "blur(20px)" }} />
+                      <p className="text-[10px] tracking-[0.28em] uppercase font-medium mb-3" style={{ color: "hsl(220 25% 55%)" }}>
+                        KANTI · Cabinet
                       </p>
-                      <p className="text-[14px] font-heading font-light leading-snug mb-5"
-                        style={{ color: "white" }}>
+                      <p className="text-[15px] font-heading font-light leading-[1.45] mb-6 text-white/90">
                         Échangeons sur votre situation patrimoniale.
                       </p>
                       <Link to="/contact"
-                        className="block text-center py-2.5 rounded-xl text-[13px] font-medium transition-opacity hover:opacity-85"
-                        style={{ background: "white", color: "hsl(224 55% 18%)" }}>
+                        className="flex items-center justify-center gap-2 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl group"
+                        style={{ background: "white", color: "hsl(224 55% 14%)" }}>
                         Prendre rendez-vous
+                        <svg className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                        </svg>
                       </Link>
                     </div>
 
-                    {/* Engagement stats */}
-                    <div className="rounded-2xl p-5"
-                      style={{ background: "hsl(220 30% 98%)", border: "1px solid hsl(224 20% 12% / 0.07)" }}>
-                      <p className="text-[10px] tracking-[0.22em] uppercase font-medium mb-4" style={{ color: "hsl(224 15% 55%)" }}>
-                        Engagement
-                      </p>
-                      <div className="flex items-center justify-around">
-                        <div className="text-center">
-                          <div className="flex items-center justify-center gap-1 mb-1">
-                            <Eye className="w-3.5 h-3.5" style={{ color: "hsl(218 45% 42%)" }} />
-                          </div>
-                          <p className="text-[18px] font-heading font-light tabular-nums" style={{ color: "hsl(224 55% 14%)" }}>
+                    {/* Engagement + Catégorie */}
+                    <div className="glass rounded-2xl ring-1 ring-foreground/[0.06] overflow-hidden">
+                      <div className="flex divide-x divide-foreground/[0.06]">
+                        <div className="flex-1 py-5 flex flex-col items-center gap-1">
+                          <Eye className="w-4 h-4 text-foreground/35 mb-1" strokeWidth={1.5} />
+                          <p className="text-[22px] font-heading font-light tabular-nums text-foreground leading-none">
                             {article.views ?? 0}
                           </p>
-                          <p className="text-[10px] font-light mt-0.5" style={{ color: "hsl(224 15% 55%)" }}>lectures</p>
+                          <p className="text-[10px] tracking-[0.18em] uppercase text-foreground/35">lectures</p>
                         </div>
-                        <div className="w-px h-8 self-center" style={{ background: "hsl(224 20% 12% / 0.08)" }} />
-                        <div className="text-center">
-                          <div className="flex items-center justify-center gap-1 mb-1">
-                            <Heart className="w-3.5 h-3.5" style={{ color: "hsl(350 65% 52%)" }} fill="currentColor" />
-                          </div>
-                          <p className="text-[18px] font-heading font-light tabular-nums" style={{ color: "hsl(224 55% 14%)" }}>
+                        <div className="flex-1 py-5 flex flex-col items-center gap-1">
+                          <Heart className="w-4 h-4 mb-1" style={{ color: "hsl(350 60% 55%)" }} fill="currentColor" strokeWidth={1.5} />
+                          <p className="text-[22px] font-heading font-light tabular-nums text-foreground leading-none">
                             {likesCount}
                           </p>
-                          <p className="text-[10px] font-light mt-0.5" style={{ color: "hsl(224 15% 55%)" }}>j'aime</p>
+                          <p className="text-[10px] tracking-[0.18em] uppercase text-foreground/35">j'aime</p>
                         </div>
+                      </div>
+                      <div className="border-t border-foreground/[0.06] px-5 py-3.5 flex items-center justify-between">
+                        <span className="text-[10px] tracking-[0.22em] uppercase font-medium text-foreground/35">Catégorie</span>
+                        <Link to="/actualites"
+                          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium transition-opacity hover:opacity-70"
+                          style={{ background: "hsl(218 45% 42% / 0.1)", color: "hsl(218 45% 38%)" }}>
+                          {article.tag}
+                          <ExternalLink className="w-3 h-3" />
+                        </Link>
                       </div>
                     </div>
 
-                    {/* Tag context */}
-                    <div>
-                      <p className="text-[10px] tracking-[0.22em] uppercase font-medium mb-3" style={{ color: "hsl(224 15% 55%)" }}>
-                        Catégorie
-                      </p>
-                      <Link to="/actualites"
-                        className="inline-flex items-center gap-2 text-[13px] font-medium hover:opacity-70 transition-opacity"
-                        style={{ color: "hsl(218 45% 38%)" }}>
-                        <ExternalLink className="w-3.5 h-3.5" />
-                        {article.tag}
-                      </Link>
-                    </div>
                   </div>
                 </aside>
               </div>

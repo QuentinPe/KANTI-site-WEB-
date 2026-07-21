@@ -97,7 +97,7 @@ export default function Header() {
 
           {/* Desktop nav bubble, unfurls horizontally from the right toward KANTI */}
           <div
-            className={`hidden xl:block flex-1 transition-[transform,opacity,filter] duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] origin-right will-change-transform ${
+            className={`hidden xl:block ml-auto transition-[transform,opacity,filter] duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] origin-right will-change-transform ${
               navExpanded
                 ? "opacity-100 scale-x-100 blur-0"
                 : "opacity-0 scale-x-0 blur-[2px]"

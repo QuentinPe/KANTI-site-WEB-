@@ -28,7 +28,7 @@ export default function Actualites() {
       <div className="max-w-7xl mx-auto relative z-10">
 
         {/* En-tête */}
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-14 gap-6 reveal">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-14 gap-6">
           <div>
             <h2 className="text-4xl md:text-5xl lg:text-[3.2rem] font-heading font-semibold text-foreground tracking-tight leading-[1.05] mb-5">
               Actualités
