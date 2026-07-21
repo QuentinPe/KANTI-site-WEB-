@@ -23,7 +23,7 @@ export default function FiscalitePage() {
         eyebrow="Stratégie fiscale"
         stats={[
           { value: "6", label: "Leviers analysés" },
-          { value: "100%", label: "Conformité AMF" },
+          { value: "100%", label: "Conformité réglementaire" },
           { value: "Annuel", label: "Suivi & révision" },
         ]}
       />
@@ -40,7 +40,7 @@ export default function FiscalitePage() {
           { title: "Revenus fonciers", text: "Arbitrage location nue / meublée, régime micro ou réel, déficit foncier, SCI à l'IS." },
           { title: "Plus-values", text: "Anticipation des cessions, report et sursis d'imposition, apport-cession (150-0 B ter), purge successorale." },
           { title: "Holding patrimoniale", text: "Structuration juridique pour regrouper, gérer et transmettre vos actifs de façon optimale." },
-          { title: "Conformité & traçabilité", text: "Vérification systématique de la licéité des montages, documentation conforme aux exigences AMF et fiscales." },
+          { title: "Conformité & traçabilité", text: "Vérification systématique de la licéité des montages, documentation conforme aux exigences réglementaires et fiscales." },
         ]}
       />
 

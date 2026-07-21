@@ -33,7 +33,7 @@ const expertises = [
       "Optimisation revenus fonciers",
       "Holding patrimoniale",
     ],
-    fiscality: "Conformité totale (AMF, BOFIP). Aucun montage à risque, traçabilité documentée.",
+    fiscality: "Conformité totale (réglementaire et BOFiP). Aucun montage à risque, traçabilité documentée.",
     horizon: "Annuel",
     href: "/fiscalite",
     featured: true,

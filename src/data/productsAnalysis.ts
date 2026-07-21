@@ -146,7 +146,7 @@ const fallback = (title: string): ProductAnalysis => ({
     { id: "C", label: "Client", role: "Souscripteur / investisseur", kind: "client" },
     { id: "K", label: "KANTI", role: "Conseil & coordination", kind: "manager" },
     { id: "V", label: "Véhicule", role: "Enveloppe / contrat / société porteuse", kind: "vehicle" },
-    { id: "R", label: "Régulateur", role: "AMF, ACPR, administration fiscale", kind: "regulator" },
+    { id: "R", label: "Régulateur", role: "ACPR, administration fiscale", kind: "regulator" },
   ],
   flows: [
     { from: "C", to: "K", label: "Mandat de conseil" },
@@ -164,7 +164,7 @@ const fallback = (title: string): ProductAnalysis => ({
   risks: [
     { label: "Risque de marché", likelihood: "Modéré", impact: "Modéré", mitigation: "Diversification, allocation pilotée, horizon long." },
     { label: "Risque de liquidité", likelihood: "Faible", impact: "Modéré", mitigation: "Coussin d'épargne court terme dédié." },
-    { label: "Risque réglementaire / fiscal", likelihood: "Faible", impact: "Modéré", mitigation: "Veille AMF & lois de finances, revue annuelle." },
+    { label: "Risque réglementaire / fiscal", likelihood: "Faible", impact: "Modéré", mitigation: "Veille réglementaire & lois de finances, revue annuelle." },
     { label: "Risque opérationnel", likelihood: "Faible", impact: "Faible", mitigation: "Sélection d'acteurs régulés, double signature." },
   ],
   performance: [
@@ -202,7 +202,7 @@ const fallback = (title: string): ProductAnalysis => ({
     "Aversion totale au risque de fluctuation.",
     "Horizon inférieur à 3 ans.",
   ],
-  regulatoryFramework: ["Code monétaire et financier", "Code général des impôts", "Doctrine AMF & BOFiP applicable"],
+  regulatoryFramework: ["Code monétaire et financier", "Code général des impôts", "Doctrine réglementaire applicable & BOFiP"],
 });
 
 /* ------------------------------------------------------------------------- */
@@ -228,7 +228,7 @@ const data: AnalysisMap = {
         { id: "A", label: "Assureur", role: "Porte juridiquement les actifs (cantonnement Lux. possible)", kind: "vehicle" },
         { id: "D", label: "Dépositaire", role: "Conserve les titres", kind: "counterparty" },
         { id: "G", label: "Sociétés de gestion", role: "Gèrent les UC sélectionnées", kind: "counterparty" },
-        { id: "R", label: "ACPR / AMF", role: "Supervision prudentielle et de commercialisation", kind: "regulator" },
+        { id: "R", label: "Encadrement réglementaire", role: "Supervision prudentielle et de commercialisation", kind: "regulator" },
       ],
       flows: [
         { from: "C", to: "A", label: "Versement" },
@@ -436,7 +436,7 @@ const data: AnalysisMap = {
         { id: "K", label: "KANTI", role: "Optimisation versements & gestion", kind: "manager" },
         { id: "P", label: "PER assurantiel", role: "Porte les actifs, gère la sortie", kind: "vehicle" },
         { id: "F", label: "Administration fiscale", role: "Déduction entrée / imposition sortie", kind: "tax" },
-        { id: "R", label: "ACPR / AMF", role: "Cadre prudentiel & DDA", kind: "regulator" },
+        { id: "R", label: "Encadrement réglementaire", role: "Cadre prudentiel & DDA", kind: "regulator" },
       ],
       flows: [
         { from: "C", to: "P", label: "Versement" },

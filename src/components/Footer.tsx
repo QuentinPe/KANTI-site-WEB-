@@ -58,7 +58,7 @@ export default function Footer() {
           <p>
             KANTI, SAS immatriculée au RCS de Bayonne sous le n° 878 821 818, Code NAF 7022Z, TVA intracommunautaire FR34878821818, Siège social : 9 Rue de la Négresse, 64200 Biarritz.
             Immatriculé à l'ORIAS sous le n° 20 000 855 (www.orias.fr) en qualité de Conseiller en Investissements Financiers (CIF), Courtier d'assurance et Courtier en opérations de banque et services de paiement (IOBSP).
-            Adhérent de La Compagnie CIF et de La Compagnie IOBSP (n° F002635) et de la CNCEF Assurance (n° 25/860422), associations agréées par l'AMF et l'ACPR. Activités d'IAS et d'IOBSP contrôlables par l'ACPR.
+            Adhérent de La Compagnie CIF et de La Compagnie IOBSP (n° F002635) et de la CNCEF Assurance (n° 25/860422), associations agréées par les autorités françaises compétentes. Activités d'IAS et d'IOBSP contrôlables par l'ACPR.
             Carte professionnelle « Transactions immobilières » n° CPI33012020000045313 délivrée par la CCI de Bordeaux-Gironde, ne peut recevoir aucun fonds, effet ou valeur.
             Assurance RC professionnelle : MMA IARD Assurances Mutuelles / MMA IARD, 160 rue Henri Champion, 72030 Le Mans Cedex 9, police n° 112 786 342, adhérent n° 231 972.
           </p>

@@ -87,7 +87,7 @@ const livrablesCadre = [
 ];
 
 const garanties = [
-  { icon: BadgeCheck, label: "Statut", value: "CIF, ORIAS", text: "Conseiller en Investissements Financiers, immatriculé à l'ORIAS et adhérent à une association agréée par l'AMF." },
+  { icon: BadgeCheck, label: "Statut", value: "CIF, ORIAS", text: "Conseiller en Investissements Financiers, immatriculé à l'ORIAS et adhérent à une association agréée par les autorités compétentes." },
   { icon: ShieldCheck, label: "Assurance", value: "RC Pro", text: "Responsabilité civile professionnelle conforme aux exigences réglementaires." },
   { icon: ClipboardCheck, label: "Conformité", value: "MIF II / DDA", text: "Recueil d'adéquation, profil de risque et information précontractuelle systématiques." },
   { icon: Lock, label: "Confidentialité", value: "RGPD", text: "Données chiffrées, hébergement européen, accès restreint et journalisé." },

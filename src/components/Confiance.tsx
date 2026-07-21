@@ -11,13 +11,13 @@ const badges = [
     label: "CNCEF",
     code: "Adhérent certifié",
     title: "La Compagnie CIF / IOBSP · CNCEF Assurance",
-    body: "Adhérent de La Compagnie CIF et de La Compagnie IOBSP (n° F002635) et de la CNCEF Assurance (n° 25/860422), associations agréées par l'AMF et l'ACPR. Code de déontologie strict et contrôle continu.",
+    body: "Adhérent de La Compagnie CIF et de La Compagnie IOBSP (n° F002635) et de la CNCEF Assurance (n° 25/860422), associations agréées par les autorités françaises compétentes. Code de déontologie strict et contrôle continu.",
   },
   {
-    label: "AMF / ACPR",
+    label: "Encadrement réglementaire",
     code: "Supervision",
     title: "Autorités de tutelle",
-    body: "Activités encadrées par l'Autorité des Marchés Financiers et l'Autorité de Contrôle Prudentiel et de Résolution. Information précontractuelle systématique.",
+    body: "Activités encadrées par les autorités financières et prudentielles compétentes. Information précontractuelle systématique.",
   },
   {
     label: "RC Pro",

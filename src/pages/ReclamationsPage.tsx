@@ -9,7 +9,7 @@ export default function ReclamationsPage() {
     queryFn: () => getLegalContent("reclamations"),
   });
 
-  const subtitle = cms?.subtitle || "Procédure de traitement des réclamations et voies de recours en cas de désaccord, conformément aux exigences de l'AMF, de l'ACPR et de la CNCEF.";
+  const subtitle = cms?.subtitle || "Procédure de traitement des réclamations et voies de recours en cas de désaccord, conformément aux exigences réglementaires en vigueur, de l'ACPR et de la CNCEF.";
 
   const cmsSections = cms?.content_html
     ? [{ id: "content", title: "", content: (
@@ -41,8 +41,8 @@ export default function ReclamationsPage() {
               KANTI s'attache à offrir à chacun de ses clients un service de qualité. Si malgré
               cette exigence vous estimez que la prestation rendue n'est pas conforme à vos
               attentes, le cabinet a mis en place une procédure de traitement des réclamations
-              gratuite, claire et conforme aux recommandations de l'Autorité des Marchés
-              Financiers (AMF) et de l'Autorité de Contrôle Prudentiel et de Résolution (ACPR).
+              gratuite, claire et conforme aux recommandations des autorités financières
+              et prudentielles compétentes.
             </p>
           ),
         },
@@ -120,10 +120,9 @@ export default function ReclamationsPage() {
               </p>
               <ul>
                 <li>
-                  <strong>Médiateur de l'AMF</strong>, pour les litiges relatifs aux instruments
+                  <strong>Médiateur de l'ACPR</strong>, pour les litiges relatifs aux instruments
                   financiers et au conseil en investissements financiers.<br />
-                  Autorité des Marchés Financiers, Médiateur, 17 place de la Bourse, 75082 Paris
-                  Cedex 02 -{" "}
+                  les autorités financières compétentes -{" "}
                   <a href="https://www.amf-france.org" target="_blank" rel="noreferrer">www.amf-france.org</a>.
                 </li>
                 <li>

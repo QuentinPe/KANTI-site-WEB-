@@ -97,8 +97,7 @@ export default function MentionsLegalesPage() {
               <ul>
                 <li>
                   <strong>Conseiller en Investissements Financiers (CIF)</strong>, sous le contrôle
-                  de l'Autorité des Marchés Financiers (AMF), 17 place de la Bourse, 75082 Paris
-                  Cedex 02.
+                  des autorités financières compétentes.
                 </li>
                 <li>
                   <strong>Courtier d'assurance (IAS)</strong>, sous le contrôle de l'Autorité de
@@ -123,8 +122,7 @@ export default function MentionsLegalesPage() {
                 IOBSP</strong> (8 Rue Godot de Mauroy, 75009 Paris) sous le numéro
                 {" "}<strong>{s("legal_compagnie_num", "F002635")}</strong>, ainsi que de la <strong>CNCEF Assurance</strong>
                 (103 Boulevard Haussmann, 75008 Paris) sous le numéro <strong>{s("legal_cncef_num", "25/860422")}</strong>.
-                Ces associations sont agréées par l'Autorité des Marchés Financiers et par
-                l'Autorité de Contrôle Prudentiel et de Résolution. Les activités d'IAS et d'IOBSP
+                Ces associations sont agréées par les autorités françaises compétentes. Les activités d'IAS et d'IOBSP
                 sont contrôlables par l'ACPR.
               </p>
               <p>

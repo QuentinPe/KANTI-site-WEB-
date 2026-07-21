@@ -30,7 +30,7 @@ const KANTI_INFO = {
   phone: "06 63 32 48 09",
   email: "kanti@adnfamily.com",
   legal:
-    "KANTI, CIF inscrit auprès de l'AMF, adhérent de la CNCEF. Le présent document est un outil pédagogique d'auto-évaluation et ne constitue pas une recommandation personnalisée d'investissement au sens de l'article L.541-1 du Code monétaire et financier.",
+    "KANTI, CIF sous contrôle des autorités financières compétentes, adhérent de la CNCEF. Le présent document est un outil pédagogique d'auto-évaluation et ne constitue pas une recommandation personnalisée d'investissement au sens de l'article L.541-1 du Code monétaire et financier.",
 };
 
 export default function ProfilRisquePage() {
@@ -80,8 +80,8 @@ export default function ProfilRisquePage() {
   return (
     <>
       <Seo
-        title="Définir son profil de risque, Questionnaire AMF | KANTI"
-        description="Évaluez votre profil investisseur et obtenez votre indicateur synthétique de risque (SRI) sur une échelle de 1 à 7. Questionnaire conforme aux exigences AMF, export PDF instantané."
+        title="Définir son profil de risque, Questionnaire réglementaire | KANTI"
+        description="Évaluez votre profil investisseur et obtenez votre indicateur synthétique de risque (SRI) sur une échelle de 1 à 7. Questionnaire conforme aux exigences réglementaires, export PDF instantané."
       />
       <Header />
       <main id="main">
@@ -314,7 +314,7 @@ function ProfilRisqueHero({ total, onStart }: { total: number; onStart: () => vo
               className="text-[10px] tracking-[0.32em] uppercase font-medium mb-5 opacity-0"
               style={{ color: "hsl(224 40% 45%)", animation: "fade-in 0.8s ease 0.15s forwards" }}
             >
-              Outil patrimonial · AMF
+              Outil patrimonial · Usage interne
             </p>
 
             {/* Headline */}
@@ -343,7 +343,7 @@ function ProfilRisqueHero({ total, onStart }: { total: number; onStart: () => vo
                 animation: "fade-in-up 0.9s cubic-bezier(0.22,1,0.36,1) 0.42s forwards",
               }}
             >
-              Un questionnaire de {total} questions conforme aux exigences AMF pour
+              Un questionnaire de {total} questions conforme aux exigences réglementaires pour
               évaluer votre tolérance au risque et obtenir votre indicateur SRI
               sur une échelle de 1 à 7.
             </p>
@@ -443,7 +443,7 @@ function Intro({ onStart, total }: { onStart: () => void; total: number }) {
         l'incertitude, et à votre projet de vie.
       </p>
       <p className="text-foreground/55 text-sm lg:text-base font-light leading-relaxed max-w-2xl mx-auto mb-10 italic">
-        Il est conforme aux exigences de l'AMF (DDA / MIF II) et reprend l'échelle
+        Il est conforme aux exigences réglementaires en vigueur (DDA / MIF II) et reprend l'échelle
         européenne PRIIPs, la même que celle utilisée par toutes les sociétés de gestion.
         À l'issue, vous obtenez un score précis sur 7, une lecture personnalisée et un
         rapport PDF que vous pourrez nous transmettre pour préparer votre rendez-vous.
@@ -452,7 +452,7 @@ function Intro({ onStart, total }: { onStart: () => void; total: number }) {
       <div className="grid sm:grid-cols-3 gap-4 mb-10 max-w-xl mx-auto">
         {[
           { v: "~ 5 min", l: "Durée moyenne" },
-          { v: "Conforme", l: "Cadre AMF" },
+          { v: "Conforme", l: "Cadre réglementaire" },
           { v: "Anonyme", l: "Sans inscription" },
         ].map((t) => (
           <div
@@ -947,7 +947,7 @@ async function generatePdf(
   setText(ACCENT);
   doc.setFont(SANS, "bold");
   doc.setFontSize(7.5);
-  doc.text("RAPPORT CONFIDENTIEL   ·   AUTO-ÉVALUATION AMF", M, 180);
+  doc.text("RAPPORT CONFIDENTIEL   ·   AUTO-ÉVALUATION RÉGLEMENTAIRE", M, 180);
 
   // Titre éditorial
   setText(NAVY);
@@ -961,7 +961,7 @@ async function generatePdf(
   doc.setFontSize(10);
   setText(NAVY_SOFT);
   const intro = doc.splitTextToSize(
-    "Évaluation personnalisée de votre tolérance au risque, conforme aux exigences de l'Autorité des Marchés Financiers (DDA / MIF II).",
+    "Évaluation personnalisée de votre tolérance au risque, conforme aux exigences réglementaires en vigueur (DDA / MIF II).",
     leftInner,
   );
   doc.text(intro, M, 330);
@@ -1151,7 +1151,7 @@ async function generatePdf(
   doc.setFont(SANS, "normal");
   doc.setFontSize(10.5);
   const story1 = doc.splitTextToSize(
-    "Avant de parler de produits, de fiscalité ou de performance, KANTI prend le temps de vous écouter. Ce questionnaire est la première pierre d'un dialogue : il transforme une notion abstraite · votre tolérance au risque · en un repère clair, partagé et opposable. C'est aussi une exigence réglementaire, posée par l'Autorité des Marchés Financiers pour protéger l'épargnant.",
+    "Avant de parler de produits, de fiscalité ou de performance, KANTI prend le temps de vous écouter. Ce questionnaire est la première pierre d'un dialogue : il transforme une notion abstraite · votre tolérance au risque · en un repère clair, partagé et opposable. C'est aussi une exigence réglementaire, posée par les autorités financières compétentes pour protéger l'épargnant.",
     CW,
   );
   doc.text(story1, M, y);
@@ -1311,7 +1311,7 @@ async function generatePdf(
   doc.setFont(SANS, "normal");
   doc.setFontSize(10);
   const posLead = doc.splitTextToSize(
-    "Comparez votre profil à la population française des épargnants à partir de données publiques (INSEE 2023, AMF Baromètre 2024, Banque de France, Enquête Patrimoine).",
+    "Comparez votre profil à la population française des épargnants à partir de données publiques (INSEE 2023, Banque de France, Baromètre Épargne 2024, Enquête Patrimoine).",
     CW,
   );
   doc.text(posLead, M, y);
@@ -1380,7 +1380,7 @@ async function generatePdf(
   setText(MUTED);
   doc.setFont(SANS, "italic");
   doc.setFontSize(7);
-  doc.text("Source : AMF, Baromètre Épargne et Investissement 2024 (estimation indicative).", M, y);
+  doc.text("Source : Banque de France, Baromètre Épargne et Investissement 2024 (estimation indicative).", M, y);
   y += 26;
 
   y = ensureSpace(y, 200, () => { doc.addPage(); drawPageHeader("Votre positionnement", "02"); return 158; });
@@ -1388,7 +1388,7 @@ async function generatePdf(
 
   const kpis = [
     { value: "177 200 €", label: "Patrimoine brut médian", source: "INSEE, Enquête Patrimoine 2021" },
-    { value: "39,5 %", label: "Ménages détenant un produit risqué", source: "AMF / Banque de France 2023" },
+    { value: "39,5 %", label: "Ménages détenant un produit risqué", source: "Banque de France 2023" },
     { value: "5,8 %", label: "Rendement annuel moyen actions FR (40 ans)", source: "Banque de France" },
     { value: "2,9 %", label: "Inflation annuelle moyenne 2020-2024", source: "INSEE, IPC" },
   ];

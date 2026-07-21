@@ -11,7 +11,7 @@ export default function TrustBand() {
             <span className="hidden sm:inline text-foreground/15">·</span>
             <span>Adhérent CNCEF</span>
             <span className="hidden sm:inline text-foreground/15">·</span>
-            <span>Supervision AMF / ACPR</span>
+            <span>Encadrement réglementaire</span>
             <span className="hidden sm:inline text-foreground/15">·</span>
             <span>RC Pro & Garantie financière</span>
           </div>

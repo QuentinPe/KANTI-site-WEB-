@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
 const bullets = [
-  "Questionnaire conforme aux exigences AMF",
+  "Questionnaire conforme aux exigences réglementaires",
   "Score SRI 1 → 7 calculé instantanément",
   "Recommandations personnalisées + export PDF",
 ];
@@ -38,7 +38,7 @@ export default function HomeProfilRisque() {
         <div className="lg:col-span-7 reveal">
           <div className="electric-line mb-6" />
           <p className="text-[11px] tracking-[0.3em] uppercase text-foreground/50 mb-5 font-medium">
-            Outil patrimonial · Conforme AMF
+            Outil patrimonial · Conforme aux exigences réglementaires
           </p>
           <h2 className="text-4xl md:text-5xl lg:text-[3.5rem] font-heading font-light text-foreground mb-8 tracking-tight leading-[1.05] text-balance">
             Définir votre <br />
@@ -47,7 +47,7 @@ export default function HomeProfilRisque() {
           <p className="text-foreground/65 text-base lg:text-lg font-light leading-relaxed max-w-xl mb-8">
             Avant toute recommandation, la réglementation impose d'évaluer votre
             tolérance au risque. Notre questionnaire, aligné sur les exigences
-            de l'AMF, calcule votre indicateur synthétique de risque
+            réglementaires en vigueur, calcule votre indicateur synthétique de risque
             <span className="text-foreground"> (SRI) sur une échelle de 1 à 7</span>
             , et vous remet une fiche PDF aux couleurs KANTI.
           </p>
@@ -153,10 +153,10 @@ export default function HomeProfilRisque() {
               </div>
               <div>
                 <div className="font-heading text-2xl font-light text-foreground">
-                  AMF
+                  DDA
                 </div>
                 <div className="text-[10px] uppercase tracking-[0.16em] text-foreground/50 mt-1">
-                  Cadre
+                  Cadre régl.
                 </div>
               </div>
               <div>
