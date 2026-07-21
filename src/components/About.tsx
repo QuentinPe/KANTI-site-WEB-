@@ -1,8 +1,11 @@
 ﻿import { Link } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
 import SplitText from "./motion/SplitText";
 import derAsset from "@/assets/der-kanti-2026.pdf.asset.json";
+import { getSiteSettings } from "@/lib/siteSettingsService";
+import { getDownloadUrl } from "@/lib/ressourcesService";
 
 function useCountUp(target: number, suffix = "", duration = 2000, delay = 0) {
   const [value, setValue] = useState("0");
@@ -46,6 +49,18 @@ export default function About() {
   const years = "Depuis 2020";
   const clients = useCountUp(250, "+", 2000, 350);
   const fidelity = useCountUp(98, " %", 1800, 700);
+
+  const { data: settings = [] } = useQuery({ queryKey: ["site-settings"], queryFn: getSiteSettings });
+  const derPath = settings.find((s) => s.key === "der_url")?.value ?? derAsset.url;
+
+  const handleDerDownload = async () => {
+    try {
+      const url = await getDownloadUrl(derPath);
+      window.open(url, "_blank", "noopener,noreferrer");
+    } catch {
+      window.open(derAsset.url, "_blank", "noopener,noreferrer");
+    }
+  };
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -116,10 +131,9 @@ export default function About() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                 </svg>
               </Link>
-              <a
-                href={derAsset.url}
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                type="button"
+                onClick={handleDerDownload}
                 data-magnetic
                 className="group relative inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium text-foreground transition-all duration-500 hover:-translate-y-0.5"
                 style={{
@@ -154,7 +168,7 @@ export default function About() {
                   />
                 </svg>
                 <span className="relative z-10">Télécharger notre DER</span>
-              </a>
+              </button>
             </div>
           </div>
 

@@ -1,7 +1,7 @@
 ﻿import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { UserRound } from "lucide-react";
+import { UserRound, KeyRound } from "lucide-react";
 import logoDark from "@/assets/logo-kanti-dark.png.asset.json";
 import logoWhite from "@/assets/logo-kanti-white.png.asset.json";
 import ClientSpaceModal from "./ClientSpaceModal";
@@ -270,9 +270,7 @@ export default function Header() {
                     onClick={() => setClientDropdownOpen(false)}
                     className="flex items-center gap-3 px-4 py-3 rounded-xl text-[13px] font-medium text-foreground/75 hover:text-foreground hover:bg-foreground/[0.04] transition-all duration-200"
                   >
-                    <svg className="w-4 h-4 text-foreground/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.955 11.955 0 003 12c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                    </svg>
+                    <KeyRound className="w-4 h-4 text-foreground/40" strokeWidth={1.5} />
                     Espace conseiller
                   </Link>
                 </div>

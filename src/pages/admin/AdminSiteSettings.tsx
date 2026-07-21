@@ -1,6 +1,7 @@
 ﻿import { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Save, Globe, Phone, BarChart3, Search, Scale } from "lucide-react";
+import { Save, Globe, Phone, BarChart3, Search, Scale, FileUp } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 import { getSiteSettings, upsertSettings } from "@/lib/siteSettingsService";
 import { toast } from "sonner";
 
@@ -46,6 +47,7 @@ export default function AdminSiteSettings() {
   const qc = useQueryClient();
   const [values, setValues] = useState<Record<string, string>>({});
   const [dirty, setDirty] = useState(false);
+  const [derUploading, setDerUploading] = useState(false);
 
   const { data: settings = [], isLoading } = useQuery({
     queryKey: ["site-settings"], queryFn: getSiteSettings,
@@ -70,6 +72,25 @@ export default function AdminSiteSettings() {
   const set = (key: string, val: string) => {
     setValues((p) => ({ ...p, [key]: val }));
     setDirty(true);
+  };
+
+  const handleDerUpload = async (file: File) => {
+    setDerUploading(true);
+    try {
+      const { data, error } = await supabase.storage
+        .from("ressources")
+        .upload("der/der-kanti.pdf", file, { contentType: "application/pdf", upsert: true });
+      if (error) throw error;
+      await upsertSettings({ der_url: data.path });
+      qc.invalidateQueries({ queryKey: ["site-settings"] });
+      set("der_url", data.path);
+      setDirty(false);
+      toast.success("DER mis à jour");
+    } catch {
+      toast.error("Erreur lors de l'envoi du DER");
+    } finally {
+      setDerUploading(false);
+    }
   };
 
   const textInput = (key: string, placeholder?: string, textarea?: boolean) => {
@@ -180,6 +201,47 @@ export default function AdminSiteSettings() {
               <div>{textInput("legal_updated_at", "Avril 2026")}</div>
             </Field>
           </div>
+        </SectionCard>
+
+        {/* Document DER */}
+        <SectionCard title="Document d'Entrée en Relation (DER)" icon={FileUp}>
+          <p className="text-[12px] font-light -mt-2" style={{ color: "hsl(224 15% 55%)" }}>
+            Ce document est affiché sur la page d'accueil. L'envoi d'un nouveau fichier remplace immédiatement le précédent.
+          </p>
+          {values["der_url"] ? (
+            <div className="flex items-center gap-3 rounded-xl px-4 py-3" style={{ background: "hsl(150 40% 96%)", border: "1px solid hsl(150 30% 82%)" }}>
+              <svg className="w-4 h-4 flex-shrink-0" style={{ color: "hsl(150 40% 38%)" }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p className="text-[12px] font-medium flex-1 truncate" style={{ color: "hsl(150 40% 28%)" }}>
+                DER enregistré · <span className="font-light opacity-70">{values["der_url"]}</span>
+              </p>
+            </div>
+          ) : (
+            <div className="flex items-center gap-3 rounded-xl px-4 py-3" style={{ background: "hsl(220 25% 97%)", border: "1px solid hsl(224 20% 12% / 0.07)" }}>
+              <p className="text-[12px] font-light" style={{ color: "hsl(224 15% 55%)" }}>Aucun DER uploadé — le document par défaut est utilisé.</p>
+            </div>
+          )}
+          <label className="inline-flex items-center gap-2 cursor-pointer self-start">
+            <input
+              type="file"
+              accept="application/pdf"
+              className="sr-only"
+              disabled={derUploading}
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) handleDerUpload(file);
+                e.target.value = "";
+              }}
+            />
+            <span
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-150"
+              style={{ background: derUploading ? "hsl(224 60% 18% / 0.5)" : "hsl(224 60% 18%)", color: "white", cursor: derUploading ? "wait" : "pointer" }}
+            >
+              <FileUp className="w-4 h-4" />
+              {derUploading ? "Envoi en cours…" : "Choisir un fichier PDF"}
+            </span>
+          </label>
         </SectionCard>
 
         {/* SEO pages fixes */}
