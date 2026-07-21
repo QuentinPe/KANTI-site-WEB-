@@ -1,4 +1,4 @@
-import { useRef } from "react";
+﻿import { useRef } from "react";
 import { useInView } from "framer-motion";
 import {
   AreaChart,
@@ -45,7 +45,7 @@ const SAVINGS_DATA = [
   { montant: "500 000 €", marche: 239800, negocie: 208200, economie: 31600 },
 ];
 
-// ── CUSTOM TOOLTIP — Taux ───────────────────────────────────────────────────
+// ── CUSTOM TOOLTIP · Taux ───────────────────────────────────────────────────
 function TauxTooltip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null;
   return (
@@ -69,7 +69,7 @@ function TauxTooltip({ active, payload, label }: any) {
   );
 }
 
-// ── CUSTOM TOOLTIP — Économies ──────────────────────────────────────────────
+// ── CUSTOM TOOLTIP · Économies ──────────────────────────────────────────────
 function SavingsTooltip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null;
   const row = SAVINGS_DATA.find((d) => d.montant === label);
@@ -168,7 +168,7 @@ export default function CreditCharts() {
         {/* Charts grid */}
         <div className="grid lg:grid-cols-2 gap-6">
 
-          {/* CHART 1 — Évolution des taux */}
+          {/* CHART 1 · Évolution des taux */}
           <ChartCard
             eyebrow="Taux d'emprunt immobilier"
             title="Évolution 2020 – 2025 (toutes durées)"
@@ -220,9 +220,9 @@ export default function CreditCharts() {
             </ResponsiveContainer>
           </ChartCard>
 
-          {/* CHART 2 — Impact du taux négocié */}
+          {/* CHART 2 · Impact du taux négocié */}
           <ChartCard
-            eyebrow="Simulation — 20 ans"
+            eyebrow="Simulation · 20 ans"
             title="Économie réalisée avec 0,5 % de mieux"
             source="Simulation KANTI · Hypothèse : −0,5 % vs taux de marché (4,2 → 3,7 %)"
           >

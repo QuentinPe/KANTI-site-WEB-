@@ -1,4 +1,4 @@
-import { motion, useReducedMotion } from "framer-motion";
+﻿import { motion, useReducedMotion } from "framer-motion";
 
 interface Offer {
   label: string;
@@ -22,7 +22,7 @@ const OFFERS: Offer[] = [
     earlyRepaymentCost: "3 % restant",
     totalCostIndex: 100,
     liquidityRetained: 88,
-    note: "Souplesse limitée — conditions de modularité restreintes.",
+    note: "Souplesse limitée · conditions de modularité restreintes.",
   },
   {
     label: "Offre B",
@@ -33,7 +33,7 @@ const OFFERS: Offer[] = [
     earlyRepaymentCost: "IRA plafonnées",
     totalCostIndex: 97,
     liquidityRetained: 100,
-    note: "Modularité élevée — optimisation possible de l'assurance.",
+    note: "Modularité élevée · optimisation possible de l'assurance.",
   },
   {
     label: "Offre C",
@@ -44,7 +44,7 @@ const OFFERS: Offer[] = [
     earlyRepaymentCost: "Sans frais",
     totalCostIndex: 96,
     liquidityRetained: 95,
-    note: "Assurance et garanties plus favorables — pertinent selon le profil.",
+    note: "Assurance et garanties plus favorables · pertinent selon le profil.",
   },
 ];
 
@@ -210,7 +210,7 @@ export default function OfferComparisonSection() {
             de cause.
           </p>
           <p className="text-[11px] italic text-foreground/35 mt-3">
-            Données fictives à titre pédagogique — les conditions réelles
+            Données fictives à titre pédagogique · les conditions réelles
             varient selon les établissements et les profils.
           </p>
         </motion.div>

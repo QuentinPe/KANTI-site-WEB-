@@ -1,4 +1,4 @@
-import { motion, useReducedMotion } from 'framer-motion';
+﻿import { motion, useReducedMotion } from 'framer-motion';
 import {
   PieChart,
   Pie,
@@ -57,11 +57,11 @@ export default function CartographieSection() {
               02 · Cartographie patrimoniale
             </p>
             <h2 className="text-3xl md:text-4xl font-heading font-light text-foreground leading-[1.1] tracking-tight mb-6">
-              Actifs, passifs, liquidité —{' '}
+              Actifs, passifs, liquidité :{' '}
               <em style={{ fontStyle: 'italic' }}>une lecture chiffrée de votre situation nette.</em>
             </h2>
             <p className="text-foreground/65 leading-relaxed font-light text-base mb-8 max-w-lg">
-              Avant toute recommandation, nous construisons une cartographie exhaustive de ce que vous possédez réellement. Valorisation actuelle, structure juridique, liquidité de chaque actif — et ce que vous devez réellement en face.
+              Avant toute recommandation, nous construisons une cartographie exhaustive de ce que vous possédez réellement. Valorisation actuelle, structure juridique, liquidité de chaque actif · et ce que vous devez réellement en face.
             </p>
 
             {/* Metric badges */}
@@ -128,7 +128,7 @@ export default function CartographieSection() {
 
               {/* Disclaimer */}
               <p className="text-[11px] font-medium text-foreground/50 text-center mt-4">
-                Exemple pédagogique — données indicatives
+                Exemple pédagogique · données indicatives
               </p>
             </div>
           </motion.div>

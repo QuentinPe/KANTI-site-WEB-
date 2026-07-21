@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+﻿import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { FileText, Users, BookOpen, HelpCircle, Inbox, ArrowRight, Clock, Maximize2, X } from "lucide-react";
@@ -202,7 +202,7 @@ function LeadsSparkline({ leads, onExpand }: { leads: Lead[]; onExpand: () => vo
       <div className="flex items-start justify-between mb-1">
         <div>
           <p className="text-[10px] tracking-[0.22em] uppercase font-medium mb-2" style={{ color: "hsl(224 15% 58%)" }}>
-            Leads — 7 derniers jours
+            Leads · 7 derniers jours
           </p>
           <p className="text-2xl font-heading font-light tabular-nums" style={{ color: "hsl(224 55% 12%)" }}>
             {thisWeek}
@@ -255,7 +255,7 @@ function LeadsSparkline({ leads, onExpand }: { leads: Lead[]; onExpand: () => vo
   );
 }
 
-/* Page background color — must match AdminLayout's main background */
+/* Page background color · must match AdminLayout's main background */
 const PAGE_BG = "hsl(220 25% 97%)";
 
 export default function AdminDashboard() {
@@ -279,13 +279,13 @@ export default function AdminDashboard() {
   const activity = [
     ...leads.slice(0, 4).map((l) => ({
       icon: Inbox,
-      text: `Lead — ${l.nom} (${l.sujet ?? l.format ?? "contact"})`,
+      text: `Lead · ${l.nom} (${l.sujet ?? l.format ?? "contact"})`,
       time: fmtDate(l.created_at),
       color: "hsl(38 75% 42%)",
     })),
     ...articles.slice(0, 3).map((a) => ({
       icon: FileText,
-      text: `Article — ${a.title}`,
+      text: `Article · ${a.title}`,
       time: fmtDate(a.created_at),
       color: "hsl(218 55% 42%)",
     })),
@@ -305,7 +305,7 @@ export default function AdminDashboard() {
           style={{ filter: "brightness(0.97) saturate(0.88)" }}
         />
 
-        {/* Soft warm veil — left edge bleeds into sidebar */}
+        {/* Soft warm veil · left edge bleeds into sidebar */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
@@ -314,7 +314,7 @@ export default function AdminDashboard() {
           aria-hidden
         />
 
-        {/* White gradient — bottom fade to page background */}
+        {/* White gradient · bottom fade to page background */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
@@ -323,7 +323,7 @@ export default function AdminDashboard() {
           aria-hidden
         />
 
-        {/* Title — sits in the gradient transition zone */}
+        {/* Title · sits in the gradient transition zone */}
         <div className="absolute bottom-0 left-0 right-0 px-8 pb-7 max-w-5xl mx-auto">
           <p
             className="text-[10px] tracking-[0.32em] uppercase font-semibold mb-2"
@@ -344,7 +344,7 @@ export default function AdminDashboard() {
           )}
         </div>
 
-        {/* New leads badge — top right of banner */}
+        {/* New leads badge · top right of banner */}
         {newLeads > 0 && (
           <Link
             to="/admin/leads"

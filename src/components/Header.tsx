@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+﻿import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { UserRound } from "lucide-react";
@@ -65,7 +65,7 @@ export default function Header() {
   const textMuted = useDarkGlass ? "text-white/75" : "text-[hsl(224_55%_30%)]";
 
   const bubbleClass = useDarkGlass ? "glass-dark" : "glass-ivory";
-  // Hover pill — navy-tinted on interior, white-frosted on home dark
+  // Hover pill · navy-tinted on interior, white-frosted on home dark
   const hoverPillClass = useDarkGlass
     ? "bg-white/12 backdrop-blur-md ring-1 ring-white/15"
     : "bg-[hsl(224_60%_12%/0.05)] ring-1 ring-[hsl(224_60%_12%/0.12)]";

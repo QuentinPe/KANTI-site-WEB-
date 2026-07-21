@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from "react";
+﻿import { useState, useMemo, useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
@@ -597,7 +597,7 @@ function LeadTableRow({ lead, onClick, selected, onSelect, seen }: {
         </span>
       </td>
 
-      {/* Statut — native select styled as badge */}
+      {/* Statut · native select styled as badge */}
       <td className="py-3.5 pr-4" onClick={(e) => e.stopPropagation()}>
         <select
           value={lead.status}

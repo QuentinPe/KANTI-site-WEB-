@@ -1,10 +1,10 @@
-import { useRef } from "react";
+﻿import { useRef } from "react";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 
 const fragments = [
   { t: "À taille humaine,", em: true },
   { t: " une vision globale", em: false },
-  { t: " — et la conviction qu'un patrimoine", em: false },
+  { t: " · et la conviction qu'un patrimoine", em: false },
   { t: " se construit dans la durée.", em: true },
 ];
 
@@ -37,7 +37,7 @@ export default function Promesse() {
           className="absolute inset-0 bg-cover bg-[65%_center] will-change-transform"
         />
 
-        {/* Top blend — seamless continuation from Identification exit (navy-deep) */}
+        {/* Top blend · seamless continuation from Identification exit (navy-deep) */}
         <div
           aria-hidden
           className="absolute inset-0 pointer-events-none"
@@ -47,7 +47,7 @@ export default function Promesse() {
           }}
         />
 
-        {/* Left gradient — text readability over the dark wall area */}
+        {/* Left gradient · text readability over the dark wall area */}
         <div
           aria-hidden
           className="absolute inset-0 pointer-events-none"
@@ -64,7 +64,7 @@ export default function Promesse() {
           style={{ background: "hsl(224 55% 5% / 0.28)" }}
         />
 
-        {/* Bottom fade — transition out */}
+        {/* Bottom fade · transition out */}
         <div
           aria-hidden
           className="absolute inset-0 pointer-events-none"
@@ -133,7 +133,7 @@ export default function Promesse() {
             style={{ color: "hsl(0 0% 100% / 0.60)" }}
           >
             Inscrits à l'ORIAS, sans lien capitalistique avec aucune banque ni
-            assureur. Votre intérêt est notre seule boussole — pour dix, vingt,
+            assureur. Votre intérêt est notre seule boussole · pour dix, vingt,
             trente ans.
           </motion.p>
         </div>

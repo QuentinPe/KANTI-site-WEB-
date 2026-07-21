@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+﻿import { useRef, useState } from "react";
 import {
   motion,
   AnimatePresence,
@@ -132,7 +132,7 @@ function DesktopIdentification() {
           {/* Middle: section title (left) + card (right) */}
           <div className="flex-1 flex items-center gap-16 xl:gap-24 min-h-0 mt-8">
 
-            {/* Left column — visible on XL+ */}
+            {/* Left column · visible on XL+ */}
             <div className="hidden xl:flex flex-col justify-center flex-shrink-0" style={{ width: "36%" }}>
               <h2
                 className="font-heading font-light tracking-tight"

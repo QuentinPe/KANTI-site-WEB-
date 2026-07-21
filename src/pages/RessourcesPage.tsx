@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useEffect } from "react";
+﻿import { useState, useMemo, useRef, useEffect } from "react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import { z } from "zod";
 import { toast } from "sonner";
@@ -179,10 +179,10 @@ export default function RessourcesPage() {
         </div>
       </section>
 
-      {/* ── Vault — immersive resource library ── */}
+      {/* ── Vault · immersive resource library ── */}
       <section className="relative py-20 pb-36 overflow-hidden bg-white">
 
-        {/* Subtle ambient radial — stays on white, no coloured band at the seam */}
+        {/* Subtle ambient radial · stays on white, no coloured band at the seam */}
         <div aria-hidden className="absolute inset-x-0 top-0 h-64 pointer-events-none" style={{
           background: "radial-gradient(ellipse 70% 100% at 50% 0%, hsl(224 40% 94% / 0.50) 0%, transparent 100%)"
         }} />

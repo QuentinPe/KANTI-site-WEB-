@@ -1,4 +1,4 @@
-import { motion, useReducedMotion } from "framer-motion";
+﻿import { motion, useReducedMotion } from "framer-motion";
 import * as Accordion from "@radix-ui/react-accordion";
 import { ChevronDown } from "lucide-react";
 
@@ -45,7 +45,7 @@ const FAQ_ITEMS = [
   },
   {
     q: "Peut-on comparer amortissable et in fine ?",
-    a: "Oui. L'in fine diffère le remboursement du capital en fin de période — seuls les intérêts sont versés chaque mois. Il permet de déduire l'intégralité des intérêts en cas d'investissement locatif et de conserver la trésorerie disponible. En contrepartie, il nécessite une épargne parallèle garantissant le remboursement du capital. Il est pertinent pour les profils fiscaux élevés avec une stratégie patrimoniale claire.",
+    a: "Oui. L'in fine diffère le remboursement du capital en fin de période · seuls les intérêts sont versés chaque mois. Il permet de déduire l'intégralité des intérêts en cas d'investissement locatif et de conserver la trésorerie disponible. En contrepartie, il nécessite une épargne parallèle garantissant le remboursement du capital. Il est pertinent pour les profils fiscaux élevés avec une stratégie patrimoniale claire.",
   },
   {
     q: "Le simulateur vaut-il accord de prêt ?",
@@ -57,7 +57,7 @@ const FAQ_ITEMS = [
   },
   {
     q: "À quel moment contacter KANTI ?",
-    a: "Le plus tôt possible, idéalement dès la réflexion sur le projet — avant même la signature du compromis. Intervenir en amont permet d'analyser la faisabilité, d'optimiser la structure et de préparer un dossier solide. Agir dans l'urgence après un compromis signé réduit les marges de manœuvre.",
+    a: "Le plus tôt possible, idéalement dès la réflexion sur le projet · avant même la signature du compromis. Intervenir en amont permet d'analyser la faisabilité, d'optimiser la structure et de préparer un dossier solide. Agir dans l'urgence après un compromis signé réduit les marges de manœuvre.",
   },
 ];
 

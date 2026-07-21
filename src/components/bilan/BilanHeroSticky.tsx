@@ -1,4 +1,4 @@
-import { useRef } from "react";
+﻿import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
 
@@ -45,7 +45,7 @@ export default function BilanHeroSticky() {
         />
       </motion.div>
 
-      {/* Dark left gradient — keeps white text readable */}
+      {/* Dark left gradient · keeps white text readable */}
       <div
         aria-hidden
         className="absolute inset-0 pointer-events-none"
@@ -65,7 +65,7 @@ export default function BilanHeroSticky() {
         }}
       />
 
-      {/* Editorial content — left column */}
+      {/* Editorial content · left column */}
       <div className="relative z-10 flex items-center h-full">
         <div className="max-w-6xl mx-auto px-8 md:px-14 w-full">
           <div className="max-w-xl">
@@ -93,7 +93,7 @@ export default function BilanHeroSticky() {
               className="text-white/65 text-[15px] md:text-base font-light leading-relaxed mb-10 opacity-0"
               style={{ animation: "fade-in-up 0.9s cubic-bezier(0.22,1,0.36,1) 0.44s forwards" }}
             >
-              Un diagnostic complet, neutre et écrit — actifs, passifs, fiscalité, prévoyance, projets — pour décider avec clarté.
+              Un diagnostic complet, neutre et écrit · actifs, passifs, fiscalité, prévoyance, projets · pour décider avec clarté.
             </p>
 
             {/* CTAs */}

@@ -1,4 +1,4 @@
-import { motion, useReducedMotion } from 'framer-motion';
+﻿import { motion, useReducedMotion } from 'framer-motion';
 
 const INDICATORS = [
   { label: 'Liquidité disponible', score: 72, color: 'hsl(222 50% 25%)' },
@@ -73,7 +73,7 @@ export default function IndicateursSoliditeSection() {
           >
             <div className="rounded-2xl border border-foreground/8 bg-white p-6 md:p-8 shadow-sm">
               <p className="text-[10px] tracking-[0.28em] uppercase text-foreground/40 mb-6 font-medium">
-                Score de solidité — exemple indicatif
+                Score de solidité · exemple indicatif
               </p>
 
               <div className="space-y-6">

@@ -1,4 +1,4 @@
-import { motion, useReducedMotion } from "framer-motion";
+﻿import { motion, useReducedMotion } from "framer-motion";
 
 const CONVICTIONS = [
   {
@@ -9,7 +9,7 @@ const CONVICTIONS = [
   {
     number: "02",
     headline: "L'assurance peut coûter plus que les intérêts.",
-    body: "Sur 20 ans, le coût de l'assurance emprunteur peut dépasser celui des intérêts selon le profil et l'âge. La délégation d'assurance reste l'un des leviers les plus puissants — et les moins exploités par les emprunteurs.",
+    body: "Sur 20 ans, le coût de l'assurance emprunteur peut dépasser celui des intérêts selon le profil et l'âge. La délégation d'assurance reste l'un des leviers les plus puissants · et les moins exploités par les emprunteurs.",
   },
   {
     number: "03",

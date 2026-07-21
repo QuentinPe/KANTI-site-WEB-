@@ -1,6 +1,6 @@
-import { createClient } from '@supabase/supabase-js'
+﻿import { createClient } from '@supabase/supabase-js'
 
-// The anon key is a publishable client key — safe in client-side bundles.
+// The anon key is a publishable client key · safe in client-side bundles.
 // Env vars take precedence; the literals are fallbacks for environments that
 // don't inject VITE_ vars (Lovable preview, local dev without .env, etc.).
 const SUPABASE_URL = 'https://zoqpsjodmlazmottqshl.supabase.co'

@@ -1,5 +1,5 @@
-/**
- * MOTEUR DE CALCUL CRÉDIT — USAGE PÉDAGOGIQUE UNIQUEMENT.
+﻿/**
+ * MOTEUR DE CALCUL CRÉDIT · USAGE PÉDAGOGIQUE UNIQUEMENT.
  *
  * Les résultats présentés reposent sur des hypothèses et des données simulées.
  * Ils ne constituent pas une offre de prêt, une garantie de taux ou une

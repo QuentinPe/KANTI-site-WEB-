@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+﻿import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { getArticles } from "@/lib/articlesService";
@@ -39,7 +39,7 @@ export default function Actualites() {
               <span className="italic text-foreground/65">& décryptages</span>
             </h2>
             <p className="text-foreground/60 text-base font-light leading-relaxed max-w-md">
-              Fiscalité, marchés, stratégies patrimoniales — nos analyses pour prendre les meilleures décisions au bon moment.
+              Fiscalité, marchés, stratégies patrimoniales · nos analyses pour prendre les meilleures décisions au bon moment.
             </p>
           </div>
           <Link
@@ -57,7 +57,7 @@ export default function Actualites() {
         {/* Grille principale */}
         <div className="grid lg:grid-cols-12 gap-6 lg:gap-8 items-start">
 
-          {/* Article à la une — 7 colonnes */}
+          {/* Article à la une · 7 colonnes */}
           <motion.div
             initial={{ opacity: 0, y: 48, clipPath: "inset(0 0 60% 0)" }}
             whileInView={{ opacity: 1, y: 0, clipPath: "inset(0 0 0% 0)" }}
@@ -113,7 +113,7 @@ export default function Actualites() {
             </Link>
           </motion.div>
 
-          {/* Articles secondaires — 5 colonnes */}
+          {/* Articles secondaires · 5 colonnes */}
           <div className="lg:col-span-5 flex flex-col gap-5">
             {articles.map((a, i) => (
               <motion.div

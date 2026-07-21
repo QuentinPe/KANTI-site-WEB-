@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Save, Globe, Phone, BarChart3, Search, Scale } from "lucide-react";
 import { getSiteSettings, upsertSettings } from "@/lib/siteSettingsService";
@@ -183,7 +183,7 @@ export default function AdminSiteSettings() {
         </SectionCard>
 
         {/* SEO pages fixes */}
-        <SectionCard title="SEO — Pages fixes" icon={Search}>
+        <SectionCard title="SEO · Pages fixes" icon={Search}>
           <p className="text-[12px] font-light -mt-2" style={{ color: "hsl(224 15% 55%)" }}>
             Titre SEO (60 car. max) et meta description (155 car. max) pour chaque page fixe.
             Si laissé vide, le titre/description par défaut codé en dur est utilisé.
@@ -194,7 +194,7 @@ export default function AdminSiteSettings() {
               <div className="flex items-center gap-2">
                 <Globe className="w-3.5 h-3.5" style={{ color: "hsl(224 35% 50%)" }} />
                 <p className="text-[12px] font-medium" style={{ color: "hsl(224 35% 32%)" }}>
-                  {page.label} <span className="font-light" style={{ color: "hsl(224 15% 58%)" }}>— {page.path}</span>
+                  {page.label} <span className="font-light" style={{ color: "hsl(224 15% 58%)" }}>· {page.path}</span>
                 </p>
               </div>
               <Field label="Titre SEO" hint={`${(values[`seo_${page.key}_title`] ?? "").length}/60`}>

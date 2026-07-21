@@ -1,4 +1,4 @@
-import { motion, useReducedMotion } from 'framer-motion';
+﻿import { motion, useReducedMotion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 
@@ -24,7 +24,7 @@ export default function BilanFinalCTA() {
             Bilan patrimonial
           </p>
           <h2 className="text-3xl md:text-5xl lg:text-[52px] font-heading font-light text-white leading-[1.08] tracking-tight max-w-3xl mx-auto mb-10">
-            Prenez le temps de comprendre votre patrimoine — avant de décider.
+            Prenez le temps de comprendre votre patrimoine · avant de décider.
           </h2>
           <p className="text-white/50 font-light text-base leading-relaxed max-w-xl mx-auto mb-12">
             Un premier échange de 30 minutes, gratuit et sans engagement, pour évaluer la pertinence d'un bilan dans votre situation.

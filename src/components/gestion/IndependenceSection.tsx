@@ -1,4 +1,4 @@
-import { motion, useReducedMotion } from 'framer-motion';
+﻿import { motion, useReducedMotion } from 'framer-motion';
 import { ShieldCheck } from 'lucide-react';
 
 const STATS = [
@@ -10,7 +10,7 @@ const STATS = [
   {
     value: '0',
     label: 'Produit maison',
-    sub: 'Aucune gamme propriétaire — sélection sur le marché entier',
+    sub: 'Aucune gamme propriétaire · sélection sur le marché entier',
   },
   {
     value: '40+',

@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useMemo } from 'react';
+﻿import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -251,7 +251,7 @@ function ScenarioComparator({
           </div>
         ))}
       </div>
-      <p className="text-[10px] italic text-foreground/30 mt-3">Données illustratives — scénarios de démonstration</p>
+      <p className="text-[10px] italic text-foreground/30 mt-3">Données illustratives · scénarios de démonstration</p>
     </div>
   );
 }
@@ -388,7 +388,7 @@ export default function SimulateurPatrimonialPage() {
         <div className="relative z-10 flex items-end h-full pb-10 px-4">
           <div className="max-w-5xl mx-auto w-full">
             <p className="text-[10px] tracking-[0.32em] uppercase text-white/50 mb-3 font-medium">
-              Outil pédagogique — données simulées
+              Outil pédagogique · données simulées
             </p>
             <h1 className="text-3xl md:text-4xl font-heading font-light text-white leading-tight tracking-tight mb-3 max-w-2xl">
               Simulateur de stratégie patrimoniale
@@ -397,7 +397,7 @@ export default function SimulateurPatrimonialPage() {
               Explorez l'impact de différentes allocations, horizons et scénarios de marché sur la projection de votre capital.
             </p>
             <p className="text-[11px] text-white/35 italic max-w-xl mb-4">
-              Indicatif uniquement — ne constitue pas une prévision ou une recommandation personnalisée.
+              Indicatif uniquement · ne constitue pas une prévision ou une recommandation personnalisée.
             </p>
             <Link
               to="/profil-de-risque"
@@ -557,7 +557,7 @@ export default function SimulateurPatrimonialPage() {
                         />
 
                         <p className="text-[11px] italic text-foreground/35">
-                          Données indicatives — profil réel défini lors du diagnostic patrimonial.
+                          Données indicatives · profil réel défini lors du diagnostic patrimonial.
                         </p>
                       </motion.div>
                     )}
@@ -632,7 +632,7 @@ export default function SimulateurPatrimonialPage() {
 
                         {/* Total indicator */}
                         <div className={`text-center py-2 rounded-xl text-sm font-medium ${allocationValid ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-600'}`}>
-                          Total : {(totalAllocation * 100).toFixed(0)} % {allocationValid ? '✓' : '— doit être 100 %'}
+                          Total : {(totalAllocation * 100).toFixed(0)} % {allocationValid ? '✓' : '(doit être 100 %)'}
                         </div>
 
                         <div className="space-y-3 max-h-[50vh] overflow-y-auto pr-1">
@@ -787,7 +787,7 @@ export default function SimulateurPatrimonialPage() {
               {/* Demo badge */}
               <div className="flex items-center gap-2 text-[11px] text-foreground/40 italic">
                 <span className="w-2 h-2 rounded-full bg-amber-400 inline-block" />
-                Données simulées — hypothèses de démonstration — non contractuelles
+                Données simulées · hypothèses de démonstration · non contractuelles
               </div>
 
               {result ? (

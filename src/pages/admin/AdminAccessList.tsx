@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ShieldCheck, UserPlus, Trash2, Power, Info, X, ChevronDown } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -120,7 +120,7 @@ export default function AdminAccessList() {
         style={{ background: "white", border: "1px solid hsl(224 20% 12% / 0.08)" }}>
         <div className="px-6 py-4" style={{ borderBottom: "1px solid hsl(224 20% 12% / 0.07)", background: "hsl(220 25% 98%)" }}>
           <h2 className="text-[14px] font-medium" style={{ color: "hsl(224 40% 28%)" }}>
-            Administrateurs — {admins.length}
+            Administrateurs · {admins.length}
           </h2>
         </div>
 
@@ -216,7 +216,7 @@ export default function AdminAccessList() {
       <div className="mt-6 rounded-2xl overflow-hidden" style={{ background: "hsl(224 55% 8%)" }}>
         <div className="px-5 py-3" style={{ borderBottom: "1px solid hsl(0 0% 100% / 0.08)" }}>
           <p className="text-[11px] tracking-[0.2em] uppercase font-medium" style={{ color: "hsl(0 0% 100% / 0.35)" }}>
-            Setup Supabase requis — à exécuter une seule fois
+            Setup Supabase requis · à exécuter une seule fois
           </p>
         </div>
         <pre className="px-5 py-4 text-[11px] leading-relaxed overflow-x-auto" style={{ color: "hsl(142 60% 70%)", fontFamily: "monospace" }}>
@@ -309,8 +309,8 @@ ON CONFLICT (email) DO NOTHING;`}
                     onFocus={(e) => Object.assign((e.target as HTMLElement).style, inputFocus)}
                     onBlur={(e) => Object.assign((e.target as HTMLElement).style, inputBlur)}
                   >
-                    <option value="admin">Admin — accès lecture/écriture standard</option>
-                    <option value="super_admin">Super Admin — accès complet</option>
+                    <option value="admin">Admin · accès lecture/écriture standard</option>
+                    <option value="super_admin">Super Admin · accès complet</option>
                   </select>
                   <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none"
                     style={{ color: "hsl(224 20% 52%)" }} />
@@ -353,7 +353,7 @@ ON CONFLICT (email) DO NOTHING;`}
                 Supprimer cet administrateur ?
               </p>
               <p className="text-[13px] font-light" style={{ color: "hsl(224 15% 50%)" }}>
-                {admins.find((a) => a.id === confirmDelete)?.email} — cette action est irréversible.
+                {admins.find((a) => a.id === confirmDelete)?.email} · cette action est irréversible.
               </p>
             </div>
             <div className="flex gap-3">

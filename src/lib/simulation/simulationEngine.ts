@@ -1,5 +1,5 @@
-/**
- * MOTEUR DE SIMULATION MONTE CARLO — USAGE PÉDAGOGIQUE UNIQUEMENT.
+﻿/**
+ * MOTEUR DE SIMULATION MONTE CARLO · USAGE PÉDAGOGIQUE UNIQUEMENT.
  *
  * Les résultats présentés reposent sur des hypothèses et des données simulées.
  * Ils ne constituent pas une prévision, une garantie de rendement ou une

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
@@ -394,7 +394,7 @@ export default function AdminArticleForm() {
               Contenu de l'article
             </label>
             <span className="text-[11px] font-light" style={{ color: "hsl(224 15% 58%)" }}>
-              Éditeur riche — import Word ou PDF possible
+              Éditeur riche · import Word ou PDF possible
             </span>
           </div>
           <RichEditor

@@ -1,4 +1,4 @@
-import { motion, useReducedMotion } from 'framer-motion';
+﻿import { motion, useReducedMotion } from 'framer-motion';
 import { TrendingUp, Home, Building2, Scale, Target } from 'lucide-react';
 
 const FLUX = [
@@ -143,7 +143,7 @@ export default function AnalyseFluxSection() {
         </div>
 
         <p className="text-[11px] italic text-foreground/40 text-center mt-8 leading-relaxed">
-          Exemple pédagogique — flux annuels indicatifs. Ne constitue pas une recommandation personnalisée.
+          Exemple pédagogique · flux annuels indicatifs. Ne constitue pas une recommandation personnalisée.
         </p>
       </div>
     </section>

@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+﻿import { Link } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -222,7 +222,7 @@ export default function HeroSticky() {
           }}
         />
 
-        {/* Bottom blend — erases the hard edge where Identification begins */}
+        {/* Bottom blend · erases the hard edge where Identification begins */}
         <div
           aria-hidden
           className="absolute bottom-0 left-0 right-0 pointer-events-none"

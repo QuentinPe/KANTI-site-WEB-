@@ -1,4 +1,4 @@
-import { useRef } from "react";
+﻿import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
 
@@ -37,14 +37,14 @@ export default function FinancingHero() {
       >
         <img
           src={IMAGE_URL}
-          alt="Bureau minimaliste — financement patrimonial KANTI"
+          alt="Bureau minimaliste · financement patrimonial KANTI"
           className="w-full h-full object-cover object-center"
           fetchPriority="high"
           decoding="sync"
         />
       </motion.div>
 
-      {/* Left gradient — image already dark, overlay stays light */}
+      {/* Left gradient · image already dark, overlay stays light */}
       <div
         aria-hidden
         className="absolute inset-0 pointer-events-none"
@@ -54,7 +54,7 @@ export default function FinancingHero() {
         }}
       />
 
-      {/* Bottom vignette — stronger to dissolve the dark desk into white */}
+      {/* Bottom vignette · stronger to dissolve the dark desk into white */}
       <div
         aria-hidden
         className="absolute inset-x-0 bottom-0 pointer-events-none"

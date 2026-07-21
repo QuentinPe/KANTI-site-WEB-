@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+﻿import { useState, useMemo } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { computeMonthlyPayment } from "@/lib/financing/loanEngine";
 
@@ -35,7 +35,7 @@ function getRobustness(debtRatio: number): {
       level: "Limitée",
       color: "text-amber-700",
       bg: "bg-amber-50 border-amber-100",
-      desc: "Attention — certains établissements peuvent refuser.",
+      desc: "Attention · certains établissements peuvent refuser.",
     };
   return {
     level: "Insuffisante",
@@ -186,7 +186,7 @@ export default function StressTestSection() {
               </div>
 
               <p className="text-[11px] italic text-foreground/35 border-t border-foreground/8 pt-4">
-                Indicateur pédagogique — ne constitue pas une décision de
+                Indicateur pédagogique · ne constitue pas une décision de
                 financement. Base : 613 000 €, 3,8%, 20 ans, revenus 8 500 €/mois.
               </p>
             </div>
@@ -243,7 +243,7 @@ export default function StressTestSection() {
                 {
                   label: "Reste à vivre",
                   value: formatEurFull(Math.max(0, resteAVivre)) + "/mois",
-                  sub: resteAVivre < 0 ? "Attention — insuffisant" : "Indicatif",
+                  sub: resteAVivre < 0 ? "Attention · insuffisant" : "Indicatif",
                 },
                 {
                   label: "Capital emprunté",

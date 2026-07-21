@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+﻿import { useState, useMemo } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { computeMonthlyPayment, computeFundingPlan } from "@/lib/financing/loanEngine";
@@ -100,7 +100,7 @@ export default function FundingPlanSection() {
               la mensualité et la trésorerie disponible pour d'autres projets.
             </p>
             <p className="text-[12px] italic text-foreground/40 leading-relaxed">
-              Exemple fictif — données pédagogiques. Les chiffres sont
+              Exemple fictif · données pédagogiques. Les chiffres sont
               modifiables à titre illustratif.
             </p>
           </motion.div>
@@ -253,7 +253,7 @@ export default function FundingPlanSection() {
                   <span>300 000 €</span>
                 </div>
                 <p className="text-[11px] italic text-foreground/35 mt-3">
-                  Mensualité estimée sur 20 ans à 3,8% + 0,3% assurance — à
+                  Mensualité estimée sur 20 ans à 3,8% + 0,3% assurance · à
                   titre indicatif uniquement
                 </p>
               </div>

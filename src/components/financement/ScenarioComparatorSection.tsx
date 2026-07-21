@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+﻿import { useMemo } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import {
   LineChart,
@@ -106,7 +106,7 @@ export default function ScenarioComparatorSection() {
     ),
   []);
 
-  // Build chart data — sample every 12 months (annual)
+  // Build chart data · sample every 12 months (annual)
   const chartData = useMemo(() => {
     const maxMonths = Math.max(...results.map((r) => r.schedule.length));
     const points: Array<Record<string, number>> = [];
@@ -155,7 +155,7 @@ export default function ScenarioComparatorSection() {
           viewport={{ once: true, margin: "-60px" }}
         >
           <p className="text-[10px] tracking-widest uppercase text-foreground/40 mb-6">
-            Capital restant dû — évolution comparée
+            Capital restant dû · évolution comparée
           </p>
           <div className="h-72" aria-label="Courbes d'amortissement comparées" role="img">
             <ResponsiveContainer width="100%" height="100%">
@@ -194,7 +194,7 @@ export default function ScenarioComparatorSection() {
             </ResponsiveContainer>
           </div>
           <p className="text-[11px] italic text-foreground/30 text-center mt-4">
-            Données illustratives — hypothèses de démonstration
+            Données illustratives · hypothèses de démonstration
           </p>
         </motion.div>
 

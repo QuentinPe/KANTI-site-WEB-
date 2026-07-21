@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+﻿import { useState, useMemo } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import {
   AreaChart,
@@ -170,7 +170,7 @@ export default function AmortizationSection() {
               ))}
             </div>
             <p className="text-[11px] italic text-foreground/35 mt-4">
-              Base : 400 000 € à 3,8% — données illustratives
+              Base : 400 000 € à 3,8% · données illustratives
             </p>
           </motion.div>
 
@@ -184,7 +184,7 @@ export default function AmortizationSection() {
           >
             <div className="rounded-2xl border border-foreground/8 bg-white p-6 md:p-8 shadow-sm">
               <p className="text-[10px] tracking-widest uppercase text-foreground/40 mb-6">
-                Composition mensuelle — {DURATIONS[selectedIdx].label}
+                Composition mensuelle · {DURATIONS[selectedIdx].label}
               </p>
               <div
                 className="h-80"

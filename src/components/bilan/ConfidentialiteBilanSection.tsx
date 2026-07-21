@@ -1,4 +1,4 @@
-import { motion, useReducedMotion } from 'framer-motion';
+﻿import { motion, useReducedMotion } from 'framer-motion';
 import { ShieldCheck } from 'lucide-react';
 
 const STATS = [
@@ -10,17 +10,17 @@ const STATS = [
   {
     value: '0',
     label: 'Produit maison',
-    sub: 'Sélection sur l\'ensemble du marché — aucun quota, aucun conflit',
+    sub: 'Sélection sur l\'ensemble du marché · aucun quota, aucun conflit',
   },
   {
     value: '100%',
     label: 'Rapport écrit remis',
-    sub: 'Le bilan vous appartient — vous pouvez le partager librement avec vos conseils',
+    sub: 'Le bilan vous appartient · vous pouvez le partager librement avec vos conseils',
   },
   {
     value: 'NDA',
     label: 'Confidentialité garantie',
-    sub: 'Accord de confidentialité systématique — vos données ne quittent pas KANTI',
+    sub: 'Accord de confidentialité systématique · vos données ne quittent pas KANTI',
   },
 ];
 

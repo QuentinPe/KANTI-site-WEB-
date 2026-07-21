@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+﻿import { useMemo } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight, ChartLine, ShieldCheck } from 'lucide-react';
@@ -105,7 +105,7 @@ export default function SimulationPreviewSection() {
             <div className="rounded-2xl bg-white/6 border border-white/10 p-4 md:p-6">
               <div className="mb-4 flex items-center justify-between">
                 <p className="text-xs text-white/50 tracking-wide">
-                  Projection illustrative — profil équilibré — 15 ans — données de démonstration
+                  Projection illustrative · profil équilibré · 15 ans · données de démonstration
                 </p>
                 <span className="text-[10px] px-2.5 py-1 rounded-full bg-white/10 text-white/50 border border-white/10">
                   Monte Carlo · 300 trajectoires

@@ -1,4 +1,4 @@
-import { motion, useReducedMotion } from 'framer-motion';
+﻿import { motion, useReducedMotion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell } from 'recharts';
@@ -127,7 +127,7 @@ export default function RiskProfileComparison() {
             <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
           </Link>
           <p className="text-[11px] italic text-foreground/35 mt-4">
-            Données indicatives — les profils réels sont construits lors d'un diagnostic complet
+            Données indicatives · les profils réels sont construits lors d'un diagnostic complet
           </p>
         </div>
       </div>

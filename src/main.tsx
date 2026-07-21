@@ -1,7 +1,7 @@
-import { createRoot } from "react-dom/client";
+﻿import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
-// Latin-only subsets — saves ~200 kB vs full subset (removes devanagari/latin-ext)
+// Latin-only subsets · saves ~200 kB vs full subset (removes devanagari/latin-ext)
 import "@fontsource/fraunces/latin-400.css";
 import "@fontsource/fraunces/latin-500.css";
 import "@fontsource/fraunces/latin-600.css";

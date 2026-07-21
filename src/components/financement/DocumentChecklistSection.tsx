@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { CheckSquare, Copy, Check } from "lucide-react";
 
@@ -114,7 +114,7 @@ export default function DocumentChecklistSection() {
     const tab = TABS[activeTab];
     const lines: string[] = [`${tab.label}\n`];
     tab.docs.forEach(cat => {
-      lines.push(`— ${cat.cat}`);
+      lines.push(`- ${cat.cat}`);
       cat.items.forEach(item => lines.push(`  · ${item}`));
       lines.push('');
     });
@@ -231,7 +231,7 @@ export default function DocumentChecklistSection() {
           </div>
 
           <p className="text-[11px] italic text-foreground/35 mt-6 border-t border-foreground/6 pt-4">
-            Liste indicative — les pièces demandées peuvent varier selon
+            Liste indicative · les pièces demandées peuvent varier selon
             l'établissement, le profil et le type de financement.
           </p>
         </motion.div>

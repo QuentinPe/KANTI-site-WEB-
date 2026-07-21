@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+﻿import { useQuery } from "@tanstack/react-query";
 import DOMPurify from "dompurify";
 import LegalLayout from "@/components/LegalLayout";
 import { getLegalContent } from "@/lib/legalService";
@@ -15,7 +15,7 @@ export default function MentionsLegalesPage() {
     staleTime: 5 * 60 * 1000,
   });
 
-  /* Regulatory fields — fall back to hardcoded defaults if not set in CMS */
+  /* Regulatory fields · fall back to hardcoded defaults if not set in CMS */
   const s = (key: string, fallback: string) => settings[key] || fallback;
 
   const subtitle = cms?.subtitle || "Informations relatives à l'éditeur du site, à l'hébergement, aux statuts réglementaires du cabinet et aux conditions d'utilisation.";

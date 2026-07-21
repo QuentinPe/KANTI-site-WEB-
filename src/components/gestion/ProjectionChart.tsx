@@ -1,4 +1,4 @@
-import {
+﻿import {
   ComposedChart,
   Area,
   Line,
@@ -190,7 +190,7 @@ export default function ProjectionChart({ result, horizon, targetAmount }: Proje
         </ComposedChart>
       </ResponsiveContainer>
       <p className="text-[11px] italic text-foreground/40 text-center mt-2">
-        Simulation illustrative — hypothèses de démonstration — données non contractuelles
+        Simulation illustrative · hypothèses de démonstration · données non contractuelles
       </p>
     </div>
   );

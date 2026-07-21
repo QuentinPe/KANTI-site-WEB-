@@ -1,4 +1,4 @@
-import { motion, useReducedMotion } from "framer-motion";
+﻿import { motion, useReducedMotion } from "framer-motion";
 import * as Accordion from "@radix-ui/react-accordion";
 import { ChevronDown } from "lucide-react";
 
@@ -70,7 +70,7 @@ const GROUPS: LoanGroup[] = [
         finalite: "Financement standard avec remboursement progressif du capital.",
         mode: "Mensualité constante incluant capital et intérêts.",
         horizon: "10 à 25 ans",
-        vigilance: "Coût total vs mensualité — arbitrage durée.",
+        vigilance: "Coût total vs mensualité · arbitrage durée.",
       },
       {
         title: "Prêt relais",

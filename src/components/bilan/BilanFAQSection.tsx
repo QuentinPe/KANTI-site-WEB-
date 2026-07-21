@@ -1,4 +1,4 @@
-import { motion, useReducedMotion } from 'framer-motion';
+﻿import { motion, useReducedMotion } from 'framer-motion';
 import * as Accordion from '@radix-ui/react-accordion';
 import { ChevronDown } from 'lucide-react';
 
@@ -29,15 +29,15 @@ const FAQ_ITEMS = [
   },
   {
     q: 'Que contient le rapport final ?',
-    a: "Le rapport patrimonial est structuré en quatre parties : (1) Synthèse du patrimoine — cartographie complète et chiffrée, actifs, passifs, patrimoine net, indicateurs clés ; (2) Cartographie des risques — analyse de la prévoyance, points de vigilance ; (3) Scénarios étudiés — 2 à 3 options comparées, simulation chiffrée ; (4) Feuille de route — actions priorisées sur 12 à 24 mois avec calendrier de mise en œuvre.",
+    a: "Le rapport patrimonial est structuré en quatre parties : (1) Synthèse du patrimoine · cartographie complète et chiffrée, actifs, passifs, patrimoine net, indicateurs clés ; (2) Cartographie des risques · analyse de la prévoyance, points de vigilance ; (3) Scénarios étudiés · 2 à 3 options comparées, simulation chiffrée ; (4) Feuille de route · actions priorisées sur 12 à 24 mois avec calendrier de mise en œuvre.",
   },
   {
     q: 'Faut-il être client KANTI après le bilan ?',
-    a: "Non. Le bilan patrimonial est une mission indépendante. À son terme, vous êtes libre de mettre en œuvre les recommandations avec qui vous souhaitez — vos conseillers habituels, votre banque, ou KANTI. Si vous souhaitez que nous coordonnions la mise en place, nous pouvons prendre en charge le suivi. Aucune obligation, aucune pression.",
+    a: "Non. Le bilan patrimonial est une mission indépendante. À son terme, vous êtes libre de mettre en œuvre les recommandations avec qui vous souhaitez · vos conseillers habituels, votre banque, ou KANTI. Si vous souhaitez que nous coordonnions la mise en place, nous pouvons prendre en charge le suivi. Aucune obligation, aucune pression.",
   },
   {
     q: 'Un bilan patrimonial est-il déductible fiscalement ?',
-    a: "Les honoraires de conseil patrimonial peuvent être déductibles dans certains cas — notamment pour les revenus fonciers ou dans le cadre d'une activité professionnelle. La déductibilité dépend de votre situation spécifique. Nous vous conseillons de vous rapprocher de votre expert-comptable ou de votre service des impôts pour valider l'éligibilité dans votre cas précis.",
+    a: "Les honoraires de conseil patrimonial peuvent être déductibles dans certains cas · notamment pour les revenus fonciers ou dans le cadre d'une activité professionnelle. La déductibilité dépend de votre situation spécifique. Nous vous conseillons de vous rapprocher de votre expert-comptable ou de votre service des impôts pour valider l'éligibilité dans votre cas précis.",
   },
   {
     q: 'Dans quelles villes intervenez-vous ?',

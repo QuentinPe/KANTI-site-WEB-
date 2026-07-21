@@ -1,4 +1,4 @@
-import { useMemo, useState, useRef, useEffect } from "react";
+﻿import { useMemo, useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import {
   Briefcase, Building2, Globe2, Home, Stethoscope, Users,
@@ -191,7 +191,7 @@ const CAS_CLIENTS_FALLBACK: CasClient[] = [
   },
 ];
 
-/* ─── FloatingCard — style "ecosystem 3D" ──────────────────────── */
+/* ─── FloatingCard · style "ecosystem 3D" ──────────────────────── */
 function FloatingCard({ cas, index, onClick }: { cas: CasClient; index: number; onClick: () => void }) {
   const Icon    = CATEGORY_ICONS[cas.category];
   const mainKpi = cas.kpis[0];
@@ -330,7 +330,7 @@ function CaseModal({
 
   return (
     <>
-      {/* Backdrop — stops page scroll on click */}
+      {/* Backdrop · stops page scroll on click */}
       <motion.div
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         transition={{ duration: 0.25 }}
@@ -343,7 +343,7 @@ function CaseModal({
       {/* Centering shell */}
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-10 lg:p-16">
 
-        {/* Prev arrow — outside the window on the left */}
+        {/* Prev arrow · outside the window on the left */}
         <motion.button
           initial={{ opacity: 0, x: -12 }} animate={{ opacity: index > 0 ? 1 : 0, x: 0 }}
           transition={{ duration: 0.3, delay: 0.3 }}
@@ -378,7 +378,7 @@ function CaseModal({
           aria-modal
           aria-label={cas.profil}
         >
-          {/* Close + counter — inside the image panel top-right */}
+          {/* Close + counter · inside the image panel top-right */}
           <div className="absolute top-5 right-5 z-20 flex items-center gap-2">
             <span className="text-[10px] tracking-[0.22em] uppercase font-medium px-2.5 py-1 rounded-full"
               style={{ background: "hsl(224 20% 12% / 0.06)", color: "hsl(224 20% 50%)", border: "1px solid hsl(224 20% 12% / 0.08)" }}>
@@ -420,7 +420,7 @@ function CaseModal({
               </div>
             </motion.div>
 
-            {/* Scrollable content — scrollbar hidden */}
+            {/* Scrollable content · scrollbar hidden */}
             <motion.div
               variants={stagger.container} initial="hidden" animate="visible"
               className="lg:col-span-3 hide-scrollbar flex flex-col"
@@ -516,7 +516,7 @@ function CaseModal({
                     {cas.verbatim.quote}
                   </p>
                   <p className="text-[10px] tracking-[0.22em] uppercase font-medium pl-8" style={{ color: "hsl(224 18% 56%)" }}>
-                    — {cas.verbatim.author}
+                    · {cas.verbatim.author}
                   </p>
                 </motion.div>
               )}
@@ -534,7 +534,7 @@ function CaseModal({
           </div>
         </motion.div>
 
-        {/* Next arrow — outside the window on the right */}
+        {/* Next arrow · outside the window on the right */}
         <motion.button
           initial={{ opacity: 0, x: 12 }} animate={{ opacity: index < total - 1 ? 1 : 0, x: 0 }}
           transition={{ duration: 0.3, delay: 0.3 }}

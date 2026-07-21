@@ -1,9 +1,9 @@
-import { Navigate } from "react-router-dom";
+﻿import { Navigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
 import { getAdminUsers } from "@/lib/adminUsersService";
 
-// Bootstrap list — used only when the admin_users table doesn't exist yet.
+// Bootstrap list · used only when the admin_users table doesn't exist yet.
 // Remove once the table is created and populated in Supabase.
 const BOOTSTRAP_EMAILS = ["m.delorme@adnfamily.com"];
 

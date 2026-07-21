@@ -1,4 +1,4 @@
-import { motion, useReducedMotion } from 'framer-motion';
+﻿import { motion, useReducedMotion } from 'framer-motion';
 
 const STEPS = [
   {
@@ -28,7 +28,7 @@ const STEPS = [
     title: 'Construction',
     description: 'Élaboration de l\'allocation et sélection des meilleurs supports.',
     items: [
-      'Architecture ouverte — aucun produit maison',
+      'Architecture ouverte · aucun produit maison',
       'Sélection comparative des supports',
       'Optimisation des enveloppes fiscales',
       'Mise en place et souscriptions',

@@ -1,4 +1,4 @@
-import { useMemo, useState, useRef } from "react";
+﻿import { useMemo, useState, useRef } from "react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import jsPDF from "jspdf";
 import { Send, X } from "lucide-react";
@@ -280,14 +280,14 @@ function ProfilRisqueHero({ total, onStart }: { total: number; onStart: () => vo
       <motion.div className="absolute inset-0 will-change-transform" style={{ y: imageY, scale: 1.18 }}>
         <img
           src={HERO_IMG}
-          alt="Espace de travail — KANTI Profil de risque"
+          alt="Espace de travail · KANTI Profil de risque"
           className="w-full h-full object-cover object-center"
           fetchPriority="high"
           decoding="sync"
         />
       </motion.div>
 
-      {/* Ivory gradient — left readability */}
+      {/* Ivory gradient · left readability */}
       <div
         aria-hidden
         className="absolute inset-0 pointer-events-none"
@@ -707,7 +707,7 @@ function SendModal({ profile, onClose }: { profile: SriProfile; onClose: () => v
     setError("");
     try {
       const fullNom = `${prenom.trim()} ${nom.trim()}`;
-      const sujet = `Profil de risque — SRI ${profile.sri}/7 (${profile.shortLabel})`;
+      const sujet = `Profil de risque · SRI ${profile.sri}/7 (${profile.shortLabel})`;
       const message = `${profile.description}\n\nScore précis : ${(profile.sriPrecise ?? profile.sri).toFixed(2)}/7`;
       await createLead({ nom: fullNom, email: email.trim(), telephone: telephone.trim() || null, sujet, message });
       try {
@@ -781,7 +781,7 @@ function SendModal({ profile, onClose }: { profile: SriProfile; onClose: () => v
               Envoyer à KANTI
             </h3>
             <p className="text-foreground/55 text-sm font-light mb-7">
-              Profil SRI <strong className="font-medium text-foreground/80">{profile.sri}/7</strong> — {profile.shortLabel}
+              Profil SRI <strong className="font-medium text-foreground/80">{profile.sri}/7</strong> · {profile.shortLabel}
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -907,18 +907,18 @@ async function generatePdf(
   const sriPrecise = profile.sriPrecise ?? profile.sri;
 
   // ═══════════════════════════════════════════════════════════
-  // PAGE 1 — COUVERTURE (géométrique, sans photo)
+  // PAGE 1 · COUVERTURE (géométrique, sans photo)
   // ═══════════════════════════════════════════════════════════
   const photoW = 210;
   const leftW = W - photoW;
   const leftInner = leftW - M * 2;
   const scoreStr = sriPrecise.toFixed(1);
 
-  // Panneau gauche — papier
+  // Panneau gauche · papier
   setFill(PAPER);
   doc.rect(0, 0, leftW, H, "F");
 
-  // Panneau droit — navy profond (uni)
+  // Panneau droit · navy profond (uni)
   setFill(NAVY);
   doc.rect(leftW, 0, photoW, H, "F");
 
@@ -1127,7 +1127,7 @@ async function generatePdf(
   }
 
   // ═══════════════════════════════════════════════════════════
-  // PAGE 2 — NOTRE DEMARCHE
+  // PAGE 2 · NOTRE DEMARCHE
   // ═══════════════════════════════════════════════════════════
   doc.addPage();
   drawPageHeader("Notre démarche", "00");
@@ -1137,7 +1137,7 @@ async function generatePdf(
   doc.setFont(SERIF, "italic");
   doc.setFontSize(18);
   const opener = doc.splitTextToSize(
-    "« Investir n'est pas un pari. C'est un alignement — entre votre histoire, vos objectifs et le temps dont vous disposez. »",
+    "« Investir n'est pas un pari. C'est un alignement · entre votre histoire, vos objectifs et le temps dont vous disposez. »",
     CW - 20,
   );
   doc.text(opener, M, y);
@@ -1151,7 +1151,7 @@ async function generatePdf(
   doc.setFont(SANS, "normal");
   doc.setFontSize(10.5);
   const story1 = doc.splitTextToSize(
-    "Avant de parler de produits, de fiscalité ou de performance, KANTI prend le temps de vous écouter. Ce questionnaire est la première pierre d'un dialogue : il transforme une notion abstraite — votre tolérance au risque — en un repère clair, partagé et opposable. C'est aussi une exigence réglementaire, posée par l'Autorité des Marchés Financiers pour protéger l'épargnant.",
+    "Avant de parler de produits, de fiscalité ou de performance, KANTI prend le temps de vous écouter. Ce questionnaire est la première pierre d'un dialogue : il transforme une notion abstraite · votre tolérance au risque · en un repère clair, partagé et opposable. C'est aussi une exigence réglementaire, posée par l'Autorité des Marchés Financiers pour protéger l'épargnant.",
     CW,
   );
   doc.text(story1, M, y);
@@ -1207,7 +1207,7 @@ async function generatePdf(
   doc.text(meth, M + 18, y + 38);
 
   // ═══════════════════════════════════════════════════════════
-  // PAGE 3 — SYNTHESE
+  // PAGE 3 · SYNTHESE
   // ═══════════════════════════════════════════════════════════
   doc.addPage();
   drawPageHeader("Synthèse de votre profil", "01");
@@ -1301,7 +1301,7 @@ async function generatePdf(
   );
 
   // ═══════════════════════════════════════════════════════════
-  // PAGE 4 — POSITIONNEMENT
+  // PAGE 4 · POSITIONNEMENT
   // ═══════════════════════════════════════════════════════════
   doc.addPage();
   drawPageHeader("Votre positionnement", "02");
@@ -1441,7 +1441,7 @@ async function generatePdf(
   doc.text(posLinesTxt, M + 18, y + 22);
 
   // ═══════════════════════════════════════════════════════════
-  // PAGES 5+ — DETAIL DES RÉPONSES
+  // PAGES 5+ · DETAIL DES RÉPONSES
   // ═══════════════════════════════════════════════════════════
   doc.addPage();
   drawPageHeader("Détail de vos réponses", "03");

@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createLead } from "@/lib/leadsService";
 import { z } from "zod";
@@ -8,7 +8,7 @@ import { ArrowRight, Building2, Video, Phone as PhoneIcon, MapPin, Mail } from "
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Seo, { breadcrumbJsonLd, localBusinessJsonLd } from "@/components/Seo";
-// Photo de fond — public/contact-bg.png
+// Photo de fond · public/contact-bg.png
 const contactBg = "/contact-bg.png";
 
 /* ─── Validation ─── */
@@ -73,7 +73,7 @@ function StepDone({ label, value, onEdit }: { label: string; value: string; onEd
           </svg>
         </div>
         <span className="text-[11px]" style={{ color: "hsl(224 20% 55%)" }}>{label}</span>
-        <span className="text-[11px] font-medium" style={{ color: "hsl(224 55% 18%)" }}>— {value}</span>
+        <span className="text-[11px] font-medium" style={{ color: "hsl(224 55% 18%)" }}>· {value}</span>
       </div>
       <button
         type="button"
@@ -155,7 +155,7 @@ export default function ContactPage() {
     const parsed = contactSchema.safeParse(form);
     if (!parsed.success) { toast.error(parsed.error.issues[0].message); return; }
 
-    // Honeypot — redirection silencieuse sans appel API
+    // Honeypot · redirection silencieuse sans appel API
     if (parsed.data.website) {
       navigate("/merci", { state: { name: parsed.data.nom.split(" ")[0], subject: "contact" } });
       return;
@@ -208,7 +208,7 @@ export default function ContactPage() {
   return (
     <>
       <Seo
-        title="Prendre rendez-vous — Cabinet KANTI, Bordeaux"
+        title="Prendre rendez-vous · Cabinet KANTI, Bordeaux"
         description="Premier échange de 30 minutes gratuit et sans engagement avec un conseiller KANTI. Réponse sous 24h ouvrées."
         jsonLd={[
           localBusinessJsonLd,

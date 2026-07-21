@@ -1,4 +1,4 @@
-import { motion, useReducedMotion } from 'framer-motion';
+﻿import { motion, useReducedMotion } from 'framer-motion';
 import {
   PieChart,
   Pie,
@@ -125,7 +125,7 @@ export default function AllocationDonutSection() {
 
               {/* Disclaimer */}
               <p className="text-[11px] font-medium text-foreground/50 text-center mt-4 mb-6">
-                Exemple pédagogique — données indicatives
+                Exemple pédagogique · données indicatives
               </p>
 
               {/* Metric badges */}

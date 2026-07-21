@@ -1,4 +1,4 @@
-import type { Allocation, RiskProfile } from './simulationTypes';
+﻿import type { Allocation, RiskProfile } from './simulationTypes';
 import { RISK_PROFILES } from './riskProfiles';
 import { ASSET_ASSUMPTIONS } from './assetAssumptions';
 
@@ -35,7 +35,7 @@ export function computeVolatility(returns: number[]): number {
 }
 
 export function computeDiversificationScore(allocation: Allocation): number {
-  // Based on Herfindahl-Hirschman Index (HHI) — lower HHI = more diversified
+  // Based on Herfindahl-Hirschman Index (HHI) · lower HHI = more diversified
   const weights = Object.values(allocation).filter(w => w > 0);
   if (weights.length === 0) return 0;
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 
 interface Step {
@@ -49,7 +49,7 @@ export default function ProcessStepper({
         {/* Two-column grid */}
         <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-start">
 
-          {/* LEFT — accordion steps */}
+          {/* LEFT · accordion steps */}
           <div className="order-2 lg:order-1">
             {steps.map((step, i) => {
               const isActive = i === activeIndex;
@@ -87,7 +87,7 @@ export default function ProcessStepper({
                         {step.label}
                       </motion.p>
 
-                      {/* Description — accordion */}
+                      {/* Description · accordion */}
                       <AnimatePresence initial={false}>
                         {isActive && (
                           <motion.div
@@ -140,7 +140,7 @@ export default function ProcessStepper({
             </div>
           </div>
 
-          {/* RIGHT — sticky image */}
+          {/* RIGHT · sticky image */}
           <div className="order-1 lg:order-2 lg:sticky lg:top-28 lg:self-start">
             <div className="relative aspect-[4/3] lg:aspect-[3/4] rounded-[1.75rem] overflow-hidden shadow-[0_24px_64px_-16px_hsl(224_60%_12%/0.22)]">
               <AnimatePresence mode="wait">

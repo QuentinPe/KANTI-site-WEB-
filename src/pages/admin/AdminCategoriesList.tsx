@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+﻿import { useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus, ChevronUp, ChevronDown, Trash2, Tags, FileText, HelpCircle, Loader2, AlertCircle } from "lucide-react";
 import {
@@ -122,7 +122,7 @@ function Section({
         <div className="px-6 py-4 flex items-center gap-2.5 text-[12px]"
           style={{ background: "hsl(38 80% 96%)", borderBottom: "1px solid hsl(38 70% 88%)", color: "hsl(30 70% 35%)" }}>
           <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
-          Table <code className="font-mono text-[11px] bg-white/60 px-1 rounded">content_categories</code> introuvable — exécutez le SQL de migration d'abord.
+          Table <code className="font-mono text-[11px] bg-white/60 px-1 rounded">content_categories</code> introuvable · exécutez le SQL de migration d'abord.
         </div>
       )}
 
@@ -134,7 +134,7 @@ function Section({
           </div>
         ) : categories.length === 0 && !isError ? (
           <p className="text-center py-8 text-[13px] font-light" style={{ color: "hsl(224 18% 60%)" }}>
-            Aucune catégorie — ajoutez-en une ci-dessous.
+            Aucune catégorie · ajoutez-en une ci-dessous.
           </p>
         ) : (
           categories.map((cat, idx) => (

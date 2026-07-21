@@ -1,15 +1,15 @@
-import { motion, useReducedMotion } from "framer-motion";
+﻿import { motion, useReducedMotion } from "framer-motion";
 import portrait from "@/assets/quentin-perromat-placeholder.jpg";
 
 // ————————————————————————————————————————————————————————————
-// Contenu éditable — modifier ici pour ajuster le texte, la timeline
+// Contenu éditable · modifier ici pour ajuster le texte, la timeline
 // et les certifications. Remplacer le fichier
 // src/assets/quentin-perromat-placeholder.jpg par la vraie photo.
 // ————————————————————————————————————————————————————————————
 
 const BIO: string[] = [
   "Après plus de quinze ans passés au sein de grandes maisons de banque privée et de gestion de patrimoine, Quentin Perromat fonde KANTI à Bordeaux avec une conviction : le conseil patrimonial doit être libre, argumenté et durable.",
-  "Formé à l'ingénierie patrimoniale et à la fiscalité du dirigeant, il accompagne aujourd'hui familles, cadres, professions libérales et chefs d'entreprise sur l'ensemble de leurs problématiques — de la structuration de holding à la préparation de la transmission.",
+  "Formé à l'ingénierie patrimoniale et à la fiscalité du dirigeant, il accompagne aujourd'hui familles, cadres, professions libérales et chefs d'entreprise sur l'ensemble de leurs problématiques · de la structuration de holding à la préparation de la transmission.",
 ];
 
 const QUOTE =
@@ -47,7 +47,7 @@ const PARCOURS: {
     role: "Conseiller en gestion de patrimoine",
     place: "Réseau national",
     detail:
-      "Premières années de terrain — épargne, prévoyance, immobilier, allocation d'actifs.",
+      "Premières années de terrain · épargne, prévoyance, immobilier, allocation d'actifs.",
   },
 ];
 
@@ -92,7 +92,7 @@ export default function QuentinPerromat() {
           </p>
         </div>
 
-        {/* A — Portrait + bio + citation */}
+        {/* A · Portrait + bio + citation */}
         <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 items-start">
           <motion.div
             initial={reduce ? { opacity: 0 } : { opacity: 0, y: 24 }}
@@ -140,7 +140,7 @@ export default function QuentinPerromat() {
                 </div>
               </div>
               <figcaption className="mt-4 font-heading italic text-[12px] leading-relaxed text-ivory/55 tracking-wide">
-                Portrait &nbsp;—&nbsp; Bordeaux, Triangle d'Or, 2026.
+                Portrait &nbsp;·&nbsp; Bordeaux, Triangle d'Or, 2026.
               </figcaption>
             </figure>
           </motion.div>
@@ -153,7 +153,7 @@ export default function QuentinPerromat() {
             className="lg:col-span-7"
           >
             <p className="text-[11px] tracking-[0.32em] uppercase text-gold mb-4 font-medium">
-              — L'entretien —
+              · L'entretien
             </p>
             <h3 className="font-heading text-4xl md:text-5xl lg:text-6xl font-light text-white leading-[1.02] tracking-tight mb-10">
               Le bon conseil
@@ -182,13 +182,13 @@ export default function QuentinPerromat() {
                 {QUOTE}
               </p>
               <footer className="mt-4 text-[11px] tracking-[0.28em] uppercase text-ivory/50">
-                — Q. P.
+                · Q. P.
               </footer>
             </blockquote>
           </motion.div>
         </div>
 
-        {/* B — Parcours : frise verticale */}
+        {/* B · Parcours : frise verticale */}
         <div className="mt-24 md:mt-32">
           <div className="mb-12 flex items-end justify-between border-b border-ivory/15 pb-5">
             <p className="text-[10px] tracking-[0.35em] uppercase text-gold font-medium">

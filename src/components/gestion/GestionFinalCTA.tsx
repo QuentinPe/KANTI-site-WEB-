@@ -1,4 +1,4 @@
-import { motion, useReducedMotion } from 'framer-motion';
+﻿import { motion, useReducedMotion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Calendar, FileText, BarChart2 } from 'lucide-react';
 
@@ -39,7 +39,7 @@ export default function GestionFinalCTA() {
           viewport={{ once: true, margin: '-60px' }}
         >
           <p className="text-[10px] tracking-[0.32em] uppercase text-white/35 mb-6 font-medium">
-            KANTI — Gestion patrimoniale
+            KANTI · Gestion patrimoniale
           </p>
           <h2 className="text-3xl md:text-5xl lg:text-[52px] font-heading font-light text-white leading-[1.08] tracking-tight max-w-3xl mx-auto mb-10">
             Votre allocation doit évoluer avec votre vie, pas avec les effets de mode.

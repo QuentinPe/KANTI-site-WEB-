@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+﻿import { useEffect, useRef } from "react";
 import { motion, useScroll, useTransform, useReducedMotion, MotionValue } from "framer-motion";
 import seq1 from "@/assets/cabinet-seq-01-bordeaux.jpg";
 import seq2 from "@/assets/cabinet-seq-02-triangle.jpg";
@@ -11,7 +11,7 @@ const PLANS = [
     src: seq1,
     alt: "Place de la Bourse à Bordeaux au crépuscule, reflets sur le Miroir d'eau",
     caption: "Une ville qui a inventé le négoce moderne.",
-    place: "Place de la Bourse — Bordeaux",
+    place: "Place de la Bourse · Bordeaux",
   },
   {
     num: "II",
@@ -112,7 +112,7 @@ export default function CabinetHeroSequence() {
           </motion.div>
         ))}
 
-        {/* Navy overlay — DA liquid glass */}
+        {/* Navy overlay · DA liquid glass */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
@@ -147,7 +147,7 @@ export default function CabinetHeroSequence() {
 
         {/* Editorial chrome */}
         <div className="absolute inset-0 flex flex-col justify-between px-6 md:px-12 py-10 md:py-14 text-ivory">
-          {/* Top row — plan numerals as glass pills */}
+          {/* Top row · plan numerals as glass pills */}
           <div className="flex items-start justify-between gap-6">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-dark">
               {PLANS.map((plan, i) => (
@@ -163,7 +163,7 @@ export default function CabinetHeroSequence() {
             <div />
           </div>
 
-          {/* Bottom — caption card + headline */}
+          {/* Bottom · caption card + headline */}
           <div className="max-w-5xl">
             {/* Caption glass card, crossfaded */}
             <div className="relative mb-10 min-h-[128px] md:min-h-[112px]">

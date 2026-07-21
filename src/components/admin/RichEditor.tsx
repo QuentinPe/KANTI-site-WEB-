@@ -1,4 +1,4 @@
-import React, { useRef, useCallback, useState, useEffect } from "react";
+﻿import React, { useRef, useCallback, useState, useEffect } from "react";
 import DOMPurify from "dompurify";
 import { useQuery } from "@tanstack/react-query";
 import { useEditor, EditorContent } from "@tiptap/react";
@@ -349,7 +349,7 @@ export default function RichEditor({ value, onChange, fullscreen = false }: Rich
             <LinkIcon className="w-4 h-4" />
           </Btn>
 
-          {/* Internal article link — new */}
+          {/* Internal article link · new */}
           <div className="relative">
             <button
               type="button"

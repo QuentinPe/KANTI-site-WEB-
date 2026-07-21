@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { X } from "lucide-react";
 
@@ -85,7 +85,7 @@ const FACTORS: Factor[] = [
     name: "Concurrence bancaire",
     shortDesc: "La mise en concurrence améliore les conditions obtenues.",
     detail:
-      "Solliciter plusieurs établissements — via un courtier — crée une pression concurrentielle qui peut améliorer significativement le taux, les frais ou les conditions annexes.",
+      "Solliciter plusieurs établissements · via un courtier · crée une pression concurrentielle qui peut améliorer significativement le taux, les frais ou les conditions annexes.",
     affected: ["Taux", "Frais de dossier", "Conditions"],
   },
   {

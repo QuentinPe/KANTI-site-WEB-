@@ -1,4 +1,4 @@
-import { useRef } from "react";
+﻿import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, MapPin, Mail } from "lucide-react";
@@ -20,7 +20,7 @@ export default function CabinetAdresse() {
       className="relative overflow-hidden bg-white"
       style={{ minHeight: 600 }}
     >
-      {/* Bureau image — parallax */}
+      {/* Bureau image · parallax */}
       <motion.div
         className="absolute inset-0 will-change-transform"
         style={{ y: imageY, scale: 1.12 }}
@@ -34,7 +34,7 @@ export default function CabinetAdresse() {
         />
       </motion.div>
 
-      {/* White gradient — left side, same logic as the hero */}
+      {/* White gradient · left side, same logic as the hero */}
       <div
         aria-hidden
         className="absolute inset-0 pointer-events-none"
@@ -56,7 +56,7 @@ export default function CabinetAdresse() {
         style={{ background: "linear-gradient(to top, hsl(220 30% 97% / 0.9) 0%, transparent 100%)" }}
       />
 
-      {/* Content — left column */}
+      {/* Content · left column */}
       <div className="relative z-10 flex items-center py-20 md:py-28 min-h-[600px]">
         <div className="max-w-6xl mx-auto px-8 md:px-14 w-full">
           <div className="max-w-md">
@@ -106,7 +106,7 @@ export default function CabinetAdresse() {
                   Horaires
                 </p>
                 <p className="text-[hsl(224_40%_30%)] text-[14px] font-light leading-relaxed">
-                  Lundi — Vendredi · 9h00 — 19h00
+                  Lundi · Vendredi · 9h00 · 19h00
                   <br />
                   Sur rendez-vous uniquement
                 </p>
@@ -122,7 +122,7 @@ export default function CabinetAdresse() {
                 </p>
               </div>
 
-              {/* Siège social — discret */}
+              {/* Siège social · discret */}
               <p className="text-[12px] text-[hsl(224_20%_60%)] font-light">
                 Siège social · 9 Rue de la Négresse, 64200 Biarritz
               </p>

@@ -24,7 +24,7 @@ export default function CabinetMasthead() {
           <div className="hidden md:flex col-span-6 items-center justify-center gap-3">
             <span className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse" aria-hidden />
             <p className="text-[11px] tracking-[0.35em] uppercase text-ivory/70 font-medium">
-              Numéro 01 &nbsp;—&nbsp; Le Cabinet &nbsp;·&nbsp; Bordeaux &nbsp;·&nbsp; MMXXVI
+              Numéro 01 &nbsp;·&nbsp; Le Cabinet &nbsp;·&nbsp; Bordeaux &nbsp;·&nbsp; MMXXVI
             </p>
             <span className="w-1.5 h-1.5 rounded-full bg-gold/60" aria-hidden />
           </div>

@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, useMemo } from "react";
+﻿import { useRef, useState, useEffect, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Clock, Calendar, BookOpen, ExternalLink } from "lucide-react";
@@ -263,7 +263,7 @@ export default function ArticleDetailPage() {
               </h1>
             </div>
 
-            {/* Cover image — full width with elegant top cut */}
+            {/* Cover image · full width with elegant top cut */}
             {article.image && (
               <div className="max-w-6xl mx-auto px-6 md:px-12">
                 <div className="rounded-2xl overflow-hidden" style={{ aspectRatio: "21 / 9" }}>
@@ -282,7 +282,7 @@ export default function ArticleDetailPage() {
 
                 {/* Left: article body */}
                 <div>
-                  {/* Excerpt — lead paragraph */}
+                  {/* Excerpt · lead paragraph */}
                   <p className="text-xl font-light leading-relaxed mb-10 pb-10 font-heading"
                     style={{ color: "hsl(218 40% 30%)", borderBottom: "1px solid hsl(224 20% 12% / 0.08)", fontSize: "clamp(1.05rem, 2vw, 1.22rem)" }}>
                     {article.excerpt}

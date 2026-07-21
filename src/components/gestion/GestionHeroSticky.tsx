@@ -1,4 +1,4 @@
-import { useRef } from "react";
+﻿import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
 
@@ -42,7 +42,7 @@ export default function GestionHeroSticky() {
         />
       </motion.div>
 
-      {/* Dark left gradient — keeps white text readable */}
+      {/* Dark left gradient · keeps white text readable */}
       <div
         aria-hidden
         className="absolute inset-0 pointer-events-none"
@@ -62,7 +62,7 @@ export default function GestionHeroSticky() {
         }}
       />
 
-      {/* Editorial content — left column */}
+      {/* Editorial content · left column */}
       <div className="relative z-10 flex items-center h-full">
         <div className="max-w-6xl mx-auto px-8 md:px-14 w-full">
           <div className="max-w-xl">

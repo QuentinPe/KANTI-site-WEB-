@@ -1,4 +1,4 @@
-import ParallaxImage from "@/components/ParallaxImage";
+﻿import ParallaxImage from "@/components/ParallaxImage";
 import bureau1 from "@/assets/cabinet-bureaux-1.jpg";
 import bureau2 from "@/assets/cabinet-bureaux-2.jpg";
 import bureau3 from "@/assets/cabinet-bureaux-3.jpg";
@@ -7,17 +7,17 @@ const NOTES = [
   {
     image: bureau1,
     alt: "Espace de travail collaboratif sous charpente",
-    date: "— Mars 2024",
+    date: "Mars 2024",
     kicker: "L'atelier",
     title: "Sous les charpentes, la lumière du plateau.",
     body:
-      "Un plateau ouvert, deux phone-boxes pour la confidence, une bibliothèque adossée aux dossiers en cours. Le cabinet a été pensé comme un atelier — pas comme une agence.",
+      "Un plateau ouvert, deux phone-boxes pour la confidence, une bibliothèque adossée aux dossiers en cours. Le cabinet a été pensé comme un atelier · pas comme une agence.",
     tag: "Bordeaux · Triangle d'Or",
   },
   {
     image: bureau2,
     alt: "Hall d'entrée vitré du cabinet",
-    date: "— Juin 2024",
+    date: "Juin 2024",
     kicker: "Le seuil",
     title: "Une entrée discrète, choisie.",
     body:
@@ -27,11 +27,11 @@ const NOTES = [
   {
     image: bureau3,
     alt: "Salle de réunion premium",
-    date: "— Novembre 2024",
+    date: "Novembre 2024",
     kicker: "La salle",
     title: "Là où les décisions prennent forme.",
     body:
-      "Pour les audits patrimoniaux, les transmissions, les réunions familiales — une pièce dédiée, feutrée, où l'on peut étaler un dossier complet sur la table et y revenir plusieurs séances de suite.",
+      "Pour les audits patrimoniaux, les transmissions, les réunions familiales · une pièce dédiée, feutrée, où l'on peut étaler un dossier complet sur la table et y revenir plusieurs séances de suite.",
     tag: "Salle de comité",
   },
 ];
@@ -108,7 +108,7 @@ export default function CarnetBordelais() {
                   </p>
                 </div>
 
-                {/* Marginalia — glass card */}
+                {/* Marginalia · glass card */}
                 <aside
                   className={`md:col-span-4 ${flip ? "md:order-1" : "md:order-2"} md:pt-6`}
                 >

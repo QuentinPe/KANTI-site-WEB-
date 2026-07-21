@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+﻿import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import {
@@ -140,10 +140,10 @@ function ChartTooltip({ active, payload, label }: TooltipProps) {
 // ─── Robustness pill ─────────────────────────────────────────────────────────
 
 function RobustnessPill({ ratio }: { ratio: number }) {
-  if (ratio < 0.28) return <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-100">Confortable — {formatPct(ratio)}</span>;
-  if (ratio < 0.33) return <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">Maîtrisée — {formatPct(ratio)}</span>;
-  if (ratio < 0.38) return <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-100">Limitée — {formatPct(ratio)}</span>;
-  return <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-red-50 text-red-700 border border-red-100">Insuffisante — {formatPct(ratio)}</span>;
+  if (ratio < 0.28) return <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-100">Confortable · {formatPct(ratio)}</span>;
+  if (ratio < 0.33) return <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">Maîtrisée · {formatPct(ratio)}</span>;
+  if (ratio < 0.38) return <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-100">Limitée · {formatPct(ratio)}</span>;
+  return <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-red-50 text-red-700 border border-red-100">Insuffisante · {formatPct(ratio)}</span>;
 }
 
 // ─── Main page ────────────────────────────────────────────────────────────────
@@ -222,7 +222,7 @@ export default function SimulateurFinancementPage() {
 
   function saveScenario() {
     if (!result) return;
-    const label = `Scénario ${nextId} — ${form.durationYears} ans · ${(form.annualRate * 100).toFixed(2)} %`;
+    const label = `Scénario ${nextId} · ${form.durationYears} ans · ${(form.annualRate * 100).toFixed(2)} %`;
     setSavedScenarios(prev => [
       ...prev.slice(-2),
       { id: nextId, label, form: { ...form }, monthlyPaymentWithInsurance: result.monthlyPaymentWithInsurance, totalCost: result.totalCost, debtRatio },
@@ -311,7 +311,7 @@ export default function SimulateurFinancementPage() {
         <div className="relative z-10 flex items-end h-full pb-10 px-4 md:px-8">
           <div className="max-w-5xl mx-auto w-full">
             <p className="text-[10px] tracking-[0.32em] uppercase text-white/50 mb-3 font-medium">
-              Outil pédagogique — données simulées
+              Outil pédagogique · données simulées
             </p>
             <h1 className="text-3xl md:text-4xl font-heading font-light text-white leading-tight tracking-tight mb-3 max-w-2xl">
               Simulateur de financement
@@ -320,7 +320,7 @@ export default function SimulateurFinancementPage() {
               Simulez mensualité, coût total et capacité d'emprunt. Comparez plusieurs stratégies et ajustez les paramètres en temps réel.
             </p>
             <p className="text-[11px] text-white/35 italic max-w-xl">
-              Indicatif uniquement — ne constitue pas une offre de prêt ou une recommandation personnalisée.
+              Indicatif uniquement · ne constitue pas une offre de prêt ou une recommandation personnalisée.
             </p>
           </div>
         </div>
@@ -338,7 +338,7 @@ export default function SimulateurFinancementPage() {
 
                 <AnimatePresence mode="wait">
 
-                  {/* Step 1 — Projet */}
+                  {/* Step 1 · Projet */}
                   {step === 1 && (
                     <motion.div
                       key="step1"
@@ -382,7 +382,7 @@ export default function SimulateurFinancementPage() {
                         <label className={labelCls}>Frais d'acquisition (€)</label>
                         <input type="number" value={form.acquisitionFees} step={500} min={0}
                           onChange={e => update("acquisitionFees", Number(e.target.value))} className={inputCls} />
-                        <p className="text-[10px] text-foreground/35 mt-1 italic">Auto-calculé à 8 % — modifiable</p>
+                        <p className="text-[10px] text-foreground/35 mt-1 italic">Auto-calculé à 8 % · modifiable</p>
                       </div>
 
                       <div className="bg-background/60 rounded-xl p-4">
@@ -392,7 +392,7 @@ export default function SimulateurFinancementPage() {
                     </motion.div>
                   )}
 
-                  {/* Step 2 — Financement */}
+                  {/* Step 2 · Financement */}
                   {step === 2 && (
                     <motion.div
                       key="step2"
@@ -455,7 +455,7 @@ export default function SimulateurFinancementPage() {
                     </motion.div>
                   )}
 
-                  {/* Step 3 — Profil */}
+                  {/* Step 3 · Profil */}
                   {step === 3 && (
                     <motion.div
                       key="step3"
@@ -504,7 +504,7 @@ export default function SimulateurFinancementPage() {
                     </motion.div>
                   )}
 
-                  {/* Step 4 — Paramètres */}
+                  {/* Step 4 · Paramètres */}
                   {step === 4 && (
                     <motion.div
                       key="step4"
@@ -527,7 +527,7 @@ export default function SimulateurFinancementPage() {
                         format={v => `${(v * 100).toFixed(2)} %`}
                       />
                       <p className="text-[10px] italic text-foreground/30 -mt-3">
-                        Taux de démonstration — sans lien avec une offre de marché actuelle.
+                        Taux de démonstration · sans lien avec une offre de marché actuelle.
                       </p>
 
                       <div>
@@ -575,7 +575,7 @@ export default function SimulateurFinancementPage() {
                     </motion.div>
                   )}
 
-                  {/* Step 5 — Robustesse */}
+                  {/* Step 5 · Robustesse */}
                   {step === 5 && (
                     <motion.div
                       key="step5"
@@ -629,7 +629,7 @@ export default function SimulateurFinancementPage() {
                       )}
 
                       <p className="text-[11px] italic text-foreground/35">
-                        Indicateur pédagogique — ne constitue pas une décision de financement.
+                        Indicateur pédagogique · ne constitue pas une décision de financement.
                       </p>
                     </motion.div>
                   )}
@@ -675,7 +675,7 @@ export default function SimulateurFinancementPage() {
             <div className="lg:col-span-7 space-y-6">
               <div className="flex items-center gap-2 text-[11px] text-foreground/40 italic">
                 <span className="w-2 h-2 rounded-full bg-amber-400 inline-block" />
-                Données calculées — hypothèses de démonstration — non contractuelles
+                Données calculées · hypothèses de démonstration · non contractuelles
               </div>
 
               {result ? (
@@ -706,7 +706,7 @@ export default function SimulateurFinancementPage() {
                   {/* Amortization chart */}
                   <div className="rounded-2xl border border-foreground/8 bg-white p-5 md:p-6 shadow-sm">
                     <p className="text-[10px] tracking-widest uppercase text-foreground/40 mb-5">
-                      Composition mensuelle — {form.durationYears} ans
+                      Composition mensuelle · {form.durationYears} ans
                     </p>
                     <div className="h-64" role="img" aria-label="Graphique de composition des mensualités">
                       <ResponsiveContainer width="100%" height="100%">

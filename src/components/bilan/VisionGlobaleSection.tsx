@@ -1,4 +1,4 @@
-import { motion, useReducedMotion } from 'framer-motion';
+﻿import { motion, useReducedMotion } from 'framer-motion';
 import { Home, Briefcase, TrendingUp, Heart } from 'lucide-react';
 
 interface SatelliteNode {
@@ -34,14 +34,14 @@ export default function VisionGlobaleSection() {
               01 · Une vision globale
             </p>
             <h2 className="text-3xl md:text-4xl font-heading font-light text-foreground leading-[1.1] tracking-tight mb-6">
-              Patrimoine privé, professionnel, fiscalité, prévoyance —{' '}
+              Patrimoine privé, professionnel, fiscalité, prévoyance :{' '}
               <em style={{ fontStyle: 'italic' }}>une lecture unifiée.</em>
             </h2>
             <p className="text-foreground/65 leading-relaxed font-light text-base mb-4 max-w-lg">
               La plupart des patrimoines souffrent d'une même lacune : chaque compartiment a été constitué séparément, sans vision d'ensemble. Assurance-vie ouverte à une époque, immobilier à une autre, PEA négligé, prévoyance sous-dimensionnée.
             </p>
             <p className="text-foreground/65 leading-relaxed font-light text-base max-w-lg">
-              Le bilan patrimonial rompt avec cette logique de silos. Il reconstruit une image cohérente et chiffrée de votre situation — pour identifier les contradictions, les angles morts et les leviers d'optimisation réels.
+              Le bilan patrimonial rompt avec cette logique de silos. Il reconstruit une image cohérente et chiffrée de votre situation · pour identifier les contradictions, les angles morts et les leviers d'optimisation réels.
             </p>
           </motion.div>
 

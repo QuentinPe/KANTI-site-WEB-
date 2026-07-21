@@ -1,4 +1,4 @@
-import { motion, useReducedMotion } from "framer-motion";
+﻿import { motion, useReducedMotion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 
@@ -29,7 +29,7 @@ export default function FinancingFinalCTA() {
           </h2>
           <p className="text-white/50 font-light text-base leading-relaxed max-w-xl mx-auto mb-12">
             Nous étudions votre projet de financement en cohérence avec
-            l'ensemble de votre patrimoine — taux, assurance, garanties,
+            l'ensemble de votre patrimoine · taux, assurance, garanties,
             trésorerie et stratégie à long terme.
           </p>
 

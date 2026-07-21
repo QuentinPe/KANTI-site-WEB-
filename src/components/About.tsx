@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+﻿import { Link } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import SplitText from "./motion/SplitText";
@@ -57,7 +57,7 @@ export default function About() {
   return (
     <section ref={sectionRef} id="about" className="section-padding texture-paper relative overflow-hidden">
 
-      {/* Top blend — smooth transition from Promesse (navy-deep) to this light section */}
+      {/* Top blend · smooth transition from Promesse (navy-deep) to this light section */}
       <div
         aria-hidden
         className="absolute top-0 left-0 right-0 pointer-events-none"

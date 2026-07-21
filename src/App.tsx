@@ -1,4 +1,4 @@
-import { lazy, Suspense, useLayoutEffect } from "react";
+﻿import { lazy, Suspense, useLayoutEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 
@@ -77,7 +77,7 @@ const AdminLegalList    = lazy(() => import("./pages/admin/AdminLegalList"));
 const AdminLegalForm    = lazy(() => import("./pages/admin/AdminLegalForm"));
 const AdminCategoriesList = lazy(() => import("./pages/admin/AdminCategoriesList"));
 
-// ─── QueryClient — 5 min stale, no refetch on focus ─────────────────────────
+// ─── QueryClient · 5 min stale, no refetch on focus ─────────────────────────
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
