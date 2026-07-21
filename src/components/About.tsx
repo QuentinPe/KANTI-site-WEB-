@@ -55,7 +55,7 @@ export default function About() {
   const ghostOpacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0, 1, 1, 0]);
 
   return (
-    <section ref={sectionRef} id="about" className="section-padding texture-paper relative overflow-hidden">
+    <section ref={sectionRef} id="about" className="section-padding pt-48 lg:pt-64 texture-paper relative overflow-hidden">
 
       {/* Top blend · smooth transition from Promesse (navy-deep) to this light section */}
       <div

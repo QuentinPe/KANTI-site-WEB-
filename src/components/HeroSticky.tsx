@@ -32,8 +32,17 @@ export default function HeroSticky() {
     offset: ["start start", "end end"],
   });
 
-  const titleOpacity = useTransform(scrollYProgress, [0, 0.12, 0.42, 0.62], [1, 1, 0.55, 0]);
-  const titleY = useTransform(scrollYProgress, [0, 0.65], reduce ? [0, 0] : [0, -48]);
+  const titleContainerRef = useRef<HTMLDivElement>(null);
+  const titleOpacity = useTransform(scrollYProgress, [0, 0.08, 0.28, 0.40], [1, 1, 0.3, 0]);
+  const titleY = useTransform(scrollYProgress, [0, 0.48], reduce ? [0, 0] : [0, -200]);
+
+  useEffect(() => {
+    return scrollYProgress.on("change", (p) => {
+      if (titleContainerRef.current) {
+        titleContainerRef.current.style.visibility = p > 0.42 ? "hidden" : "visible";
+      }
+    });
+  }, [scrollYProgress]);
 
   // Preload all frames as <img> elements + drive canvas from scroll
   useEffect(() => {
@@ -235,6 +244,7 @@ export default function HeroSticky() {
 
         {/* Editorial content */}
         <motion.div
+          ref={titleContainerRef}
           style={{ opacity: titleOpacity, y: titleY }}
           className="relative z-10 max-w-6xl mx-auto px-6 pt-44 pb-32 w-full will-change-transform"
         >

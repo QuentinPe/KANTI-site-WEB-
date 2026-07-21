@@ -219,7 +219,7 @@ export default function Header() {
             )}
             <Link
               to="/contact"
-              className={`ml-2 px-5 py-2 rounded-full text-[13px] font-medium tracking-wide transition-all duration-300 ${
+              className={`ml-2 px-5 py-2 rounded-full text-[13px] font-medium tracking-wide whitespace-nowrap transition-all duration-300 ${
                 useDarkGlass
                   ? "btn-glass text-white"
                   : "bg-[hsl(224_60%_18%)] text-white hover:bg-[hsl(224_60%_12%)] shadow-sm hover:shadow-md"
