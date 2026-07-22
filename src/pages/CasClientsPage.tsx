@@ -1,15 +1,16 @@
-﻿import { useMemo, useState, useRef, useEffect } from "react";
+import { useMemo, useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import {
-  Briefcase, Building2, Globe2, Home, Stethoscope, Users,
+  Building2, Globe2, Home, Stethoscope, Users,
   ShieldCheck, TrendingDown, TrendingUp, Coins, X, ArrowRight,
   ChevronLeft, ChevronRight,
+  LayoutGrid, BookOpen, BarChart2, Search, Shield, Zap, Lock, Heart,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import PageCTA from "@/components/PageCTA";
 import Seo, { breadcrumbJsonLd } from "@/components/Seo";
 import { getCasClients } from "@/lib/casClientsService";
 import type { CasClient as DbCasClient } from "@/lib/casClientsService";
@@ -23,6 +24,10 @@ import casExpatrie from "@/assets/cas-expatrie.jpg";
 
 /* ─── Types ─────────────────────────────────────────────────────── */
 type Category = "particulier" | "dirigeant" | "liberal" | "investisseur" | "expatrie";
+type ViewMode = "cartes" | "parcours" | "comparer";
+type ProfileFilter = "Tous" | "Particulier" | "Dirigeant" | "Profession libérale" | "Investisseur" | "Expatrié";
+type ObjectifFilter = "Tous" | "Fiscalité" | "Transmission" | "Trésorerie" | "Retraite" | "International";
+
 interface KPI { label: string; value: string; icon: typeof TrendingDown; }
 interface CasClient {
   category: Category; categoryLabel: string; expertise: string; profil: string;
@@ -30,6 +35,12 @@ interface CasClient {
   diagnostic: string[]; strategie: string[]; resultat: string;
   kpis: KPI[]; vigilance: string; verbatim?: { quote: string; author: string };
 }
+
+/* ─── Style constants ───────────────────────────────────────────── */
+const NAVY      = "hsl(224 60% 18%)";
+const NAVY_TEXT = "hsl(224 55% 12%)";
+const NAVY_MID  = "hsl(224 25% 42%)";
+const CARD_BORDER = "1px solid hsl(224 20% 12% / 0.08)";
 
 /* ─── Mapping DB → affichage ────────────────────────────────────── */
 const CATEGORY_IMAGES: Record<string, string> = {
@@ -41,8 +52,29 @@ function kpiIcon(value: string): typeof TrendingDown {
   if (value.startsWith("−") || value.startsWith("-")) return TrendingDown;
   if (value.startsWith("+")) return TrendingUp;
   if (value === "100 %") return ShieldCheck;
-  if (value.includes("k€") || value.includes("M€") || value.includes("k€")) return Coins;
+  if (value.includes("k€") || value.includes("M€")) return Coins;
   return TrendingUp;
+}
+
+const CATEGORY_ICONS: Record<Category, typeof Users> = {
+  particulier: Users, dirigeant: Building2, liberal: Stethoscope,
+  investisseur: Home, expatrie: Globe2,
+};
+
+const PROFILE_FILTERS: ProfileFilter[] = [
+  "Tous", "Particulier", "Dirigeant", "Profession libérale", "Investisseur", "Expatrié",
+];
+const OBJECTIF_FILTERS: ObjectifFilter[] = [
+  "Tous", "Fiscalité", "Transmission", "Trésorerie", "Retraite", "International",
+];
+
+function deriveObjectif(expertise: string): ObjectifFilter {
+  const e = expertise.toLowerCase();
+  if (e.includes("retraite")) return "Retraite";
+  if (e.includes("trésor") || e.includes("cession")) return "Trésorerie";
+  if (e.includes("impatri") || e.includes("retour en france")) return "International";
+  if (e.includes("transmission") || e.includes("succession")) return "Transmission";
+  return "Fiscalité";
 }
 
 function mapDbToDisplay(d: DbCasClient): CasClient {
@@ -64,31 +96,7 @@ function mapDbToDisplay(d: DbCasClient): CasClient {
   };
 }
 
-/* ─── 3D config par position de carte ───────────────────────────── */
-const CARD_3D = [
-  { ry: -10, rx:  6, z: -12 }, // 0 – haut gauche  (incliné arrière-gauche)
-  { ry:   0, rx:  4, z:  26 }, // 1 – haut centre   (avant)
-  { ry:  10, rx:  6, z: -12 }, // 2 – haut droite   (incliné arrière-droite)
-  { ry:  -8, rx: -6, z:  -6 }, // 3 – bas gauche
-  { ry:   0, rx: -4, z:  32 }, // 4 – bas centre    (avant, le plus proche)
-  { ry:   8, rx: -6, z:  -6 }, // 5 – bas droite
-];
-
 /* ─── Données ───────────────────────────────────────────────────── */
-const CATEGORY_ICONS: Record<Category, typeof Users> = {
-  particulier: Users, dirigeant: Building2, liberal: Stethoscope,
-  investisseur: Home, expatrie: Globe2,
-};
-
-const categories = [
-  { id: "tous" as const,         label: "Tous",         icon: Briefcase   },
-  { id: "particulier" as const,  label: "Particulier",  icon: Users       },
-  { id: "dirigeant" as const,    label: "Dirigeant",    icon: Building2   },
-  { id: "liberal" as const,      label: "Libéral",      icon: Stethoscope },
-  { id: "investisseur" as const, label: "Investisseur", icon: Home        },
-  { id: "expatrie" as const,     label: "Expatrié",     icon: Globe2      },
-];
-
 const CAS_CLIENTS_FALLBACK: CasClient[] = [
   {
     category: "particulier", categoryLabel: "Particulier",
@@ -190,111 +198,6 @@ const CAS_CLIENTS_FALLBACK: CasClient[] = [
     vigilance: "Le retour en France impose des déclarations spécifiques (formulaire 3916, déclaration de patrimoine IFI). Le non-respect expose à des pénalités significatives.",
   },
 ];
-
-/* ─── FloatingCard · style "ecosystem 3D" ──────────────────────── */
-function FloatingCard({ cas, index, onClick }: { cas: CasClient; index: number; onClick: () => void }) {
-  const Icon    = CATEGORY_ICONS[cas.category];
-  const mainKpi = cas.kpis[0];
-  const cfg     = CARD_3D[index % CARD_3D.length];
-
-  const floatY        = 6 + (index % 3) * 3;
-  const floatDuration = 8.5 + index * 0.9;
-  const floatDelay    = index * 1.2;
-
-  /* Shadow varies with Z depth */
-  const shadowDepth = (cfg.z + 15) / 50; // 0→1
-  const shadowSize  = 18 + shadowDepth * 28;
-  const shadowAlpha = (0.10 + shadowDepth * 0.12).toFixed(2);
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 40 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.92 }}
-      transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1], delay: index * 0.09 }}
-    >
-      <motion.button
-        type="button"
-        onClick={onClick}
-        /* 3D base position + continuous float */
-        animate={{
-          y: [0, -floatY, 0],
-          rotateY: cfg.ry,
-          rotateX: cfg.rx,
-          z: cfg.z,
-        }}
-        transition={{
-          y:       { duration: floatDuration, repeat: Infinity, delay: floatDelay, ease: "easeInOut" },
-          rotateY: { duration: 0.01 },
-          rotateX: { duration: 0.01 },
-          z:       { duration: 0.01 },
-        }}
-        /* Hover: flatten + surge forward */
-        whileHover={{
-          y: -22, rotateY: 0, rotateX: 0, z: 60, scale: 1.04,
-          transition: { duration: 0.42, ease: [0.22, 1, 0.36, 1] },
-        }}
-        whileTap={{ scale: 0.97, transition: { duration: 0.1 } }}
-        className="group w-full text-left flex flex-col focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(224_55%_32%)]"
-        style={{
-          transformPerspective: 900,
-          padding: "28px",
-          minHeight: "236px",
-          borderRadius: "28px",
-          background: "linear-gradient(145deg, hsl(0 0% 100% / 0.86) 0%, hsl(218 28% 97% / 0.76) 100%)",
-          backdropFilter: "blur(28px) saturate(180%)",
-          WebkitBackdropFilter: "blur(28px) saturate(180%)",
-          border: "none",
-          boxShadow:
-            `0 ${shadowSize * 0.55}px ${shadowSize}px -8px hsl(224 40% 18% / ${shadowAlpha}),` +
-            "inset 0 1px 0 hsl(0 0% 100% / 0.94)," +
-            "inset 0 -1px 0 hsl(224 30% 60% / 0.06)",
-        }}
-      >
-        {/* Category badge + icon */}
-        <div className="flex items-start justify-between mb-5">
-          <span className="text-[10px] tracking-[0.26em] uppercase font-medium px-2.5 py-1.5 rounded-full"
-            style={{ background: "hsl(224 55% 18% / 0.07)", color: "hsl(224 50% 32%)" }}>
-            {cas.categoryLabel}
-          </span>
-          <div className="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 transition-colors duration-300 group-hover:bg-[hsl(224_55%_18%/0.10)]"
-            style={{ background: "hsl(224 55% 18% / 0.06)", border: "1px solid hsl(224 28% 30% / 0.10)" }}>
-            <Icon className="w-[18px] h-[18px]" style={{ color: "hsl(224 55% 32%)" }} strokeWidth={1.5} />
-          </div>
-        </div>
-
-        {/* Title + expertise */}
-        <h3 className="font-heading text-[17px] md:text-[19px] font-light leading-snug tracking-tight mb-2 transition-colors duration-300 group-hover:text-[hsl(224_55%_22%)]"
-          style={{ color: "hsl(224 60% 10%)" }}>
-          {cas.profil}
-        </h3>
-        <p className="text-[12px] font-light leading-relaxed mb-6" style={{ color: "hsl(224 20% 50%)" }}>
-          {cas.expertise}
-        </p>
-
-        {/* Bottom: main KPI + link */}
-        <div className="mt-auto w-full pt-5 flex items-end justify-between"
-          style={{ borderTop: "1px solid hsl(224 20% 12% / 0.07)" }}>
-          {mainKpi ? (
-            <div>
-              <p className="text-[9px] tracking-[0.22em] uppercase font-medium mb-1" style={{ color: "hsl(224 15% 58%)" }}>
-                {mainKpi.label}
-              </p>
-              <p className="font-heading text-2xl font-light tracking-tight tabular-nums leading-none" style={{ color: "hsl(224 55% 12%)" }}>
-                {mainKpi.value}
-              </p>
-            </div>
-          ) : <div />}
-          <div className="flex items-center gap-1.5 text-[11px] font-medium tracking-wide opacity-40 transition-opacity duration-300 group-hover:opacity-100"
-            style={{ color: "hsl(224 50% 30%)" }}>
-            <span>Voir le cas</span>
-            <ArrowRight className="w-3 h-3 transition-transform duration-300 group-hover:translate-x-0.5" strokeWidth={2} />
-          </div>
-        </div>
-      </motion.button>
-    </motion.div>
-  );
-}
 
 /* ─── CaseModal ─────────────────────────────────────────────────── */
 function CaseModal({
@@ -552,68 +455,197 @@ function CaseModal({
   );
 }
 
-/* ─── CategoryFilter ────────────────────────────────────────────── */
-function CategoryFilter({ active, onChange, counts, total }: {
-  active: Category | "tous"; onChange: (id: Category | "tous") => void; counts: Record<string, number>; total: number;
+/* ─── CaseCard (new design) ─────────────────────────────────────── */
+function CaseCard({
+  cas, viewMode, isCompareSelected, onToggleCompare, onClick,
+}: {
+  cas: CasClient;
+  viewMode: ViewMode;
+  isCompareSelected: boolean;
+  onToggleCompare: () => void;
+  onClick: () => void;
 }) {
+  const mainKpi = cas.kpis[0];
+
   return (
-    <div className="flex flex-wrap gap-2">
-      {categories.map((cat) => {
-        const Icon     = cat.icon;
-        const isActive = active === cat.id;
-        const count    = cat.id === "tous" ? total : (counts[cat.id] ?? 0);
-        return (
-          <button key={cat.id} type="button" onClick={() => onChange(cat.id)} aria-pressed={isActive}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-[12px] font-medium tracking-wide transition-all duration-300"
+    <motion.article
+      layout
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      whileHover={{ y: -4 }}
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      className="group relative bg-white rounded-2xl overflow-hidden flex flex-col"
+      style={{
+        border: CARD_BORDER,
+        boxShadow: "0 4px 20px -6px hsl(224 40% 18% / 0.08)",
+        cursor: viewMode === "comparer" ? "default" : "pointer",
+      }}
+      onClick={viewMode !== "comparer" ? onClick : undefined}
+    >
+      {/* Image area */}
+      <div className="relative overflow-hidden" style={{ aspectRatio: "3 / 2" }}>
+        <img
+          src={cas.image} alt="" aria-hidden
+          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+        />
+        {/* Gradient overlay */}
+        <div
+          className="absolute inset-0"
+          style={{ background: "linear-gradient(to top, hsl(224 40% 8% / 0.52) 0%, transparent 55%)" }}
+        />
+        {/* Category chip — bottom-left */}
+        <div className="absolute bottom-3 left-3">
+          <span
+            className="text-[9px] tracking-[0.24em] uppercase font-semibold px-2.5 py-1.5 rounded-full"
             style={{
-              background: isActive ? "hsl(224 60% 18%)" : "hsl(0 0% 100% / 0.68)",
-              color: isActive ? "white" : "hsl(224 25% 40%)",
-              border: `1px solid ${isActive ? "hsl(224 60% 18%)" : "hsl(0 0% 100% / 0.55)"}`,
-              backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)",
-              boxShadow: isActive ? "0 4px 14px -4px hsl(224 60% 18% / 0.30)" : "0 2px 8px -4px hsl(224 20% 20% / 0.07)",
-            }}>
-            <Icon className="w-3.5 h-3.5" />
-            <span>{cat.label}</span>
-            <span className="text-[10px] tabular-nums px-1.5 py-0.5 rounded-full"
-              style={{ background: isActive ? "hsl(0 0% 100% / 0.18)" : "hsl(224 20% 12% / 0.07)", color: isActive ? "hsl(0 0% 100% / 0.85)" : "hsl(224 20% 55%)" }}>
-              {count}
-            </span>
+              background: "hsl(0 0% 100% / 0.92)",
+              color: NAVY,
+              backdropFilter: "blur(8px)",
+            }}
+          >
+            {cas.categoryLabel.toUpperCase()}
+          </span>
+        </div>
+        {/* Compare checkbox (comparer mode) — top-right */}
+        {viewMode === "comparer" && (
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); onToggleCompare(); }}
+            className="absolute top-3 right-3 w-7 h-7 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110"
+            style={{
+              background: isCompareSelected ? NAVY : "hsl(0 0% 100% / 0.92)",
+              border: `2px solid ${isCompareSelected ? NAVY : "hsl(224 20% 12% / 0.22)"}`,
+              backdropFilter: "blur(8px)",
+            }}
+            aria-label={isCompareSelected ? "Désélectionner" : "Sélectionner pour comparer"}
+          >
+            {isCompareSelected && (
+              <span className="text-white text-[11px] font-bold leading-none">✓</span>
+            )}
           </button>
-        );
-      })}
-    </div>
+        )}
+      </div>
+
+      {/* Body */}
+      <div className="flex flex-col flex-1 p-5">
+        <h3
+          className="font-heading text-[17px] font-light leading-snug tracking-tight mb-1.5 transition-colors duration-300 group-hover:text-[hsl(224_60%_22%)]"
+          style={{ color: NAVY_TEXT }}
+        >
+          {cas.profil}
+        </h3>
+        <p className="text-[12px] font-light leading-relaxed mb-4" style={{ color: NAVY_MID }}>
+          {cas.expertise}
+        </p>
+
+        {/* Main KPI */}
+        {mainKpi && (
+          <div className="mb-4">
+            <p className="text-[9px] tracking-[0.22em] uppercase font-medium mb-1" style={{ color: "hsl(224 15% 58%)" }}>
+              {mainKpi.label}
+            </p>
+            <p className="font-heading text-2xl font-light tracking-tight tabular-nums leading-none" style={{ color: NAVY_TEXT }}>
+              {mainKpi.value}
+            </p>
+          </div>
+        )}
+
+        {/* Footer */}
+        <div className="mt-auto pt-4 flex items-center justify-between" style={{ borderTop: CARD_BORDER }}>
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); onClick(); }}
+            className="inline-flex items-center gap-1.5 text-[12px] font-medium tracking-wide transition-all duration-200 hover:gap-3"
+            style={{ color: NAVY }}
+          >
+            Découvrir le cas
+            <ArrowRight className="w-3.5 h-3.5 transition-transform duration-200" strokeWidth={1.8} />
+          </button>
+        </div>
+      </div>
+    </motion.article>
   );
 }
 
 /* ─── Page ──────────────────────────────────────────────────────── */
 export default function CasClientsPage() {
   useScrollReveal();
-  const [active, setActive]     = useState<Category | "tous">("tous");
-  const [selected, setSelected] = useState<CasClient | null>(null);
 
+  /* ── State ── */
+  const [viewMode, setViewMode]           = useState<ViewMode>("cartes");
+  const [activeProfile, setActiveProfile] = useState<ProfileFilter>("Tous");
+  const [activeObjectif, setActiveObjectif] = useState<ObjectifFilter>("Tous");
+  const [searchQuery, setSearchQuery]     = useState("");
+  const [compareIds, setCompareIds]       = useState<Set<string>>(new Set());
+  const [selected, setSelected]           = useState<CasClient | null>(null);
+
+  /* ── Parallax ── */
   const heroRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const imageY = useTransform(scrollYProgress, [0, 1], ["0%", "22%"]);
 
+  /* ── Data ── */
   const { data: dbCas } = useQuery({ queryKey: ["cas-clients"], queryFn: getCasClients });
 
   const casClients = useMemo(
-    () => dbCas && dbCas.length > 0 ? dbCas.map(mapDbToDisplay) : CAS_CLIENTS_FALLBACK,
-    [dbCas]
+    () => (dbCas && dbCas.length > 0 ? dbCas.map(mapDbToDisplay) : CAS_CLIENTS_FALLBACK),
+    [dbCas],
   );
 
-  const counts   = useMemo(() => casClients.reduce<Record<string, number>>((acc, c) => { acc[c.category] = (acc[c.category] ?? 0) + 1; return acc; }, {}), [casClients]);
-  const filtered = useMemo(() => active === "tous" ? casClients : casClients.filter((c) => c.category === active), [active, casClients]);
+  const filtered = useMemo(() => {
+    let result = casClients;
+    if (activeProfile !== "Tous") {
+      result = result.filter((c) => c.categoryLabel === activeProfile);
+    }
+    if (activeObjectif !== "Tous") {
+      result = result.filter((c) => deriveObjectif(c.expertise) === activeObjectif);
+    }
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter(
+        (c) =>
+          c.profil.toLowerCase().includes(q) ||
+          c.expertise.toLowerCase().includes(q) ||
+          c.contexte.toLowerCase().includes(q),
+      );
+    }
+    return result;
+  }, [casClients, activeProfile, activeObjectif, searchQuery]);
 
+  /* ── Modal navigation ── */
   const selectedIndex = selected ? filtered.indexOf(selected) : -1;
   const onPrev = () => { if (selectedIndex > 0) setSelected(filtered[selectedIndex - 1]); };
   const onNext = () => { if (selectedIndex < filtered.length - 1) setSelected(filtered[selectedIndex + 1]); };
 
-  const stats = [
-    { value: "180+",   label: "Familles accompagnées"       },
-    { value: "12 ans", label: "D'expérience moyenne"        },
-    { value: "97 %",   label: "Taux de fidélisation"        },
-    { value: "30+",    label: "Partenaires institutionnels" },
+  /* ── Compare toggle ── */
+  function toggleCompare(profil: string) {
+    setCompareIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(profil)) {
+        next.delete(profil);
+      } else if (next.size < 2) {
+        next.add(profil);
+      }
+      return next;
+    });
+  }
+
+  const featuredCase = casClients[1]; // Couple avec transmission — −180 k€ · 1,8 M€
+  const compareArr   = Array.from(compareIds);
+  const compareCases = compareArr
+    .map((id) => casClients.find((c) => c.profil === id))
+    .filter(Boolean) as CasClient[];
+
+  /* ── Steps for progress bar ── */
+  const STEPS = ["Contexte", "Diagnostic", "Stratégie", "Résultats"];
+
+  /* ── Trust badges ── */
+  const TRUST_BADGES = [
+    { icon: Shield, label: "Cabinet indépendant" },
+    { icon: Zap,    label: "Réponse sous 24h" },
+    { icon: Lock,   label: "Données confidentielles" },
+    { icon: Heart,  label: "100 % dédié à vos intérêts" },
   ];
 
   return (
@@ -625,119 +657,763 @@ export default function CasClientsPage() {
       />
       <Header />
 
-      {/* ── Hero ── */}
-      <section ref={heroRef} className="relative overflow-hidden" style={{ minHeight: "68vh" }}>
+      {/* ── HERO ──────────────────────────────────────────────────── */}
+      <section
+        ref={heroRef}
+        className="relative overflow-hidden"
+        style={{ minHeight: "100vh", background: "hsl(220 25% 97%)" }}
+      >
+        {/* Parallax background */}
         <motion.div className="absolute inset-0 will-change-transform" style={{ y: imageY, scale: 1.14 }}>
           <img src={heroBg} alt="" aria-hidden className="w-full h-full object-cover object-center" fetchPriority="high" />
         </motion.div>
-        <div aria-hidden className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(105deg, hsl(0 0% 100% / 0.98) 0%, hsl(0 0% 100% / 0.92) 28%, hsl(0 0% 100% / 0.60) 52%, hsl(0 0% 100% / 0.08) 70%, transparent 82%)" }} />
-        <div aria-hidden className="absolute inset-x-0 bottom-0 h-36 pointer-events-none" style={{ background: "linear-gradient(to top, hsl(0 0% 100%) 0%, transparent 100%)" }} />
-        <div className="relative z-10 flex items-center min-h-[68vh] py-28 lg:py-36">
+        {/* Gradient — left text readable, right fades to image */}
+        <div
+          aria-hidden
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              "linear-gradient(105deg, hsl(220 25% 97% / 0.98) 0%, hsl(220 25% 97% / 0.92) 28%, hsl(220 25% 97% / 0.60) 52%, hsl(220 25% 97% / 0.12) 70%, transparent 84%)",
+          }}
+        />
+        <div
+          aria-hidden
+          className="absolute inset-x-0 bottom-0 h-36 pointer-events-none"
+          style={{ background: "linear-gradient(to top, hsl(220 25% 97%) 0%, transparent 100%)" }}
+        />
+
+        {/* Content */}
+        <div className="relative z-10 flex items-center min-h-screen py-28 lg:py-36">
           <div className="max-w-6xl mx-auto px-8 md:px-14 w-full">
-            <div className="max-w-[520px]">
-              <motion.div className="flex items-center gap-2 mb-7" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 0.1 }}>
-                <span className="w-5 h-[2px]" style={{ background: "hsl(224 60% 22%)" }} />
-                <p className="text-[11px] tracking-[0.32em] uppercase font-medium" style={{ color: "hsl(224 60% 22%)" }}>Études de cas · Transparence</p>
-              </motion.div>
-              <motion.h1 className="font-heading font-light leading-[1.04] tracking-tight mb-6"
-                style={{ fontSize: "clamp(2.6rem, 5.5vw, 4rem)", color: "hsl(224 60% 12%)" }}
-                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}>
-                Six situations<br />
-                <span className="italic" style={{ color: "hsl(224 55% 30%)" }}>réelles.</span>
-              </motion.h1>
-              <motion.p className="text-[15px] font-light leading-relaxed mb-8" style={{ color: "hsl(224 25% 32%)" }}
-                initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}>
-                Contexte, diagnostic, stratégie et résultats chiffrés. Pour comprendre comment KANTI construit une solution patrimoniale sur mesure.
-              </motion.p>
-              <motion.p className="text-[12px] font-light tracking-wide" style={{ color: "hsl(224 18% 55%)" }}
-                initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 0.5 }}>
-                6 cas · Anonymisés · Chiffrés
-              </motion.p>
-            </div>
-          </div>
-        </div>
-      </section>
+            <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
 
-      {/* ── Intro + stats ── */}
-      <section className="bg-white section-padding">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 items-end mb-16 reveal">
-            <div className="lg:col-span-6">
-              <h2 className="text-3xl md:text-5xl font-heading font-light leading-[1.05] tracking-tight" style={{ color: "hsl(224 55% 12%)" }}>
-                Des situations réelles,<br />
-                <span className="italic" style={{ color: "hsl(224 25% 40%)" }}>rigoureusement anonymisées</span>.
-              </h2>
-            </div>
-            <div className="lg:col-span-6 lg:pl-10 lg:border-l" style={{ borderColor: "hsl(224 20% 12% / 0.10)" }}>
-              <p className="text-base md:text-lg leading-relaxed font-light" style={{ color: "hsl(224 15% 40%)" }}>
-                Chaque cas présenté ici s'inspire d'un dossier réel suivi par le cabinet. Les noms, montants et secteurs ont été modifiés pour préserver la confidentialité absolue de nos clients, sans altérer la logique patrimoniale ni les résultats obtenus.
-              </p>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-px rounded-2xl overflow-hidden reveal"
-            style={{ background: "hsl(224 20% 12% / 0.07)", border: "1px solid hsl(224 20% 12% / 0.07)" }}>
-            {stats.map((s) => (
-              <div key={s.label} className="bg-white p-7 md:p-9">
-                <p className="font-heading text-3xl md:text-5xl font-light tracking-tight tabular-nums leading-none mb-3" style={{ color: "hsl(224 55% 12%)" }}>{s.value}</p>
-                <p className="text-[10px] md:text-[11px] tracking-[0.22em] uppercase font-medium" style={{ color: "hsl(224 20% 52%)" }}>{s.label}</p>
+              {/* Left col */}
+              <div className="lg:col-span-5">
+                {/* Eyebrow */}
+                <motion.p
+                  className="text-[10px] tracking-[0.30em] uppercase font-semibold mb-6"
+                  style={{ color: NAVY_MID }}
+                  initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                  transition={{ duration: 0.6, delay: 0.1 }}
+                >
+                  ÉTUDES DE CAS · STRATÉGIES RÉELLES
+                </motion.p>
+
+                {/* H1 */}
+                <motion.h1
+                  className="font-heading font-light leading-[1.05] tracking-tight mb-6"
+                  style={{ fontSize: "clamp(2.4rem, 5vw, 3.6rem)", color: NAVY_TEXT }}
+                  initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  Explorez des trajectoires patrimoniales{" "}
+                  <span className="italic" style={{ color: "hsl(38 70% 36%)" }}>réelles</span>
+                </motion.h1>
+
+                {/* Description */}
+                <motion.p
+                  className="text-[15px] font-light leading-relaxed mb-10"
+                  style={{ color: "hsl(224 25% 38%)" }}
+                  initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  Chaque cas présente le contexte, le diagnostic, la stratégie mise en œuvre et les résultats chiffrés obtenus pour nos clients.
+                </motion.p>
+
+                {/* View mode toggle */}
+                <motion.div
+                  className="flex flex-wrap gap-2"
+                  initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.7, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  {(
+                    [
+                      { id: "cartes"   as const, label: "Cartes",   Icon: LayoutGrid },
+                      { id: "parcours" as const, label: "Parcours", Icon: BookOpen   },
+                      { id: "comparer" as const, label: "Comparer", Icon: BarChart2  },
+                    ] as { id: ViewMode; label: string; Icon: typeof LayoutGrid }[]
+                  ).map(({ id, label, Icon }) => {
+                    const isActive = viewMode === id;
+                    return (
+                      <button
+                        key={id}
+                        type="button"
+                        onClick={() => setViewMode(id)}
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-[12px] font-medium tracking-wide transition-all duration-300"
+                        style={{
+                          background: isActive ? NAVY : "hsl(0 0% 100% / 0.72)",
+                          color: isActive ? "white" : NAVY_MID,
+                          border: `1px solid ${isActive ? NAVY : "hsl(224 20% 12% / 0.14)"}`,
+                          backdropFilter: "blur(12px)",
+                          boxShadow: isActive ? `0 4px 14px -4px ${NAVY}4D` : "0 2px 8px -4px hsl(224 20% 20% / 0.07)",
+                        }}
+                      >
+                        <Icon className="w-3.5 h-3.5" strokeWidth={1.75} />
+                        {label}
+                      </button>
+                    );
+                  })}
+                </motion.div>
               </div>
-            ))}
+
+              {/* Right col — stacked preview cards */}
+              <div className="lg:col-span-7 hidden lg:block">
+                <div className="relative" style={{ height: 460 }}>
+
+                  {/* Card 1 — back-left (Chef d'entreprise) */}
+                  <motion.div
+                    whileHover={{ y: -8 }}
+                    transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                    onClick={() => setSelected(casClients[2])}
+                    className="absolute cursor-pointer"
+                    style={{
+                      top: 72, left: 0, width: "64%",
+                      transform: "rotate(-8deg)",
+                      zIndex: 1,
+                      borderRadius: 24,
+                      background: "linear-gradient(145deg, hsl(0 0% 100% / 0.82) 0%, hsl(218 28% 97% / 0.72) 100%)",
+                      backdropFilter: "blur(24px) saturate(180%)",
+                      WebkitBackdropFilter: "blur(24px) saturate(180%)",
+                      border: "1px solid hsl(0 0% 100% / 0.60)",
+                      boxShadow: "0 12px 40px -10px hsl(224 40% 18% / 0.14), inset 0 1px 0 hsl(0 0% 100% / 0.90)",
+                      padding: "24px 28px",
+                    }}
+                  >
+                    <p className="font-heading text-3xl font-light tracking-tight tabular-nums mb-1" style={{ color: NAVY_TEXT }}>+3,2 %/an</p>
+                    <p className="text-[10px] tracking-[0.24em] uppercase font-medium mb-4" style={{ color: "hsl(224 15% 58%)" }}>Rendement cible</p>
+                    <div className="flex items-center justify-between pt-4" style={{ borderTop: "1px solid hsl(224 20% 12% / 0.08)" }}>
+                      <span className="text-[11px] font-medium" style={{ color: NAVY_MID }}>Chef d'entreprise</span>
+                      <span className="text-[11px] font-medium flex items-center gap-1" style={{ color: NAVY }}>
+                        Voir le cas <ArrowRight className="w-3 h-3" strokeWidth={2} />
+                      </span>
+                    </div>
+                  </motion.div>
+
+                  {/* Card 2 — center, featured (CAS DU MOIS) */}
+                  <motion.div
+                    whileHover={{ y: -8 }}
+                    transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                    onClick={() => setSelected(casClients[1])}
+                    className="absolute cursor-pointer"
+                    style={{
+                      top: 16, left: "14%", width: "80%",
+                      transform: "rotate(-1.5deg)",
+                      zIndex: 3,
+                      borderRadius: 24,
+                      background: "linear-gradient(145deg, hsl(0 0% 100% / 0.96) 0%, hsl(218 22% 98% / 0.92) 100%)",
+                      backdropFilter: "blur(32px) saturate(200%)",
+                      WebkitBackdropFilter: "blur(32px) saturate(200%)",
+                      border: "1px solid hsl(0 0% 100% / 0.80)",
+                      boxShadow: "0 24px 60px -12px hsl(224 40% 18% / 0.20), inset 0 1px 0 hsl(0 0% 100% / 0.95)",
+                      padding: "28px 32px",
+                    }}
+                  >
+                    <div className="flex items-center justify-between mb-5">
+                      <span
+                        className="text-[9px] tracking-[0.28em] uppercase font-semibold px-3 py-1.5 rounded-full"
+                        style={{ background: "hsl(42 90% 48% / 0.12)", color: "hsl(38 70% 36%)" }}
+                      >
+                        CAS DU MOIS
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-6 mb-5">
+                      <div>
+                        <p className="font-heading text-3xl font-light tracking-tight tabular-nums mb-1" style={{ color: NAVY_TEXT }}>−180 k€</p>
+                        <p className="text-[10px] tracking-[0.22em] uppercase font-medium" style={{ color: "hsl(224 15% 58%)" }}>Droits évités</p>
+                      </div>
+                      <div>
+                        <p className="font-heading text-3xl font-light tracking-tight tabular-nums mb-1" style={{ color: NAVY_TEXT }}>1,8 M€</p>
+                        <p className="text-[10px] tracking-[0.22em] uppercase font-medium" style={{ color: "hsl(224 15% 58%)" }}>Patrimoine sécurisé</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between pt-5" style={{ borderTop: "1px solid hsl(224 20% 12% / 0.08)" }}>
+                      <span className="text-[11px] font-medium" style={{ color: NAVY_MID }}>Couple · Transmission</span>
+                      <span className="text-[11px] font-medium flex items-center gap-1" style={{ color: NAVY }}>
+                        Voir le cas <ArrowRight className="w-3 h-3" strokeWidth={2} />
+                      </span>
+                    </div>
+                  </motion.div>
+
+                  {/* Card 3 — front-right (Expatrié retour) */}
+                  <motion.div
+                    whileHover={{ y: -8 }}
+                    transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                    onClick={() => setSelected(casClients[5])}
+                    className="absolute cursor-pointer"
+                    style={{
+                      top: 88, right: 0, width: "64%",
+                      transform: "rotate(7deg)",
+                      zIndex: 2,
+                      borderRadius: 24,
+                      background: "linear-gradient(145deg, hsl(0 0% 100% / 0.86) 0%, hsl(218 28% 97% / 0.76) 100%)",
+                      backdropFilter: "blur(24px) saturate(180%)",
+                      WebkitBackdropFilter: "blur(24px) saturate(180%)",
+                      border: "1px solid hsl(0 0% 100% / 0.65)",
+                      boxShadow: "0 16px 50px -10px hsl(224 40% 18% / 0.16), inset 0 1px 0 hsl(0 0% 100% / 0.90)",
+                      padding: "24px 28px",
+                    }}
+                  >
+                    <p className="font-heading text-3xl font-light tracking-tight tabular-nums mb-1" style={{ color: NAVY_TEXT }}>−310 k€</p>
+                    <p className="text-[10px] tracking-[0.24em] uppercase font-medium mb-4" style={{ color: "hsl(224 15% 58%)" }}>Économie sur 8 ans</p>
+                    <div className="flex items-center justify-between pt-4" style={{ borderTop: "1px solid hsl(224 20% 12% / 0.08)" }}>
+                      <span className="text-[11px] font-medium" style={{ color: NAVY_MID }}>Expatrié · Retour en France</span>
+                      <span className="text-[11px] font-medium flex items-center gap-1" style={{ color: NAVY }}>
+                        Voir le cas <ArrowRight className="w-3 h-3" strokeWidth={2} />
+                      </span>
+                    </div>
+                  </motion.div>
+
+                </div>
+              </div>
+
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ── Ecosystem 3D floating cards ── */}
-      <section
-        className="relative overflow-hidden pb-24 md:pb-32"
-        style={{ background: "linear-gradient(155deg, hsl(214 55% 94%) 0%, hsl(220 38% 96.5%) 50%, hsl(210 50% 93.5%) 100%)" }}
-      >
-        {/* Depth orbs */}
-        <div aria-hidden className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-24 left-1/4 w-96 h-96 rounded-full opacity-35"
-            style={{ background: "radial-gradient(circle, hsl(214 75% 84%) 0%, transparent 70%)", filter: "blur(70px)" }} />
-          <div className="absolute top-64 right-[20%] w-80 h-80 rounded-full opacity-28"
-            style={{ background: "radial-gradient(circle, hsl(220 65% 80%) 0%, transparent 70%)", filter: "blur(55px)" }} />
-          <div className="absolute bottom-24 left-[30%] w-72 h-72 rounded-full opacity-22"
-            style={{ background: "radial-gradient(circle, hsl(210 72% 86%) 0%, transparent 70%)", filter: "blur(48px)" }} />
-          <div className="absolute top-40 right-[35%] w-60 h-60 rounded-full opacity-18"
-            style={{ background: "radial-gradient(circle, hsl(200 60% 88%) 0%, transparent 70%)", filter: "blur(44px)" }} />
-        </div>
+      {/* ── STICKY FILTER BAR ─────────────────────────────────────── */}
+      <div className="sticky z-40 py-3" style={{ top: 72, background: "hsl(220 25% 97%)" }}>
+        <div className="max-w-6xl mx-auto px-8 md:px-14">
+          <div
+            className="rounded-2xl px-5 py-4"
+            style={{
+              background: "hsl(0 0% 100% / 0.96)",
+              backdropFilter: "blur(14px)",
+              border: "1px solid hsl(224 20% 12% / 0.08)",
+              boxShadow: "0 2px 16px -4px hsl(224 60% 12% / 0.07)",
+            }}
+          >
+            <div className="grid lg:grid-cols-[1fr_auto] gap-4 items-start">
+              {/* Filter rows */}
+              <div className="space-y-3">
+                {/* Row 1: Profil */}
+                <div className="flex items-center gap-3 flex-wrap">
+                  <span
+                    className="text-[9px] tracking-[0.28em] uppercase font-semibold flex-shrink-0"
+                    style={{ color: NAVY_MID }}
+                  >
+                    PROFIL
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {PROFILE_FILTERS.map((p) => {
+                      const isActive = activeProfile === p;
+                      return (
+                        <button
+                          key={p}
+                          type="button"
+                          onClick={() => setActiveProfile(p)}
+                          className="px-3 py-1.5 rounded-full text-[11px] font-medium tracking-wide transition-all duration-200"
+                          style={{
+                            background: isActive ? NAVY : "transparent",
+                            color: isActive ? "white" : NAVY_MID,
+                            border: `1px solid ${isActive ? "transparent" : "hsl(224 20% 86%)"}`,
+                          }}
+                        >
+                          {p}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
 
-        <div className="relative max-w-6xl mx-auto px-8 md:px-14 pt-16 md:pt-20">
-          {/* Filters */}
-          <div className="mb-14 reveal">
-            <p className="text-[11px] tracking-[0.3em] uppercase font-medium mb-4" style={{ color: "hsl(224 28% 45%)" }}>
-              Filtrer par profil
-            </p>
-            <CategoryFilter active={active} onChange={(id) => { setActive(id); setSelected(null); }} counts={counts} total={casClients.length} />
-          </div>
+                {/* Row 2: Objectif */}
+                <div className="flex items-center gap-3 flex-wrap">
+                  <span
+                    className="text-[9px] tracking-[0.28em] uppercase font-semibold flex-shrink-0"
+                    style={{ color: NAVY_MID }}
+                  >
+                    OBJECTIF
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {OBJECTIF_FILTERS.map((o) => {
+                      const isActive = activeObjectif === o;
+                      return (
+                        <button
+                          key={o}
+                          type="button"
+                          onClick={() => setActiveObjectif(o)}
+                          className="px-3 py-1.5 rounded-full text-[11px] font-medium tracking-wide transition-all duration-200"
+                          style={{
+                            background: isActive ? NAVY : "transparent",
+                            color: isActive ? "white" : NAVY_MID,
+                            border: `1px solid ${isActive ? "transparent" : "hsl(224 20% 86%)"}`,
+                          }}
+                        >
+                          {o}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
 
-          {/* 3D perspective container */}
-          <div style={{ perspective: "1400px", perspectiveOrigin: "50% 30%" }}>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-7">
-              <AnimatePresence mode="popLayout">
-                {filtered.map((cas, i) => (
-                  <FloatingCard key={cas.profil} cas={cas} index={i} onClick={() => setSelected(cas)} />
-                ))}
-              </AnimatePresence>
+              {/* Search + sort — right side */}
+              <div className="flex flex-col sm:flex-row lg:flex-col gap-2.5 flex-shrink-0">
+                {/* Search */}
+                <div className="relative">
+                  <Search
+                    className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none"
+                    style={{ color: "hsl(224 20% 60%)" }}
+                    strokeWidth={1.75}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Rechercher un cas…"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-9 pr-4 py-1.5 rounded-full text-[12px] focus:outline-none transition-all duration-150"
+                    style={{
+                      background: "hsl(220 25% 97%)",
+                      border: "1px solid hsl(224 20% 86%)",
+                      color: NAVY_TEXT,
+                      width: 190,
+                    }}
+                  />
+                </div>
+                {/* Sort */}
+                <select
+                  className="pl-3 pr-8 py-1.5 rounded-full text-[12px] focus:outline-none appearance-none"
+                  style={{
+                    background: "hsl(220 25% 97%)",
+                    border: "1px solid hsl(224 20% 86%)",
+                    color: NAVY_MID,
+                    width: 190,
+                  }}
+                  defaultValue="pertinence"
+                >
+                  <option value="pertinence">Trier par pertinence</option>
+                  <option value="economie">Économie la plus élevée</option>
+                  <option value="profil">Par profil</option>
+                </select>
+              </div>
             </div>
           </div>
+        </div>
+      </div>
 
-          {filtered.length === 0 && (
-            <p className="text-center font-light py-20" style={{ color: "hsl(224 12% 55%)" }}>
-              Aucun cas ne correspond à ce filtre pour le moment.
-            </p>
+      {/* ── MAIN CONTENT ──────────────────────────────────────────── */}
+      <main
+        className="pb-24 md:pb-32"
+        style={{ background: "hsl(220 25% 97%)" }}
+      >
+        <div className="max-w-6xl mx-auto px-8 md:px-14">
+
+          {/* ── CARTES MODE ── */}
+          {viewMode === "cartes" && (
+            <>
+              {/* Featured case section */}
+              {featuredCase && (
+                <section className="pt-12 pb-10 reveal">
+                  <div
+                    className="rounded-3xl overflow-hidden grid lg:grid-cols-12"
+                    style={{
+                      background: "white",
+                      border: CARD_BORDER,
+                      boxShadow: "0 8px 40px -12px hsl(224 60% 12% / 0.10)",
+                    }}
+                  >
+                    {/* Left: image */}
+                    <div className="lg:col-span-5 relative min-h-[280px]">
+                      <img
+                        src={casCouple}
+                        alt=""
+                        aria-hidden
+                        className="w-full h-full object-cover object-center"
+                        style={{ minHeight: 280 }}
+                      />
+                      <div
+                        className="absolute inset-0"
+                        style={{
+                          background:
+                            "linear-gradient(to right, hsl(224 40% 8% / 0.08) 0%, transparent 60%)," +
+                            "linear-gradient(to top, hsl(224 40% 8% / 0.72) 0%, transparent 52%)",
+                        }}
+                      />
+                      <div className="absolute bottom-0 left-0 right-0 p-7">
+                        <span
+                          className="inline-flex text-[9px] tracking-[0.28em] uppercase font-semibold px-3 py-1.5 rounded-full"
+                          style={{ background: "hsl(42 90% 48% / 0.20)", color: "hsl(42 90% 70%)" }}
+                        >
+                          CAS DU MOIS
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Right: editorial content */}
+                    <div className="lg:col-span-7 p-8 lg:p-10 flex flex-col gap-6">
+                      {/* Badges */}
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span
+                          className="text-[9px] tracking-[0.28em] uppercase font-semibold px-3 py-1.5 rounded-full"
+                          style={{ background: "hsl(42 90% 48% / 0.10)", color: "hsl(38 70% 36%)" }}
+                        >
+                          CAS DU MOIS
+                        </span>
+                        <span
+                          className="text-[9px] tracking-[0.22em] uppercase font-semibold px-3 py-1.5 rounded-full"
+                          style={{ background: `${NAVY}12`, color: NAVY }}
+                        >
+                          {featuredCase.categoryLabel.toUpperCase()}
+                        </span>
+                      </div>
+
+                      {/* Title + subtitle */}
+                      <div>
+                        <h2
+                          className="font-heading text-2xl lg:text-3xl font-light leading-tight tracking-tight mb-2"
+                          style={{ color: NAVY_TEXT }}
+                        >
+                          {featuredCase.profil}
+                        </h2>
+                        <p className="text-[14px] font-light italic" style={{ color: NAVY_MID }}>
+                          {featuredCase.contexte.split(". ")[0]}.
+                        </p>
+                      </div>
+
+                      {/* Objective */}
+                      <p className="text-[13px] font-light" style={{ color: "hsl(224 25% 42%)" }}>
+                        <span className="font-medium" style={{ color: NAVY_TEXT }}>Objectif :</span>{" "}
+                        préparer la transmission et protéger le conjoint.
+                      </p>
+
+                      {/* 4-step progress bar */}
+                      <div className="relative flex justify-between">
+                        {/* Connecting line */}
+                        <div
+                          className="absolute h-px"
+                          style={{
+                            top: 16,
+                            left: "12.5%",
+                            right: "12.5%",
+                            background: "hsl(224 20% 12% / 0.12)",
+                          }}
+                        />
+                        {STEPS.map((label, i) => (
+                          <div key={label} className="flex flex-col items-center gap-2 relative z-10">
+                            <div
+                              className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-semibold tracking-wide"
+                              style={{
+                                background: i === 0 ? NAVY : "hsl(224 20% 92%)",
+                                color: i === 0 ? "white" : "hsl(224 20% 55%)",
+                              }}
+                            >
+                              {String(i + 1).padStart(2, "0")}
+                            </div>
+                            <span
+                              className="text-[10px] font-medium"
+                              style={{ color: i === 0 ? NAVY_TEXT : "hsl(224 20% 60%)" }}
+                            >
+                              {label}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* KPI blocks */}
+                      <div className="grid grid-cols-3 gap-0">
+                        {featuredCase.kpis.map((kpi, i) => (
+                          <div
+                            key={kpi.label}
+                            className={i > 0 ? "pl-5 lg:pl-7" : ""}
+                            style={{ borderLeft: i > 0 ? "1px solid hsl(224 20% 12% / 0.10)" : "none" }}
+                          >
+                            <p
+                              className="font-heading text-2xl lg:text-3xl font-light tracking-tight tabular-nums leading-none mb-1.5"
+                              style={{ color: NAVY_TEXT }}
+                            >
+                              {kpi.value}
+                            </p>
+                            <p
+                              className="text-[9px] tracking-[0.22em] uppercase font-medium"
+                              style={{ color: "hsl(224 15% 58%)" }}
+                            >
+                              {kpi.label}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* CTA */}
+                      <div>
+                        <button
+                          type="button"
+                          onClick={() => setSelected(featuredCase)}
+                          className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-full text-[13px] font-medium tracking-wide transition-all duration-300 hover:gap-4"
+                          style={{
+                            background: NAVY,
+                            color: "white",
+                            boxShadow: `0 8px 24px -6px ${NAVY}52`,
+                          }}
+                        >
+                          Découvrir ce cas en détail
+                          <ArrowRight className="w-4 h-4" strokeWidth={1.5} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+              )}
+
+              {/* Cards grid */}
+              <section className="pt-4">
+                {filtered.length === 0 ? (
+                  <p className="text-center font-light py-20" style={{ color: "hsl(224 12% 55%)" }}>
+                    Aucun cas ne correspond à ces filtres pour le moment.
+                  </p>
+                ) : (
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <AnimatePresence mode="popLayout">
+                      {filtered.map((cas) => (
+                        <CaseCard
+                          key={cas.profil}
+                          cas={cas}
+                          viewMode={viewMode}
+                          isCompareSelected={compareIds.has(cas.profil)}
+                          onToggleCompare={() => toggleCompare(cas.profil)}
+                          onClick={() => setSelected(cas)}
+                        />
+                      ))}
+                    </AnimatePresence>
+                  </div>
+                )}
+                <p className="text-center mt-8 text-[11px] font-light tracking-wide" style={{ color: "hsl(224 22% 52%)" }}>
+                  Cliquez sur une carte · Navigation clavier dans le détail : ← → Échap
+                </p>
+              </section>
+            </>
           )}
 
-          <p className="text-center mt-10 text-[11px] font-light tracking-wide" style={{ color: "hsl(224 22% 52%)" }}>
-            Cliquez sur une carte · Navigation clavier&nbsp;: ← → Échap
-          </p>
-        </div>
-      </section>
+          {/* ── PARCOURS MODE ── */}
+          {viewMode === "parcours" && (
+            <section className="pt-12">
+              <div className="space-y-5">
+                {filtered.length === 0 ? (
+                  <p className="text-center font-light py-20" style={{ color: "hsl(224 12% 55%)" }}>
+                    Aucun cas ne correspond à ces filtres.
+                  </p>
+                ) : (
+                  filtered.map((cas, i) => {
+                    const CatIcon = CATEGORY_ICONS[cas.category];
+                    return (
+                      <motion.div
+                        key={cas.profil}
+                        initial={{ opacity: 0, y: 16 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.5, delay: i * 0.06, ease: [0.22, 1, 0.36, 1] }}
+                        className="group rounded-2xl bg-white overflow-hidden cursor-pointer"
+                        style={{
+                          border: CARD_BORDER,
+                          boxShadow: "0 4px 20px -6px hsl(224 40% 18% / 0.07)",
+                        }}
+                        onClick={() => setSelected(cas)}
+                      >
+                        <div className="grid sm:grid-cols-[200px_1fr] gap-0">
+                          {/* Image */}
+                          <div className="relative overflow-hidden" style={{ minHeight: 160 }}>
+                            <img
+                              src={cas.image}
+                              alt=""
+                              aria-hidden
+                              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                              style={{ minHeight: 160 }}
+                            />
+                            <div
+                              className="absolute inset-0"
+                              style={{ background: "linear-gradient(to right, transparent 60%, hsl(0 0% 100% / 0.15) 100%)" }}
+                            />
+                          </div>
+                          {/* Content */}
+                          <div className="p-6 flex flex-col justify-between gap-4">
+                            <div>
+                              <div className="flex items-center gap-2 mb-2">
+                                <CatIcon className="w-3.5 h-3.5 flex-shrink-0" style={{ color: NAVY_MID }} strokeWidth={1.75} />
+                                <span className="text-[10px] tracking-[0.24em] uppercase font-semibold" style={{ color: NAVY_MID }}>
+                                  {cas.categoryLabel}
+                                </span>
+                              </div>
+                              <h3 className="font-heading text-xl font-light leading-snug tracking-tight mb-1" style={{ color: NAVY_TEXT }}>
+                                {cas.profil}
+                              </h3>
+                              <p className="text-[12px] font-light" style={{ color: NAVY_MID }}>{cas.expertise}</p>
+                            </div>
+                            <div className="flex items-center gap-6 flex-wrap">
+                              {cas.kpis.map((kpi) => (
+                                <div key={kpi.label}>
+                                  <p className="font-heading text-lg font-light tracking-tight tabular-nums" style={{ color: NAVY_TEXT }}>
+                                    {kpi.value}
+                                  </p>
+                                  <p className="text-[9px] tracking-[0.20em] uppercase font-medium" style={{ color: "hsl(224 15% 60%)" }}>
+                                    {kpi.label}
+                                  </p>
+                                </div>
+                              ))}
+                              <div className="ml-auto">
+                                <span
+                                  className="inline-flex items-center gap-1.5 text-[12px] font-medium"
+                                  style={{ color: NAVY }}
+                                >
+                                  Découvrir <ArrowRight className="w-3.5 h-3.5" strokeWidth={1.8} />
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    );
+                  })
+                )}
+              </div>
+            </section>
+          )}
 
-      {/* ── Modal ── */}
+          {/* ── COMPARER MODE ── */}
+          {viewMode === "comparer" && (
+            <section className="pt-12">
+              <div className="mb-8">
+                <h2 className="font-heading text-2xl font-light tracking-tight mb-2" style={{ color: NAVY_TEXT }}>
+                  Comparer ou explorer d'autres cas similaires
+                </h2>
+                <p className="text-[13px] font-light" style={{ color: NAVY_MID }}>
+                  Sélectionnez deux cas (✓) pour les comparer côte à côte.
+                </p>
+              </div>
+
+              {/* Selection grid */}
+              {filtered.length === 0 ? (
+                <p className="text-center font-light py-20" style={{ color: "hsl(224 12% 55%)" }}>
+                  Aucun cas ne correspond à ces filtres.
+                </p>
+              ) : (
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 mb-12">
+                  <AnimatePresence mode="popLayout">
+                    {filtered.map((cas) => (
+                      <CaseCard
+                        key={cas.profil}
+                        cas={cas}
+                        viewMode={viewMode}
+                        isCompareSelected={compareIds.has(cas.profil)}
+                        onToggleCompare={() => toggleCompare(cas.profil)}
+                        onClick={() => setSelected(cas)}
+                      />
+                    ))}
+                  </AnimatePresence>
+                </div>
+              )}
+
+              {/* Comparison table — when 2 selected */}
+              <AnimatePresence>
+                {compareCases.length === 2 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 24 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 12 }}
+                    transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                    className="rounded-3xl overflow-hidden"
+                    style={{
+                      background: "white",
+                      border: CARD_BORDER,
+                      boxShadow: "0 8px 40px -12px hsl(224 60% 12% / 0.10)",
+                    }}
+                  >
+                    {/* Header row */}
+                    <div
+                      className="grid grid-cols-3 gap-0 px-8 py-5"
+                      style={{ background: NAVY, color: "white" }}
+                    >
+                      <div className="text-[10px] tracking-[0.26em] uppercase font-semibold opacity-60">Critère</div>
+                      {compareCases.map((cas) => {
+                        const CIcon = CATEGORY_ICONS[cas.category];
+                        return (
+                          <div key={cas.profil} className="pl-6" style={{ borderLeft: "1px solid hsl(0 0% 100% / 0.12)" }}>
+                            <div className="flex items-center gap-2 mb-0.5">
+                              <CIcon className="w-3.5 h-3.5 opacity-70" strokeWidth={1.75} />
+                              <span className="text-[10px] tracking-[0.20em] uppercase font-semibold opacity-70">{cas.categoryLabel}</span>
+                            </div>
+                            <p className="font-heading text-[15px] font-light leading-snug">{cas.profil}</p>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Rows */}
+                    {[
+                      {
+                        label: "Expertise",
+                        render: (cas: CasClient) => (
+                          <span className="text-[13px] font-light" style={{ color: NAVY_MID }}>{cas.expertise}</span>
+                        ),
+                      },
+                      ...Array.from({ length: 3 }, (_, ki) => ({
+                        label: `KPI ${ki + 1}`,
+                        render: (cas: CasClient) => {
+                          const kpi = cas.kpis[ki];
+                          if (!kpi) return <span className="text-[13px] font-light" style={{ color: "hsl(224 15% 70%)" }}>—</span>;
+                          return (
+                            <div>
+                              <p className="font-heading text-xl font-light tracking-tight tabular-nums" style={{ color: NAVY_TEXT }}>{kpi.value}</p>
+                              <p className="text-[10px] tracking-[0.20em] uppercase font-medium mt-0.5" style={{ color: "hsl(224 15% 60%)" }}>{kpi.label}</p>
+                            </div>
+                          );
+                        },
+                      })),
+                      {
+                        label: "Contexte",
+                        render: (cas: CasClient) => (
+                          <p className="text-[12px] font-light leading-relaxed" style={{ color: NAVY_MID }}>
+                            {cas.contexte.length > 140 ? cas.contexte.slice(0, 137) + "…" : cas.contexte}
+                          </p>
+                        ),
+                      },
+                    ].map((row, ri) => (
+                      <div
+                        key={row.label}
+                        className="grid grid-cols-3 gap-0 px-8 py-5"
+                        style={{ borderTop: "1px solid hsl(224 20% 12% / 0.07)", background: ri % 2 === 0 ? "hsl(220 25% 98%)" : "white" }}
+                      >
+                        <div
+                          className="text-[9px] tracking-[0.24em] uppercase font-semibold self-start pt-1"
+                          style={{ color: "hsl(224 20% 60%)" }}
+                        >
+                          {row.label}
+                        </div>
+                        {compareCases.map((cas) => (
+                          <div key={cas.profil} className="pl-6" style={{ borderLeft: "1px solid hsl(224 20% 12% / 0.07)" }}>
+                            {row.render(cas)}
+                          </div>
+                        ))}
+                      </div>
+                    ))}
+
+                    {/* CTA row */}
+                    <div
+                      className="grid grid-cols-3 gap-0 px-8 py-5"
+                      style={{ borderTop: "1px solid hsl(224 20% 12% / 0.07)" }}
+                    >
+                      <div />
+                      {compareCases.map((cas) => (
+                        <div key={cas.profil} className="pl-6" style={{ borderLeft: "1px solid hsl(224 20% 12% / 0.07)" }}>
+                          <button
+                            type="button"
+                            onClick={() => setSelected(cas)}
+                            className="inline-flex items-center gap-1.5 text-[12px] font-medium tracking-wide"
+                            style={{ color: NAVY }}
+                          >
+                            Voir le détail <ArrowRight className="w-3.5 h-3.5" strokeWidth={1.8} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </section>
+          )}
+
+        </div>
+      </main>
+
+      {/* ── MODAL ─────────────────────────────────────────────────── */}
       <AnimatePresence>
         {selected && (
           <CaseModal
@@ -752,12 +1428,132 @@ export default function CasClientsPage() {
         )}
       </AnimatePresence>
 
-      <PageCTA
-        title="Votre situation ressemble à l'un de ces cas ?"
-        subtitle="Chaque patrimoine est unique. Parlons du vôtre lors d'un premier échange de 30 minutes, sans engagement."
-        eyebrow="Études de cas"
-        index="10"
-      />
+      {/* ── COMPARE FLOATING BAR (cartes mode, 2 selected) ────────── */}
+      <AnimatePresence>
+        {viewMode === "cartes" && compareIds.size === 2 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            className="fixed z-40 flex items-center gap-4 px-6 py-4 rounded-2xl"
+            style={{
+              bottom: 24,
+              left: "50%",
+              transform: "translateX(-50%)",
+              background: "hsl(0 0% 100% / 0.96)",
+              backdropFilter: "blur(20px)",
+              border: CARD_BORDER,
+              boxShadow: "0 16px 50px -8px hsl(224 60% 12% / 0.18)",
+            }}
+          >
+            <div className="flex items-center gap-2">
+              {compareArr.map((id) => (
+                <span
+                  key={id}
+                  className="text-[11px] font-medium px-3 py-1 rounded-full"
+                  style={{ background: `${NAVY}12`, color: NAVY }}
+                >
+                  {id.split(" ").slice(0, 3).join(" ")}
+                </span>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={() => setViewMode("comparer")}
+              className="inline-flex items-center gap-2 px-5 py-2 rounded-full text-[12px] font-medium tracking-wide transition-all duration-200 hover:gap-3"
+              style={{ background: NAVY, color: "white", boxShadow: `0 6px 20px -4px ${NAVY}52` }}
+            >
+              Comparer 2 cas
+              <ArrowRight className="w-3.5 h-3.5" strokeWidth={1.8} />
+            </button>
+            <button
+              type="button"
+              onClick={() => setCompareIds(new Set())}
+              className="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110"
+              style={{ background: "hsl(224 20% 12% / 0.06)", border: "1px solid hsl(224 20% 12% / 0.10)" }}
+              aria-label="Effacer la sélection"
+            >
+              <X className="w-3.5 h-3.5" style={{ color: NAVY_MID }} strokeWidth={1.8} />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── CTA SECTION ───────────────────────────────────────────── */}
+      <section
+        className="py-24 lg:py-32"
+        style={{ background: "white", borderTop: "1px solid hsl(224 20% 12% / 0.07)" }}
+      >
+        <div className="max-w-6xl mx-auto px-8 md:px-14 reveal">
+          <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center mb-16">
+            {/* Left: heading */}
+            <div className="lg:col-span-5">
+              <h2
+                className="font-heading font-light leading-[1.05] tracking-tight"
+                style={{ fontSize: "clamp(2rem, 4vw, 3rem)", color: NAVY_TEXT }}
+              >
+                Votre situation mérite{"\n"}
+                <span className="italic" style={{ color: NAVY_MID }}>une stratégie sur mesure</span>
+              </h2>
+            </div>
+
+            {/* Center/right: description + buttons */}
+            <div className="lg:col-span-7 flex flex-col gap-6">
+              <p className="text-[15px] font-light leading-relaxed" style={{ color: "hsl(224 15% 40%)" }}>
+                Chacun des cas présentés ici s'inspire d'une situation réelle. Votre patrimoine a ses propres spécificités — parlons-en lors d'un premier échange de 30 minutes, sans engagement.
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <Link
+                  to="/contact"
+                  className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-full text-[13px] font-medium tracking-wide transition-all duration-300 hover:gap-4"
+                  style={{
+                    background: NAVY,
+                    color: "white",
+                    boxShadow: `0 8px 24px -6px ${NAVY}52`,
+                  }}
+                >
+                  Prendre rendez-vous
+                  <ArrowRight className="w-4 h-4" strokeWidth={1.5} />
+                </Link>
+                <Link
+                  to="/ressources"
+                  className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-full text-[13px] font-medium tracking-wide transition-all duration-300 hover:gap-4"
+                  style={{
+                    background: "transparent",
+                    color: NAVY,
+                    border: `1px solid ${NAVY}3A`,
+                  }}
+                >
+                  Recevoir une synthèse PDF
+                  <ArrowRight className="w-4 h-4" strokeWidth={1.5} />
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* Trust badges */}
+          <div
+            className="grid grid-cols-2 lg:grid-cols-4 gap-px rounded-2xl overflow-hidden"
+            style={{ background: "hsl(224 20% 12% / 0.07)", border: "1px solid hsl(224 20% 12% / 0.07)" }}
+          >
+            {TRUST_BADGES.map(({ icon: Icon, label }) => (
+              <div key={label} className="bg-white px-6 py-5 flex items-center gap-3">
+                <div
+                  className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                  style={{ background: `${NAVY}10` }}
+                >
+                  <Icon className="w-4 h-4" style={{ color: NAVY }} strokeWidth={1.6} />
+                </div>
+                <p className="text-[12px] font-medium leading-snug" style={{ color: NAVY_TEXT }}>
+                  {label}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <Footer />
     </>
   );
