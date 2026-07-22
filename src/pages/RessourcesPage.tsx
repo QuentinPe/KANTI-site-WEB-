@@ -13,6 +13,7 @@ import Footer from "@/components/Footer";
 import Seo from "@/components/Seo";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { getRessources, getDownloadUrl } from "@/lib/ressourcesService";
+import { getSiteSettingsMap } from "@/lib/siteSettingsService";
 import { supabase } from "@/lib/supabase";
 import heroBg from "@/assets/resources-dome.jpg";
 import imgDefisc from "@/assets/resource-defiscalisation.jpg";
@@ -173,7 +174,7 @@ function BookCover({
         <p style={{ color: "white", fontSize: 11, fontWeight: 300, lineHeight: 1.35 }}>{title}</p>
       </div>
       <div className="flex items-end justify-between mt-3">
-        <p style={{ color: "hsl(38 80% 65%)", fontSize: 8, letterSpacing: "0.30em", textTransform: "uppercase", fontWeight: 700 }}>KANTI</p>
+        <img src="/logo-white.png" alt="KANTI" style={{ height: 10, opacity: 0.70, objectFit: "contain", objectPosition: "left" }} />
         {pages != null && pages > 0 && (
           <p style={{ color: "hsl(0 0% 100% / 0.32)", fontSize: 7 }}>{pages}p</p>
         )}
@@ -257,6 +258,7 @@ export default function RessourcesPage() {
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const [heroLoading, setHeroLoading] = useState(false);
   const [heroSubmitted, setHeroSubmitted] = useState(false);
+  const [selectedResourceId, setSelectedResourceId] = useState("");
 
   // Card modal state
   const [openId, setOpenId] = useState<string | null>(null);
@@ -272,6 +274,11 @@ export default function RessourcesPage() {
   const imageY = useTransform(scrollYProgress, [0, 1], ["0%", "18%"]);
 
   const { data: dbRessources } = useQuery({ queryKey: ["ressources"], queryFn: getRessources });
+  const { data: settingsMap = {} } = useQuery({
+    queryKey: ["site-settings-map"],
+    queryFn: getSiteSettingsMap,
+    staleTime: 60_000,
+  });
 
   const resources: DisplayResource[] = useMemo(() => {
     if (!dbRessources || dbRessources.length === 0) return RESOURCES_FALLBACK;
@@ -287,7 +294,7 @@ export default function RessourcesPage() {
     }));
   }, [dbRessources]);
 
-  const featuredResource = resources.find((r) => r.id === FEATURED_ID) ?? resources[0];
+  const featuredResource = resources.find((r) => r.id === (settingsMap["featured_resource_id"] ?? FEATURED_ID)) ?? resources[0];
 
   const filtered = useMemo(() => {
     let list = activeCategory === "Tous" ? resources : resources.filter((r) => r.category === activeCategory);
@@ -334,8 +341,9 @@ export default function RessourcesPage() {
       }).then(({ error }) => {
         if (error) console.info("[KANTI] Lead insert skipped:", error.message);
       });
-      // Download featured resource
-      await triggerDownload(featuredResource);
+      // Download chosen resource
+      const chosenResource = resources.find((r) => r.id === selectedResourceId) ?? featuredResource;
+      await triggerDownload(chosenResource);
       setHeroSubmitted(true);
       toast.success("Guide en cours de téléchargement ! Vous avez maintenant accès à toutes les ressources.");
     } catch {
@@ -535,6 +543,28 @@ export default function RessourcesPage() {
                         </div>
                       </div>
 
+                      <div>
+                        <FormLabel>Guide souhaité*</FormLabel>
+                        <div className="relative">
+                          <select
+                            value={selectedResourceId}
+                            onChange={(e) => setSelectedResourceId(e.target.value)}
+                            required
+                            disabled={heroLoading}
+                            className={INPUT_CLASS}
+                            style={{ ...INPUT_STYLE, appearance: "none", paddingRight: 36, cursor: "pointer" }}
+                          >
+                            <option value="">Choisissez votre guide…</option>
+                            {resources.map((r) => (
+                              <option key={r.id} value={r.id}>
+                                {r.title}{r.pages ? ` · ${r.pages}p` : ""}
+                              </option>
+                            ))}
+                          </select>
+                          <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "hsl(224 20% 55%)" }} strokeWidth={1.5} />
+                        </div>
+                      </div>
+
                       <label className="flex items-start gap-2.5 cursor-pointer pt-1">
                         <input
                           type="checkbox" checked={privacyAccepted}
@@ -574,8 +604,8 @@ export default function RessourcesPage() {
 
       {/* ── FILTER BAR (sticky) ────────────────────────────────────────────────── */}
       <div
-        className="sticky top-0 z-30 border-b"
-        style={{ background: "hsl(0 0% 100% / 0.95)", backdropFilter: "blur(12px)", borderColor: "hsl(224 20% 12% / 0.08)" }}>
+        className="sticky z-40 border-b"
+        style={{ top: 72, background: "hsl(0 0% 100% / 0.95)", backdropFilter: "blur(12px)", borderColor: "hsl(224 20% 12% / 0.08)" }}>
         <div className="max-w-7xl mx-auto px-6 lg:px-12 py-2.5 flex items-center gap-2 flex-wrap">
           {CATEGORIES.map((cat) => {
             const active = activeCategory === cat;
@@ -608,64 +638,91 @@ export default function RessourcesPage() {
 
       {/* ── FEATURED RESOURCE ─────────────────────────────────────────────────── */}
       {featuredResource && (
-        <section className="py-14 lg:py-16" style={{ background: "hsl(222 55% 12%)" }}>
+        <section className="py-16 border-t border-b" style={{ background: "hsl(220 25% 97%)", borderColor: "hsl(224 20% 12% / 0.07)" }}>
           <div className="max-w-7xl mx-auto px-6 lg:px-12">
-            <p className="text-[9px] tracking-[0.42em] uppercase font-semibold mb-10" style={{ color: "hsl(38 80% 58%)" }}>
-              Ressource mise en avant
-            </p>
-            <div className="grid lg:grid-cols-12 gap-10 items-center">
-              {/* Book cover */}
-              <div className="lg:col-span-2 flex justify-center lg:justify-start">
-                <BookCover
-                  title={featuredResource.title}
-                  category={featuredResource.category}
-                  pages={featuredResource.pages}
-                  style={{ width: 140, height: 200 }}
-                />
+            <div
+              className="rounded-3xl overflow-hidden grid lg:grid-cols-12 gap-0"
+              style={{
+                background: "white",
+                border: "1px solid hsl(224 20% 12% / 0.08)",
+                boxShadow: "0 8px 40px -12px hsl(224 60% 12% / 0.10)",
+              }}
+            >
+              {/* Left: book cover on navy panel */}
+              <div
+                className="lg:col-span-4 flex items-center justify-center p-12"
+                style={{ background: "hsl(222 55% 12%)" }}
+              >
+                <div className="relative">
+                  <BookCover
+                    title={featuredResource.title}
+                    category={featuredResource.category}
+                    pages={featuredResource.pages}
+                    style={{ width: 160, height: 224 }}
+                  />
+                  {/* Glow */}
+                  <div aria-hidden className="absolute -inset-6 pointer-events-none" style={{
+                    background: "radial-gradient(ellipse 80% 60% at 50% 50%, hsl(38 80% 50% / 0.20) 0%, transparent 70%)",
+                  }} />
+                </div>
               </div>
 
-              {/* Bullets */}
-              <div className="lg:col-span-5">
-                <h2 className="font-heading text-2xl lg:text-3xl font-light leading-tight tracking-tight mb-2" style={{ color: "white" }}>
-                  {featuredResource.title}
-                </h2>
-                <p className="text-[13px] font-light mb-6 italic" style={{ color: "hsl(0 0% 100% / 0.55)" }}>
-                  {featuredResource.description.split(".")[0]}.
-                </p>
-                <ul className="space-y-2.5">
-                  {FEATURED_BULLETS.map((b) => (
-                    <li key={b} className="flex items-center gap-2.5 text-[13px] font-light" style={{ color: "hsl(0 0% 100% / 0.82)" }}>
-                      <svg className="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} style={{ color: "hsl(38 80% 58%)" }}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                      </svg>
-                      {b}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              {/* Right: editorial content */}
+              <div className="lg:col-span-8 p-10 lg:p-12 flex flex-col justify-between gap-8">
+                <div>
+                  <div className="flex items-center gap-2 mb-5">
+                    <span
+                      className="px-3 py-1 rounded-full text-[9px] font-semibold tracking-[0.28em] uppercase"
+                      style={{ background: "hsl(38 80% 50% / 0.12)", color: "hsl(38 70% 36%)" }}>
+                      Ressource mise en avant
+                    </span>
+                    <span
+                      className="px-3 py-1 rounded-full text-[9px] font-semibold tracking-[0.22em] uppercase"
+                      style={{ background: `${CAT_COLOR[featuredResource.category] ?? "hsl(224 60% 15%)"}15`, color: CAT_COLOR[featuredResource.category] ?? "hsl(224 60% 15%)" }}>
+                      {featuredResource.category}
+                    </span>
+                  </div>
+                  <h2 className="font-heading text-2xl lg:text-3xl font-light leading-tight tracking-tight mb-2" style={{ color: "hsl(224 55% 12%)" }}>
+                    {featuredResource.title}
+                  </h2>
+                  <p className="text-[14px] font-light italic mb-7" style={{ color: "hsl(224 15% 52%)" }}>
+                    {featuredResource.description.split(".")[0]}.
+                  </p>
 
-              {/* Checklist + CTA */}
-              <div className="lg:col-span-5 flex flex-col gap-6">
-                <ul className="space-y-2">
-                  {FEATURED_CHECKLIST.map((item) => (
-                    <li key={item} className="flex items-center gap-2 text-[12px]" style={{ color: "hsl(0 0% 100% / 0.62)" }}>
-                      <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" strokeWidth={1.5} style={{ color: "hsl(38 80% 58%)" }} />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-                <div className="flex flex-col gap-2">
+                  <div className="grid sm:grid-cols-2 gap-6">
+                    <ul className="space-y-2.5">
+                      {FEATURED_BULLETS.map((b) => (
+                        <li key={b} className="flex items-start gap-2.5 text-[13px] font-light" style={{ color: "hsl(224 35% 28%)" }}>
+                          <svg className="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} style={{ color: "hsl(218 55% 42%)" }}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                          </svg>
+                          {b}
+                        </li>
+                      ))}
+                    </ul>
+                    <ul className="space-y-2">
+                      {FEATURED_CHECKLIST.map((item) => (
+                        <li key={item} className="flex items-center gap-2 text-[12px]" style={{ color: "hsl(224 20% 48%)" }}>
+                          <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" strokeWidth={1.5} style={{ color: "hsl(142 52% 42%)" }} />
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-4 flex-wrap pt-2 border-t" style={{ borderColor: "hsl(224 20% 12% / 0.07)" }}>
                   <button
                     type="button"
                     onClick={() => handleCardOpen(featuredResource)}
-                    className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl text-[13px] font-medium transition-all duration-200 hover:bg-white/90"
-                    style={{ background: "white", color: "hsl(224 60% 12%)", boxShadow: "0 8px 24px -8px hsl(224 60% 5% / 0.35)" }}>
+                    className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl text-[13px] font-medium transition-all duration-200"
+                    style={{ background: "hsl(224 60% 18%)", color: "white", boxShadow: "0 8px 24px -8px hsl(224 60% 18% / 0.38)" }}>
                     <Download className="w-4 h-4" strokeWidth={1.5} />
                     Recevoir le guide PDF
                   </button>
-                  <p className="text-center text-[11px] font-light" style={{ color: "hsl(0 0% 100% / 0.38)" }}>
-                    <Mail className="w-3 h-3 inline mr-1" strokeWidth={1.5} />
-                    Envoi immédiat par email
+                  <p className="text-[12px] font-light flex items-center gap-1.5" style={{ color: "hsl(224 15% 55%)" }}>
+                    <Mail className="w-3.5 h-3.5" strokeWidth={1.5} />
+                    Téléchargement immédiat
                   </p>
                 </div>
               </div>
