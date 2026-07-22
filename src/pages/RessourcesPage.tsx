@@ -82,7 +82,7 @@ const FEATURED_BULLETS = [
   "Comprendre les règles clés de la transmission",
   "Optimiser la fiscalité et réduire les droits",
   "Protéger vos proches et sécuriser l'avenir",
-  "Anticiper les changements législatifs 2026",
+  "Anticiper les changements législatifs",
 ];
 const FEATURED_CHECKLIST = [
   "28 pages d'expertise",
@@ -258,7 +258,6 @@ export default function RessourcesPage() {
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const [heroLoading, setHeroLoading] = useState(false);
   const [heroSubmitted, setHeroSubmitted] = useState(false);
-  const [selectedResourceId, setSelectedResourceId] = useState("");
 
   // Card modal state
   const [openId, setOpenId] = useState<string | null>(null);
@@ -295,6 +294,13 @@ export default function RessourcesPage() {
   }, [dbRessources]);
 
   const featuredResource = resources.find((r) => r.id === (settingsMap["featured_resource_id"] ?? FEATURED_ID)) ?? resources[0];
+
+  const featuredBullets: string[] = (() => {
+    try { return settingsMap["featured_bullets"] ? JSON.parse(settingsMap["featured_bullets"]) : FEATURED_BULLETS; } catch { return FEATURED_BULLETS; }
+  })();
+  const featuredChecklist: string[] = (() => {
+    try { return settingsMap["featured_checklist"] ? JSON.parse(settingsMap["featured_checklist"]) : FEATURED_CHECKLIST; } catch { return FEATURED_CHECKLIST; }
+  })();
 
   const filtered = useMemo(() => {
     let list = activeCategory === "Tous" ? resources : resources.filter((r) => r.category === activeCategory);
@@ -341,9 +347,7 @@ export default function RessourcesPage() {
       }).then(({ error }) => {
         if (error) console.info("[KANTI] Lead insert skipped:", error.message);
       });
-      // Download chosen resource
-      const chosenResource = resources.find((r) => r.id === selectedResourceId) ?? featuredResource;
-      await triggerDownload(chosenResource);
+      await triggerDownload(featuredResource);
       setHeroSubmitted(true);
       toast.success("Guide en cours de téléchargement ! Vous avez maintenant accès à toutes les ressources.");
     } catch {
@@ -446,15 +450,24 @@ export default function RessourcesPage() {
             {/* Center: book stack (desktop only) */}
             <div className="hidden lg:flex lg:col-span-3 items-center justify-center">
               <div className="relative" style={{ width: 200, height: 288 }}>
-                <div style={{ position: "absolute", left: 6, top: 30, width: 88, height: 125, transform: "rotate(-9deg) translateX(-6px)", zIndex: 1 }}>
-                  <BookCover title="Fiscalité & Optimisation 2026" category="Fiscalité" pages={24} style={{ width: "100%", height: "100%" }} />
-                </div>
-                <div style={{ position: "absolute", left: "50%", top: 0, width: 108, height: 154, transform: "translateX(-50%) rotate(-1.5deg)", zIndex: 3 }}>
+                <motion.div
+                  style={{ position: "absolute", left: 6, top: 30, width: 88, height: 125, rotate: -9, x: -6, zIndex: 1 }}
+                  whileHover={{ rotate: -14, x: -18, y: -8, zIndex: 10, transition: { duration: 0.28, ease: [0.22, 1, 0.36, 1] } }}
+                >
+                  <BookCover title="Fiscalité & Optimisation" category="Fiscalité" pages={24} style={{ width: "100%", height: "100%" }} />
+                </motion.div>
+                <motion.div
+                  style={{ position: "absolute", left: "50%", top: 0, width: 108, height: 154, x: "-50%", rotate: -1.5, zIndex: 3 }}
+                  whileHover={{ rotate: 0, y: -12, zIndex: 10, transition: { duration: 0.28, ease: [0.22, 1, 0.36, 1] } }}
+                >
                   <BookCover title="Transmission Patrimoniale" category="Transmission" pages={28} style={{ width: "100%", height: "100%" }} />
-                </div>
-                <div style={{ position: "absolute", right: 6, top: 24, width: 86, height: 122, transform: "rotate(8deg) translateX(8px)", zIndex: 2 }}>
+                </motion.div>
+                <motion.div
+                  style={{ position: "absolute", right: 6, top: 24, width: 86, height: 122, rotate: 8, x: 8, zIndex: 2 }}
+                  whileHover={{ rotate: 14, x: 18, y: -8, zIndex: 10, transition: { duration: 0.28, ease: [0.22, 1, 0.36, 1] } }}
+                >
                   <BookCover title="Patrimoine du Dirigeant" category="Dirigeants" pages={26} style={{ width: "100%", height: "100%" }} />
-                </div>
+                </motion.div>
               </div>
             </div>
 
@@ -486,7 +499,7 @@ export default function RessourcesPage() {
                       <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "hsl(224 60% 12%)" }}>
                         <FileText className="w-4 h-4 text-white" strokeWidth={1.5} />
                       </div>
-                      <p className="text-[14px] font-medium" style={{ color: "hsl(224 55% 12%)" }}>Téléchargez votre guide PDF</p>
+                      <p className="text-[14px] font-medium" style={{ color: "hsl(224 55% 12%)" }}>Débloquez toutes les ressources</p>
                     </div>
 
                     <form onSubmit={handleHeroSubmit} className="space-y-3">
@@ -543,28 +556,6 @@ export default function RessourcesPage() {
                         </div>
                       </div>
 
-                      <div>
-                        <FormLabel>Guide souhaité*</FormLabel>
-                        <div className="relative">
-                          <select
-                            value={selectedResourceId}
-                            onChange={(e) => setSelectedResourceId(e.target.value)}
-                            required
-                            disabled={heroLoading}
-                            className={INPUT_CLASS}
-                            style={{ ...INPUT_STYLE, appearance: "none", paddingRight: 36, cursor: "pointer" }}
-                          >
-                            <option value="">Choisissez votre guide…</option>
-                            {resources.map((r) => (
-                              <option key={r.id} value={r.id}>
-                                {r.title}{r.pages ? ` · ${r.pages}p` : ""}
-                              </option>
-                            ))}
-                          </select>
-                          <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "hsl(224 20% 55%)" }} strokeWidth={1.5} />
-                        </div>
-                      </div>
-
                       <label className="flex items-start gap-2.5 cursor-pointer pt-1">
                         <input
                           type="checkbox" checked={privacyAccepted}
@@ -603,10 +594,9 @@ export default function RessourcesPage() {
       </section>
 
       {/* ── FILTER BAR (sticky) ────────────────────────────────────────────────── */}
-      <div
-        className="sticky z-40 border-b"
-        style={{ top: 72, background: "hsl(0 0% 100% / 0.95)", backdropFilter: "blur(12px)", borderColor: "hsl(224 20% 12% / 0.08)" }}>
-        <div className="max-w-7xl mx-auto px-6 lg:px-12 py-2.5 flex items-center gap-2 flex-wrap">
+      <div className="sticky z-40 py-3" style={{ top: 72, background: "hsl(220 25% 97%)" }}>
+        <div className="max-w-7xl mx-auto px-6 lg:px-12">
+        <div className="rounded-2xl px-4 py-2.5 flex items-center gap-2 flex-wrap" style={{ background: "hsl(0 0% 100% / 0.96)", backdropFilter: "blur(12px)", border: "1px solid hsl(224 20% 12% / 0.08)", boxShadow: "0 2px 12px -4px hsl(224 60% 12% / 0.06)" }}>
           {CATEGORIES.map((cat) => {
             const active = activeCategory === cat;
             return (
@@ -633,6 +623,7 @@ export default function RessourcesPage() {
               style={{ background: "hsl(220 25% 97%)", border: "1px solid hsl(224 20% 86%)", color: "hsl(224 50% 18%)", width: 190 }}
             />
           </div>
+        </div>
         </div>
       </div>
 
@@ -691,7 +682,7 @@ export default function RessourcesPage() {
 
                   <div className="grid sm:grid-cols-2 gap-6">
                     <ul className="space-y-2.5">
-                      {FEATURED_BULLETS.map((b) => (
+                      {featuredBullets.map((b) => (
                         <li key={b} className="flex items-start gap-2.5 text-[13px] font-light" style={{ color: "hsl(224 35% 28%)" }}>
                           <svg className="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} style={{ color: "hsl(218 55% 42%)" }}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
@@ -701,7 +692,7 @@ export default function RessourcesPage() {
                       ))}
                     </ul>
                     <ul className="space-y-2">
-                      {FEATURED_CHECKLIST.map((item) => (
+                      {featuredChecklist.map((item) => (
                         <li key={item} className="flex items-center gap-2 text-[12px]" style={{ color: "hsl(224 20% 48%)" }}>
                           <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" strokeWidth={1.5} style={{ color: "hsl(142 52% 42%)" }} />
                           {item}

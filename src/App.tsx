@@ -65,8 +65,9 @@ const AdminMediaLibrary = lazy(() => import("./pages/admin/AdminMediaLibrary"));
 const AdminAccessList   = lazy(() => import("./pages/admin/AdminAccessList"));
 const AdminArticlesList = lazy(() => import("./pages/admin/AdminArticlesList"));
 const AdminArticleForm  = lazy(() => import("./pages/admin/AdminArticleForm"));
-const AdminResourcesList = lazy(() => import("./pages/admin/AdminResourcesList"));
-const AdminResourceForm  = lazy(() => import("./pages/admin/AdminResourceForm"));
+const AdminResourcesList    = lazy(() => import("./pages/admin/AdminResourcesList"));
+const AdminResourceForm     = lazy(() => import("./pages/admin/AdminResourceForm"));
+const AdminFeaturedResource = lazy(() => import("./pages/admin/AdminFeaturedResource"));
 const AdminCasClientsList = lazy(() => import("./pages/admin/AdminCasClientsList"));
 const AdminCasClientsForm = lazy(() => import("./pages/admin/AdminCasClientsForm"));
 const AdminFAQList      = lazy(() => import("./pages/admin/AdminFAQList"));
@@ -153,6 +154,7 @@ const AppShell = () => {
                 <Route path="articles/new" element={<AdminArticleForm />} />
                 <Route path="articles/:id/edit" element={<AdminArticleForm />} />
                 <Route path="ressources" element={<AdminResourcesList />} />
+                <Route path="ressources/mise-en-avant" element={<AdminFeaturedResource />} />
                 <Route path="ressources/new" element={<AdminResourceForm />} />
                 <Route path="ressources/:id/edit" element={<AdminResourceForm />} />
                 <Route path="cas-clients" element={<AdminCasClientsList />} />

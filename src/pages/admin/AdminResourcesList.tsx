@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Pencil, Trash2, BookOpen, CheckCircle2, XCircle, Star } from "lucide-react";
+import { Plus, Pencil, Trash2, BookOpen, CheckCircle2, XCircle, Star, Settings2 } from "lucide-react";
 import { getAllRessources, deleteRessource } from "@/lib/ressourcesService";
 import { getSiteSettingsMap, upsertSetting } from "@/lib/siteSettingsService";
 
@@ -48,14 +48,24 @@ export default function AdminResourcesList() {
             {ressources.length} ressource{ressources.length !== 1 ? "s" : ""} au total
           </p>
         </div>
-        <Link
-          to="/admin/ressources/new"
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-[13px] font-medium text-white transition-all duration-200 hover:opacity-90"
-          style={{ background: "hsl(224 60% 18%)" }}
-        >
-          <Plus className="w-4 h-4" />
-          Nouvelle ressource
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            to="/admin/ressources/mise-en-avant"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200"
+            style={{ background: "hsl(42 90% 48% / 0.10)", color: "hsl(38 70% 36%)", border: "1px solid hsl(42 80% 60% / 0.25)" }}
+          >
+            <Settings2 className="w-4 h-4" />
+            Mise en avant
+          </Link>
+          <Link
+            to="/admin/ressources/new"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-[13px] font-medium text-white transition-all duration-200 hover:opacity-90"
+            style={{ background: "hsl(224 60% 18%)" }}
+          >
+            <Plus className="w-4 h-4" />
+            Nouvelle ressource
+          </Link>
+        </div>
       </div>
 
       {isLoading ? (
