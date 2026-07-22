@@ -14,7 +14,7 @@ import Footer from "@/components/Footer";
 import Seo, { breadcrumbJsonLd } from "@/components/Seo";
 import { getCasClients } from "@/lib/casClientsService";
 import type { CasClient as DbCasClient } from "@/lib/casClientsService";
-import heroBg from "@/assets/contact-advisors.jpg";
+import heroBg from "@/assets/pdf-cover-building.jpg";
 import casCadre from "@/assets/cas-cadre.jpg";
 import casCouple from "@/assets/cas-couple.jpg";
 import casDirigeant from "@/assets/cas-dirigeant.jpg";
@@ -579,6 +579,7 @@ export default function CasClientsPage() {
   const [searchQuery, setSearchQuery]     = useState("");
   const [compareIds, setCompareIds]       = useState<Set<string>>(new Set());
   const [selected, setSelected]           = useState<CasClient | null>(null);
+  const [hoveredCard, setHoveredCard]     = useState<number | null>(null);
 
   /* ── Parallax ── */
   const heroRef = useRef<HTMLElement>(null);
@@ -661,24 +662,31 @@ export default function CasClientsPage() {
       <section
         ref={heroRef}
         className="relative overflow-hidden"
-        style={{ minHeight: "100vh", background: "hsl(220 25% 97%)" }}
+        style={{ minHeight: "100vh", background: "hsl(222 58% 10%)" }}
       >
         {/* Parallax background */}
         <motion.div className="absolute inset-0 will-change-transform" style={{ y: imageY, scale: 1.14 }}>
           <img src={heroBg} alt="" aria-hidden className="w-full h-full object-cover object-center" fetchPriority="high" />
         </motion.div>
-        {/* Gradient — left text readable, right fades to image */}
+        {/* Navy duotone overlay */}
+        <div
+          aria-hidden
+          className="absolute inset-0 pointer-events-none"
+          style={{ background: "hsl(222 58% 10% / 0.78)", mixBlendMode: "multiply" }}
+        />
+        {/* Gradient — left stronger, right lighter to let image breathe */}
         <div
           aria-hidden
           className="absolute inset-0 pointer-events-none"
           style={{
             background:
-              "linear-gradient(105deg, hsl(220 25% 97% / 0.98) 0%, hsl(220 25% 97% / 0.92) 28%, hsl(220 25% 97% / 0.60) 52%, hsl(220 25% 97% / 0.12) 70%, transparent 84%)",
+              "linear-gradient(115deg, hsl(222 60% 8% / 0.95) 0%, hsl(222 56% 12% / 0.80) 36%, hsl(222 50% 16% / 0.45) 62%, transparent 90%)",
           }}
         />
+        {/* Bottom fade to page bg */}
         <div
           aria-hidden
-          className="absolute inset-x-0 bottom-0 h-36 pointer-events-none"
+          className="absolute inset-x-0 bottom-0 h-32 pointer-events-none"
           style={{ background: "linear-gradient(to top, hsl(220 25% 97%) 0%, transparent 100%)" }}
         />
 
@@ -692,7 +700,7 @@ export default function CasClientsPage() {
                 {/* Eyebrow */}
                 <motion.p
                   className="text-[10px] tracking-[0.30em] uppercase font-semibold mb-6"
-                  style={{ color: NAVY_MID }}
+                  style={{ color: "hsl(214 55% 72%)" }}
                   initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                   transition={{ duration: 0.6, delay: 0.1 }}
                 >
@@ -702,18 +710,18 @@ export default function CasClientsPage() {
                 {/* H1 */}
                 <motion.h1
                   className="font-heading font-light leading-[1.05] tracking-tight mb-6"
-                  style={{ fontSize: "clamp(2.4rem, 5vw, 3.6rem)", color: NAVY_TEXT }}
+                  style={{ fontSize: "clamp(2.4rem, 5vw, 3.6rem)", color: "white" }}
                   initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
                 >
                   Explorez des trajectoires patrimoniales{" "}
-                  <span className="italic" style={{ color: "hsl(38 70% 36%)" }}>réelles</span>
+                  <span className="italic" style={{ color: "hsl(214 80% 72%)" }}>réelles</span>
                 </motion.h1>
 
                 {/* Description */}
                 <motion.p
                   className="text-[15px] font-light leading-relaxed mb-10"
-                  style={{ color: "hsl(224 25% 38%)" }}
+                  style={{ color: "hsl(0 0% 100% / 0.68)" }}
                   initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
                 >
@@ -741,11 +749,11 @@ export default function CasClientsPage() {
                         onClick={() => setViewMode(id)}
                         className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-[12px] font-medium tracking-wide transition-all duration-300"
                         style={{
-                          background: isActive ? NAVY : "hsl(0 0% 100% / 0.72)",
-                          color: isActive ? "white" : NAVY_MID,
-                          border: `1px solid ${isActive ? NAVY : "hsl(224 20% 12% / 0.14)"}`,
+                          background: isActive ? "white" : "hsl(0 0% 100% / 0.12)",
+                          color: isActive ? NAVY : "hsl(0 0% 100% / 0.82)",
+                          border: `1px solid ${isActive ? "transparent" : "hsl(0 0% 100% / 0.22)"}`,
                           backdropFilter: "blur(12px)",
-                          boxShadow: isActive ? `0 4px 14px -4px ${NAVY}4D` : "0 2px 8px -4px hsl(224 20% 20% / 0.07)",
+                          boxShadow: isActive ? "0 4px 16px -4px hsl(224 60% 8% / 0.35)" : "none",
                         }}
                       >
                         <Icon className="w-3.5 h-3.5" strokeWidth={1.75} />
@@ -758,106 +766,137 @@ export default function CasClientsPage() {
 
               {/* Right col — stacked preview cards */}
               <div className="lg:col-span-7 hidden lg:block">
-                <div className="relative" style={{ height: 460 }}>
+                <div className="relative" style={{ height: 480 }}>
 
-                  {/* Card 1 — back-left (Chef d'entreprise) */}
+                  {/* Ambient glow behind card stack */}
+                  <div aria-hidden className="absolute pointer-events-none" style={{
+                    top: "10%", left: "10%", right: "10%", bottom: "0%",
+                    background: "radial-gradient(ellipse 80% 60% at 50% 55%, hsl(214 70% 55% / 0.18) 0%, transparent 72%)",
+                    filter: "blur(28px)",
+                  }} />
+
+                  {/* Card 1 — back-left, NAVY DARK (Chef d'entreprise) */}
                   <motion.div
-                    whileHover={{ y: -8 }}
-                    transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                    onHoverStart={() => setHoveredCard(0)}
+                    onHoverEnd={() => setHoveredCard(null)}
+                    whileHover={{ y: -20, scale: 1.02, transition: { duration: 0.32, ease: [0.22, 1, 0.36, 1] } }}
                     onClick={() => setSelected(casClients[2])}
                     className="absolute cursor-pointer"
                     style={{
-                      top: 72, left: 0, width: "64%",
-                      transform: "rotate(-8deg)",
-                      zIndex: 1,
-                      borderRadius: 24,
-                      background: "linear-gradient(145deg, hsl(0 0% 100% / 0.82) 0%, hsl(218 28% 97% / 0.72) 100%)",
-                      backdropFilter: "blur(24px) saturate(180%)",
-                      WebkitBackdropFilter: "blur(24px) saturate(180%)",
-                      border: "1px solid hsl(0 0% 100% / 0.60)",
-                      boxShadow: "0 12px 40px -10px hsl(224 40% 18% / 0.14), inset 0 1px 0 hsl(0 0% 100% / 0.90)",
-                      padding: "24px 28px",
+                      top: 80, left: 0, width: "62%",
+                      rotate: "-8deg",
+                      zIndex: hoveredCard === 0 ? 20 : 1,
+                      borderRadius: 22,
+                      background: "linear-gradient(140deg, hsl(222 52% 24%) 0%, hsl(224 60% 14%) 100%)",
+                      border: "1px solid hsl(214 45% 36% / 0.55)",
+                      boxShadow: "0 20px 60px -10px hsl(224 65% 8% / 0.55), inset 0 1px 0 hsl(214 60% 55% / 0.18), inset 0 -1px 0 hsl(224 60% 8% / 0.30)",
+                      padding: "22px 26px",
                     }}
                   >
-                    <p className="font-heading text-3xl font-light tracking-tight tabular-nums mb-1" style={{ color: NAVY_TEXT }}>+3,2 %/an</p>
-                    <p className="text-[10px] tracking-[0.24em] uppercase font-medium mb-4" style={{ color: "hsl(224 15% 58%)" }}>Rendement cible</p>
-                    <div className="flex items-center justify-between pt-4" style={{ borderTop: "1px solid hsl(224 20% 12% / 0.08)" }}>
-                      <span className="text-[11px] font-medium" style={{ color: NAVY_MID }}>Chef d'entreprise</span>
-                      <span className="text-[11px] font-medium flex items-center gap-1" style={{ color: NAVY }}>
+                    <p className="text-[9px] tracking-[0.28em] uppercase font-semibold mb-4" style={{ color: "hsl(214 55% 62%)" }}>
+                      DIRIGEANT · TRÉSORERIE
+                    </p>
+                    <p className="font-heading text-[2rem] font-light tracking-tight tabular-nums leading-none mb-1" style={{ color: "white" }}>
+                      +3,2 %/an
+                    </p>
+                    <p className="text-[10px] tracking-[0.22em] uppercase font-medium mb-5" style={{ color: "hsl(0 0% 100% / 0.42)" }}>
+                      Rendement trésorerie
+                    </p>
+                    <div className="flex items-center justify-between pt-4" style={{ borderTop: "1px solid hsl(0 0% 100% / 0.10)" }}>
+                      <span className="text-[11px] font-light" style={{ color: "hsl(0 0% 100% / 0.55)" }}>Chef d'entreprise</span>
+                      <span className="text-[11px] font-medium flex items-center gap-1.5" style={{ color: "hsl(214 80% 72%)" }}>
                         Voir le cas <ArrowRight className="w-3 h-3" strokeWidth={2} />
                       </span>
                     </div>
                   </motion.div>
 
-                  {/* Card 2 — center, featured (CAS DU MOIS) */}
+                  {/* Card 2 — center, WHITE (CAS DU MOIS — Couple Transmission) */}
                   <motion.div
-                    whileHover={{ y: -8 }}
-                    transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                    onHoverStart={() => setHoveredCard(1)}
+                    onHoverEnd={() => setHoveredCard(null)}
+                    whileHover={{ y: -20, scale: 1.025, transition: { duration: 0.32, ease: [0.22, 1, 0.36, 1] } }}
                     onClick={() => setSelected(casClients[1])}
                     className="absolute cursor-pointer"
                     style={{
-                      top: 16, left: "14%", width: "80%",
-                      transform: "rotate(-1.5deg)",
-                      zIndex: 3,
-                      borderRadius: 24,
-                      background: "linear-gradient(145deg, hsl(0 0% 100% / 0.96) 0%, hsl(218 22% 98% / 0.92) 100%)",
-                      backdropFilter: "blur(32px) saturate(200%)",
-                      WebkitBackdropFilter: "blur(32px) saturate(200%)",
-                      border: "1px solid hsl(0 0% 100% / 0.80)",
-                      boxShadow: "0 24px 60px -12px hsl(224 40% 18% / 0.20), inset 0 1px 0 hsl(0 0% 100% / 0.95)",
+                      top: 8, left: "16%", width: "80%",
+                      rotate: "-1.5deg",
+                      zIndex: hoveredCard === 1 ? 20 : 3,
+                      borderRadius: 28,
+                      background: "linear-gradient(150deg, hsl(0 0% 100%) 0%, hsl(218 30% 98%) 100%)",
+                      border: "1px solid hsl(0 0% 100% / 0.92)",
+                      boxShadow: "0 40px 100px -16px hsl(224 60% 8% / 0.55), 0 0 0 1px hsl(224 20% 80% / 0.25), inset 0 1px 0 white",
                       padding: "28px 32px",
                     }}
                   >
                     <div className="flex items-center justify-between mb-5">
                       <span
                         className="text-[9px] tracking-[0.28em] uppercase font-semibold px-3 py-1.5 rounded-full"
-                        style={{ background: "hsl(42 90% 48% / 0.12)", color: "hsl(38 70% 36%)" }}
+                        style={{ background: `${NAVY}14`, color: NAVY }}
                       >
                         CAS DU MOIS
                       </span>
-                    </div>
-                    <div className="grid grid-cols-2 gap-6 mb-5">
-                      <div>
-                        <p className="font-heading text-3xl font-light tracking-tight tabular-nums mb-1" style={{ color: NAVY_TEXT }}>−180 k€</p>
-                        <p className="text-[10px] tracking-[0.22em] uppercase font-medium" style={{ color: "hsl(224 15% 58%)" }}>Droits évités</p>
-                      </div>
-                      <div>
-                        <p className="font-heading text-3xl font-light tracking-tight tabular-nums mb-1" style={{ color: NAVY_TEXT }}>1,8 M€</p>
-                        <p className="text-[10px] tracking-[0.22em] uppercase font-medium" style={{ color: "hsl(224 15% 58%)" }}>Patrimoine sécurisé</p>
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full" style={{ background: "hsl(214 55% 62%)" }} />
+                        <span className="w-1.5 h-1.5 rounded-full" style={{ background: "hsl(224 30% 82%)" }} />
+                        <span className="w-1.5 h-1.5 rounded-full" style={{ background: "hsl(224 30% 88%)" }} />
                       </div>
                     </div>
-                    <div className="flex items-center justify-between pt-5" style={{ borderTop: "1px solid hsl(224 20% 12% / 0.08)" }}>
+                    <div className="grid grid-cols-2 gap-5 mb-5">
+                      <div>
+                        <p className="font-heading text-[2.2rem] font-light tracking-tight tabular-nums leading-none mb-1.5" style={{ color: NAVY_TEXT }}>
+                          −180 k€
+                        </p>
+                        <p className="text-[9px] tracking-[0.22em] uppercase font-medium" style={{ color: "hsl(224 15% 58%)" }}>
+                          Droits évités
+                        </p>
+                      </div>
+                      <div>
+                        <p className="font-heading text-[2.2rem] font-light tracking-tight tabular-nums leading-none mb-1.5" style={{ color: NAVY_TEXT }}>
+                          1,8 M€
+                        </p>
+                        <p className="text-[9px] tracking-[0.22em] uppercase font-medium" style={{ color: "hsl(224 15% 58%)" }}>
+                          Patrimoine sécurisé
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between pt-5" style={{ borderTop: CARD_BORDER }}>
                       <span className="text-[11px] font-medium" style={{ color: NAVY_MID }}>Couple · Transmission</span>
-                      <span className="text-[11px] font-medium flex items-center gap-1" style={{ color: NAVY }}>
+                      <span className="text-[11px] font-medium flex items-center gap-1.5" style={{ color: NAVY }}>
                         Voir le cas <ArrowRight className="w-3 h-3" strokeWidth={2} />
                       </span>
                     </div>
                   </motion.div>
 
-                  {/* Card 3 — front-right (Expatrié retour) */}
+                  {/* Card 3 — front-right, NAVY DARK (Expatrié) */}
                   <motion.div
-                    whileHover={{ y: -8 }}
-                    transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                    onHoverStart={() => setHoveredCard(2)}
+                    onHoverEnd={() => setHoveredCard(null)}
+                    whileHover={{ y: -20, scale: 1.02, transition: { duration: 0.32, ease: [0.22, 1, 0.36, 1] } }}
                     onClick={() => setSelected(casClients[5])}
                     className="absolute cursor-pointer"
                     style={{
-                      top: 88, right: 0, width: "64%",
-                      transform: "rotate(7deg)",
-                      zIndex: 2,
-                      borderRadius: 24,
-                      background: "linear-gradient(145deg, hsl(0 0% 100% / 0.86) 0%, hsl(218 28% 97% / 0.76) 100%)",
-                      backdropFilter: "blur(24px) saturate(180%)",
-                      WebkitBackdropFilter: "blur(24px) saturate(180%)",
-                      border: "1px solid hsl(0 0% 100% / 0.65)",
-                      boxShadow: "0 16px 50px -10px hsl(224 40% 18% / 0.16), inset 0 1px 0 hsl(0 0% 100% / 0.90)",
-                      padding: "24px 28px",
+                      top: 96, right: 0, width: "62%",
+                      rotate: "7deg",
+                      zIndex: hoveredCard === 2 ? 20 : 2,
+                      borderRadius: 22,
+                      background: "linear-gradient(140deg, hsl(222 50% 22%) 0%, hsl(224 58% 13%) 100%)",
+                      border: "1px solid hsl(214 42% 34% / 0.50)",
+                      boxShadow: "0 16px 55px -10px hsl(224 65% 8% / 0.50), inset 0 1px 0 hsl(214 60% 50% / 0.14)",
+                      padding: "22px 26px",
                     }}
                   >
-                    <p className="font-heading text-3xl font-light tracking-tight tabular-nums mb-1" style={{ color: NAVY_TEXT }}>−310 k€</p>
-                    <p className="text-[10px] tracking-[0.24em] uppercase font-medium mb-4" style={{ color: "hsl(224 15% 58%)" }}>Économie sur 8 ans</p>
-                    <div className="flex items-center justify-between pt-4" style={{ borderTop: "1px solid hsl(224 20% 12% / 0.08)" }}>
-                      <span className="text-[11px] font-medium" style={{ color: NAVY_MID }}>Expatrié · Retour en France</span>
-                      <span className="text-[11px] font-medium flex items-center gap-1" style={{ color: NAVY }}>
+                    <p className="text-[9px] tracking-[0.28em] uppercase font-semibold mb-4" style={{ color: "hsl(214 55% 62%)" }}>
+                      EXPATRIÉ · INTERNATIONAL
+                    </p>
+                    <p className="font-heading text-[2rem] font-light tracking-tight tabular-nums leading-none mb-1" style={{ color: "white" }}>
+                      −310 k€
+                    </p>
+                    <p className="text-[10px] tracking-[0.22em] uppercase font-medium mb-5" style={{ color: "hsl(0 0% 100% / 0.42)" }}>
+                      Économie sur 8 ans
+                    </p>
+                    <div className="flex items-center justify-between pt-4" style={{ borderTop: "1px solid hsl(0 0% 100% / 0.10)" }}>
+                      <span className="text-[11px] font-light" style={{ color: "hsl(0 0% 100% / 0.55)" }}>Expatrié · Retour France</span>
+                      <span className="text-[11px] font-medium flex items-center gap-1.5" style={{ color: "hsl(214 80% 72%)" }}>
                         Voir le cas <ArrowRight className="w-3 h-3" strokeWidth={2} />
                       </span>
                     </div>
@@ -1032,7 +1071,7 @@ export default function CasClientsPage() {
                       <div className="absolute bottom-0 left-0 right-0 p-7">
                         <span
                           className="inline-flex text-[9px] tracking-[0.28em] uppercase font-semibold px-3 py-1.5 rounded-full"
-                          style={{ background: "hsl(42 90% 48% / 0.20)", color: "hsl(42 90% 70%)" }}
+                          style={{ background: "hsl(214 60% 55% / 0.22)", color: "hsl(214 80% 82%)" }}
                         >
                           CAS DU MOIS
                         </span>
@@ -1045,7 +1084,7 @@ export default function CasClientsPage() {
                       <div className="flex items-center gap-2 flex-wrap">
                         <span
                           className="text-[9px] tracking-[0.28em] uppercase font-semibold px-3 py-1.5 rounded-full"
-                          style={{ background: "hsl(42 90% 48% / 0.10)", color: "hsl(38 70% 36%)" }}
+                          style={{ background: `${NAVY}14`, color: NAVY }}
                         >
                           CAS DU MOIS
                         </span>
