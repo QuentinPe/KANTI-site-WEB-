@@ -11,7 +11,8 @@ const expertises = [
       "Allocation d'actifs, assurance-vie, PER, compte-titres, SCPI, une stratégie d'épargne construite pour durer.",
     benefit: "Faire travailler votre capital en cohérence avec vos projets de vie.",
     href: "/gestion-patrimoniale",
-    image: "https://images.unsplash.com/photo-1553877522-43269d4ea984?q=80&w=1170&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1486325212027-8081e485255e?q=80&w=1400&auto=format&fit=crop",
+    treatment: "blue" as const,
   },
   {
     tag: "Fiscalité",
@@ -20,7 +21,8 @@ const expertises = [
       "Audit fiscal, IFI, revenus fonciers, structuration, réduire votre pression fiscale sans prendre de risques inutiles.",
     benefit: "Identifier vos marges de manœuvre fiscales réelles.",
     href: "/fiscalite",
-    image: "https://images.unsplash.com/photo-1554224155-a1487473ffd9?q=80&w=1170&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1400&auto=format&fit=crop",
+    treatment: "bw" as const,
   },
   {
     tag: "Dirigeants",
@@ -29,7 +31,8 @@ const expertises = [
       "Rémunération du dirigeant, trésorerie d'entreprise, holding, prévoyance, cession et transmission d'activité.",
     benefit: "Articuler patrimoine privé et professionnel avec méthode.",
     href: "/patrimoine-professionnel",
-    image: "https://images.unsplash.com/photo-1506787497326-c2736dde1bef?w=600&auto=format&fit=crop&q=60",
+    image: "https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=1400&auto=format&fit=crop",
+    treatment: "blue" as const,
   },
   {
     tag: "Financement",
@@ -38,7 +41,8 @@ const expertises = [
       "Courtage patrimonial, négociation des meilleures conditions, montages patrimoniaux adaptés à chaque projet.",
     benefit: "Obtenir les conditions de crédit les plus compétitives.",
     href: "/financement",
-    image: "https://plus.unsplash.com/premium_photo-1689609950112-d66095626efb?w=600&auto=format&fit=crop&q=60",
+    image: "https://images.unsplash.com/photo-1448630360428-65456885c650?q=80&w=1400&auto=format&fit=crop",
+    treatment: "bw" as const,
   },
   {
     tag: "Succession",
@@ -47,7 +51,8 @@ const expertises = [
       "Donation, démembrement, assurance-vie, pacte Dutreil, anticiper pour protéger ceux qui comptent.",
     benefit: "Préparer la transmission en maîtrisant la fiscalité.",
     href: "/transmission-patrimoine-famille",
-    image: "https://images.unsplash.com/photo-1463760959829-d829ea46e191?w=600&auto=format&fit=crop&q=60",
+    image: "https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?q=80&w=1400&auto=format&fit=crop",
+    treatment: "blue" as const,
   },
   {
     tag: "Immobilier",
@@ -56,7 +61,8 @@ const expertises = [
       "Résidence principale, locatif, SCI, nue-propriété, chaque investissement pensé dans une logique globale.",
     benefit: "Structurer vos actifs immobiliers intelligemment.",
     href: "/patrimoine-immobilier-strategie",
-    image: "https://images.unsplash.com/photo-1598228723793-52759bba239c?w=600&auto=format&fit=crop&q=60",
+    image: "https://images.unsplash.com/photo-1570129477492-45c003edd2be?q=80&w=1400&auto=format&fit=crop",
+    treatment: "bw" as const,
   },
 ];
 
@@ -79,10 +85,23 @@ export default function ExpertisesPinned() {
           <div className="space-y-5">
             {expertises.map((e, i) => (
               <article key={e.title} className="glass-card glass-card-plain rounded-[1.5rem] overflow-hidden">
-                <div
-                  className="aspect-[16/10] bg-cover bg-center"
-                  style={{ backgroundImage: `url(${e.image})` }}
-                />
+                <div className="relative aspect-[16/10] overflow-hidden">
+                  <div
+                    className="absolute inset-0 bg-cover bg-center"
+                    style={{
+                      backgroundImage: `url(${e.image})`,
+                      filter: e.treatment === "bw"
+                        ? "grayscale(1) brightness(0.88) contrast(1.12)"
+                        : "grayscale(1)",
+                    }}
+                  />
+                  {e.treatment === "blue" && (
+                    <div
+                      className="absolute inset-0 pointer-events-none"
+                      style={{ background: "hsl(218 65% 28% / 0.45)", mixBlendMode: "multiply" }}
+                    />
+                  )}
+                </div>
                 <div className="p-6">
                   <p className="text-[10px] tracking-[0.25em] uppercase text-foreground/50 font-medium mb-3">
                     {e.tag} · {String(i + 1).padStart(2, "0")}
@@ -237,9 +256,20 @@ function ExpertiseCard({
           animate={{ scale: 1 }}
           exit={reduce ? { scale: 1 } : { scale: 1.04 }}
           transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-          style={{ backgroundImage: `url(${item.image})` }}
+          style={{
+            backgroundImage: `url(${item.image})`,
+            filter: item.treatment === "bw"
+              ? "grayscale(1) brightness(0.88) contrast(1.12)"
+              : "grayscale(1)",
+          }}
           className="absolute inset-0 bg-cover bg-center will-change-transform"
         />
+        {item.treatment === "blue" && (
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{ background: "hsl(218 65% 28% / 0.45)", mixBlendMode: "multiply" }}
+          />
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-background/40 via-transparent to-transparent" />
         <span
           aria-hidden
