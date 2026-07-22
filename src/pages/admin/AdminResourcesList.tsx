@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Pencil, Trash2, BookOpen, CheckCircle2, XCircle } from "lucide-react";
+import { Plus, Pencil, Trash2, BookOpen, CheckCircle2, XCircle, Star } from "lucide-react";
 import { getAllRessources, deleteRessource } from "@/lib/ressourcesService";
+import { getSiteSettingsMap, upsertSetting } from "@/lib/siteSettingsService";
 
 export default function AdminResourcesList() {
   const qc = useQueryClient();
@@ -11,6 +12,19 @@ export default function AdminResourcesList() {
   const { data: ressources = [], isLoading } = useQuery({
     queryKey: ["ressources-admin"],
     queryFn: getAllRessources,
+  });
+
+  const { data: settingsMap = {} } = useQuery({
+    queryKey: ["site-settings"],
+    queryFn: getSiteSettingsMap,
+    staleTime: 30_000,
+  });
+
+  const featuredId = settingsMap["featured_resource_id"] ?? null;
+
+  const featuredMutation = useMutation({
+    mutationFn: (id: string) => upsertSetting("featured_resource_id", id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["site-settings"] }),
   });
 
   const deleteMutation = useMutation({
@@ -74,7 +88,7 @@ export default function AdminResourcesList() {
           <table className="w-full">
             <thead>
               <tr style={{ borderBottom: "1px solid hsl(224 20% 12% / 0.07)" }}>
-                {["Titre", "Catégorie", "Pages", "Actif", "Actions"].map((h) => (
+                {["Titre", "Catégorie", "Pages", "Actif", "Mise en avant", "Actions"].map((h) => (
                   <th key={h} className="text-left px-5 py-3.5 text-[11px] tracking-[0.18em] uppercase font-medium"
                     style={{ color: "hsl(224 15% 55%)" }}>
                     {h}
@@ -107,6 +121,21 @@ export default function AdminResourcesList() {
                       ? <CheckCircle2 className="w-4 h-4" style={{ color: "hsl(142 55% 42%)" }} />
                       : <XCircle className="w-4 h-4" style={{ color: "hsl(224 15% 65%)" }} />
                     }
+                  </td>
+                  <td className="px-5 py-4">
+                    <button
+                      title={r.id === featuredId ? "Ressource mise en avant" : "Mettre en avant sur la page Ressources"}
+                      disabled={featuredMutation.isPending}
+                      onClick={() => { if (r.id !== featuredId) featuredMutation.mutate(r.id); }}
+                      className="p-1.5 rounded-lg transition-all duration-150 disabled:opacity-50"
+                      style={{
+                        color: r.id === featuredId ? "hsl(42 90% 48%)" : "hsl(224 15% 72%)",
+                        background: r.id === featuredId ? "hsl(42 90% 48% / 0.10)" : "transparent",
+                        cursor: r.id === featuredId ? "default" : "pointer",
+                      }}
+                    >
+                      <Star className="w-4 h-4" fill={r.id === featuredId ? "currentColor" : "none"} />
+                    </button>
                   </td>
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-2">

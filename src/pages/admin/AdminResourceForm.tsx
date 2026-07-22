@@ -8,7 +8,7 @@ import { ArrowLeft, Upload, FileText, X } from "lucide-react";
 import { getAllRessources, createRessource, updateRessource, uploadPDF } from "@/lib/ressourcesService";
 import type { RessourceInput } from "@/lib/ressourcesService";
 
-const CATEGORIES = ["Fiscalité", "Transmission", "Dirigeants", "Investir", "International"];
+const CATEGORIES = ["Fiscalité", "Transmission", "Dirigeants", "Investir", "International", "Retraite", "Immobilier"];
 
 const schema = z.object({
   title: z.string().min(3, "Titre trop court"),
