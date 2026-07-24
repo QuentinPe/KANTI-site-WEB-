@@ -33,7 +33,6 @@ const GestionPatrimonialePage   = lazy(() => import("./pages/GestionPatrimoniale
 const SimulateurPatrimonialPage = lazy(() => import("./pages/SimulateurPatrimonialPage"));
 const FiscalitePage             = lazy(() => import("./pages/FiscalitePage"));
 const PatrimoineProPage         = lazy(() => import("./pages/PatrimoineProPage"));
-const FinancementPage           = lazy(() => import("./pages/FinancementPage"));
 const CourtageFinancementPage   = lazy(() => import("./pages/CourtageFinancementPage"));
 const SimulateurFinancementPage = lazy(() => import("./pages/SimulateurFinancementPage"));
 const ActualitesPage            = lazy(() => import("./pages/ActualitesPage"));

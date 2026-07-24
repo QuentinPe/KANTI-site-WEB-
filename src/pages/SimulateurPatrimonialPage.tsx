@@ -336,7 +336,7 @@ export default function SimulateurPatrimonialPage() {
       const res = runSimulation(params);
       setResult(res);
     } catch (e) {
-      console.error(e);
+      console.error("[Simulateur] form submit error:", e);
     }
   }, [allocation, buildParams]);
 

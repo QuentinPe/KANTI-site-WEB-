@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { UserRound, KeyRound } from "lucide-react";
 import logoDark from "@/assets/logo-kanti-dark.png.asset.json";
 import logoWhite from "@/assets/logo-kanti-white.png.asset.json";
-import ClientSpaceModal from "./ClientSpaceModal";
 
 const navLinks = [
   { label: "Le Cabinet", href: "/cabinet" },
@@ -18,7 +17,7 @@ const navLinks = [
       { label: "Gestion patrimoniale", href: "/gestion-patrimoniale" },
       { label: "Fiscalité du patrimoine", href: "/fiscalite" },
       { label: "Patrimoine professionnel", href: "/patrimoine-professionnel" },
-      { label: "Financement & crédit", href: "/financement" },
+      { label: "Financement & crédit", href: "/courtage-patrimonial" },
       { label: "Transmission & prévoyance", href: "/transmission-patrimoine-famille" },
       { label: "Immobilier patrimonial", href: "/patrimoine-immobilier-strategie" },
     ],
@@ -32,7 +31,6 @@ export default function Header() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [navExpanded, setNavExpanded] = useState(false);
   const [hoveredKey, setHoveredKey] = useState<string | null>(null);
-  const [clientSpaceOpen, setClientSpaceOpen] = useState(false);
   const [clientDropdownOpen, setClientDropdownOpen] = useState(false);
   const location = useLocation();
   const isHome = location.pathname === "/";
@@ -371,7 +369,6 @@ export default function Header() {
       </div>
     </header>
 
-    <ClientSpaceModal open={clientSpaceOpen} onClose={() => setClientSpaceOpen(false)} />
     </>
   );
 }

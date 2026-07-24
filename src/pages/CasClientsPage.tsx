@@ -639,7 +639,7 @@ export default function CasClientsPage() {
     .filter(Boolean) as CasClient[];
 
   /* ── Steps for progress bar ── */
-  const STEPS = ["Contexte", "Diagnostic", "Stratégie", "Résultats"];
+  const STEPS = ["Contexte", "Diagnostic", "Stratégie", "Résultat"];
 
   /* ── Trust badges ── */
   const TRUST_BADGES = [
@@ -1009,21 +1009,6 @@ export default function CasClientsPage() {
                     }}
                   />
                 </div>
-                {/* Sort */}
-                <select
-                  className="pl-3 pr-8 py-1.5 rounded-full text-[12px] focus:outline-none appearance-none"
-                  style={{
-                    background: "hsl(220 25% 97%)",
-                    border: "1px solid hsl(224 20% 86%)",
-                    color: NAVY_MID,
-                    width: 190,
-                  }}
-                  defaultValue="pertinence"
-                >
-                  <option value="pertinence">Trier par pertinence</option>
-                  <option value="economie">Économie la plus élevée</option>
-                  <option value="profil">Par profil</option>
-                </select>
               </div>
             </div>
           </div>

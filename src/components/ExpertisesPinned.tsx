@@ -74,7 +74,7 @@ const expertises = [
       "Accompagnement complet de A à Z",
     ],
     kpi: { value: "−0,42 %", label: "Par rapport au taux marché en moyenne" },
-    href: "/financement",
+    href: "/courtage-patrimonial",
     image:
       "https://images.unsplash.com/photo-1448630360428-65456885c650?q=80&w=1400&auto=format&fit=crop",
     treatment: "bw" as const,
@@ -90,7 +90,7 @@ const expertises = [
       "Assurance-vie et pacte Dutreil",
       "Anticipation successorale",
     ],
-    kpi: { value: "−180 k€", label: "De droits de succession évités en moyenne" },
+    kpi: { value: "−180 k€", label: "De droits évités — exemple : couple 60 ans, 1,8 M€" },
     href: "/transmission-patrimoine-famille",
     image:
       "https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?q=80&w=1400&auto=format&fit=crop",
@@ -223,6 +223,9 @@ export default function ExpertisesPinned() {
               </article>
             ))}
           </div>
+          <p className="mt-4 text-[10px] leading-relaxed font-light px-1" style={{ color: NAVY_LIGHT, opacity: 0.55 }}>
+            * Les performances passées ne préjugent pas des performances futures. Données calculées sur les portefeuilles gérés par KANTI, nettes de frais de gestion.
+          </p>
         </div>
       </section>
 
@@ -356,6 +359,11 @@ function ExpertisesPinnedDesktop() {
                   ))}
                 </div>
               )}
+
+              {/* Compliance footnote */}
+              <p className="text-[10px] leading-relaxed font-light" style={{ color: NAVY_LIGHT, opacity: 0.55 }}>
+                * Les performances passées ne préjugent pas des performances futures. Données calculées sur les portefeuilles gérés par KANTI, nettes de frais de gestion.
+              </p>
             </div>
           </div>
         </div>
