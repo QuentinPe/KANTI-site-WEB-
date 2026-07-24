@@ -257,14 +257,16 @@ export default function Header() {
                   <div className="px-4 pt-2 pb-2.5 mb-0.5 border-b border-foreground/[0.06]">
                     <p className="text-[10px] tracking-[0.28em] uppercase font-medium text-foreground/45">Accès sécurisé</p>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => { setClientDropdownOpen(false); setClientSpaceOpen(true); }}
+                  <a
+                    href="https://app.wealthcome.fr/login"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setClientDropdownOpen(false)}
                     className="w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl text-[13px] font-medium text-foreground/75 hover:text-foreground hover:bg-foreground/[0.04] transition-all duration-200 mx-0"
                   >
                     <UserRound className="w-4 h-4 text-foreground/40" strokeWidth={1.5} />
                     Espace client
-                  </button>
+                  </a>
                   <Link
                     to="/admin"
                     onClick={() => setClientDropdownOpen(false)}
@@ -349,14 +351,16 @@ export default function Header() {
         >
           Prendre rendez-vous
         </Link>
-        <button
-          type="button"
-          onClick={() => { setMenuOpen(false); setClientSpaceOpen(true); }}
+        <a
+          href="https://app.wealthcome.fr/login"
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => setMenuOpen(false)}
           className="mt-2 px-8 py-3 rounded-full ring-1 ring-white/20 text-white text-sm tracking-wide inline-flex items-center gap-2"
         >
           <UserRound className="w-4 h-4" strokeWidth={1.75} />
           Espace client
-        </button>
+        </a>
         <Link
           to="/admin"
           onClick={() => setMenuOpen(false)}

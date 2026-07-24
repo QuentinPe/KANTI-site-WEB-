@@ -34,7 +34,7 @@ export default function AdminLayout() {
         <div className="px-6 py-7 border-b" style={{ borderColor: "hsl(0 0% 100% / 0.08)" }}>
           <img src={logoWhite.url} alt="KANTI" className="h-6 w-auto" style={{ opacity: 0.85 }} />
           <p className="mt-1.5 text-[10px] tracking-[0.28em] uppercase font-medium" style={{ color: "hsl(0 0% 100% / 0.35)" }}>
-            Administration
+            Conseillers
           </p>
         </div>
 

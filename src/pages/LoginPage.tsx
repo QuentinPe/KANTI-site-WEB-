@@ -8,6 +8,7 @@ import { Eye, EyeOff, Mail, Lock, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import logoWhite from "@/assets/logo-kanti-white.png.asset.json";
+import logoDark from "@/assets/logo-kanti-dark.png.asset.json";
 
 const loginSchema = z.object({
   email: z.string().min(1, "Email requis").email("Adresse email invalide"),
@@ -91,6 +92,49 @@ export default function LoginPage() {
       className="min-h-screen flex items-center justify-center p-4"
       style={{ background: "linear-gradient(145deg, hsl(224 60% 7%) 0%, hsl(222 50% 12%) 100%)" }}
     >
+      {/* ── Loading overlay ─────────────────────────────────────────── */}
+      <AnimatePresence>
+        {loginPending && (
+          <motion.div
+            key="login-loading"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.18 }}
+            className="fixed inset-0 z-[9999] flex flex-col items-center justify-center"
+            style={{ background: "white" }}
+          >
+            <img
+              src={logoDark.url}
+              alt="KANTI"
+              style={{ height: 36, width: "auto", marginBottom: 40, opacity: 0.92 }}
+            />
+            {/* Progress bar track */}
+            <div
+              style={{
+                width: 220,
+                height: 2,
+                borderRadius: 99,
+                background: "hsl(224 20% 90%)",
+                overflow: "hidden",
+              }}
+            >
+              <motion.div
+                animate={{ x: ["0%", "240%"] }}
+                transition={{ duration: 1.1, repeat: Infinity, ease: "easeInOut" }}
+                style={{
+                  width: "40%",
+                  height: "100%",
+                  borderRadius: 99,
+                  background: "hsl(224 55% 16%)",
+                  originX: 0,
+                }}
+              />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div aria-hidden className="fixed inset-0 opacity-[0.030] pointer-events-none"
         style={{ backgroundImage: GRAIN, backgroundSize: "200px" }} />
 
@@ -171,7 +215,7 @@ export default function LoginPage() {
                 transition={{ duration: 0.22 }}
               >
                 <h2 className="text-[17px] font-medium mb-1 tracking-tight" style={{ color: "hsl(0 0% 100% / 0.90)" }}>
-                  Connexion administrateur
+                  Espace conseillers
                 </h2>
 
                 <div className="flex flex-col gap-1.5">
