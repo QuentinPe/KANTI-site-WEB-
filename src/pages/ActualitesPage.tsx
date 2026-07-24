@@ -214,53 +214,83 @@ export default function ActualitesPage() {
         style={{ borderBottom: "1px solid hsl(224 20% 12% / 0.07)" }}
       >
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
-          {/* Tabs */}
-          <div className="flex items-center gap-2 py-3">
+          {/* Tabs — spring-animated pill indicator */}
+          <div className="flex items-center py-2.5 gap-1">
             {TABS.map(({ id, Icon, label }) => {
               const active = activeTab === id;
               return (
                 <button
                   key={id}
                   onClick={() => setActiveTab(id)}
-                  className="flex items-center gap-2 px-4 py-2 rounded-full text-[12.5px] font-medium tracking-wide transition-all duration-200"
-                  style={{
-                    background: active ? NAVY : "transparent",
-                    color: active ? "white" : NAVY_MID,
-                    border: `1px solid ${active ? NAVY : "hsl(224 20% 12% / 0.12)"}`,
-                  }}
+                  className="relative flex items-center gap-2 px-4 py-2 rounded-full text-[12.5px] font-medium tracking-wide transition-colors duration-200"
+                  style={{ color: active ? NAVY : NAVY_SFT }}
                 >
-                  <Icon className="w-3.5 h-3.5" strokeWidth={active ? 2 : 1.5} />
-                  {label}
+                  {/* Spring-animated background — moves between tabs via layoutId */}
+                  {active && (
+                    <motion.span
+                      layoutId="tab-bubble"
+                      className="absolute inset-0 rounded-full"
+                      style={{ background: "hsl(220 25% 94%)", border: "1px solid hsl(224 20% 12% / 0.10)" }}
+                      transition={{ type: "spring", bounce: 0.22, duration: 0.48 }}
+                    />
+                  )}
+                  {/* Hover ghost — only on inactive */}
+                  {!active && (
+                    <span className="absolute inset-0 rounded-full opacity-0 hover:opacity-100 transition-opacity duration-150" style={{ background: "hsl(220 25% 96%)" }} />
+                  )}
+                  <Icon className="w-3.5 h-3.5 relative z-10 transition-transform duration-200 group-hover:scale-110" strokeWidth={active ? 2 : 1.5} />
+                  <span className="relative z-10">{label}</span>
                 </button>
               );
             })}
           </div>
 
           {/* Filter pills */}
-          {activeTab !== "bref" && (
-            <div className="flex items-center gap-2 pb-3 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
-              {FILTERS.map((f) => {
-                const active = cat === f;
-                return (
-                  <button
-                    key={f}
-                    onClick={() => setCat(f)}
-                    className="flex-shrink-0 px-3.5 py-1.5 rounded-full text-[11.5px] font-medium tracking-wide transition-all duration-200"
-                    style={{
-                      background: active ? "hsl(224 55% 18%)" : "transparent",
-                      color: active ? "white" : "hsl(224 18% 44%)",
-                      border: `1px solid ${active ? "hsl(224 55% 22%)" : "hsl(224 20% 12% / 0.12)"}`,
-                    }}
+          <AnimatePresence initial={false}>
+            {activeTab !== "bref" && (
+              <motion.div
+                key="filters"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                className="overflow-hidden"
+              >
+                <div className="flex items-center gap-2 pb-3 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
+                  {FILTERS.map((f) => {
+                    const active = cat === f;
+                    return (
+                      <motion.button
+                        key={f}
+                        onClick={() => setCat(f)}
+                        whileHover={active ? {} : { y: -1, scale: 1.02 }}
+                        whileTap={{ scale: 0.96 }}
+                        transition={{ duration: 0.15 }}
+                        className="flex-shrink-0 px-3.5 py-1.5 rounded-full text-[11.5px] font-medium tracking-wide"
+                        style={{
+                          background: active ? "hsl(224 55% 18%)" : "transparent",
+                          color: active ? "white" : "hsl(224 18% 44%)",
+                          border: `1px solid ${active ? "hsl(224 55% 22%)" : "hsl(224 20% 12% / 0.12)"}`,
+                          transition: "background 0.18s, color 0.18s, border-color 0.18s, box-shadow 0.18s",
+                          boxShadow: active ? "0 2px 8px -2px hsl(224 60% 20% / 0.28)" : undefined,
+                        }}
+                      >
+                        {f}
+                      </motion.button>
+                    );
+                  })}
+                  <motion.button
+                    whileHover={{ scale: 1.1, rotate: 8 }}
+                    whileTap={{ scale: 0.94 }}
+                    transition={{ duration: 0.15 }}
+                    className="flex-shrink-0 ml-auto p-2 rounded-full transition-colors hover:bg-black/5"
                   >
-                    {f}
-                  </button>
-                );
-              })}
-              <button className="flex-shrink-0 ml-auto p-2 rounded-full transition-colors hover:bg-black/5">
-                <Search className="w-4 h-4" strokeWidth={1.5} style={{ color: NAVY_SFT }} />
-              </button>
-            </div>
-          )}
+                    <Search className="w-4 h-4" strokeWidth={1.5} style={{ color: NAVY_SFT }} />
+                  </motion.button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
 
