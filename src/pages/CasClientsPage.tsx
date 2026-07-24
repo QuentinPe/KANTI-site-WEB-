@@ -1522,69 +1522,71 @@ export default function CasClientsPage() {
       {/* ── CTA SECTION ───────────────────────────────────────────── */}
       <section
         className="py-24 lg:py-32"
-        style={{ background: "white", borderTop: "1px solid hsl(224 20% 12% / 0.07)" }}
+        style={{ background: "hsl(var(--navy-deep))", position: "relative", overflow: "hidden" }}
       >
         <div className="max-w-6xl mx-auto px-8 md:px-14 reveal">
           <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center mb-16">
             {/* Left: heading */}
             <div className="lg:col-span-5">
+              <p className="text-[9px] tracking-[0.30em] uppercase font-semibold mb-5" style={{ color: "hsl(0 0% 100% / 0.35)" }}>
+                Kanti · Études de cas
+              </p>
               <h2
                 className="font-heading font-light leading-[1.05] tracking-tight"
-                style={{ fontSize: "clamp(2rem, 4vw, 3rem)", color: NAVY_TEXT }}
+                style={{ fontSize: "clamp(2rem, 4vw, 3rem)", color: "white" }}
               >
-                Votre situation mérite{"\n"}
-                <span className="italic" style={{ color: NAVY_MID }}>une stratégie sur mesure</span>
+                Votre situation mérite{" "}
+                <span className="italic" style={{ color: "hsl(214 60% 72%)" }}>une stratégie sur mesure</span>
               </h2>
             </div>
 
             {/* Center/right: description + buttons */}
-            <div className="lg:col-span-7 flex flex-col gap-6">
-              <p className="text-[15px] font-light leading-relaxed" style={{ color: "hsl(224 15% 40%)" }}>
+            <div className="lg:col-span-7 flex flex-col gap-6" style={{ borderLeft: "1px solid hsl(0 0% 100% / 0.10)", paddingLeft: "2.5rem" }}>
+              <p className="text-[15px] font-light leading-relaxed" style={{ color: "hsl(0 0% 100% / 0.58)" }}>
                 Chacun des cas présentés ici s'inspire d'une situation réelle. Votre patrimoine a ses propres spécificités — parlons-en lors d'un premier échange de 30 minutes, sans engagement.
               </p>
               <div className="flex flex-wrap gap-3">
                 <Link
                   to="/contact"
-                  className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-full text-[13px] font-medium tracking-wide transition-all duration-300 hover:gap-4"
-                  style={{
-                    background: NAVY,
-                    color: "white",
-                    boxShadow: `0 8px 24px -6px ${NAVY}52`,
-                  }}
+                  className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-full text-[13px] font-medium tracking-wide transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_12px_32px_-8px_hsl(0_0%_100%_/_0.15)] group"
+                  style={{ background: "white", color: "hsl(224 55% 12%)" }}
                 >
                   Prendre rendez-vous
-                  <ArrowRight className="w-4 h-4" strokeWidth={1.5} />
+                  <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" strokeWidth={1.5} />
                 </Link>
                 <Link
                   to="/ressources"
-                  className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-full text-[13px] font-medium tracking-wide transition-all duration-300 hover:gap-4"
-                  style={{
-                    background: "transparent",
-                    color: NAVY,
-                    border: `1px solid ${NAVY}3A`,
-                  }}
+                  className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-full text-[13px] font-medium tracking-wide transition-all duration-300 hover:border-white/40 hover:text-white group"
+                  style={{ border: "1px solid hsl(0 0% 100% / 0.20)", color: "hsl(0 0% 100% / 0.72)" }}
                 >
                   Recevoir une synthèse PDF
-                  <ArrowRight className="w-4 h-4" strokeWidth={1.5} />
+                  <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" strokeWidth={1.5} />
                 </Link>
+              </div>
+
+              {/* Trust dots */}
+              <div className="flex flex-wrap gap-x-6 gap-y-2 pt-2">
+                {["Premier échange gratuit", "Sans engagement", "Confidentiel"].map((t) => (
+                  <span key={t} className="inline-flex items-center gap-2 text-[11px] tracking-[0.18em] uppercase font-medium" style={{ color: "hsl(0 0% 100% / 0.28)" }}>
+                    <span className="w-1 h-1 rounded-full" style={{ background: "hsl(0 0% 100% / 0.28)" }} />
+                    {t}
+                  </span>
+                ))}
               </div>
             </div>
           </div>
 
           {/* Trust badges */}
-          <div
-            className="grid grid-cols-2 lg:grid-cols-4 gap-px rounded-2xl overflow-hidden"
-            style={{ background: "hsl(224 20% 12% / 0.07)", border: "1px solid hsl(224 20% 12% / 0.07)" }}
-          >
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-px rounded-2xl overflow-hidden" style={{ background: "hsl(0 0% 100% / 0.06)", border: "1px solid hsl(0 0% 100% / 0.08)" }}>
             {TRUST_BADGES.map(({ icon: Icon, label }) => (
-              <div key={label} className="bg-white px-6 py-5 flex items-center gap-3">
+              <div key={label} className="px-6 py-5 flex items-center gap-3" style={{ background: "hsl(224 60% 7%)" }}>
                 <div
                   className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-                  style={{ background: `${NAVY}10` }}
+                  style={{ background: "hsl(0 0% 100% / 0.08)" }}
                 >
-                  <Icon className="w-4 h-4" style={{ color: NAVY }} strokeWidth={1.6} />
+                  <Icon className="w-4 h-4" style={{ color: "hsl(0 0% 100% / 0.55)" }} strokeWidth={1.6} />
                 </div>
-                <p className="text-[12px] font-medium leading-snug" style={{ color: NAVY_TEXT }}>
+                <p className="text-[12px] font-light leading-snug" style={{ color: "hsl(0 0% 100% / 0.55)" }}>
                   {label}
                 </p>
               </div>

@@ -33,7 +33,10 @@ export default function PageCTA({
   const indexColor = isNavy ? "text-white/15" : "text-foreground/12";
 
   return (
-    <section className={`section-padding ${isNavy ? "section-dark" : "section-glass"}`}>
+    <section
+      className={`section-padding ${isNavy ? "" : "section-glass"}`}
+      style={isNavy ? { background: "hsl(var(--navy-deep))", position: "relative", overflow: "hidden" } : undefined}
+    >
       <div className="max-w-6xl mx-auto relative z-10 reveal">
         <div className={`grid lg:grid-cols-12 gap-10 lg:gap-16 items-end border-t ${hairline} pt-12 md:pt-16`}>
           {/* Colonne éditoriale gauche */}
