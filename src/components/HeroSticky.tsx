@@ -32,16 +32,11 @@ export default function HeroSticky() {
   });
 
   const titleContainerRef = useRef<HTMLDivElement>(null);
-  const titleOpacity = useTransform(scrollYProgress, [0, 0.90, 0.95, 0.98], [1, 1, 0.1, 0]);
-  const titleY = useTransform(scrollYProgress, [0, 0.98], reduce ? [0, 0] : [0, -30]);
-
-  useEffect(() => {
-    return scrollYProgress.on("change", (p) => {
-      if (titleContainerRef.current) {
-        titleContainerRef.current.style.visibility = p > 0.98 ? "hidden" : "visible";
-      }
-    });
-  }, [scrollYProgress]);
+  // Text stays fully visible until 94% through the hero scroll, then fades out smoothly.
+  // No visibility toggle — it caused CSS animations to replay, making buttons re-appear
+  // while h1/p briefly reset to opacity:0 (animation-fill-mode: both replay).
+  const titleOpacity = useTransform(scrollYProgress, [0, 0.94, 0.98, 0.999], [1, 1, 0.08, 0]);
+  const titleY = useTransform(scrollYProgress, [0, 0.999], reduce ? [0, 0] : [0, -30]);
 
   // Preload all frames as <img> elements + drive canvas from scroll
   useEffect(() => {
