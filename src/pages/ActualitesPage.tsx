@@ -139,47 +139,64 @@ export default function ActualitesPage() {
               transition={{ duration: 0.9, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
             >
               <article
-                className="relative rounded-[22px] overflow-hidden cursor-pointer group"
-                style={{ height: "460px", boxShadow: "0 24px 64px -12px hsl(224 60% 12% / 0.24)" }}
+                className="flex rounded-[22px] overflow-hidden cursor-pointer group"
+                style={{ height: "480px", boxShadow: "0 24px 64px -12px hsl(224 60% 12% / 0.24)" }}
                 onClick={() => navigate(`/actualites/${featured.id}`)}
               >
-                <img
-                  src={featured.image ?? FALLBACK}
-                  alt={featured.title}
-                  fetchPriority="high"
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]"
-                />
+                {/* Image — left 56% */}
+                <div className="relative flex-shrink-0" style={{ width: "56%" }}>
+                  <img
+                    src={featured.image ?? FALLBACK}
+                    alt={featured.title}
+                    fetchPriority="high"
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.05]"
+                  />
+                  {/* Badge */}
+                  <span
+                    className="absolute top-5 left-5 px-3 py-1.5 rounded-full text-[10px] tracking-[0.22em] uppercase font-semibold"
+                    style={{ background: "hsl(0 0% 100% / 0.90)", backdropFilter: "blur(10px)", color: NAVY }}
+                  >
+                    À la une
+                  </span>
+                  {/* Smooth right-edge blend into the content panel */}
+                  <div
+                    aria-hidden
+                    className="absolute inset-y-0 right-0 w-16 pointer-events-none"
+                    style={{ background: "linear-gradient(90deg, transparent, hsl(224 60% 9%))" }}
+                  />
+                </div>
+
+                {/* Content panel — right */}
                 <div
-                  className="absolute inset-0"
-                  style={{ background: "linear-gradient(145deg, transparent 25%, hsl(224 60% 7% / 0.88) 58%, hsl(224 60% 7%) 100%)" }}
-                />
-                <span
-                  className="absolute top-5 left-5 px-3 py-1.5 rounded-full text-[10px] tracking-[0.22em] uppercase font-semibold"
-                  style={{ background: "hsl(43 78% 54%)", color: "hsl(224 60% 10%)" }}
+                  className="flex-1 flex flex-col justify-center p-8 lg:p-10 min-w-0"
+                  style={{ background: "hsl(224 60% 9%)" }}
                 >
-                  À la une
-                </span>
-                <div className="absolute bottom-0 right-0 p-7 lg:p-9 max-w-[68%]">
-                  <p className="text-[9px] tracking-[0.28em] uppercase font-semibold mb-3" style={{ color: "hsl(43 80% 65%)" }}>
+                  <p
+                    className="text-[9px] tracking-[0.3em] uppercase font-semibold mb-4"
+                    style={{ color: "hsl(214 55% 62%)" }}
+                  >
                     {featured.tag}
                   </p>
                   <h2
-                    className="font-heading font-light text-white leading-[1.12] tracking-tight mb-3"
-                    style={{ fontSize: "clamp(1.1rem, 1.9vw, 1.45rem)" }}
+                    className="font-heading font-light text-white leading-[1.1] tracking-tight mb-4"
+                    style={{ fontSize: "clamp(1.05rem, 1.8vw, 1.45rem)" }}
                   >
                     {featured.title}
                   </h2>
-                  <p className="text-[12.5px] font-light text-white/60 leading-relaxed mb-4 line-clamp-2">
+                  <p className="text-[13px] font-light leading-relaxed mb-5 line-clamp-3" style={{ color: "hsl(0 0% 100% / 0.55)" }}>
                     {featured.excerpt}
                   </p>
-                  <div className="flex items-center gap-3 mb-5">
-                    <span className="text-[11px] text-white/40 font-light">{featured.reading_time} de lecture</span>
-                    <span className="w-px h-3 bg-white/20" />
-                    <span className="text-[11px] text-white/40 font-light">{featured.date}</span>
+                  <div
+                    className="flex items-center gap-3 mb-6 pb-5"
+                    style={{ borderBottom: "1px solid hsl(0 0% 100% / 0.08)" }}
+                  >
+                    <span className="text-[11px] font-light" style={{ color: "hsl(0 0% 100% / 0.38)" }}>{featured.reading_time} de lecture</span>
+                    <span className="w-px h-3" style={{ background: "hsl(0 0% 100% / 0.14)" }} />
+                    <span className="text-[11px] font-light" style={{ color: "hsl(0 0% 100% / 0.38)" }}>{featured.date}</span>
                   </div>
                   <button
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-[12.5px] font-medium text-white transition-all duration-200 hover:-translate-y-0.5"
-                    style={{ background: "hsl(224 55% 18%)", border: "1px solid hsl(224 55% 28%)" }}
+                    className="self-start inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-[12.5px] font-medium transition-all duration-200 hover:-translate-y-0.5"
+                    style={{ background: "white", color: NAVY }}
                   >
                     Lire l'article
                     <ArrowRight className="w-3.5 h-3.5" strokeWidth={1.5} />
@@ -422,7 +439,7 @@ export default function ActualitesPage() {
             <Link
               to="/contact"
               className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full text-[13px] font-medium transition-all duration-200 hover:-translate-y-0.5"
-              style={{ background: "hsl(43 78% 54%)", color: "hsl(224 60% 10%)" }}
+              style={{ background: "white", color: NAVY }}
             >
               Prendre rendez-vous
               <ArrowRight className="w-4 h-4" strokeWidth={1.5} />
