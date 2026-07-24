@@ -50,7 +50,7 @@ export default function IndicateursSoliditeSection() {
             viewport={{ once: true, margin: '-60px' }}
           >
             <p className="text-[10px] tracking-[0.32em] uppercase text-foreground/45 mb-5 font-medium">
-              05 · Indicateurs de solidité
+              04 · Indicateurs de solidité
             </p>
             <h2 className="text-3xl md:text-4xl font-heading font-light text-foreground leading-[1.1] tracking-tight mb-6">
               Ce que le bilan mesure au-delà des chiffres bruts.

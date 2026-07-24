@@ -54,7 +54,7 @@ export default function CartographieSection() {
             viewport={{ once: true, margin: '-60px' }}
           >
             <p className="text-[10px] tracking-[0.32em] uppercase text-foreground/45 mb-5 font-medium">
-              02 · Cartographie patrimoniale
+              01 · Cartographie patrimoniale
             </p>
             <h2 className="text-3xl md:text-4xl font-heading font-light text-foreground leading-[1.1] tracking-tight mb-6">
               Actifs, passifs, liquidité :{' '}

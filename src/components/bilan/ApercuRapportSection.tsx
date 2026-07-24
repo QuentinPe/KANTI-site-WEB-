@@ -62,7 +62,7 @@ export default function ApercuRapportSection() {
             viewport={{ once: true, margin: '-60px' }}
           >
             <p className="text-[10px] tracking-[0.32em] uppercase text-white/40 mb-5 font-medium">
-              08 · Le rapport remis
+              07 · Le rapport remis
             </p>
             <h2 className="text-3xl md:text-4xl font-heading font-light text-white leading-[1.1] tracking-tight mb-6">
               Un document structuré, argumenté, qui vous appartient.

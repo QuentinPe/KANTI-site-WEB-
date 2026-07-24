@@ -59,7 +59,7 @@ export default function BilanFAQSection() {
           viewport={{ once: true, margin: '-60px' }}
         >
           <p className="text-[10px] tracking-[0.32em] uppercase text-foreground/45 mb-4 font-medium">
-            12 · Questions fréquentes
+            09 · Questions fréquentes
           </p>
           <h2 className="text-3xl md:text-4xl font-heading font-light text-foreground leading-tight tracking-tight">
             Ce que vous voulez savoir sur le bilan patrimonial

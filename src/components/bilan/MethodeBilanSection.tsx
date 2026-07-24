@@ -61,7 +61,7 @@ export default function MethodeBilanSection() {
           viewport={{ once: true, margin: '-60px' }}
         >
           <p className="text-[10px] tracking-[0.32em] uppercase text-foreground/45 mb-4 font-medium">
-            07 · Notre méthode
+            06 · Notre méthode
           </p>
           <h2 className="text-3xl md:text-4xl font-heading font-light text-foreground leading-tight tracking-tight max-w-2xl mx-auto">
             Quatre temps. De la collecte à la feuille de route.

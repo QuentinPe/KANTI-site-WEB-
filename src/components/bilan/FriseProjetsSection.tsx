@@ -43,7 +43,7 @@ export default function FriseProjetsSection() {
           viewport={{ once: true, margin: '-60px' }}
         >
           <p className="text-[10px] tracking-[0.32em] uppercase text-foreground/45 mb-4 font-medium">
-            04 · Frise des projets de vie
+            03 · Frise des projets de vie
           </p>
           <h2 className="text-3xl md:text-4xl font-heading font-light text-foreground leading-tight tracking-tight max-w-2xl">
             Aligner votre allocation à chaque étape.

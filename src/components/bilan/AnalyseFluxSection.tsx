@@ -24,7 +24,7 @@ export default function AnalyseFluxSection() {
           viewport={{ once: true, margin: '-60px' }}
         >
           <p className="text-[10px] tracking-[0.32em] uppercase text-foreground/45 mb-4 font-medium">
-            06 · Analyse des flux annuels
+            05 · Analyse des flux annuels
           </p>
           <h2 className="text-3xl md:text-4xl font-heading font-light text-foreground leading-tight tracking-tight max-w-2xl mx-auto">
             Ce que vous gagnez, ce que vous payez, ce qui reste.

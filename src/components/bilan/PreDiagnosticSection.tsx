@@ -38,7 +38,7 @@ export default function PreDiagnosticSection() {
           viewport={{ once: true, margin: '-60px' }}
         >
           <p className="text-[10px] tracking-[0.32em] uppercase text-foreground/45 mb-4 font-medium">
-            09 · Pré-diagnostic
+            08 · Pré-diagnostic
           </p>
           <h2 className="text-3xl md:text-4xl font-heading font-light text-foreground leading-tight tracking-tight max-w-2xl mx-auto">
             Quelques informations pour préparer notre échange.
@@ -82,8 +82,9 @@ export default function PreDiagnosticSection() {
             </p>
           </motion.div>
 
-          {/* Right: CTA card */}
+          {/* Right: CTA card — sticky */}
           <motion.div
+            className="lg:sticky lg:top-24 lg:self-start"
             initial={reduce ? false : { opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, ease: 'easeOut', delay: 0.15 }}
