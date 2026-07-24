@@ -911,18 +911,18 @@ export default function CasClientsPage() {
       </section>
 
       {/* ── STICKY FILTER BAR ─────────────────────────────────────── */}
-      <div className="sticky z-40 py-3" style={{ top: 72, background: "hsl(220 25% 97%)" }}>
-        <div className="max-w-6xl mx-auto px-8 md:px-14">
-          <div
-            className="rounded-2xl px-5 py-4"
-            style={{
-              background: "hsl(0 0% 100% / 0.96)",
-              backdropFilter: "blur(14px)",
-              border: "1px solid hsl(224 20% 12% / 0.08)",
-              boxShadow: "0 2px 16px -4px hsl(224 60% 12% / 0.07)",
-            }}
-          >
-            <div className="grid lg:grid-cols-[1fr_auto] gap-4 items-start">
+      <div
+        className="sticky z-40 backdrop-blur-2xl"
+        style={{
+          top: 72,
+          background: "hsl(0 0% 100% / 0.52)",
+          borderBottom: "1px solid hsl(0 0% 100% / 0.55)",
+          boxShadow: "0 8px 32px -8px hsl(224 30% 18% / 0.10), inset 0 -1px 0 hsl(224 20% 12% / 0.05)",
+          WebkitBackdropFilter: "blur(24px) saturate(160%)",
+        } as React.CSSProperties}
+      >
+        <div className="max-w-6xl mx-auto px-8 md:px-14 py-4">
+          <div className="grid lg:grid-cols-[1fr_auto] gap-4 items-start">
               {/* Filter rows */}
               <div className="space-y-3">
                 {/* Row 1: Profil */}
@@ -937,19 +937,24 @@ export default function CasClientsPage() {
                     {PROFILE_FILTERS.map((p) => {
                       const isActive = activeProfile === p;
                       return (
-                        <button
+                        <motion.button
                           key={p}
                           type="button"
                           onClick={() => setActiveProfile(p)}
-                          className="px-3 py-1.5 rounded-full text-[11px] font-medium tracking-wide transition-all duration-200"
+                          whileHover={isActive ? {} : { y: -1, scale: 1.02 }}
+                          whileTap={{ scale: 0.96 }}
+                          transition={{ duration: 0.15 }}
+                          className="px-3 py-1.5 rounded-full text-[11px] font-medium tracking-wide"
                           style={{
                             background: isActive ? NAVY : "transparent",
                             color: isActive ? "white" : NAVY_MID,
-                            border: `1px solid ${isActive ? "transparent" : "hsl(224 20% 86%)"}`,
+                            border: `1px solid ${isActive ? "transparent" : "hsl(224 20% 12% / 0.12)"}`,
+                            boxShadow: isActive ? "0 2px 8px -2px hsl(224 60% 20% / 0.28)" : undefined,
+                            transition: "background 0.18s, color 0.18s, border-color 0.18s, box-shadow 0.18s",
                           }}
                         >
                           {p}
-                        </button>
+                        </motion.button>
                       );
                     })}
                   </div>
@@ -967,19 +972,24 @@ export default function CasClientsPage() {
                     {OBJECTIF_FILTERS.map((o) => {
                       const isActive = activeObjectif === o;
                       return (
-                        <button
+                        <motion.button
                           key={o}
                           type="button"
                           onClick={() => setActiveObjectif(o)}
-                          className="px-3 py-1.5 rounded-full text-[11px] font-medium tracking-wide transition-all duration-200"
+                          whileHover={isActive ? {} : { y: -1, scale: 1.02 }}
+                          whileTap={{ scale: 0.96 }}
+                          transition={{ duration: 0.15 }}
+                          className="px-3 py-1.5 rounded-full text-[11px] font-medium tracking-wide"
                           style={{
                             background: isActive ? NAVY : "transparent",
                             color: isActive ? "white" : NAVY_MID,
-                            border: `1px solid ${isActive ? "transparent" : "hsl(224 20% 86%)"}`,
+                            border: `1px solid ${isActive ? "transparent" : "hsl(224 20% 12% / 0.12)"}`,
+                            boxShadow: isActive ? "0 2px 8px -2px hsl(224 60% 20% / 0.28)" : undefined,
+                            transition: "background 0.18s, color 0.18s, border-color 0.18s, box-shadow 0.18s",
                           }}
                         >
                           {o}
-                        </button>
+                        </motion.button>
                       );
                     })}
                   </div>
@@ -1013,7 +1023,6 @@ export default function CasClientsPage() {
             </div>
           </div>
         </div>
-      </div>
 
       {/* ── MAIN CONTENT ──────────────────────────────────────────── */}
       <main

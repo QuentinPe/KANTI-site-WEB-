@@ -691,8 +691,8 @@ export default function ArticleDetailPage() {
           </div>
 
           {/* ── AUDIO PLAYER ── */}
-          <div className="bg-white">
-            <div className="max-w-6xl mx-auto px-6 md:px-12 pt-8">
+          <div className="bg-white pt-6 pb-2">
+            <div className="max-w-6xl mx-auto px-10 md:px-20">
               {article.audio_url
                 ? <AudioPlayer src={article.audio_url} />
                 : <BrowserTTSPlayer

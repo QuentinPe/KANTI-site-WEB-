@@ -594,21 +594,38 @@ export default function RessourcesPage() {
       </section>
 
       {/* ── FILTER BAR (sticky) ────────────────────────────────────────────────── */}
-      <div className="sticky z-40 py-3" style={{ top: 72, background: "hsl(220 25% 97%)" }}>
-        <div className="max-w-7xl mx-auto px-6 lg:px-12">
-        <div className="rounded-2xl px-4 py-2.5 flex items-center gap-2 flex-wrap" style={{ background: "hsl(0 0% 100% / 0.96)", backdropFilter: "blur(12px)", border: "1px solid hsl(224 20% 12% / 0.08)", boxShadow: "0 2px 12px -4px hsl(224 60% 12% / 0.06)" }}>
+      <div
+        className="sticky z-40 backdrop-blur-2xl"
+        style={{
+          top: 72,
+          background: "hsl(0 0% 100% / 0.52)",
+          borderBottom: "1px solid hsl(0 0% 100% / 0.55)",
+          boxShadow: "0 8px 32px -8px hsl(224 30% 18% / 0.10), inset 0 -1px 0 hsl(224 20% 12% / 0.05)",
+          WebkitBackdropFilter: "blur(24px) saturate(160%)",
+        } as React.CSSProperties}
+      >
+        <div className="max-w-7xl mx-auto px-6 lg:px-12 py-3 flex items-center gap-2 flex-wrap">
           {CATEGORIES.map((cat) => {
             const active = activeCategory === cat;
             return (
-              <button key={cat} type="button" onClick={() => setActiveCategory(cat)}
-                className="px-3.5 py-1.5 rounded-full text-[11px] font-medium tracking-wide transition-all duration-200"
+              <motion.button
+                key={cat}
+                type="button"
+                onClick={() => setActiveCategory(cat)}
+                whileHover={active ? {} : { y: -1, scale: 1.02 }}
+                whileTap={{ scale: 0.96 }}
+                transition={{ duration: 0.15 }}
+                className="px-3.5 py-1.5 rounded-full text-[11px] font-medium tracking-wide"
                 style={{
-                  background: active ? "hsl(224 60% 18%)" : "transparent",
-                  color: active ? "white" : "hsl(224 25% 42%)",
-                  border: `1px solid ${active ? "transparent" : "hsl(224 20% 86%)"}`,
-                }}>
+                  background: active ? "hsl(224 55% 18%)" : "transparent",
+                  color: active ? "white" : "hsl(224 18% 44%)",
+                  border: `1px solid ${active ? "hsl(224 55% 22%)" : "hsl(224 20% 12% / 0.12)"}`,
+                  boxShadow: active ? "0 2px 8px -2px hsl(224 60% 20% / 0.28)" : undefined,
+                  transition: "background 0.18s, color 0.18s, border-color 0.18s, box-shadow 0.18s",
+                }}
+              >
                 {cat}
-              </button>
+              </motion.button>
             );
           })}
           {/* Search */}
@@ -620,10 +637,9 @@ export default function RessourcesPage() {
               type="text" placeholder="Rechercher un guide…" value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-9 pr-4 py-1.5 rounded-full text-[12px] focus:outline-none transition-all duration-150"
-              style={{ background: "hsl(220 25% 97%)", border: "1px solid hsl(224 20% 86%)", color: "hsl(224 50% 18%)", width: 190 }}
+              style={{ background: "hsl(220 25% 96%)", border: "1px solid hsl(224 20% 12% / 0.10)", color: "hsl(224 50% 18%)", width: 190 }}
             />
           </div>
-        </div>
         </div>
       </div>
 
