@@ -18,6 +18,7 @@ export interface Article {
   sort_order?: number;
   views?: number;
   likes?: number;
+  audio_url?: string | null;
   created_at: string;
   updated_at: string;
 }

@@ -209,8 +209,13 @@ export default function ActualitesPage() {
 
       {/* ── STICKY NAV ───────────────────────────────────────────────── */}
       <div
-        className="sticky top-[72px] z-20 bg-white/95 backdrop-blur-md"
-        style={{ borderBottom: "1px solid hsl(224 20% 12% / 0.07)" }}
+        className="sticky top-[72px] z-20 backdrop-blur-2xl"
+        style={{
+          background: "hsl(0 0% 100% / 0.52)",
+          borderBottom: "1px solid hsl(0 0% 100% / 0.55)",
+          boxShadow: "0 8px 32px -8px hsl(224 30% 18% / 0.10), inset 0 -1px 0 hsl(224 20% 12% / 0.05)",
+          WebkitBackdropFilter: "blur(24px) saturate(160%)",
+        } as React.CSSProperties}
       >
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           {/* Tabs — spring-animated pill indicator */}

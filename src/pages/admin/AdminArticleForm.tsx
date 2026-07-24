@@ -49,6 +49,7 @@ const schema = z.object({
   meta_title: z.string().max(60, "60 caractères maximum").optional(),
   meta_description: z.string().max(155, "155 caractères maximum").optional(),
   author_name: z.string().max(80).optional(),
+  audio_url: z.string().url("URL invalide").optional().or(z.literal("")),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -133,6 +134,7 @@ export default function AdminArticleForm() {
       meta_title: "",
       meta_description: "",
       author_name: "",
+      audio_url: "",
     },
   });
 
@@ -151,6 +153,7 @@ export default function AdminArticleForm() {
         meta_title: existing.meta_title ?? "",
         meta_description: existing.meta_description ?? "",
         author_name: existing.author_name ?? "",
+        audio_url: existing.audio_url ?? "",
       });
       setSelectedRelated(existing.related_article_ids ?? []);
       if (existing.slug) setSlugManuallyEdited(true);
@@ -249,6 +252,7 @@ export default function AdminArticleForm() {
       ...(data.meta_title ? { meta_title: data.meta_title } : {}),
       ...(data.meta_description ? { meta_description: data.meta_description } : {}),
       ...(data.author_name ? { author_name: data.author_name } : {}),
+      ...(data.audio_url ? { audio_url: data.audio_url } : { audio_url: null }),
       related_article_ids: selectedRelated.length > 0 ? selectedRelated : null,
     };
     if (isEdit) {
@@ -704,6 +708,18 @@ export default function AdminArticleForm() {
                   style={inputStyle}
                   placeholder="ex: Nom Prénom"
                   {...register("author_name")}
+                  onFocus={(e) => Object.assign((e.target as HTMLElement).style, inputFocus)}
+                  onBlur={(e) => Object.assign((e.target as HTMLElement).style, inputBlur)}
+                />
+              </Field>
+
+              {/* Audio */}
+              <Field label="Piste audio" hint="URL du fichier audio MP3 ou OGG pour la lecture en ligne" error={errors.audio_url?.message}>
+                <input
+                  className={inputClass}
+                  style={inputStyle}
+                  placeholder="https://… /audio.mp3"
+                  {...register("audio_url")}
                   onFocus={(e) => Object.assign((e.target as HTMLElement).style, inputFocus)}
                   onBlur={(e) => Object.assign((e.target as HTMLElement).style, inputBlur)}
                 />

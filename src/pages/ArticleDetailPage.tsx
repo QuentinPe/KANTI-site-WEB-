@@ -1,8 +1,9 @@
 ﻿import { useRef, useState, useEffect, useMemo, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Clock, Calendar, BookOpen, ExternalLink, Eye, Heart } from "lucide-react";
+import { ArrowLeft, Clock, Calendar, BookOpen, ExternalLink, Eye, Heart, Share2, Copy, Check, Play, Pause, Volume2, VolumeX, Printer } from "lucide-react";
 import { motion, useScroll, useSpring, useMotionValueEvent, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
 import DOMPurify from "dompurify";
 import { getArticleById, getArticles, incrementArticleViews, toggleArticleLike } from "@/lib/articlesService";
 import Header from "@/components/Header";
@@ -90,6 +91,226 @@ function TableOfContents({ items, activeId }: { items: { id: string; text: strin
         ))}
       </ul>
     </nav>
+  );
+}
+
+/* ── Audio Player ────────────────────────────────────────────── */
+function AudioPlayer({ src }: { src: string }) {
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [playing, setPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [muted, setMuted] = useState(false);
+
+  const fmt = (s: number) => {
+    const m = Math.floor(s / 60);
+    const sec = Math.floor(s % 60);
+    return `${m}:${sec.toString().padStart(2, "0")}`;
+  };
+
+  const toggle = () => {
+    const a = audioRef.current;
+    if (!a) return;
+    if (playing) { a.pause(); setPlaying(false); }
+    else { a.play().then(() => setPlaying(true)).catch(() => {}); }
+  };
+
+  const seek = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const a = audioRef.current;
+    if (!a) return;
+    a.currentTime = Number(e.target.value);
+    setCurrentTime(a.currentTime);
+  };
+
+  const toggleMute = () => {
+    const a = audioRef.current;
+    if (!a) return;
+    a.muted = !muted;
+    setMuted(!muted);
+  };
+
+  return (
+    <div
+      className="flex items-center gap-4 px-5 py-3.5 rounded-2xl"
+      style={{ background: "hsl(224 55% 10%)", border: "1px solid hsl(224 40% 30% / 0.25)" }}
+    >
+      <audio
+        ref={audioRef}
+        src={src}
+        onTimeUpdate={() => setCurrentTime(audioRef.current?.currentTime ?? 0)}
+        onLoadedMetadata={() => setDuration(audioRef.current?.duration ?? 0)}
+        onEnded={() => setPlaying(false)}
+      />
+      {/* Play / Pause */}
+      <button
+        onClick={toggle}
+        className="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-105"
+        style={{ background: "white" }}
+        aria-label={playing ? "Pause" : "Écouter"}
+      >
+        {playing
+          ? <Pause className="w-3.5 h-3.5" fill="hsl(224 60% 12%)" strokeWidth={0} style={{ color: "hsl(224 60% 12%)" }} />
+          : <Play className="w-3.5 h-3.5 translate-x-[1px]" fill="hsl(224 60% 12%)" strokeWidth={0} style={{ color: "hsl(224 60% 12%)" }} />
+        }
+      </button>
+
+      {/* Label + progress */}
+      <div className="flex-1 min-w-0">
+        <p className="text-[10px] tracking-[0.24em] uppercase font-semibold mb-1.5" style={{ color: "hsl(214 55% 65%)" }}>
+          Écouter cet article
+        </p>
+        <input
+          type="range"
+          min={0}
+          max={duration || 100}
+          value={currentTime}
+          onChange={seek}
+          className="w-full h-1 rounded-full appearance-none cursor-pointer"
+          style={{ accentColor: "white" }}
+        />
+      </div>
+
+      {/* Time */}
+      <span className="text-[11px] font-light tabular-nums flex-shrink-0" style={{ color: "hsl(0 0% 100% / 0.42)" }}>
+        {fmt(currentTime)}&thinsp;/&thinsp;{fmt(duration)}
+      </span>
+
+      {/* Mute */}
+      <button
+        onClick={toggleMute}
+        className="flex-shrink-0 p-1.5 rounded-lg transition-colors hover:bg-white/10"
+        aria-label={muted ? "Activer le son" : "Couper le son"}
+      >
+        {muted
+          ? <VolumeX className="w-3.5 h-3.5" strokeWidth={1.5} style={{ color: "hsl(0 0% 100% / 0.40)" }} />
+          : <Volume2 className="w-3.5 h-3.5" strokeWidth={1.5} style={{ color: "hsl(0 0% 100% / 0.40)" }} />
+        }
+      </button>
+    </div>
+  );
+}
+
+function AudioUnavailable() {
+  return (
+    <div
+      className="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl"
+      style={{ background: "hsl(224 18% 96%)", border: "1px solid hsl(224 20% 12% / 0.08)" }}
+    >
+      <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "hsl(224 20% 12% / 0.07)" }}>
+        <VolumeX className="w-3.5 h-3.5" strokeWidth={1.5} style={{ color: "hsl(224 20% 55%)" }} />
+      </div>
+      <div>
+        <p className="text-[12px] font-medium" style={{ color: "hsl(224 25% 42%)" }}>Audio non disponible</p>
+        <p className="text-[11px] font-light" style={{ color: "hsl(224 15% 58%)" }}>Aucune piste audio associée à cet article</p>
+      </div>
+    </div>
+  );
+}
+
+/* ── Share Menu ──────────────────────────────────────────────── */
+function ShareMenu({ title, url }: { title: string; url: string }) {
+  const [open, setOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [open]);
+
+  const copyLink = async () => {
+    await navigator.clipboard.writeText(url);
+    setCopied(true);
+    toast.success("Lien copié !");
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const ACTIONS = [
+    {
+      label: "Copier le lien",
+      Icon: copied ? Check : Copy,
+      action: copyLink,
+    },
+    {
+      label: "Partager sur LinkedIn",
+      Icon: () => (
+        <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="currentColor">
+          <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z" />
+          <circle cx="4" cy="4" r="2" />
+        </svg>
+      ),
+      action: () => window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, "_blank"),
+    },
+    {
+      label: "Partager sur X",
+      Icon: () => (
+        <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="currentColor">
+          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.74l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+        </svg>
+      ),
+      action: () => window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`, "_blank"),
+    },
+    {
+      label: "Imprimer",
+      Icon: Printer,
+      action: () => window.print(),
+    },
+  ];
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        onClick={() => setOpen(o => !o)}
+        className="flex items-center gap-1.5 rounded-full px-3 py-1 transition-all duration-200 text-[12px] font-medium"
+        style={{
+          background: open ? "hsl(224 55% 14% / 0.09)" : "hsl(224 20% 12% / 0.06)",
+          color: "hsl(224 15% 50%)",
+          border: "1px solid hsl(224 20% 12% / 0.10)",
+        }}
+      >
+        <Share2 className="w-3.5 h-3.5" strokeWidth={1.5} />
+        <span>Partager</span>
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: -6, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -4, scale: 0.97 }}
+            transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+            className="absolute left-0 top-full mt-2 z-50 rounded-2xl overflow-hidden"
+            style={{
+              background: "hsl(0 0% 100% / 0.85)",
+              backdropFilter: "blur(20px)",
+              WebkitBackdropFilter: "blur(20px)",
+              border: "1px solid hsl(224 20% 12% / 0.10)",
+              boxShadow: "0 12px 32px -8px hsl(224 40% 12% / 0.18)",
+              minWidth: "200px",
+            } as React.CSSProperties}
+          >
+            {ACTIONS.map(({ label, Icon, action }, i) => (
+              <button
+                key={label}
+                onClick={() => { action(); if (label !== "Copier le lien") setOpen(false); }}
+                className="w-full flex items-center gap-3 px-4 py-3 text-[13px] font-light text-left transition-colors hover:bg-black/5"
+                style={{
+                  color: "hsl(224 40% 25%)",
+                  borderTop: i > 0 ? "1px solid hsl(224 20% 12% / 0.07)" : undefined,
+                }}
+              >
+                <Icon className="w-3.5 h-3.5 flex-shrink-0" strokeWidth={1.5} />
+                {label}
+              </button>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }
 
@@ -298,7 +519,7 @@ export default function ArticleDetailPage() {
               </Link>
 
               {/* Meta row */}
-              <div className="flex flex-wrap items-center gap-4 mb-6">
+              <div className="flex flex-wrap items-center gap-3 mb-6">
                 <span className="px-3 py-1 rounded-full text-[11px] font-semibold tracking-[0.18em] uppercase"
                   style={{ background: "hsl(218 45% 42% / 0.09)", color: "hsl(218 45% 36%)" }}>
                   {article.tag}
@@ -314,13 +535,16 @@ export default function ArticleDetailPage() {
                     par <span className="font-medium" style={{ color: "hsl(224 35% 35%)" }}>{article.author_name}</span>
                   </span>
                 )}
-                {/* Views */}
                 {(article.views ?? 0) > 0 && (
                   <span className="flex items-center gap-1.5 text-[12px] font-light" style={{ color: "hsl(224 15% 50%)" }}>
                     <Eye className="w-3.5 h-3.5" />{article.views} lecture{(article.views ?? 0) > 1 ? "s" : ""}
                   </span>
                 )}
-                {/* Like button */}
+
+                {/* Spacer */}
+                <span className="flex-1" />
+
+                {/* Like */}
                 <button
                   onClick={handleLike}
                   aria-label={liked ? "Retirer votre like" : "Liker cet article"}
@@ -339,15 +563,17 @@ export default function ArticleDetailPage() {
                       transition={{ type: "spring", stiffness: 400, damping: 15 }}
                       style={{ display: "flex" }}
                     >
-                      <Heart
-                        className="w-3.5 h-3.5"
-                        fill={liked ? "currentColor" : "none"}
-                        strokeWidth={liked ? 0 : 1.5}
-                      />
+                      <Heart className="w-3.5 h-3.5" fill={liked ? "currentColor" : "none"} strokeWidth={liked ? 0 : 1.5} />
                     </motion.span>
                   </AnimatePresence>
                   <span>{likesCount > 0 ? likesCount : ""} {liked ? "Aimé" : "Aimer"}</span>
                 </button>
+
+                {/* Share */}
+                <ShareMenu
+                  title={article.title}
+                  url={`${window.location.origin}/actualites/${article.slug ?? article.id}`}
+                />
               </div>
 
               {/* Headline */}
@@ -367,6 +593,16 @@ export default function ArticleDetailPage() {
                 </div>
               </div>
             )}
+          </div>
+
+          {/* ── AUDIO PLAYER ── */}
+          <div className="bg-white">
+            <div className="max-w-6xl mx-auto px-6 md:px-12 pt-8">
+              {article.audio_url
+                ? <AudioPlayer src={article.audio_url} />
+                : <AudioUnavailable />
+              }
+            </div>
           </div>
 
           {/* ── CONTENT + SIDEBAR ── */}
