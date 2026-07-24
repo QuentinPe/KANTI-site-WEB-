@@ -190,19 +190,114 @@ function AudioPlayer({ src }: { src: string }) {
   );
 }
 
-function AudioUnavailable() {
+function BrowserTTSPlayer({ text }: { text: string }) {
+  const [playing, setPlaying] = useState(false);
+  const [paused, setPaused] = useState(false);
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const supported = typeof window !== "undefined" && "speechSynthesis" in window;
+
+  useEffect(() => {
+    if (!supported) return;
+    const load = () => setVoices(window.speechSynthesis.getVoices());
+    load();
+    window.speechSynthesis.addEventListener("voiceschanged", load);
+    return () => {
+      window.speechSynthesis.removeEventListener("voiceschanged", load);
+      window.speechSynthesis.cancel();
+    };
+  }, [supported]);
+
+  const frVoice = voices.find(v => v.lang.startsWith("fr-FR")) ?? voices.find(v => v.lang.startsWith("fr")) ?? null;
+
+  const speak = () => {
+    if (!supported) return;
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = "fr-FR";
+    u.rate = 0.94;
+    u.pitch = 1.0;
+    if (frVoice) u.voice = frVoice;
+    u.onstart = () => { setPlaying(true); setPaused(false); };
+    u.onend = () => { setPlaying(false); setPaused(false); };
+    u.onerror = () => { setPlaying(false); setPaused(false); };
+    window.speechSynthesis.speak(u);
+  };
+
+  const toggle = () => {
+    if (!supported) return;
+    if (!playing) { speak(); return; }
+    if (paused) { window.speechSynthesis.resume(); setPaused(false); }
+    else { window.speechSynthesis.pause(); setPaused(true); }
+  };
+
+  const stop = () => {
+    window.speechSynthesis?.cancel();
+    setPlaying(false);
+    setPaused(false);
+  };
+
   return (
     <div
-      className="flex items-center gap-3.5 px-5 py-3.5 rounded-2xl"
-      style={{ background: "hsl(224 18% 96%)", border: "1px solid hsl(224 20% 12% / 0.08)" }}
+      className="flex items-center gap-4 px-5 py-3.5 rounded-2xl"
+      style={{ background: "hsl(224 55% 10%)", border: "1px solid hsl(224 40% 30% / 0.25)" }}
     >
-      <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "hsl(224 20% 12% / 0.07)" }}>
-        <VolumeX className="w-3.5 h-3.5" strokeWidth={1.5} style={{ color: "hsl(224 20% 55%)" }} />
+      {/* Play / Pause */}
+      <button
+        onClick={toggle}
+        disabled={!supported}
+        className="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-105 disabled:opacity-40"
+        style={{ background: "white" }}
+        aria-label={playing && !paused ? "Pause" : "Écouter"}
+      >
+        {playing && !paused
+          ? <Pause className="w-3.5 h-3.5" fill="hsl(224 60% 12%)" strokeWidth={0} style={{ color: "hsl(224 60% 12%)" }} />
+          : <Play className="w-3.5 h-3.5 translate-x-[1px]" fill="hsl(224 60% 12%)" strokeWidth={0} style={{ color: "hsl(224 60% 12%)" }} />
+        }
+      </button>
+
+      {/* Info */}
+      <div className="flex-1 min-w-0">
+        <p className="text-[10px] tracking-[0.24em] uppercase font-semibold mb-0.5" style={{ color: "hsl(214 55% 65%)" }}>
+          Écouter cet article
+        </p>
+        <p className="text-[11px] font-light" style={{ color: "hsl(0 0% 100% / 0.35)" }}>
+          {!supported
+            ? "Synthèse vocale non supportée par ce navigateur"
+            : frVoice
+              ? `Voix : ${frVoice.name}`
+              : "Synthèse vocale · Voix du navigateur"}
+        </p>
       </div>
-      <div>
-        <p className="text-[12px] font-medium" style={{ color: "hsl(224 25% 42%)" }}>Audio non disponible</p>
-        <p className="text-[11px] font-light" style={{ color: "hsl(224 15% 58%)" }}>Aucune piste audio associée à cet article</p>
-      </div>
+
+      {/* Animated waveform when playing */}
+      {playing && !paused && (
+        <div className="flex items-center gap-[3px] flex-shrink-0">
+          {[0, 0.15, 0.08, 0.22, 0.05].map((delay, i) => (
+            <motion.div
+              key={i}
+              className="w-[3px] rounded-full"
+              style={{ background: "hsl(214 55% 65%)" }}
+              animate={{ height: ["6px", "16px", "6px"] }}
+              transition={{ duration: 0.7, delay, repeat: Infinity, ease: "easeInOut" }}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Stop */}
+      {playing && (
+        <button
+          onClick={stop}
+          className="flex-shrink-0 p-1.5 rounded-lg transition-colors hover:bg-white/10"
+          aria-label="Arrêter la lecture"
+        >
+          <VolumeX className="w-3.5 h-3.5" strokeWidth={1.5} style={{ color: "hsl(0 0% 100% / 0.45)" }} />
+        </button>
+      )}
+
+      {!playing && (
+        <Volume2 className="w-3.5 h-3.5 flex-shrink-0" strokeWidth={1.5} style={{ color: "hsl(0 0% 100% / 0.28)" }} />
+      )}
     </div>
   );
 }
@@ -600,7 +695,13 @@ export default function ArticleDetailPage() {
             <div className="max-w-6xl mx-auto px-6 md:px-12 pt-8">
               {article.audio_url
                 ? <AudioPlayer src={article.audio_url} />
-                : <AudioUnavailable />
+                : <BrowserTTSPlayer
+                    text={[
+                      article.title,
+                      article.excerpt,
+                      (article.body ?? "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim(),
+                    ].filter(Boolean).join(". ")}
+                  />
               }
             </div>
           </div>
