@@ -79,128 +79,127 @@ export default function ActualitesPage() {
       <Header />
 
       {/* ── HERO ─────────────────────────────────────────────────────── */}
-      <section className="bg-white relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6 lg:px-12 py-20 lg:py-28 grid lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+      <section style={{ background: "hsl(220 22% 97%)" }} className="relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6 lg:px-12 py-16 lg:py-24 grid lg:grid-cols-12 gap-8 lg:gap-10 items-center">
 
-          {/* Left: editorial */}
-          <div className="lg:col-span-5">
-            <motion.p
-              className="text-[10px] tracking-[0.32em] uppercase font-semibold mb-6"
-              style={{ color: NAVY_MID }}
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6 }}
+          {/* Left: editorial anchor */}
+          <div className="lg:col-span-4">
+            <motion.span
+              className="inline-flex items-center gap-1.5 text-[10px] tracking-[0.28em] uppercase font-semibold mb-8 px-3.5 py-1.5 rounded-full text-white"
+              style={{ background: NAVY }}
+              initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
             >
               Actualités &amp; Décryptages
-            </motion.p>
+            </motion.span>
 
             <motion.h1
-              className="font-heading font-light leading-[1.05] tracking-tight mb-6"
-              style={{ fontSize: "clamp(2.2rem, 4vw, 3.4rem)", color: NAVY }}
+              className="font-heading font-light leading-[1.06] tracking-tight mb-5"
+              style={{ fontSize: "clamp(2.4rem, 3.6vw, 3.5rem)", color: NAVY }}
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.8, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
             >
-              Décrypter l'actualité patrimoniale
+              Décrypter
+              <br />
+              l'actualité
               <br />
               <span className="italic font-light" style={{ color: NAVY_MID }}>en perspective</span>
             </motion.h1>
 
             <motion.p
-              className="text-[15px] font-light leading-relaxed mb-10"
+              className="text-[14px] font-light leading-relaxed mb-10"
               style={{ color: "hsl(224 18% 42%)" }}
               initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.7, delay: 0.28, ease: [0.22, 1, 0.36, 1] }}
             >
-              Nos analyses pour comprendre les marchés, la fiscalité, la gestion de
-              patrimoine, la transmission et les stratégies des dirigeants. Des contenus
-              clairs pour éclairer vos décisions.
+              Marchés, fiscalité, transmission, stratégies des dirigeants — des analyses indépendantes pour éclairer vos décisions.
             </motion.p>
 
             <motion.div
-              className="grid grid-cols-2 gap-3"
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 0.45 }}
+              className="space-y-3"
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 0.42 }}
             >
               {HERO_STATS.map(({ Icon, label }) => (
-                <div
-                  key={label}
-                  className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl"
-                  style={{ background: "hsl(220 30% 97%)", border: "1px solid hsl(224 20% 12% / 0.07)" }}
-                >
+                <div key={label} className="flex items-center gap-2.5">
                   <Icon className="w-3.5 h-3.5 flex-shrink-0" strokeWidth={1.5} style={{ color: NAVY_MID }} />
-                  <span className="text-[11.5px] font-light leading-snug" style={{ color: "hsl(224 25% 38%)" }}>{label}</span>
+                  <span className="text-[12.5px] font-light" style={{ color: "hsl(224 20% 46%)" }}>{label}</span>
                 </div>
               ))}
             </motion.div>
           </div>
 
-          {/* Right: featured card */}
+          {/* Right: featured article — full image, text overlay */}
           {featured && (
             <motion.div
-              className="lg:col-span-7"
+              className="lg:col-span-8"
               initial={{ opacity: 0, x: 28 }} animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.9, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.9, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
             >
               <article
-                className="flex rounded-[22px] overflow-hidden cursor-pointer group"
-                style={{ height: "480px", boxShadow: "0 24px 64px -12px hsl(224 60% 12% / 0.24)" }}
+                className="relative rounded-[22px] overflow-hidden cursor-pointer group"
+                style={{ height: "520px", boxShadow: "0 32px 72px -16px hsl(224 60% 12% / 0.28)" }}
                 onClick={() => navigate(`/actualites/${featured.id}`)}
               >
-                {/* Image — left 56% */}
-                <div className="relative flex-shrink-0" style={{ width: "56%" }}>
-                  <img
-                    src={featured.image ?? FALLBACK}
-                    alt={featured.title}
-                    fetchPriority="high"
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.05]"
-                  />
-                  {/* Badge */}
+                {/* Full-bleed image */}
+                <img
+                  src={featured.image ?? FALLBACK}
+                  alt={featured.title}
+                  fetchPriority="high"
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1400ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]"
+                />
+
+                {/* Gradient overlay — rises from bottom */}
+                <div
+                  aria-hidden
+                  className="absolute inset-0 pointer-events-none"
+                  style={{ background: "linear-gradient(to top, hsl(224 60% 7%) 0%, hsl(224 60% 10% / 0.72) 38%, hsl(224 60% 12% / 0.10) 68%, transparent 100%)" }}
+                />
+
+                {/* Top badges */}
+                <div className="absolute top-6 left-6 right-6 flex items-center justify-between">
                   <span
-                    className="absolute top-5 left-5 px-3 py-1.5 rounded-full text-[10px] tracking-[0.22em] uppercase font-semibold"
-                    style={{ background: "hsl(0 0% 100% / 0.90)", backdropFilter: "blur(10px)", color: NAVY }}
+                    className="px-3 py-1.5 rounded-full text-[10px] tracking-[0.22em] uppercase font-semibold"
+                    style={{ background: "hsl(0 0% 100% / 0.92)", backdropFilter: "blur(12px)", color: NAVY }}
                   >
                     À la une
                   </span>
-                  {/* Smooth right-edge blend into the content panel */}
-                  <div
-                    aria-hidden
-                    className="absolute inset-y-0 right-0 w-16 pointer-events-none"
-                    style={{ background: "linear-gradient(90deg, transparent, hsl(224 60% 9%))" }}
-                  />
-                </div>
-
-                {/* Content panel — right */}
-                <div
-                  className="flex-1 flex flex-col justify-center p-8 lg:p-10 min-w-0"
-                  style={{ background: "hsl(224 60% 9%)" }}
-                >
-                  <p
-                    className="text-[9px] tracking-[0.3em] uppercase font-semibold mb-4"
-                    style={{ color: "hsl(214 55% 62%)" }}
+                  <span
+                    className="px-3 py-1.5 rounded-full text-[9px] tracking-[0.28em] uppercase font-semibold"
+                    style={{ background: "hsl(224 60% 7% / 0.55)", backdropFilter: "blur(10px)", color: "hsl(214 60% 78%)" }}
                   >
                     {featured.tag}
-                  </p>
+                  </span>
+                </div>
+
+                {/* Bottom content — on gradient */}
+                <div className="absolute bottom-0 left-0 right-0 p-8 lg:p-10">
                   <h2
-                    className="font-heading font-light text-white leading-[1.1] tracking-tight mb-4"
-                    style={{ fontSize: "clamp(1.05rem, 1.8vw, 1.45rem)" }}
+                    className="font-heading font-light text-white leading-[1.1] tracking-tight mb-3"
+                    style={{ fontSize: "clamp(1.35rem, 2.2vw, 1.9rem)" }}
                   >
                     {featured.title}
                   </h2>
-                  <p className="text-[13px] font-light leading-relaxed mb-5 line-clamp-3" style={{ color: "hsl(0 0% 100% / 0.55)" }}>
+                  <p className="text-[13px] font-light leading-relaxed mb-5 line-clamp-2" style={{ color: "hsl(0 0% 100% / 0.58)" }}>
                     {featured.excerpt}
                   </p>
-                  <div
-                    className="flex items-center gap-3 mb-6 pb-5"
-                    style={{ borderBottom: "1px solid hsl(0 0% 100% / 0.08)" }}
-                  >
-                    <span className="text-[11px] font-light" style={{ color: "hsl(0 0% 100% / 0.38)" }}>{featured.reading_time} de lecture</span>
-                    <span className="w-px h-3" style={{ background: "hsl(0 0% 100% / 0.14)" }} />
-                    <span className="text-[11px] font-light" style={{ color: "hsl(0 0% 100% / 0.38)" }}>{featured.date}</span>
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                      <span className="text-[11px] font-light" style={{ color: "hsl(0 0% 100% / 0.38)" }}>
+                        {featured.reading_time} de lecture
+                      </span>
+                      <span className="w-px h-3" style={{ background: "hsl(0 0% 100% / 0.15)" }} />
+                      <span className="text-[11px] font-light" style={{ color: "hsl(0 0% 100% / 0.38)" }}>
+                        {featured.date}
+                      </span>
+                    </div>
+                    <button
+                      className="flex-shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-[12.5px] font-medium transition-all duration-300 group-hover:-translate-y-0.5"
+                      style={{ background: "white", color: NAVY, boxShadow: "0 4px 16px -4px hsl(224 60% 12% / 0.35)" }}
+                    >
+                      Lire l'article
+                      <ArrowRight className="w-3.5 h-3.5" strokeWidth={1.5} />
+                    </button>
                   </div>
-                  <button
-                    className="self-start inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-[12.5px] font-medium transition-all duration-200 hover:-translate-y-0.5"
-                    style={{ background: "white", color: NAVY }}
-                  >
-                    Lire l'article
-                    <ArrowRight className="w-3.5 h-3.5" strokeWidth={1.5} />
-                  </button>
                 </div>
               </article>
             </motion.div>
