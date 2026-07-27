@@ -209,7 +209,7 @@ export default function ActualitesPage() {
 
       {/* ── STICKY NAV ───────────────────────────────────────────────── */}
       <div
-        className="sticky top-[72px] z-20 backdrop-blur-2xl"
+        className="sticky top-[72px] z-20 backdrop-blur-2xl relative"
         style={{
           background: "hsl(0 0% 100% / 0.52)",
           borderBottom: "1px solid hsl(0 0% 100% / 0.55)",
@@ -223,9 +223,10 @@ export default function ActualitesPage() {
             {TABS.map(({ id, Icon, label }) => {
               const active = activeTab === id;
               return (
-                <button
+                <motion.button
                   key={id}
                   onClick={() => setActiveTab(id)}
+                  whileHover={active ? {} : { color: "hsl(218 65% 46%)" }}
                   className="relative flex items-center gap-2 px-4 py-2 rounded-full text-[12.5px] font-medium tracking-wide transition-colors duration-200"
                   style={{ color: active ? NAVY : NAVY_SFT }}
                 >
@@ -240,11 +241,11 @@ export default function ActualitesPage() {
                   )}
                   {/* Hover ghost — only on inactive */}
                   {!active && (
-                    <span className="absolute inset-0 rounded-full opacity-0 hover:opacity-100 transition-opacity duration-150" style={{ background: "hsl(220 25% 96%)" }} />
+                    <span className="absolute inset-0 rounded-full opacity-0 hover:opacity-100 transition-opacity duration-150" style={{ background: "hsl(218 75% 95%)" }} />
                   )}
                   <Icon className="w-3.5 h-3.5 relative z-10 transition-transform duration-200 group-hover:scale-110" strokeWidth={active ? 2 : 1.5} />
                   <span className="relative z-10">{label}</span>
-                </button>
+                </motion.button>
               );
             })}
           </div>
@@ -267,7 +268,7 @@ export default function ActualitesPage() {
                       <motion.button
                         key={f}
                         onClick={() => setCat(f)}
-                        whileHover={active ? {} : { y: -1, scale: 1.02 }}
+                        whileHover={active ? {} : { y: -1, scale: 1.02, backgroundColor: "hsl(218 75% 95%)", color: "hsl(218 65% 46%)", boxShadow: "0 0 0 1px hsl(218 50% 75%)" }}
                         whileTap={{ scale: 0.96 }}
                         transition={{ duration: 0.15 }}
                         className="flex-shrink-0 px-3.5 py-1.5 rounded-full text-[11.5px] font-medium tracking-wide"
@@ -296,6 +297,18 @@ export default function ActualitesPage() {
             )}
           </AnimatePresence>
         </div>
+      <div
+        aria-hidden
+        className="absolute top-full left-0 right-0 pointer-events-none"
+        style={{
+          height: "28px",
+          background: "linear-gradient(to bottom, hsl(0 0% 100% / 0.28) 0%, transparent 100%)",
+          backdropFilter: "blur(14px) saturate(140%)",
+          WebkitBackdropFilter: "blur(14px) saturate(140%)",
+          maskImage: "linear-gradient(to bottom, black 0%, transparent 100%)",
+          WebkitMaskImage: "linear-gradient(to bottom, black 0%, transparent 100%)",
+        } as React.CSSProperties}
+      />
       </div>
 
       {/* ── MAIN CONTENT ─────────────────────────────────────────────── */}

@@ -337,16 +337,17 @@ export default function RessourcesPage() {
     if (!parsed.success) { toast.error(parsed.error.issues[0].message); return; }
     setHeroLoading(true);
     try {
-      // Capture lead (silent fail if RLS blocks anonymous insert)
-      await supabase.from("leads").insert({
-        nom: `${parsed.data.prenom} ${parsed.data.nom}`,
-        email: parsed.data.email,
-        telephone: parsed.data.telephone,
-        sujet: `Ressource · ${parsed.data.statut}`,
-        status: "nouveau",
-      }).then(({ error }) => {
-        if (error) console.info("[KANTI] Lead insert skipped:", error.message);
-      });
+      // Capture lead: insert to Supabase + notify Telegram via contact API
+      await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nom: `${parsed.data.prenom} ${parsed.data.nom}`,
+          email: parsed.data.email,
+          telephone: parsed.data.telephone || "",
+          sujet: `Ressource · ${parsed.data.statut}`,
+        }),
+      }).catch(() => {});
       await triggerDownload(featuredResource);
       setHeroSubmitted(true);
       toast.success("Guide en cours de téléchargement ! Vous avez maintenant accès à toutes les ressources.");
@@ -595,7 +596,7 @@ export default function RessourcesPage() {
 
       {/* ── FILTER BAR (sticky) ────────────────────────────────────────────────── */}
       <div
-        className="sticky z-40 backdrop-blur-2xl"
+        className="sticky z-40 backdrop-blur-2xl relative"
         style={{
           top: 72,
           background: "hsl(0 0% 100% / 0.52)",
@@ -612,7 +613,7 @@ export default function RessourcesPage() {
                 key={cat}
                 type="button"
                 onClick={() => setActiveCategory(cat)}
-                whileHover={active ? {} : { y: -1, scale: 1.02 }}
+                whileHover={active ? {} : { y: -1, scale: 1.02, backgroundColor: "hsl(218 75% 95%)", color: "hsl(218 65% 46%)", boxShadow: "0 0 0 1px hsl(218 50% 75%)" }}
                 whileTap={{ scale: 0.96 }}
                 transition={{ duration: 0.15 }}
                 className="px-3.5 py-1.5 rounded-full text-[11px] font-medium tracking-wide"
@@ -641,6 +642,18 @@ export default function RessourcesPage() {
             />
           </div>
         </div>
+        <div
+          aria-hidden
+          className="absolute top-full left-0 right-0 pointer-events-none"
+          style={{
+            height: "28px",
+            background: "linear-gradient(to bottom, hsl(0 0% 100% / 0.28) 0%, transparent 100%)",
+            backdropFilter: "blur(14px) saturate(140%)",
+            WebkitBackdropFilter: "blur(14px) saturate(140%)",
+            maskImage: "linear-gradient(to bottom, black 0%, transparent 100%)",
+            WebkitMaskImage: "linear-gradient(to bottom, black 0%, transparent 100%)",
+          } as React.CSSProperties}
+        />
       </div>
 
       {/* ── FEATURED RESOURCE ─────────────────────────────────────────────────── */}

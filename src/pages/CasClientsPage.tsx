@@ -912,7 +912,7 @@ export default function CasClientsPage() {
 
       {/* ── STICKY FILTER BAR ─────────────────────────────────────── */}
       <div
-        className="sticky z-40 backdrop-blur-2xl"
+        className="sticky z-40 backdrop-blur-2xl relative"
         style={{
           top: 72,
           background: "hsl(0 0% 100% / 0.52)",
@@ -941,7 +941,7 @@ export default function CasClientsPage() {
                           key={p}
                           type="button"
                           onClick={() => setActiveProfile(p)}
-                          whileHover={isActive ? {} : { y: -1, scale: 1.02 }}
+                          whileHover={isActive ? {} : { y: -1, scale: 1.02, backgroundColor: "hsl(218 75% 95%)", color: "hsl(218 65% 46%)", boxShadow: "0 0 0 1px hsl(218 50% 75%)" }}
                           whileTap={{ scale: 0.96 }}
                           transition={{ duration: 0.15 }}
                           className="px-3 py-1.5 rounded-full text-[11px] font-medium tracking-wide"
@@ -976,7 +976,7 @@ export default function CasClientsPage() {
                           key={o}
                           type="button"
                           onClick={() => setActiveObjectif(o)}
-                          whileHover={isActive ? {} : { y: -1, scale: 1.02 }}
+                          whileHover={isActive ? {} : { y: -1, scale: 1.02, backgroundColor: "hsl(218 75% 95%)", color: "hsl(218 65% 46%)", boxShadow: "0 0 0 1px hsl(218 50% 75%)" }}
                           whileTap={{ scale: 0.96 }}
                           transition={{ duration: 0.15 }}
                           className="px-3 py-1.5 rounded-full text-[11px] font-medium tracking-wide"
@@ -1022,6 +1022,18 @@ export default function CasClientsPage() {
               </div>
             </div>
           </div>
+        <div
+          aria-hidden
+          className="absolute top-full left-0 right-0 pointer-events-none"
+          style={{
+            height: "28px",
+            background: "linear-gradient(to bottom, hsl(0 0% 100% / 0.28) 0%, transparent 100%)",
+            backdropFilter: "blur(14px) saturate(140%)",
+            WebkitBackdropFilter: "blur(14px) saturate(140%)",
+            maskImage: "linear-gradient(to bottom, black 0%, transparent 100%)",
+            WebkitMaskImage: "linear-gradient(to bottom, black 0%, transparent 100%)",
+          } as React.CSSProperties}
+        />
         </div>
 
       {/* ── MAIN CONTENT ──────────────────────────────────────────── */}

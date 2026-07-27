@@ -39,6 +39,19 @@ export default function ProfilRisquePage() {
   const [answers, setAnswers] = useState<Record<string, AnswerValue>>({});
   const [selectedIndices, setSelectedIndices] = useState<Record<string, number>>({});
   const [showSendModal, setShowSendModal] = useState(false);
+  const [pendingDownload, setPendingDownload] = useState(false);
+  const [pdfGenerating, setPdfGenerating] = useState(false);
+
+  const triggerPdfDownload = async () => {
+    setPdfGenerating(true);
+    try {
+      await generatePdf(profile, answers);
+    } catch (e) {
+      console.error("[PDF] generatePdf failed:", e);
+    } finally {
+      setPdfGenerating(false);
+    }
+  };
 
   const total = RISK_QUESTIONS.length;
   const current = RISK_QUESTIONS[step];
@@ -237,6 +250,10 @@ export default function ProfilRisquePage() {
                   answers={answers}
                   onReset={handleReset}
                   onSend={() => setShowSendModal(true)}
+                  onDownloadRequest={() => {
+                    setPendingDownload(true);
+                    setShowSendModal(true);
+                  }}
                 />
               )}
             </AnimatePresence>
@@ -254,7 +271,13 @@ export default function ProfilRisquePage() {
         {showSendModal && (
           <SendModal
             profile={profile}
-            onClose={() => setShowSendModal(false)}
+            onClose={() => { setShowSendModal(false); setPendingDownload(false); }}
+            onAfterSend={() => {
+              if (pendingDownload) {
+                setPendingDownload(false);
+                triggerPdfDownload();
+              }
+            }}
           />
         )}
       </AnimatePresence>
@@ -502,28 +525,15 @@ function ResultView({
   answers,
   onReset,
   onSend,
+  onDownloadRequest,
 }: {
   profile: SriProfile;
   answers: Record<string, AnswerValue>;
   onReset: () => void;
   onSend: () => void;
+  onDownloadRequest: () => void;
 }) {
-  const [pdfError, setPdfError] = useState("");
-  const [pdfGenerating, setPdfGenerating] = useState(false);
-
-  const handleDownload = async () => {
-    setPdfError("");
-    setPdfGenerating(true);
-    try {
-      await generatePdf(profile, answers);
-    } catch (e: unknown) {
-      const errMsg = e instanceof Error ? e.message : String(e);
-      console.error("[PDF] generatePdf failed:", e);
-      setPdfError(`Erreur PDF : ${errMsg.slice(0, 180)}`);
-    } finally {
-      setPdfGenerating(false);
-    }
-  };
+  const handleDownload = onDownloadRequest;
 
   return (
     <motion.div
@@ -639,18 +649,14 @@ function ResultView({
       </div>
 
       {/* Actions */}
-      {pdfError && (
-        <p className="text-center text-red-500 text-sm mt-2">{pdfError}</p>
-      )}
       <div className="flex flex-wrap gap-4 justify-center pt-2">
         <button
           type="button"
           onClick={handleDownload}
-          disabled={pdfGenerating}
           data-magnetic
-          className="group inline-flex items-center gap-3 pl-8 pr-2.5 py-2.5 rounded-full bg-[hsl(var(--navy-deep))] text-white text-sm font-medium tracking-wide reflection-sweep shadow-xl hover:-translate-y-0.5 transition-transform duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
+          className="group inline-flex items-center gap-3 pl-8 pr-2.5 py-2.5 rounded-full bg-[hsl(var(--navy-deep))] text-white text-sm font-medium tracking-wide reflection-sweep shadow-xl hover:-translate-y-0.5 transition-transform duration-300"
         >
-          <span>{pdfGenerating ? "Génération…" : "Télécharger ma fiche PDF"}</span>
+          <span>Télécharger ma fiche PDF</span>
           <span className="w-9 h-9 rounded-full bg-white text-[hsl(var(--navy-deep))] flex items-center justify-center transition-transform duration-300 group-hover:translate-y-0.5">
             <svg
               className="w-3.5 h-3.5"
@@ -691,7 +697,7 @@ function ResultView({
 
 
 /* ───────────────── SEND MODAL ───────────────── */
-function SendModal({ profile, onClose }: { profile: SriProfile; onClose: () => void }) {
+function SendModal({ profile, onClose, onAfterSend }: { profile: SriProfile; onClose: () => void; onAfterSend?: () => void }) {
   const [prenom, setPrenom] = useState("");
   const [nom, setNom] = useState("");
   const [email, setEmail] = useState("");
@@ -724,6 +730,7 @@ function SendModal({ profile, onClose }: { profile: SriProfile; onClose: () => v
         });
       } catch {}
       setSent(true);
+      onAfterSend?.();
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
       console.error("[SendModal] createLead failed:", msg);

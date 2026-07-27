@@ -117,5 +117,35 @@ export default async function handler(req: Request): Promise<Response> {
     console.error("[KANTI] Fetch Telegram failed:", err);
   }
 
+  // Also insert lead into Supabase
+  const supabaseUrl = process.env.VITE_SUPABASE_URL;
+  const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
+  if (supabaseUrl && supabaseKey) {
+    try {
+      await fetch(`${supabaseUrl}/rest/v1/leads`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": supabaseKey,
+          "Authorization": `Bearer ${supabaseKey}`,
+          "Prefer": "return=minimal",
+        },
+        body: JSON.stringify({
+          nom: data.nom,
+          email: data.email,
+          telephone: data.telephone || null,
+          conseiller: data.conseiller || null,
+          format: data.format || null,
+          timing: data.timing || null,
+          sujet: data.sujet || null,
+          message: data.message || null,
+          status: "nouveau",
+        }),
+      });
+    } catch (err) {
+      console.error("[KANTI] Supabase lead insert failed:", err);
+    }
+  }
+
   return new Response(JSON.stringify({ ok: true }), { status: 200, headers: cors });
 }
