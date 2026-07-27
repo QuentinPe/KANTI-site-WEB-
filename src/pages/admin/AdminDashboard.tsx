@@ -658,7 +658,7 @@ export default function AdminDashboard() {
                   { to: "/admin/articles/new",  label: "Nouvel article",   icon: FileText   },
                   { to: "/admin/leads",          label: "Voir les leads",   icon: Inbox      },
                   { to: "/admin/faq/new",        label: "Nouvelle FAQ",     icon: HelpCircle },
-                  { to: "/admin/site-settings",  label: "Paramètres site",  icon: Settings   },
+                  { to: "/admin/settings",        label: "Paramètres site",  icon: Settings   },
                 ].map(({ to, label, icon: Icon }) => (
                   <Link key={to} to={to}
                     className="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-[12px] font-medium transition-all duration-150"

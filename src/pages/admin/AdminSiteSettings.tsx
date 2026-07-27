@@ -84,6 +84,7 @@ export default function AdminSiteSettings() {
   };
 
   const handleDerUpload = async (file: File) => {
+    if (file.size > 10 * 1024 * 1024) { toast.error("Fichier trop lourd (max 10 Mo)"); return; }
     setDerUploading(true);
     try {
       const { data, error } = await supabase.storage

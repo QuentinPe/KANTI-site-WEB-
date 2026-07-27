@@ -49,9 +49,10 @@ export const reorderArticles = async (
   updates: { id: string; sort_order: number }[]
 ): Promise<void> => {
   await Promise.all(
-    updates.map(({ id, sort_order }) =>
-      supabase.from("articles").update({ sort_order }).eq("id", id)
-    )
+    updates.map(async ({ id, sort_order }) => {
+      const { error } = await supabase.from("articles").update({ sort_order }).eq("id", id);
+      if (error) throw error;
+    })
   );
 };
 

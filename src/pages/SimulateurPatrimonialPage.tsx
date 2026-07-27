@@ -354,6 +354,7 @@ export default function SimulateurPatrimonialPage() {
     setAllocation(prev => ({ ...prev, [id]: Math.round(val * 100) / 100 }));
   }
 
+  const memoizedParams = useMemo(buildParams, [buildParams]);
   const horizon = watch('horizon');
 
   return (
@@ -799,7 +800,7 @@ export default function SimulateurPatrimonialPage() {
 
                   <SimulationMetrics result={result} />
 
-                  <ScenarioComparator baseParams={buildParams()} horizon={horizon} />
+                  <ScenarioComparator baseParams={memoizedParams} horizon={horizon} />
 
                   <AssumptionsPanel open={showAssumptions} onToggle={() => setShowAssumptions(v => !v)} />
                 </>

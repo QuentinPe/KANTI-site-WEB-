@@ -21,14 +21,20 @@ async function verifySupabaseToken(token: string): Promise<boolean> {
   if (!supabaseUrl || !supabaseKey) return false;
   try {
     const res = await fetch(`${supabaseUrl}/auth/v1/user`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        apikey: supabaseKey,
-      },
+      headers: { Authorization: `Bearer ${token}`, apikey: supabaseKey },
     });
     if (!res.ok) return false;
     const user = await res.json();
-    return Boolean(user?.id);
+    if (!user?.email) return false;
+
+    // Verify the authenticated user has an active row in admin_users
+    const adminRes = await fetch(
+      `${supabaseUrl}/rest/v1/admin_users?email=eq.${encodeURIComponent(user.email)}&active=eq.true&select=email&limit=1`,
+      { headers: { apikey: supabaseKey, Authorization: `Bearer ${supabaseKey}` } },
+    );
+    if (!adminRes.ok) return false;
+    const admins = await adminRes.json();
+    return Array.isArray(admins) && admins.length > 0;
   } catch {
     return false;
   }

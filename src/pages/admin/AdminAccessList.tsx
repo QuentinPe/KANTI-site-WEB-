@@ -63,7 +63,7 @@ export default function AdminAccessList() {
 
   const handleInvite = () => {
     setInviteError("");
-    if (!inviteEmail.includes("@")) { setInviteError("Email invalide."); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inviteEmail.trim())) { setInviteError("Email invalide."); return; }
     if (admins.some((a) => a.email === inviteEmail.trim())) {
       setInviteError("Cet email est déjà dans la liste."); return;
     }

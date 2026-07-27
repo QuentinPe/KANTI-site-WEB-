@@ -77,6 +77,27 @@ function formatPct(v: number) {
 
 // ─── Step indicator ───────────────────────────────────────────────────────────
 
+const SLIDER_LABEL_CLS = "block text-xs text-foreground/55 mb-1.5 tracking-wide";
+
+function SliderField({ label, value, onChange, min, max, step: s, format }: {
+  label: string; value: number; onChange: (v: number) => void;
+  min: number; max: number; step: number; format: (v: number) => string;
+}) {
+  return (
+    <div>
+      <div className="flex justify-between mb-1.5">
+        <label className={SLIDER_LABEL_CLS}>{label}</label>
+        <span className="text-xs font-medium text-foreground/70">{format(value)}</span>
+      </div>
+      <input
+        type="range" min={min} max={max} step={s} value={value}
+        onChange={e => onChange(Number(e.target.value))}
+        className="w-full accent-foreground"
+      />
+    </div>
+  );
+}
+
 function StepIndicator({ current }: { current: number }) {
   return (
     <div className="flex items-center w-full overflow-hidden mb-8">
@@ -258,26 +279,6 @@ export default function SimulateurFinancementPage() {
   // ── Input helpers ──────────────────────────────────────────────────────────
 
   const inputCls = "w-full border border-foreground/12 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-foreground/15 bg-background/50";
-  const labelCls = "block text-xs text-foreground/55 mb-1.5 tracking-wide";
-
-  function SliderField({ label, value, onChange, min, max, step: s, format }: {
-    label: string; value: number; onChange: (v: number) => void;
-    min: number; max: number; step: number; format: (v: number) => string;
-  }) {
-    return (
-      <div>
-        <div className="flex justify-between mb-1.5">
-          <label className={labelCls}>{label}</label>
-          <span className="text-xs font-medium text-foreground/70">{format(value)}</span>
-        </div>
-        <input
-          type="range" min={min} max={max} step={s} value={value}
-          onChange={e => onChange(Number(e.target.value))}
-          className="w-full accent-foreground"
-        />
-      </div>
-    );
-  }
 
   return (
     <>

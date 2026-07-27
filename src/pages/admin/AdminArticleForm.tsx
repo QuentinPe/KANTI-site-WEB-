@@ -41,7 +41,7 @@ const schema = z.object({
   body: z.string().optional(),
   tag: z.string().min(1, "Choisissez une catégorie"),
   date: z.string().min(1, "Date requise"),
-  reading_time: z.string().min(1, "Temps de lecture requis"),
+  reading_time: z.string().regex(/^\d+\s*(min|h)$/, "Format attendu : \"5 min\" ou \"1h\"").min(1, "Temps de lecture requis"),
   image: z.string().url("URL d'image invalide"),
   featured: z.boolean(),
   // SEO

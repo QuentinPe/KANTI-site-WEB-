@@ -1,6 +1,5 @@
 ﻿import { useMemo, useState, useRef } from "react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
-import jsPDF from "jspdf";
 import { Send, X } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -13,10 +12,6 @@ import {
   type SriProfile,
   type RiskSection,
 } from "@/data/profilRisqueQuestions";
-import {
-  LOGO_KANTI_WHITE_B64,
-  LOGO_KANTI_DARK_B64,
-} from "@/assets/pdf-assets";
 
 type Phase = "intro" | "quiz" | "result";
 
@@ -709,6 +704,10 @@ function SendModal({ profile, onClose, onAfterSend }: { profile: SriProfile; onC
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!prenom.trim() || !nom.trim() || !email.trim()) return;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      setError("Adresse email invalide.");
+      return;
+    }
     setSubmitting(true);
     setError("");
     try {
@@ -871,6 +870,23 @@ async function generatePdf(
   profile: SriProfile,
   answers: Record<string, AnswerValue>,
 ) {
+  const { default: jsPDF } = await import("jspdf");
+
+  const loadImg = async (src: string) => {
+    try {
+      const res = await fetch(src);
+      const buf = await res.arrayBuffer();
+      const arr = new Uint8Array(buf);
+      let bin = "";
+      arr.forEach(b => { bin += String.fromCharCode(b); });
+      return btoa(bin);
+    } catch { return ""; }
+  };
+  const [LOGO_KANTI_DARK_B64, LOGO_KANTI_WHITE_B64] = await Promise.all([
+    loadImg("/logo-dark.png"),
+    loadImg("/logo-white.png"),
+  ]);
+
   const doc = new jsPDF({ unit: "pt", format: "a4" });
   const W = doc.internal.pageSize.getWidth();
   const H = doc.internal.pageSize.getHeight();

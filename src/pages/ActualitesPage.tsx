@@ -1,7 +1,8 @@
 import { useState, useMemo } from "react";
+import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  ArrowRight, Star, LayoutGrid, Zap, Search,
+  ArrowRight, Star, LayoutGrid, Zap,
   TrendingUp, Building2, FileText, Users,
   BarChart2, Clock, BookOpen, Scale, Mail,
 } from "lucide-react";
@@ -46,7 +47,27 @@ export default function ActualitesPage() {
   const [activeTab, setActiveTab] = useState<Tab>("une");
   const [cat, setCat]             = useState("Tous");
   const [email, setEmail]         = useState("");
+  const [newsletterSent, setNewsletterSent] = useState(false);
   const navigate                  = useNavigate();
+
+  const handleNewsletterSubmit = async () => {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      toast.error("Adresse email invalide.");
+      return;
+    }
+    try {
+      await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nom: "—", email: email.trim(), sujet: "Newsletter", message: "Inscription à la newsletter Actualités." }),
+      });
+      setNewsletterSent(true);
+      setEmail("");
+      toast.success("Inscription confirmée !");
+    } catch {
+      toast.error("Une erreur est survenue. Réessayez dans un instant.");
+    }
+  };
 
   const { data: articles = [], isLoading } = useQuery({
     queryKey: ["articles"],
@@ -284,14 +305,6 @@ export default function ActualitesPage() {
                       </motion.button>
                     );
                   })}
-                  <motion.button
-                    whileHover={{ scale: 1.1, rotate: 8 }}
-                    whileTap={{ scale: 0.94 }}
-                    transition={{ duration: 0.15 }}
-                    className="flex-shrink-0 ml-auto p-2 rounded-full transition-colors hover:bg-black/5"
-                  >
-                    <Search className="w-4 h-4" strokeWidth={1.5} style={{ color: NAVY_SFT }} />
-                  </motion.button>
                 </div>
               </motion.div>
             )}
@@ -447,14 +460,18 @@ export default function ActualitesPage() {
                   placeholder="Votre adresse e-mail"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleNewsletterSubmit()}
+                  disabled={newsletterSent}
                   className="flex-1 md:w-60 px-4 py-2.5 rounded-full text-[13px] font-light focus:outline-none"
                   style={{ background: "hsl(220 30% 97%)", border: "1px solid hsl(224 20% 12% / 0.12)", color: NAVY }}
                 />
                 <button
-                  className="px-5 py-2.5 rounded-full text-[13px] font-medium text-white whitespace-nowrap transition-all duration-200 hover:-translate-y-0.5"
+                  onClick={handleNewsletterSubmit}
+                  disabled={newsletterSent}
+                  className="px-5 py-2.5 rounded-full text-[13px] font-medium text-white whitespace-nowrap transition-all duration-200 hover:-translate-y-0.5 disabled:opacity-60"
                   style={{ background: NAVY }}
                 >
-                  S'abonner
+                  {newsletterSent ? "Inscrit ✓" : "S'abonner"}
                 </button>
               </div>
               <p className="text-[10.5px] font-light" style={{ color: "hsl(224 12% 65%)" }}>

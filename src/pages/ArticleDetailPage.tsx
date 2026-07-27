@@ -447,6 +447,8 @@ export default function ArticleDetailPage() {
   const { id } = useParams<{ id: string }>();
   const qc = useQueryClient();
   const contentRef = useRef<HTMLElement>(null);
+  const mounted = useRef(true);
+  useEffect(() => () => { mounted.current = false; }, []);
   const [readPct, setReadPct] = useState(0);
   const [activeId, setActiveId] = useState("");
   const [liked, setLiked] = useState(false);
@@ -515,7 +517,7 @@ export default function ArticleDetailPage() {
     setTimeout(() => setLikeAnim(false), 600);
     setLikedArticle(article.id, nextLiked);
     const serverCount = await toggleArticleLike(article.id, delta as 1 | -1);
-    if (serverCount !== null) {
+    if (serverCount !== null && mounted.current) {
       setLikesCount(serverCount);
       qc.setQueryData(["article", id], (old: typeof article) =>
         old ? { ...old, likes: serverCount } : old
@@ -526,20 +528,20 @@ export default function ArticleDetailPage() {
   // IntersectionObserver for active TOC heading
   useEffect(() => {
     if (!processedBody || toc.length === 0) return;
+    let observer: IntersectionObserver | null = null;
     const timer = setTimeout(() => {
       const headings = toc.map(t => document.getElementById(t.id)).filter(Boolean) as HTMLElement[];
       if (headings.length === 0) return;
-      const observer = new IntersectionObserver(
+      observer = new IntersectionObserver(
         entries => {
           const visible = entries.filter(e => e.isIntersecting);
           if (visible.length > 0) setActiveId(visible[0].target.id);
         },
         { rootMargin: "-15% 0% -55% 0%", threshold: 0 }
       );
-      headings.forEach(h => observer.observe(h));
-      return () => observer.disconnect();
+      headings.forEach(h => observer!.observe(h));
     }, 400);
-    return () => clearTimeout(timer);
+    return () => { clearTimeout(timer); observer?.disconnect(); };
   }, [processedBody, toc]);
 
   return (

@@ -695,8 +695,11 @@ export default function AdminLeadsList() {
       if (prev.has(id)) return prev;
       const next = new Set(prev);
       next.add(id);
-      localStorage.setItem("seen-lead-ids", JSON.stringify([...next]));
-      return next;
+      // Cap at 1000 IDs to prevent unbounded localStorage growth
+      const arr = [...next];
+      const capped = arr.length > 1000 ? arr.slice(arr.length - 1000) : arr;
+      localStorage.setItem("seen-lead-ids", JSON.stringify(capped));
+      return new Set(capped);
     });
   };
   const PER_PAGE = 20;

@@ -233,6 +233,7 @@ export default function LoginPage() {
                     <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "hsl(0 0% 100% / 0.35)" }} />
                     <input type={showPw ? "text" : "password"} placeholder="••••••••" className={`${inputBase} pr-10`} {...regLogin("password")} />
                     <button type="button" onClick={() => setShowPw((v) => !v)}
+                      aria-label={showPw ? "Masquer le mot de passe" : "Afficher le mot de passe"}
                       className="absolute right-3.5 top-1/2 -translate-y-1/2 transition-opacity hover:opacity-80"
                       style={{ color: "hsl(0 0% 100% / 0.35)" }}>
                       {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}

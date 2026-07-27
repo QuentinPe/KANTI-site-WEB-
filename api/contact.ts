@@ -27,7 +27,7 @@ function escHtml(s: string): string {
 
 export default async function handler(req: Request): Promise<Response> {
   const cors = {
-    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Origin": process.env.ALLOWED_ORIGIN ?? "https://kanti.fr",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Content-Type": "application/json",
   };
@@ -50,6 +50,9 @@ export default async function handler(req: Request): Promise<Response> {
   // Validation minimale côté serveur
   if (!data.nom?.trim() || !data.email?.trim()) {
     return new Response(JSON.stringify({ error: "Nom et email requis" }), { status: 400, headers: cors });
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email.trim())) {
+    return new Response(JSON.stringify({ error: "Adresse email invalide" }), { status: 400, headers: cors });
   }
 
   const token = process.env.TELEGRAM_BOT_TOKEN;
@@ -75,7 +78,7 @@ export default async function handler(req: Request): Promise<Response> {
     `👤 <b>Conseiller :</b> ${ADVISORS[data.conseiller] ?? "—"}`,
     `📍 <b>Format :</b> ${FORMATS[data.format] ?? "—"}`,
     `📅 <b>Disponibilité :</b> ${TIMING[data.timing] ?? "—"}`,
-    `🏷️ <b>Sujet :</b> ${data.sujet || "—"}`,
+    `🏷️ <b>Sujet :</b> ${escHtml(data.sujet || "—")}`,
     "",
     "━━━━━━━━━━━━━━━━━",
     `<b>Nom :</b> ${escHtml(data.nom)}`,

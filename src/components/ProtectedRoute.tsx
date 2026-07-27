@@ -4,8 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { getAdminUsers } from "@/lib/adminUsersService";
 
 // Bootstrap list · used only when the admin_users table doesn't exist yet.
-// Remove once the table is created and populated in Supabase.
-const BOOTSTRAP_EMAILS = ["m.delorme@adnfamily.com"];
+const BOOTSTRAP_EMAILS = [import.meta.env.VITE_BOOTSTRAP_ADMIN_EMAIL].filter(Boolean) as string[];
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
