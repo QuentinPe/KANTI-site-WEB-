@@ -1,4 +1,5 @@
 ﻿import { useState, useMemo } from "react";
+import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import {
@@ -165,6 +166,69 @@ function RobustnessPill({ ratio }: { ratio: number }) {
   if (ratio < 0.33) return <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">Maîtrisée · {formatPct(ratio)}</span>;
   if (ratio < 0.38) return <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-100">Limitée · {formatPct(ratio)}</span>;
   return <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-red-50 text-red-700 border border-red-100">Insuffisante · {formatPct(ratio)}</span>;
+}
+
+// ─── Email capture ────────────────────────────────────────────────────────────
+
+interface LoanResult { monthlyPaymentWithInsurance: number; totalCost: number; }
+
+function FinancementEmailCapture({ result, debtRatio }: { result: LoanResult; debtRatio: number }) {
+  const [email, setEmail] = useState('');
+  const [sent, setSent] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const handleSend = async () => {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      toast.error('Adresse email invalide.');
+      return;
+    }
+    setLoading(true);
+    const message = [
+      `Mensualité (assurance incluse) : ${formatEur(result.monthlyPaymentWithInsurance)}`,
+      `Coût total du crédit : ${formatEur(result.totalCost)}`,
+      `Taux d'endettement : ${formatPct(debtRatio)}`,
+    ].join('\n');
+    try {
+      await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nom: '—', email: email.trim(), sujet: 'Simulation financement', message }),
+      });
+      setSent(true);
+      toast.success('Simulation envoyée ! Vérifiez votre boîte mail.');
+    } catch {
+      toast.error("Erreur d'envoi. Réessayez.");
+    }
+    setLoading(false);
+  };
+
+  if (sent) return null;
+
+  return (
+    <div className="rounded-2xl border border-foreground/8 bg-white/60 px-6 py-5 flex flex-col sm:flex-row items-center gap-4">
+      <div className="flex-1 text-left">
+        <p className="text-sm font-medium text-foreground">Recevoir cette simulation par email</p>
+        <p className="text-[12px] text-foreground/50 font-light mt-0.5">Mensualité, coût total et ratio d'endettement envoyés dans votre boîte mail.</p>
+      </div>
+      <div className="flex gap-2 w-full sm:w-auto">
+        <input
+          type="email"
+          placeholder="votre@email.fr"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && handleSend()}
+          className="flex-1 sm:w-52 px-3.5 py-2 rounded-full text-[13px] border border-foreground/15 focus:outline-none focus:border-foreground/30 bg-white"
+        />
+        <button
+          onClick={handleSend}
+          disabled={loading}
+          className="px-4 py-2 rounded-full text-[13px] font-medium bg-foreground text-white hover:bg-foreground/85 disabled:opacity-50 transition-all whitespace-nowrap"
+        >
+          {loading ? '…' : 'Envoyer'}
+        </button>
+      </div>
+    </div>
+  );
 }
 
 // ─── Main page ────────────────────────────────────────────────────────────────
@@ -833,6 +897,9 @@ export default function SimulateurFinancementPage() {
                   </Link>
                 </div>
               </div>
+
+              {/* Email results capture */}
+              {result && <FinancementEmailCapture result={result} debtRatio={debtRatio} />}
             </div>
           </div>
         </div>

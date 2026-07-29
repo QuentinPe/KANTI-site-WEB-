@@ -1,5 +1,6 @@
 ﻿import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
+import { toast } from 'sonner';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod/v4';
@@ -252,6 +253,70 @@ function ScenarioComparator({
         ))}
       </div>
       <p className="text-[10px] italic text-foreground/30 mt-3">Données illustratives · scénarios de démonstration</p>
+    </div>
+  );
+}
+
+// ─── Email capture ────────────────────────────────────────────────────────────
+function SimulationEmailCapture({ result }: { result: SimulationResult }) {
+  const [email, setEmail] = useState('');
+  const [sent, setSent] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const handleSend = async () => {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      toast.error('Adresse email invalide.');
+      return;
+    }
+    setLoading(true);
+    const m = result.metrics;
+    const message = [
+      `Capital médian final : ${formatEur(m.medianFinalValue)}`,
+      `Capital total investi : ${formatEur(m.totalContributed)}`,
+      `Rendement annualisé médian : ${formatPct(m.medianAnnualizedReturn)}`,
+      `Volatilité : ${formatPct(m.annualizedVolatility)}`,
+      `Probabilité de gain : ${Math.round(m.probabilityOfGain * 100)} %`,
+      `Drawdown max : ${formatPct(m.maxDrawdown)}`,
+    ].join('\n');
+    try {
+      await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nom: '—', email: email.trim(), sujet: 'Simulation patrimoniale', message }),
+      });
+      setSent(true);
+      toast.success('Simulation envoyée ! Vérifiez votre boîte mail.');
+    } catch {
+      toast.error('Erreur d\'envoi. Réessayez.');
+    }
+    setLoading(false);
+  };
+
+  if (sent) return null;
+
+  return (
+    <div className="rounded-2xl border border-foreground/8 bg-white/60 px-6 py-5 flex flex-col sm:flex-row items-center gap-4">
+      <div className="flex-1 text-left">
+        <p className="text-sm font-medium text-foreground">Recevoir cette simulation par email</p>
+        <p className="text-[12px] text-foreground/50 font-light mt-0.5">Résultats clés envoyés directement dans votre boîte mail.</p>
+      </div>
+      <div className="flex gap-2 w-full sm:w-auto">
+        <input
+          type="email"
+          placeholder="votre@email.fr"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && handleSend()}
+          className="flex-1 sm:w-52 px-3.5 py-2 rounded-full text-[13px] border border-foreground/15 focus:outline-none focus:border-foreground/30 bg-white"
+        />
+        <button
+          onClick={handleSend}
+          disabled={loading}
+          className="px-4 py-2 rounded-full text-[13px] font-medium bg-foreground text-white hover:bg-foreground/85 disabled:opacity-50 transition-all whitespace-nowrap"
+        >
+          {loading ? '…' : 'Envoyer'}
+        </button>
+      </div>
     </div>
   );
 }
@@ -834,6 +899,9 @@ export default function SimulateurPatrimonialPage() {
                   </Link>
                 </div>
               </div>
+
+              {/* Email results capture */}
+              {result && <SimulationEmailCapture result={result} />}
             </div>
           </div>
         </div>

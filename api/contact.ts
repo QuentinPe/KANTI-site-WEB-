@@ -150,5 +150,13 @@ export default async function handler(req: Request): Promise<Response> {
     }
   }
 
+  // Send confirmation email to the prospect (fire-and-forget)
+  const baseUrl = process.env.ALLOWED_ORIGIN ?? "https://kanti.fr";
+  fetch(`${baseUrl}/api/send-confirmation`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ nom: data.nom, email: data.email, sujet: data.sujet }),
+  }).catch(() => {});
+
   return new Response(JSON.stringify({ ok: true }), { status: 200, headers: cors });
 }

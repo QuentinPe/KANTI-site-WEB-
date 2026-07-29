@@ -1,4 +1,5 @@
 ﻿import { useMemo, useState, useRef } from "react";
+import { Link } from "react-router-dom";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import { Send, X } from "lucide-react";
 import Header from "@/components/Header";
@@ -685,6 +686,30 @@ function ResultView({
         >
           Refaire le test
         </button>
+      </div>
+
+      {/* Simulateur bridge */}
+      <div className="rounded-[2rem] border border-foreground/10 bg-white/65 backdrop-blur p-7 lg:p-8 text-center">
+        <p className="text-[11px] tracking-[0.3em] uppercase text-foreground/50 mb-3 font-medium">
+          Étape suivante
+        </p>
+        <p className="font-heading text-xl lg:text-2xl font-light text-foreground mb-2 tracking-tight">
+          Simulez votre patrimoine avec ce profil
+        </p>
+        <p className="text-[14px] font-light text-foreground/55 mb-6 max-w-md mx-auto leading-relaxed">
+          Votre score SRI {profile.sri}/7 est directement injecté dans notre simulateur patrimonial pour projeter vos trajectoires Monte Carlo.
+        </p>
+        <Link
+          to={`/gestion-patrimoniale/simulateur?profil=${profile.sri <= 2 ? "prudent" : profile.sri <= 4 ? "équilibré" : "dynamique"}`}
+          className="group inline-flex items-center gap-3 pl-7 pr-2.5 py-2.5 rounded-full border border-foreground/20 text-foreground text-sm font-medium tracking-wide hover:bg-foreground/5 transition"
+        >
+          <span>Lancer la simulation</span>
+          <span className="w-9 h-9 rounded-full bg-[hsl(var(--electric))] text-white flex items-center justify-center transition-transform duration-300 group-hover:translate-x-0.5">
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+            </svg>
+          </span>
+        </Link>
       </div>
     </motion.div>
   );

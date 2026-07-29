@@ -238,7 +238,12 @@ export default function RessourcesPage() {
   const [heroForm, setHeroForm] = useState({ prenom: "", nom: "", email: "", telephone: "", statut: "" });
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const [heroLoading, setHeroLoading] = useState(false);
-  const [heroSubmitted, setHeroSubmitted] = useState(false);
+  const [heroSubmitted, setHeroSubmitted] = useState(() => {
+    try {
+      const ts = localStorage.getItem("kanti_resources_unlocked");
+      return !!ts && Date.now() - parseInt(ts) < 30 * 86_400_000;
+    } catch { return false; }
+  });
 
   // Card modal state
   const [openId, setOpenId] = useState<string | null>(null);
@@ -329,6 +334,7 @@ export default function RessourcesPage() {
         }),
       }).catch(() => {});
       await triggerDownload(featuredResource);
+      try { localStorage.setItem("kanti_resources_unlocked", Date.now().toString()); } catch {}
       setHeroSubmitted(true);
       toast.success("Guide en cours de téléchargement ! Vous avez maintenant accès à toutes les ressources.");
     } catch {

@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Search, X } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import Header from "@/components/Header";
@@ -121,6 +122,7 @@ export default function FAQPage() {
 
   const [activeCatId, setActiveCatId] = useState<string>(sections[0].id);
   const [openItems, setOpenItems] = useState<Record<string, boolean>>({});
+  const [searchQuery, setSearchQuery] = useState("");
 
   const activeCat = sections.find((c) => c.id === activeCatId) ?? sections[0];
   const activeIndex = sections.findIndex((c) => c.id === activeCatId);
@@ -133,6 +135,26 @@ export default function FAQPage() {
     setActiveCatId(id);
     setOpenItems({});
   };
+
+  const highlight = useCallback((text: string, q: string) => {
+    if (!q) return text;
+    const parts = text.split(new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'));
+    return parts.map((p, i) =>
+      p.toLowerCase() === q.toLowerCase()
+        ? `<mark style="background:hsl(218 80% 88%);color:hsl(218 60% 24%);border-radius:2px;padding:0 1px">${p}</mark>`
+        : p
+    ).join('');
+  }, []);
+
+  const searchResults = useMemo(() => {
+    if (!searchQuery.trim()) return [];
+    const q = searchQuery.trim().toLowerCase();
+    return sections.flatMap(c =>
+      c.questions
+        .filter(item => item.q.toLowerCase().includes(q) || item.a.toLowerCase().includes(q))
+        .map(item => ({ ...item, category: c.category }))
+    );
+  }, [searchQuery, sections]);
 
   return (
     <>
@@ -224,6 +246,93 @@ export default function FAQPage() {
 
             {/* Categories + questions */}
             <div className="lg:col-span-8">
+              {/* Search */}
+              <div className="mb-6 relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "hsl(224 18% 56%)" }} strokeWidth={1.5} />
+                <input
+                  type="search"
+                  placeholder="Rechercher dans la FAQ…"
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  className="w-full pl-11 pr-10 py-3 rounded-2xl text-[14px] font-light focus:outline-none transition-all"
+                  style={{ background: "white", border: "1px solid hsl(224 20% 12% / 0.1)", color: "hsl(224 55% 12%)", boxShadow: "0 2px 12px -4px hsl(224 30% 20% / 0.07)" }}
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-foreground/8 transition-colors"
+                    aria-label="Effacer la recherche"
+                  >
+                    <X className="w-3.5 h-3.5" style={{ color: "hsl(224 18% 56%)" }} />
+                  </button>
+                )}
+              </div>
+
+              {/* Search results */}
+              {searchQuery.trim() ? (
+                <motion.div
+                  key="search"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.25 }}
+                >
+                  {searchResults.length === 0 ? (
+                    <div className="text-center py-16 text-foreground/40 text-sm font-light">
+                      Aucun résultat pour «&nbsp;{searchQuery}&nbsp;»
+                    </div>
+                  ) : (
+                    <ul className="space-y-3">
+                      {searchResults.map((item, i) => {
+                        const key = `search-${i}`;
+                        const isOpen = !!openItems[key];
+                        return (
+                          <li key={key} className="rounded-[1.25rem] border border-foreground/[0.08] bg-white/60 backdrop-blur-sm hover:border-foreground/15 transition-colors">
+                            <button
+                              onClick={() => toggle(key)}
+                              className="w-full flex items-start justify-between gap-6 text-left p-5 group"
+                              aria-expanded={isOpen}
+                            >
+                              <span className="flex items-start gap-3 flex-1">
+                                <span className="text-[10px] font-medium tracking-[0.18em] uppercase px-2 py-0.5 rounded-full mt-0.5 shrink-0"
+                                  style={{ background: "hsl(218 45% 42% / 0.09)", color: "hsl(218 45% 36%)" }}>
+                                  {item.category}
+                                </span>
+                                <span
+                                  className="font-heading text-base font-light text-foreground tracking-tight leading-snug"
+                                  dangerouslySetInnerHTML={{ __html: highlight(item.q, searchQuery.trim()) }}
+                                />
+                              </span>
+                              <svg className={`w-4 h-4 shrink-0 mt-0.5 text-foreground/35 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                              </svg>
+                            </button>
+                            <AnimatePresence>
+                              {isOpen && (
+                                <motion.div
+                                  initial={{ height: 0, opacity: 0 }}
+                                  animate={{ height: "auto", opacity: 1 }}
+                                  exit={{ height: 0, opacity: 0 }}
+                                  transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                                  style={{ overflow: "hidden" }}
+                                >
+                                  <div className="px-5 pb-5 pt-0">
+                                    <p
+                                      className="text-foreground/70 text-sm font-light leading-relaxed"
+                                      dangerouslySetInnerHTML={{ __html: highlight(item.a, searchQuery.trim()) }}
+                                    />
+                                  </div>
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
+                </motion.div>
+              ) : (
+
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeCat.id}
@@ -306,6 +415,7 @@ export default function FAQPage() {
                   </ul>
                 </motion.div>
               </AnimatePresence>
+              )}
             </div>
           </div>
         </div>
