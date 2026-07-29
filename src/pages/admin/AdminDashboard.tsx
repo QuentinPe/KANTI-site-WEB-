@@ -18,32 +18,48 @@ import { useAuth } from "@/contexts/AuthContext";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
-// Solid dark reference (used in gradients / vignettes)
-const PAGE_BG = "hsl(222 55% 7%)";
+// Solid dark used in vignettes
+const PAGE_BG = "hsl(224 60% 6%)";
 
-// Full-page gradient background
-const PAGE_BG_GRADIENT = "linear-gradient(145deg, hsl(222 55% 8%) 0%, hsl(228 48% 11%) 45%, hsl(222 60% 7%) 100%)";
+// Rich layered background: soft radial blobs give the blur something to render through glass
+const PAGE_BG_GRADIENT = `
+  radial-gradient(ellipse 75% 55% at 12% 20%, hsl(218 80% 30% / 0.60) 0%, transparent 65%),
+  radial-gradient(ellipse 55% 70% at 88% 80%, hsl(258 70% 28% / 0.55) 0%, transparent 58%),
+  radial-gradient(ellipse 60% 50% at 55% 10%, hsl(200 75% 22% / 0.35) 0%, transparent 55%),
+  radial-gradient(ellipse 100% 100% at 50% 50%, hsl(222 62% 8%) 0%, hsl(224 68% 5%) 100%)
+`.trim();
 
-// Liquid glass card
-const CARD_STYLE: React.CSSProperties = {
-  background: "hsl(0 0% 100% / 0.07)",
-  backdropFilter: "blur(24px)",
-  WebkitBackdropFilter: "blur(24px)",
-  border: "1px solid hsl(0 0% 100% / 0.13)",
-  boxShadow: "inset 0 1px 0 hsl(0 0% 100% / 0.18), 0 4px 24px hsl(224 60% 4% / 0.40)",
+// ── Liquid glass panel ─────────────────────────────────────────────────────────
+// High-saturation blur reveals colour blobs behind each card (Apple-style vibrancy)
+const GLASS: React.CSSProperties = {
+  background: "rgba(255, 255, 255, 0.10)",
+  backdropFilter: "blur(48px) saturate(210%)",
+  WebkitBackdropFilter: "blur(48px) saturate(210%)",
+  border: "1px solid rgba(255, 255, 255, 0.18)",
+  boxShadow: [
+    "inset 0 2px 0 rgba(255,255,255,0.28)",   // specular top edge
+    "inset 0 -1px 0 rgba(0,0,0,0.12)",         // subtle bottom shadow
+    "inset 1px 0 0 rgba(255,255,255,0.06)",    // left edge catch-light
+    "0 24px 64px rgba(0,0,0,0.32)",
+  ].join(", "),
 };
-const CARD_HOVER_SHADOW = "inset 0 1px 0 hsl(0 0% 100% / 0.24), 0 16px 48px hsl(224 60% 4% / 0.60)";
+const CARD_STYLE = GLASS;
+const CARD_HOVER_SHADOW = [
+  "inset 0 2px 0 rgba(255,255,255,0.36)",
+  "inset 0 -1px 0 rgba(0,0,0,0.12)",
+  "0 32px 80px rgba(0,0,0,0.45)",
+].join(", ");
+
+// Inner surface nested inside a glass card
+const INNER_BG     = "rgba(255,255,255,0.07)";
+const INNER_BORDER = "rgba(255,255,255,0.10)";
 
 // Text roles
-const T_PRIMARY   = "hsl(0 0% 98%)";
-const T_SECONDARY = "hsl(0 0% 100% / 0.55)";
-const T_MUTED     = "hsl(0 0% 100% / 0.38)";
-const T_HEADING   = "hsl(0 0% 100% / 0.88)";
-const T_LABEL     = "hsl(0 0% 100% / 0.65)";
-
-// Inner surface (inside a glass card)
-const INNER_BG     = "hsl(0 0% 100% / 0.07)";
-const INNER_BORDER = "hsl(0 0% 100% / 0.10)";
+const T_PRIMARY   = "rgba(255,255,255,0.96)";
+const T_SECONDARY = "rgba(255,255,255,0.55)";
+const T_MUTED     = "rgba(255,255,255,0.36)";
+const T_HEADING   = "rgba(255,255,255,0.88)";
+const T_LABEL     = "rgba(255,255,255,0.65)";
 
 const LEAD_SOURCES = [
   { label: "Bilan patrimonial", test: (s: string) => /bilan|patrimoni/i.test(s), color: "hsl(218 55% 42%)" },
@@ -134,8 +150,9 @@ function DeltaBadge({ pct }: { pct: number | null }) {
     <span
       className="inline-flex items-center gap-0.5 text-[10px] font-medium px-1.5 py-0.5 rounded-full"
       style={{
-        background: up ? "hsl(142 55% 38% / 0.22)" : "hsl(0 65% 48% / 0.22)",
-        color: up ? "hsl(142 65% 72%)" : "hsl(0 72% 74%)",
+        background: up ? "rgba(52,199,89,0.18)" : "rgba(255,69,58,0.18)",
+        color: up ? "rgb(52,210,100)" : "rgb(255,90,80)",
+        border: up ? "1px solid rgba(52,199,89,0.25)" : "1px solid rgba(255,69,58,0.25)",
       }}
     >
       {up ? "↑" : "↓"}{Math.abs(pct)}%
@@ -155,20 +172,11 @@ function KpiCard({
     <Link
       to={to}
       className="group flex flex-col gap-3.5 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1"
-      style={{
-        background: "hsl(0 0% 100% / 0.08)",
-        backdropFilter: "blur(20px)",
-        WebkitBackdropFilter: "blur(20px)",
-        border: "1px solid hsl(0 0% 100% / 0.13)",
-        boxShadow: "inset 0 1px 0 hsl(0 0% 100% / 0.20), 0 4px 20px hsl(224 60% 4% / 0.35)",
-      }}
+      style={{ ...GLASS }}
       onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = CARD_HOVER_SHADOW; }}
-      onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = "inset 0 1px 0 hsl(0 0% 100% / 0.20), 0 4px 20px hsl(224 60% 4% / 0.35)"; }}
+      onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = GLASS.boxShadow as string; }}
     >
-      {/* Accent top stripe */}
-      <div style={{ height: 3, background: color, opacity: 0.85 }} />
-
-      <div className="flex flex-col gap-3.5 px-5 pb-5">
+      <div className="flex flex-col gap-3.5 px-5 pt-5 pb-5">
         <div className="flex items-start justify-between">
           <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
             style={{ background: color + "22" }}>
@@ -258,11 +266,14 @@ function LeadsChartModal({ leads, onClose }: { leads: Lead[]; onClose: () => voi
       <div
         className="relative w-full max-w-3xl rounded-2xl overflow-hidden"
         style={{
-          background: "hsl(224 50% 10% / 0.92)",
-          backdropFilter: "blur(40px)",
-          WebkitBackdropFilter: "blur(40px)",
-          border: "1px solid hsl(0 0% 100% / 0.13)",
-          boxShadow: "inset 0 1px 0 hsl(0 0% 100% / 0.18), 0 32px 80px hsl(224 60% 4% / 0.60)",
+          background: "rgba(20,26,60,0.72)",
+          backdropFilter: "blur(60px) saturate(200%)",
+          WebkitBackdropFilter: "blur(60px) saturate(200%)",
+          border: "1px solid rgba(255,255,255,0.18)",
+          boxShadow: [
+            "inset 0 2px 0 rgba(255,255,255,0.22)",
+            "0 40px 100px rgba(0,0,0,0.50)",
+          ].join(", "),
         }}
       >
         {/* Header */}
@@ -454,7 +465,7 @@ export default function AdminDashboard() {
   const lastArticles = articles.slice(0, 4);
 
   return (
-    <div className="min-h-screen" style={{ background: PAGE_BG_GRADIENT }}>
+    <div className="min-h-screen" style={{ background: PAGE_BG_GRADIENT, backgroundAttachment: "fixed" }}>
 
       {/* ── Hero banner ── */}
       <div className="relative w-full overflow-hidden" style={{ height: 300 }}>
