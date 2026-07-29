@@ -21,7 +21,15 @@ export default function AdminLayout() {
   const isActive = (path: string) => location.pathname.startsWith(path);
 
   return (
-    <div className="min-h-screen flex" style={{ background: "hsl(220 25% 97%)" }}>
+    <div
+      className="min-h-screen flex"
+      style={{
+        backgroundImage: "url(/admin-hero.jpg)",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundAttachment: "fixed",
+      }}
+    >
       {/* Sidebar */}
       <aside
         className="w-64 flex flex-col flex-shrink-0"
@@ -187,8 +195,8 @@ export default function AdminLayout() {
         </div>
       </aside>
 
-      {/* Main */}
-      <main className="flex-1 overflow-auto">
+      {/* Main — dark overlay so all page content sits on the glass surface */}
+      <main className="flex-1 overflow-auto" style={{ background: "linear-gradient(160deg, rgba(11,14,28,0.82) 0%, rgba(8,11,22,0.88) 100%)" }}>
         <Outlet />
       </main>
     </div>

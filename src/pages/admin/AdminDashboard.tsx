@@ -15,45 +15,20 @@ import {
 } from "@/components/admin/LeadsVolumeChart";
 import type { PeriodKey } from "@/components/admin/LeadsVolumeChart";
 import { useAuth } from "@/contexts/AuthContext";
+import {
+  GLASS, GLASS_HOVER_SHADOW, INNER_BG, INNER_BORDER,
+  T_PRIMARY, T_SECONDARY, T_MUTED, T_HEADING, T_LABEL,
+  C_BLUE, C_GOLD, C_SAGE, C_MAUVE, C_CORAL, C_TEAL,
+} from "@/lib/adminTheme";
 
-// ── Liquid glass panel ─────────────────────────────────────────────────────────
-// High-saturation blur reveals colour blobs behind each card (Apple-style vibrancy)
-const GLASS: React.CSSProperties = {
-  background: "rgba(255, 255, 255, 0.10)",
-  backdropFilter: "blur(48px) saturate(210%)",
-  WebkitBackdropFilter: "blur(48px) saturate(210%)",
-  border: "1px solid rgba(255, 255, 255, 0.18)",
-  boxShadow: [
-    "inset 0 2px 0 rgba(255,255,255,0.28)",   // specular top edge
-    "inset 0 -1px 0 rgba(0,0,0,0.12)",         // subtle bottom shadow
-    "inset 1px 0 0 rgba(255,255,255,0.06)",    // left edge catch-light
-    "0 24px 64px rgba(0,0,0,0.32)",
-  ].join(", "),
-};
 const CARD_STYLE = GLASS;
-const CARD_HOVER_SHADOW = [
-  "inset 0 2px 0 rgba(255,255,255,0.36)",
-  "inset 0 -1px 0 rgba(0,0,0,0.12)",
-  "0 32px 80px rgba(0,0,0,0.45)",
-].join(", ");
-
-// Inner surface nested inside a glass card
-const INNER_BG     = "rgba(255,255,255,0.07)";
-const INNER_BORDER = "rgba(255,255,255,0.10)";
-
-// Text roles
-const T_PRIMARY   = "rgba(255,255,255,0.96)";
-const T_SECONDARY = "rgba(255,255,255,0.55)";
-const T_MUTED     = "rgba(255,255,255,0.36)";
-const T_HEADING   = "rgba(255,255,255,0.88)";
-const T_LABEL     = "rgba(255,255,255,0.65)";
 
 const LEAD_SOURCES = [
-  { label: "Bilan patrimonial", test: (s: string) => /bilan|patrimoni/i.test(s), color: "hsl(218 55% 42%)" },
-  { label: "Gestion",           test: (s: string) => /gestion/i.test(s),          color: "hsl(258 55% 52%)" },
-  { label: "Immobilier",        test: (s: string) => /immobilier|immo/i.test(s),   color: "hsl(38 75% 42%)"  },
-  { label: "Transmission",      test: (s: string) => /transmission|succession|pr[eé]voyance/i.test(s), color: "hsl(162 50% 38%)" },
-  { label: "Autre",             test: (_: string) => true,                         color: "hsl(224 20% 62%)" },
+  { label: "Bilan patrimonial", test: (s: string) => /bilan|patrimoni/i.test(s), color: C_BLUE  },
+  { label: "Gestion",           test: (s: string) => /gestion/i.test(s),          color: C_MAUVE },
+  { label: "Immobilier",        test: (s: string) => /immobilier|immo/i.test(s),   color: C_GOLD  },
+  { label: "Transmission",      test: (s: string) => /transmission|succession|pr[eé]voyance/i.test(s), color: C_SAGE },
+  { label: "Autre",             test: (_: string) => true,                         color: T_SECONDARY },
 ];
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -137,9 +112,9 @@ function DeltaBadge({ pct }: { pct: number | null }) {
     <span
       className="inline-flex items-center gap-0.5 text-[10px] font-medium px-1.5 py-0.5 rounded-full"
       style={{
-        background: up ? "rgba(52,199,89,0.18)" : "rgba(255,69,58,0.18)",
-        color: up ? "rgb(52,210,100)" : "rgb(255,90,80)",
-        border: up ? "1px solid rgba(52,199,89,0.25)" : "1px solid rgba(255,69,58,0.25)",
+        background: up ? "rgba(62,190,95,0.16)" : "rgba(200,82,66,0.16)",
+        color: up ? "rgb(72,200,105)" : "rgb(210,92,76)",
+        border: up ? "1px solid rgba(62,190,95,0.22)" : "1px solid rgba(200,82,66,0.22)",
       }}
     >
       {up ? "↑" : "↓"}{Math.abs(pct)}%
@@ -160,7 +135,7 @@ function KpiCard({
       to={to}
       className="group flex flex-col gap-3.5 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1"
       style={{ ...GLASS }}
-      onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = CARD_HOVER_SHADOW; }}
+      onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = GLASS_HOVER_SHADOW; }}
       onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = GLASS.boxShadow as string; }}
     >
       <div className="flex flex-col gap-3.5 px-5 pt-5 pb-5">
@@ -413,7 +388,7 @@ export default function AdminDashboard() {
       text: `Lead · ${l.nom}`,
       sub: l.sujet ?? l.format ?? "contact",
       time: l.created_at,
-      color: "hsl(38 75% 42%)",
+      color: C_GOLD,
       to: "/admin/leads",
     })),
     ...articles.slice(0, 5).map((a) => ({
@@ -421,7 +396,7 @@ export default function AdminDashboard() {
       text: a.title,
       sub: a.tag ?? "",
       time: a.created_at,
-      color: "hsl(218 55% 42%)",
+      color: C_BLUE,
       to: `/admin/articles/${a.id}/edit`,
     })),
   ]
@@ -433,13 +408,13 @@ export default function AdminDashboard() {
   const tasks = useMemo(() => {
     const t: { label: string; detail: string; color: string; to: string; done: boolean }[] = [];
     if (newLeads > 0)
-      t.push({ label: `${newLeads} nouveau${newLeads > 1 ? "x" : ""} lead${newLeads > 1 ? "s" : ""}`, detail: "À appeler", color: "hsl(38 80% 48%)", to: "/admin/leads", done: false });
+      t.push({ label: `${newLeads} nouveau${newLeads > 1 ? "x" : ""} lead${newLeads > 1 ? "s" : ""}`, detail: "À appeler", color: C_GOLD, to: "/admin/leads", done: false });
     if (staleLeads.length > 0)
-      t.push({ label: `${staleLeads.length} lead${staleLeads.length > 1 ? "s" : ""} à relancer`, detail: "Pas de retour depuis +48 h", color: "hsl(0 60% 50%)", to: "/admin/leads", done: false });
+      t.push({ label: `${staleLeads.length} lead${staleLeads.length > 1 ? "s" : ""} à relancer`, detail: "Pas de retour depuis +48 h", color: C_CORAL, to: "/admin/leads", done: false });
     if (articlesThisMonth === 0)
-      t.push({ label: "Publier un article", detail: "Aucun article ce mois-ci", color: "hsl(218 55% 42%)", to: "/admin/articles/new", done: false });
+      t.push({ label: "Publier un article", detail: "Aucun article ce mois-ci", color: C_BLUE, to: "/admin/articles/new", done: false });
     if (t.length === 0)
-      t.push({ label: "Tout est à jour", detail: "Aucune action urgente", color: "hsl(142 52% 36%)", to: "/admin", done: true });
+      t.push({ label: "Tout est à jour", detail: "Aucune action urgente", color: C_TEAL, to: "/admin", done: true });
     return t;
   }, [newLeads, staleLeads.length, articlesThisMonth]);
 
@@ -452,20 +427,7 @@ export default function AdminDashboard() {
   const lastArticles = articles.slice(0, 4);
 
   return (
-    <div
-      className="min-h-screen"
-      style={{
-        backgroundImage: `url(/admin-hero.jpg)`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundAttachment: "fixed",
-      }}
-    >
-      {/* Dark overlay — gives cards enough contrast while letting photo bleed through glass */}
-      <div
-        className="min-h-screen"
-        style={{ background: "linear-gradient(160deg, rgba(11,14,28,0.80) 0%, rgba(8,11,22,0.86) 100%)" }}
-      >
+    <div className="min-h-screen">
 
       {/* ── Page header ── */}
       <div className="px-8 pt-10 pb-8 max-w-6xl mx-auto">
@@ -530,25 +492,25 @@ export default function AdminDashboard() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <KpiCard
             label="Articles publiés" value={articles.length}
-            icon={FileText} color="hsl(218 55% 42%)" to="/admin/articles"
+            icon={FileText} color={C_BLUE} to="/admin/articles"
             pct={Math.min((articles.length / 8) * 100, 100)} delta={articlesWeek}
             sparkVals={articlesSpark} gradId="sp-articles" goalLabel="Obj. mensuel : 8"
           />
           <KpiCard
             label="Leads totaux" value={leads.length}
-            icon={Inbox} color="hsl(38 75% 42%)" to="/admin/leads"
+            icon={Inbox} color={C_GOLD} to="/admin/leads"
             pct={Math.min((leads.length / 20) * 100, 100)} delta={leadsWeek}
             sparkVals={leadsSpark} gradId="sp-leads" goalLabel="Obj. mensuel : 20"
           />
           <KpiCard
             label="Cas clients" value={casClients.length}
-            icon={Users} color="hsl(142 55% 38%)" to="/admin/cas-clients"
+            icon={Users} color={C_SAGE} to="/admin/cas-clients"
             pct={Math.min((casClients.length / 10) * 100, 100)} delta={casClientsWeek}
             sparkVals={casClientsSpark} gradId="sp-cas" goalLabel="Obj. mensuel : 10"
           />
           <KpiCard
             label="Ressources PDF" value={ressources.length}
-            icon={BookOpen} color="hsl(258 55% 52%)" to="/admin/ressources"
+            icon={BookOpen} color={C_MAUVE} to="/admin/ressources"
             pct={Math.min((ressources.length / 10) * 100, 100)} delta={ressourcesWeek}
             sparkVals={ressourcesSpark} gradId="sp-res" goalLabel="Obj. mensuel : 10"
           />
@@ -634,10 +596,10 @@ export default function AdminDashboard() {
               </div>
               <div className="grid grid-cols-2 gap-2">
                 {[
-                  { label: "Nouveaux leads",  value: newLeads,             color: "hsl(38 80% 48%)"  },
-                  { label: "À relancer",       value: staleLeads.length,    color: "hsl(0 60% 50%)"   },
-                  { label: "Taux conversion",  value: `${conversionRate}%`, color: "hsl(142 52% 36%)" },
-                  { label: "Convertis",        value: convertedLeads,       color: "hsl(218 55% 42%)" },
+                  { label: "Nouveaux leads",  value: newLeads,             color: C_GOLD  },
+                  { label: "À relancer",       value: staleLeads.length,    color: C_CORAL },
+                  { label: "Taux conversion",  value: `${conversionRate}%`, color: C_TEAL  },
+                  { label: "Convertis",        value: convertedLeads,       color: C_BLUE  },
                 ].map((s) => (
                   <div key={s.label} className="rounded-xl p-3 overflow-hidden"
                     style={{
@@ -916,7 +878,6 @@ export default function AdminDashboard() {
       </div>
 
       {chartOpen && <LeadsChartModal leads={leads} onClose={() => setChartOpen(false)} />}
-      </div>
     </div>
   );
 }
