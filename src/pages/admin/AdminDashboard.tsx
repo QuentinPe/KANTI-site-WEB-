@@ -16,20 +16,6 @@ import {
 import type { PeriodKey } from "@/components/admin/LeadsVolumeChart";
 import { useAuth } from "@/contexts/AuthContext";
 
-// ── Constants ─────────────────────────────────────────────────────────────────
-
-// Solid dark used in vignettes – warm-neutral to match the office interior hero photo
-const PAGE_BG = "hsl(222 30% 6%)";
-
-// Radial blobs tuned to the hero photo palette (warm beige walls, wood, cool window light)
-// Muted slate-warm rather than vivid blue/purple so the glass feels like a natural extension
-const PAGE_BG_GRADIENT = `
-  radial-gradient(ellipse 75% 55% at 12% 20%, hsl(220 28% 20% / 0.48) 0%, transparent 65%),
-  radial-gradient(ellipse 55% 70% at 88% 80%, hsl(32 38% 18% / 0.42) 0%, transparent 58%),
-  radial-gradient(ellipse 60% 50% at 55% 10%, hsl(215 22% 15% / 0.32) 0%, transparent 55%),
-  radial-gradient(ellipse 100% 100% at 50% 50%, hsl(222 32% 7%) 0%, hsl(220 28% 5%) 100%)
-`.trim();
-
 // ── Liquid glass panel ─────────────────────────────────────────────────────────
 // High-saturation blur reveals colour blobs behind each card (Apple-style vibrancy)
 const GLASS: React.CSSProperties = {
@@ -466,96 +452,79 @@ export default function AdminDashboard() {
   const lastArticles = articles.slice(0, 4);
 
   return (
-    <div className="min-h-screen" style={{ background: PAGE_BG_GRADIENT, backgroundAttachment: "fixed" }}>
+    <div
+      className="min-h-screen"
+      style={{
+        backgroundImage: `url(/admin-hero.jpg)`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundAttachment: "fixed",
+      }}
+    >
+      {/* Dark overlay — gives cards enough contrast while letting photo bleed through glass */}
+      <div
+        className="min-h-screen"
+        style={{ background: "linear-gradient(160deg, rgba(11,14,28,0.80) 0%, rgba(8,11,22,0.86) 100%)" }}
+      >
 
-      {/* ── Hero banner ── */}
-      <div className="relative w-full overflow-hidden" style={{ height: 300 }}>
-        <img
-          src="/admin-hero.jpg"
-          alt=""
-          aria-hidden
-          className="absolute inset-0 w-full h-full object-cover object-center"
-          style={{ filter: "brightness(0.80) saturate(0.75)" }}
-        />
-        {/* Multi-layer gradient overlay */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: `
-              linear-gradient(to right, hsl(222 28% 7% / 0.32) 0%, transparent 38%),
-              linear-gradient(to bottom, transparent 0%, transparent 20%, hsl(222 30% 7% / 0.72) 78%, hsl(222 30% 7% / 0.85) 100%)
-            `,
-          }}
-          aria-hidden
-        />
-
-        {/* Bottom vignette → fades photo into page background */}
-        <div
-          aria-hidden
-          className="absolute inset-x-0 bottom-0 pointer-events-none"
-          style={{
-            height: 80,
-            background: `linear-gradient(to top, ${PAGE_BG} 0%, transparent 100%)`,
-          }}
-        />
-
-        {/* Top-right: floating action buttons */}
-        <div className="absolute top-5 right-8 flex items-center gap-2">
-          {newLeads > 0 && (
-            <Link
-              to="/admin/leads"
-              className="flex items-center gap-2 px-3.5 py-2 rounded-full text-[11px] font-medium transition-opacity hover:opacity-85"
+      {/* ── Page header ── */}
+      <div className="px-8 pt-10 pb-8 max-w-6xl mx-auto">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p
+              className="text-[10px] tracking-[0.32em] uppercase font-semibold mb-2"
+              style={{ color: "hsl(0 0% 100% / 0.45)" }}
+            >
+              {greeting} · {dateStr}
+            </p>
+            <h1
+              className="text-[28px] font-heading font-light tracking-tight"
+              style={{ color: "white" }}
+            >
+              Tableau de bord
+            </h1>
+            {user?.email && (
+              <p className="text-[12px] font-light mt-1" style={{ color: "hsl(0 0% 100% / 0.40)" }}>
+                {user.email}
+              </p>
+            )}
+          </div>
+          <div className="flex items-center gap-2 pt-2 flex-shrink-0">
+            {newLeads > 0 && (
+              <Link
+                to="/admin/leads"
+                className="flex items-center gap-2 px-3.5 py-2 rounded-full text-[11px] font-medium transition-opacity hover:opacity-85"
+                style={{
+                  background: "hsl(38 90% 50% / 0.92)",
+                  color: "white",
+                  backdropFilter: "blur(8px)",
+                  boxShadow: "0 4px 16px -4px hsl(38 80% 40% / 0.40)",
+                }}
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                {newLeads} nouveau{newLeads > 1 ? "x" : ""} lead{newLeads > 1 ? "s" : ""}
+              </Link>
+            )}
+            <button
+              type="button"
+              onClick={() => exportLeadsCSV(leads)}
+              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full text-[11px] font-medium transition-opacity hover:opacity-85"
               style={{
-                background: "hsl(38 90% 50% / 0.92)",
+                background: "hsl(0 0% 100% / 0.13)",
                 color: "white",
                 backdropFilter: "blur(8px)",
-                boxShadow: "0 4px 16px -4px hsl(38 80% 40% / 0.40)",
+                border: "1px solid hsl(0 0% 100% / 0.20)",
               }}
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-              {newLeads} nouveau{newLeads > 1 ? "x" : ""} lead{newLeads > 1 ? "s" : ""}
-            </Link>
-          )}
-          <button
-            type="button"
-            onClick={() => exportLeadsCSV(leads)}
-            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full text-[11px] font-medium transition-opacity hover:opacity-85"
-            style={{
-              background: "hsl(0 0% 100% / 0.13)",
-              color: "white",
-              backdropFilter: "blur(8px)",
-              border: "1px solid hsl(0 0% 100% / 0.20)",
-            }}
-          >
-            <Download className="w-3.5 h-3.5" />
-            Exporter CSV
-          </button>
-        </div>
-
-        {/* Bottom: greeting + title + email */}
-        <div className="absolute bottom-0 left-0 right-0 px-8 pb-24 max-w-6xl mx-auto">
-          <p
-            className="text-[10px] tracking-[0.32em] uppercase font-semibold mb-2"
-            style={{ color: "hsl(0 0% 100% / 0.55)" }}
-          >
-            {greeting} · {dateStr}
-          </p>
-          <h1
-            className="text-[28px] font-heading font-light tracking-tight"
-            style={{ color: "white", textShadow: "0 2px 20px hsl(224 60% 6% / 0.45)" }}
-          >
-            Tableau de bord
-          </h1>
-          {user?.email && (
-            <p className="text-[12px] font-light mt-1" style={{ color: "hsl(0 0% 100% / 0.50)" }}>
-              {user.email}
-            </p>
-          )}
+              <Download className="w-3.5 h-3.5" />
+              Exporter CSV
+            </button>
+          </div>
         </div>
       </div>
 
       {/* ── Main content ── */}
-      <div className="px-8 pb-10 max-w-6xl mx-auto mt-0 space-y-5">
+      <div className="px-8 pb-10 max-w-6xl mx-auto space-y-5">
 
         {/* ── 4 KPI cards ── */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -947,6 +916,7 @@ export default function AdminDashboard() {
       </div>
 
       {chartOpen && <LeadsChartModal leads={leads} onClose={() => setChartOpen(false)} />}
+      </div>
     </div>
   );
 }
