@@ -26,8 +26,9 @@ export default function AdminLayout() {
       <aside
         className="w-64 flex flex-col flex-shrink-0"
         style={{
-          background: "hsl(224 55% 10%)",
-          borderRight: "1px solid hsl(0 0% 100% / 0.06)",
+          background: "linear-gradient(175deg, hsl(224 62% 9%) 0%, hsl(222 58% 7%) 100%)",
+          borderRight: "1px solid hsl(0 0% 100% / 0.08)",
+          boxShadow: "inset -1px 0 0 hsl(0 0% 100% / 0.04)",
         }}
       >
         {/* Logo */}
@@ -132,7 +133,12 @@ export default function AdminLayout() {
           <Link
             to="/admin/articles/new"
             className="flex items-center gap-2 w-full px-3 py-2.5 rounded-xl text-[12px] font-medium transition-all duration-200"
-            style={{ background: "hsl(0 0% 100% / 0.10)", color: "hsl(0 0% 100% / 0.80)" }}
+            style={{
+              background: "hsl(0 0% 100% / 0.10)",
+              color: "hsl(0 0% 100% / 0.82)",
+              border: "1px solid hsl(0 0% 100% / 0.08)",
+              boxShadow: "inset 0 1px 0 hsl(0 0% 100% / 0.10)",
+            }}
             onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(0 0% 100% / 0.16)"; }}
             onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(0 0% 100% / 0.10)"; }}
           >
@@ -203,7 +209,12 @@ function NavItem({
       to={to}
       className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200"
       style={active
-        ? { background: "hsl(0 0% 100% / 0.14)", color: "hsl(0 0% 100% / 0.90)" }
+        ? {
+            background: "hsl(0 0% 100% / 0.12)",
+            color: "hsl(0 0% 100% / 0.92)",
+            boxShadow: "inset 0 1px 0 hsl(0 0% 100% / 0.10), 0 1px 4px hsl(224 60% 4% / 0.25)",
+            border: "1px solid hsl(0 0% 100% / 0.08)",
+          }
         : { color: "hsl(0 0% 100% / 0.50)" }}
       onMouseEnter={(e) => { if (!active) (e.currentTarget as HTMLElement).style.color = "hsl(0 0% 100% / 0.75)"; }}
       onMouseLeave={(e) => { if (!active) (e.currentTarget as HTMLElement).style.color = "hsl(0 0% 100% / 0.50)"; }}

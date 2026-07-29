@@ -1,4 +1,4 @@
-﻿import { useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import {
@@ -18,14 +18,32 @@ import { useAuth } from "@/contexts/AuthContext";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
-const PAGE_BG = "hsl(220 25% 97%)";
+// Solid dark reference (used in gradients / vignettes)
+const PAGE_BG = "hsl(222 55% 7%)";
 
+// Full-page gradient background
+const PAGE_BG_GRADIENT = "linear-gradient(145deg, hsl(222 55% 8%) 0%, hsl(228 48% 11%) 45%, hsl(222 60% 7%) 100%)";
+
+// Liquid glass card
 const CARD_STYLE: React.CSSProperties = {
-  background: "white",
-  border: "1px solid hsl(224 20% 12% / 0.08)",
-  boxShadow: "0 2px 8px -4px hsl(224 60% 12% / 0.06)",
+  background: "hsl(0 0% 100% / 0.07)",
+  backdropFilter: "blur(24px)",
+  WebkitBackdropFilter: "blur(24px)",
+  border: "1px solid hsl(0 0% 100% / 0.13)",
+  boxShadow: "inset 0 1px 0 hsl(0 0% 100% / 0.18), 0 4px 24px hsl(224 60% 4% / 0.40)",
 };
-const CARD_HOVER_SHADOW = "0 12px 32px -8px hsl(224 60% 12% / 0.14)";
+const CARD_HOVER_SHADOW = "inset 0 1px 0 hsl(0 0% 100% / 0.24), 0 16px 48px hsl(224 60% 4% / 0.60)";
+
+// Text roles
+const T_PRIMARY   = "hsl(0 0% 98%)";
+const T_SECONDARY = "hsl(0 0% 100% / 0.55)";
+const T_MUTED     = "hsl(0 0% 100% / 0.38)";
+const T_HEADING   = "hsl(0 0% 100% / 0.88)";
+const T_LABEL     = "hsl(0 0% 100% / 0.65)";
+
+// Inner surface (inside a glass card)
+const INNER_BG     = "hsl(0 0% 100% / 0.07)";
+const INNER_BORDER = "hsl(0 0% 100% / 0.10)";
 
 const LEAD_SOURCES = [
   { label: "Bilan patrimonial", test: (s: string) => /bilan|patrimoni/i.test(s), color: "hsl(218 55% 42%)" },
@@ -75,7 +93,7 @@ function RingProgress({ pct, color, size = 48 }: { pct: number; color: string; s
   return (
     <svg width={size} height={size} style={{ transform: "rotate(-90deg)", flexShrink: 0 }} aria-hidden>
       <circle cx={size / 2} cy={size / 2} r={r} fill="none"
-        stroke="hsl(224 20% 12% / 0.09)" strokeWidth={4} />
+        stroke="hsl(0 0% 100% / 0.15)" strokeWidth={4} />
       <circle cx={size / 2} cy={size / 2} r={r} fill="none"
         stroke={color} strokeWidth={4}
         strokeDasharray={`${filled.toFixed(1)} ${circ.toFixed(1)}`}
@@ -98,7 +116,7 @@ function MiniSparkline({ vals, color, gradId }: { vals: number[]; color: string;
     <svg viewBox={`0 0 ${W} ${H}`} style={{ width: 68, height: 26 }} aria-hidden>
       <defs>
         <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity="0.28" />
+          <stop offset="0%" stopColor={color} stopOpacity="0.35" />
           <stop offset="100%" stopColor={color} stopOpacity="0" />
         </linearGradient>
       </defs>
@@ -116,8 +134,8 @@ function DeltaBadge({ pct }: { pct: number | null }) {
     <span
       className="inline-flex items-center gap-0.5 text-[10px] font-medium px-1.5 py-0.5 rounded-full"
       style={{
-        background: up ? "hsl(142 55% 38% / 0.10)" : "hsl(0 65% 48% / 0.10)",
-        color: up ? "hsl(142 50% 30%)" : "hsl(0 60% 40%)",
+        background: up ? "hsl(142 55% 38% / 0.22)" : "hsl(0 65% 48% / 0.22)",
+        color: up ? "hsl(142 65% 72%)" : "hsl(0 72% 74%)",
       }}
     >
       {up ? "↑" : "↓"}{Math.abs(pct)}%
@@ -136,22 +154,24 @@ function KpiCard({
   return (
     <Link
       to={to}
-      className="group flex flex-col gap-3.5 rounded-2xl overflow-hidden transition-all duration-200 hover:-translate-y-1"
+      className="group flex flex-col gap-3.5 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1"
       style={{
-        background: "white",
-        border: "1px solid hsl(224 20% 12% / 0.08)",
-        boxShadow: "0 4px 20px -6px hsl(224 60% 12% / 0.12)",
+        background: "hsl(0 0% 100% / 0.08)",
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
+        border: "1px solid hsl(0 0% 100% / 0.13)",
+        boxShadow: "inset 0 1px 0 hsl(0 0% 100% / 0.20), 0 4px 20px hsl(224 60% 4% / 0.35)",
       }}
       onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = CARD_HOVER_SHADOW; }}
-      onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = "0 4px 20px -6px hsl(224 60% 12% / 0.12)"; }}
+      onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = "inset 0 1px 0 hsl(0 0% 100% / 0.20), 0 4px 20px hsl(224 60% 4% / 0.35)"; }}
     >
       {/* Accent top stripe */}
-      <div style={{ height: 3, background: color, opacity: 0.75 }} />
+      <div style={{ height: 3, background: color, opacity: 0.85 }} />
 
       <div className="flex flex-col gap-3.5 px-5 pb-5">
         <div className="flex items-start justify-between">
           <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-            style={{ background: color + "16" }}>
+            style={{ background: color + "22" }}>
             <Icon className="w-4 h-4" style={{ color }} strokeWidth={1.5} />
           </div>
           <div className="relative flex items-center justify-center" style={{ width: 46, height: 46 }}>
@@ -162,14 +182,14 @@ function KpiCard({
         </div>
         <div>
           <p className="text-[32px] font-heading font-light tabular-nums leading-none"
-            style={{ color: "hsl(224 55% 12%)" }}>{value}</p>
+            style={{ color: T_PRIMARY }}>{value}</p>
           <p className="text-[11px] font-medium tracking-wide mt-0.5"
-            style={{ color: "hsl(224 20% 52%)" }}>{label}</p>
+            style={{ color: T_SECONDARY }}>{label}</p>
         </div>
         <div className="flex items-end justify-between">
           <div className="flex flex-col gap-1">
             <DeltaBadge pct={delta.pct} />
-            <p className="text-[9px] font-light leading-none" style={{ color: "hsl(224 15% 62%)" }}>
+            <p className="text-[9px] font-light leading-none" style={{ color: T_MUTED }}>
               {goalLabel}
             </p>
           </div>
@@ -198,7 +218,7 @@ function DonutChart({ segments }: { segments: { label: string; count: number; co
     <div className="relative flex-shrink-0" style={{ width: SIZE, height: SIZE }}>
       <svg viewBox={`0 0 ${SIZE} ${SIZE}`} style={{ width: SIZE, height: SIZE }}>
         <circle cx={cx} cy={cy} r={r} fill="none"
-          stroke="hsl(224 20% 12% / 0.07)" strokeWidth={15} />
+          stroke="hsl(0 0% 100% / 0.12)" strokeWidth={15} />
         {total > 0 && arcs.map((arc, i) => {
           const filled = Math.max(arc.frac * circ - (active.length > 1 ? 2 : 0), 0);
           return (
@@ -213,8 +233,8 @@ function DonutChart({ segments }: { segments: { label: string; count: number; co
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
         <p className="text-[18px] font-heading font-light tabular-nums leading-none"
-          style={{ color: "hsl(224 55% 12%)" }}>{total}</p>
-        <p className="text-[9px] font-light" style={{ color: "hsl(224 15% 58%)" }}>leads</p>
+          style={{ color: T_PRIMARY }}>{total}</p>
+        <p className="text-[9px] font-light" style={{ color: T_MUTED }}>leads</p>
       </div>
     </div>
   );
@@ -232,40 +252,47 @@ function LeadsChartModal({ leads, onClose }: { leads: Lead[]; onClose: () => voi
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ background: "hsl(224 60% 6% / 0.55)", backdropFilter: "blur(6px)" }}
+      style={{ background: "hsl(224 60% 4% / 0.70)", backdropFilter: "blur(12px)" }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="relative w-full max-w-3xl rounded-2xl overflow-hidden"
-        style={{ background: "white", boxShadow: "0 32px 80px -20px hsl(224 60% 12% / 0.22)" }}>
-
+      <div
+        className="relative w-full max-w-3xl rounded-2xl overflow-hidden"
+        style={{
+          background: "hsl(224 50% 10% / 0.92)",
+          backdropFilter: "blur(40px)",
+          WebkitBackdropFilter: "blur(40px)",
+          border: "1px solid hsl(0 0% 100% / 0.13)",
+          boxShadow: "inset 0 1px 0 hsl(0 0% 100% / 0.18), 0 32px 80px hsl(224 60% 4% / 0.60)",
+        }}
+      >
         {/* Header */}
         <div className="flex items-center justify-between px-7 py-5"
-          style={{ borderBottom: "1px solid hsl(224 20% 12% / 0.08)" }}>
+          style={{ borderBottom: "1px solid hsl(0 0% 100% / 0.08)" }}>
           <div>
-            <h2 className="text-lg font-heading font-light" style={{ color: "hsl(224 55% 12%)" }}>
+            <h2 className="text-lg font-heading font-light" style={{ color: T_PRIMARY }}>
               Historique des leads
             </h2>
-            <p className="text-[12px] font-light mt-0.5" style={{ color: "hsl(224 15% 52%)" }}>
+            <p className="text-[12px] font-light mt-0.5" style={{ color: T_SECONDARY }}>
               {totalInPeriod} leads · {convertiInPeriod} convertis · {tauxConversion}% de conversion
             </p>
           </div>
           <div className="flex items-center gap-3">
             {/* Period selector */}
-            <div className="flex items-center gap-1 p-1 rounded-lg" style={{ background: "hsl(220 25% 97%)" }}>
+            <div className="flex items-center gap-1 p-1 rounded-lg" style={{ background: "hsl(0 0% 100% / 0.08)" }}>
               {PERIODS.map((p) => (
                 <button key={p.key} onClick={() => setPeriod(p.key)}
                   className="px-2.5 py-1 rounded-md text-[11px] font-medium transition-all"
                   style={{
-                    background: period === p.key ? "white" : "transparent",
-                    color: period === p.key ? "hsl(218 48% 38%)" : "hsl(224 15% 52%)",
-                    boxShadow: period === p.key ? "0 1px 3px -1px hsl(224 20% 12% / 0.12)" : "none",
+                    background: period === p.key ? "hsl(0 0% 100% / 0.18)" : "transparent",
+                    color: period === p.key ? "hsl(218 80% 78%)" : T_SECONDARY,
+                    boxShadow: period === p.key ? "0 1px 3px -1px hsl(224 60% 4% / 0.30)" : "none",
                   }}>
                   {p.label}
                 </button>
               ))}
             </div>
-            <button onClick={onClose} className="p-2 rounded-lg transition-colors hover:bg-[hsl(224_20%_12%/0.06)]">
-              <X className="w-4 h-4" style={{ color: "hsl(224 20% 45%)" }} />
+            <button onClick={onClose} className="p-2 rounded-lg transition-colors hover:bg-[hsl(0_0%_100%/0.08)]">
+              <X className="w-4 h-4" style={{ color: T_SECONDARY }} />
             </button>
           </div>
         </div>
@@ -274,10 +301,10 @@ function LeadsChartModal({ leads, onClose }: { leads: Lead[]; onClose: () => voi
           {/* Volume chart */}
           <div>
             <div className="flex items-center justify-between mb-3">
-              <p className="text-[11px] font-medium tracking-wide uppercase" style={{ color: "hsl(224 15% 52%)" }}>
+              <p className="text-[11px] font-medium tracking-wide uppercase" style={{ color: T_SECONDARY }}>
                 Volume de leads reçus
               </p>
-              <div className="flex items-center gap-4 text-[10px]" style={{ color: "hsl(224 15% 55%)" }}>
+              <div className="flex items-center gap-4 text-[10px]" style={{ color: T_MUTED }}>
                 <span className="flex items-center gap-1.5">
                   <span className="inline-block w-6 h-0.5 rounded" style={{ background: "hsl(218 45% 42%)" }} /> Total
                 </span>
@@ -292,7 +319,7 @@ function LeadsChartModal({ leads, onClose }: { leads: Lead[]; onClose: () => voi
                 {buckets
                   .filter((_, i) => i === 0 || i === Math.floor(buckets.length / 2) || i === buckets.length - 1)
                   .map((b, i) => (
-                    <span key={i} className="text-[9px]" style={{ color: "hsl(224 15% 58%)" }}>{b.label}</span>
+                    <span key={i} className="text-[9px]" style={{ color: T_MUTED }}>{b.label}</span>
                   ))}
               </div>
             </div>
@@ -305,9 +332,9 @@ function LeadsChartModal({ leads, onClose }: { leads: Lead[]; onClose: () => voi
                 { label: "Max / jour",      value: maxBucket },
               ].map((s) => (
                 <div key={s.label} className="rounded-xl p-3 text-center"
-                  style={{ background: "hsl(220 25% 97%)", border: "1px solid hsl(224 20% 12% / 0.07)" }}>
-                  <p className="text-xl font-heading font-light tabular-nums" style={{ color: "hsl(224 55% 12%)" }}>{s.value}</p>
-                  <p className="text-[10px] font-light mt-0.5" style={{ color: "hsl(224 15% 55%)" }}>{s.label}</p>
+                  style={{ background: INNER_BG, border: `1px solid ${INNER_BORDER}` }}>
+                  <p className="text-xl font-heading font-light tabular-nums" style={{ color: T_PRIMARY }}>{s.value}</p>
+                  <p className="text-[10px] font-light mt-0.5" style={{ color: T_SECONDARY }}>{s.label}</p>
                 </div>
               ))}
             </div>
@@ -315,7 +342,7 @@ function LeadsChartModal({ leads, onClose }: { leads: Lead[]; onClose: () => voi
 
           {/* Status breakdown */}
           <div>
-            <p className="text-[11px] font-medium tracking-wide uppercase mb-4" style={{ color: "hsl(224 15% 52%)" }}>
+            <p className="text-[11px] font-medium tracking-wide uppercase mb-4" style={{ color: T_SECONDARY }}>
               Répartition actuelle
             </p>
             <StatusBars leads={leads} />
@@ -427,7 +454,7 @@ export default function AdminDashboard() {
   const lastArticles = articles.slice(0, 4);
 
   return (
-    <div className="min-h-screen" style={{ background: PAGE_BG }}>
+    <div className="min-h-screen" style={{ background: PAGE_BG_GRADIENT }}>
 
       {/* ── Hero banner ── */}
       <div className="relative w-full overflow-hidden" style={{ height: 300 }}>
@@ -436,15 +463,15 @@ export default function AdminDashboard() {
           alt=""
           aria-hidden
           className="absolute inset-0 w-full h-full object-cover object-center"
-          style={{ filter: "brightness(0.86) saturate(0.80)" }}
+          style={{ filter: "brightness(0.80) saturate(0.75)" }}
         />
-        {/* Multi-layer gradient: soft left veil + rich dark bottom */}
+        {/* Multi-layer gradient overlay */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
             background: `
-              linear-gradient(to right, hsl(224 40% 8% / 0.28) 0%, transparent 38%),
-              linear-gradient(to bottom, transparent 0%, transparent 20%, hsl(224 55% 8% / 0.68) 78%, hsl(224 55% 8% / 0.72) 100%)
+              linear-gradient(to right, hsl(224 40% 8% / 0.35) 0%, transparent 38%),
+              linear-gradient(to bottom, transparent 0%, transparent 20%, hsl(224 55% 8% / 0.72) 78%, hsl(224 55% 8% / 0.85) 100%)
             `,
           }}
           aria-hidden
@@ -493,7 +520,7 @@ export default function AdminDashboard() {
           </button>
         </div>
 
-        {/* Bottom: greeting + title + email — above the bottom vignette zone */}
+        {/* Bottom: greeting + title + email */}
         <div className="absolute bottom-0 left-0 right-0 px-8 pb-24 max-w-6xl mx-auto">
           <p
             className="text-[10px] tracking-[0.32em] uppercase font-semibold mb-2"
@@ -518,7 +545,7 @@ export default function AdminDashboard() {
       {/* ── Main content ── */}
       <div className="px-8 pb-10 max-w-6xl mx-auto mt-0 space-y-5">
 
-        {/* ── 4 KPI cards (floating over photo) ── */}
+        {/* ── 4 KPI cards ── */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <KpiCard
             label="Articles publiés" value={articles.length}
@@ -555,23 +582,23 @@ export default function AdminDashboard() {
               <div>
                 <div className="flex items-center gap-2 mb-0.5">
                   <div className="w-1 h-3.5 rounded-full" style={{ background: "hsl(218 55% 42%)" }} />
-                  <p className="text-[12px] font-medium tracking-wide" style={{ color: "hsl(224 40% 28%)" }}>
+                  <p className="text-[12px] font-medium tracking-wide" style={{ color: T_HEADING }}>
                     Leads sur la période
                   </p>
                 </div>
-                <p className="text-[11px] font-light pl-3" style={{ color: "hsl(224 15% 55%)" }}>
+                <p className="text-[11px] font-light pl-3" style={{ color: T_SECONDARY }}>
                   {chartTotal} reçus · {chartConverti} convertis
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <div className="flex items-center gap-0.5 p-1 rounded-lg" style={{ background: "hsl(220 25% 96%)" }}>
+                <div className="flex items-center gap-0.5 p-1 rounded-lg" style={{ background: "hsl(0 0% 100% / 0.08)" }}>
                   {PERIODS.slice(0, 4).map((p) => (
                     <button key={p.key} onClick={() => setChartPeriod(p.key)}
                       className="px-2.5 py-1 rounded-md text-[11px] font-medium transition-all duration-150"
                       style={{
-                        background: chartPeriod === p.key ? "white" : "transparent",
-                        color: chartPeriod === p.key ? "hsl(218 48% 38%)" : "hsl(224 15% 52%)",
-                        boxShadow: chartPeriod === p.key ? "0 1px 3px -1px hsl(224 20% 12% / 0.10)" : "none",
+                        background: chartPeriod === p.key ? "hsl(0 0% 100% / 0.18)" : "transparent",
+                        color: chartPeriod === p.key ? "hsl(218 80% 78%)" : T_SECONDARY,
+                        boxShadow: chartPeriod === p.key ? "0 1px 3px -1px hsl(224 60% 4% / 0.25)" : "none",
                       }}>
                       {p.label}
                     </button>
@@ -581,9 +608,9 @@ export default function AdminDashboard() {
                   type="button"
                   onClick={() => setChartOpen(true)}
                   className="p-2 rounded-lg transition-colors"
-                  style={{ color: "hsl(224 20% 55%)" }}
+                  style={{ color: T_SECONDARY }}
                   title="Agrandir"
-                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(224 20% 12% / 0.06)"; }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(0 0% 100% / 0.08)"; }}
                   onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}
                 >
                   <Maximize2 className="w-3.5 h-3.5" />
@@ -597,18 +624,18 @@ export default function AdminDashboard() {
               {chartBuckets
                 .filter((_, i, arr) => i === 0 || i === Math.floor(arr.length / 2) || i === arr.length - 1)
                 .map((b, i) => (
-                  <span key={i} className="text-[9px] tabular-nums" style={{ color: "hsl(224 12% 62%)" }}>
+                  <span key={i} className="text-[9px] tabular-nums" style={{ color: T_MUTED }}>
                     {b.label}
                   </span>
                 ))}
             </div>
             <div className="flex items-center gap-4 mt-3 pt-3"
-              style={{ borderTop: "1px solid hsl(224 20% 12% / 0.06)" }}>
-              <span className="flex items-center gap-1.5 text-[10px]" style={{ color: "hsl(224 15% 55%)" }}>
+              style={{ borderTop: "1px solid hsl(0 0% 100% / 0.08)" }}>
+              <span className="flex items-center gap-1.5 text-[10px]" style={{ color: T_SECONDARY }}>
                 <span className="inline-block w-5 rounded" style={{ height: 2, background: "hsl(218 45% 42%)" }} />
                 Total
               </span>
-              <span className="flex items-center gap-1.5 text-[10px]" style={{ color: "hsl(224 15% 55%)" }}>
+              <span className="flex items-center gap-1.5 text-[10px]" style={{ color: T_SECONDARY }}>
                 <span className="inline-block w-5 rounded" style={{ height: 1, border: "1px dashed hsl(142 50% 40%)" }} />
                 Convertis
               </span>
@@ -620,7 +647,7 @@ export default function AdminDashboard() {
             <div className="rounded-2xl p-5" style={{ ...CARD_STYLE }}>
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-1 h-3.5 rounded-full" style={{ background: "hsl(218 55% 42%)" }} />
-                <p className="text-[12px] font-medium tracking-wide" style={{ color: "hsl(224 40% 28%)" }}>
+                <p className="text-[12px] font-medium tracking-wide" style={{ color: T_HEADING }}>
                   Résumé rapide
                 </p>
               </div>
@@ -633,14 +660,14 @@ export default function AdminDashboard() {
                 ].map((s) => (
                   <div key={s.label} className="rounded-xl p-3 overflow-hidden"
                     style={{
-                      background: "hsl(220 25% 97%)",
-                      border: "1px solid hsl(224 20% 12% / 0.07)",
+                      background: INNER_BG,
+                      border: `1px solid ${INNER_BORDER}`,
                       borderLeft: `3px solid ${s.color}`,
                     }}>
                     <p className="text-[22px] font-heading font-light tabular-nums leading-none"
                       style={{ color: s.color }}>{s.value}</p>
                     <p className="text-[10px] font-light leading-tight mt-0.5"
-                      style={{ color: "hsl(224 15% 52%)" }}>{s.label}</p>
+                      style={{ color: T_SECONDARY }}>{s.label}</p>
                   </div>
                 ))}
               </div>
@@ -649,7 +676,7 @@ export default function AdminDashboard() {
             <div className="rounded-2xl p-5" style={{ ...CARD_STYLE }}>
               <div className="flex items-center gap-2 mb-3">
                 <div className="w-1 h-3.5 rounded-full" style={{ background: "hsl(218 55% 42%)" }} />
-                <p className="text-[12px] font-medium tracking-wide" style={{ color: "hsl(224 40% 28%)" }}>
+                <p className="text-[12px] font-medium tracking-wide" style={{ color: T_HEADING }}>
                   Actions rapides
                 </p>
               </div>
@@ -662,11 +689,11 @@ export default function AdminDashboard() {
                 ].map(({ to, label, icon: Icon }) => (
                   <Link key={to} to={to}
                     className="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-[12px] font-medium transition-all duration-150"
-                    style={{ color: "hsl(224 40% 32%)", background: "hsl(220 20% 97%)" }}
-                    onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(224 60% 18% / 0.07)"; }}
-                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(220 20% 97%)"; }}>
+                    style={{ color: T_HEADING, background: "hsl(0 0% 100% / 0.05)" }}
+                    onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(0 0% 100% / 0.12)"; }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(0 0% 100% / 0.05)"; }}>
                     <span className="flex items-center gap-2.5">
-                      <Icon className="w-3.5 h-3.5" strokeWidth={1.5} style={{ color: "hsl(224 40% 48%)" }} />
+                      <Icon className="w-3.5 h-3.5" strokeWidth={1.5} style={{ color: T_LABEL }} />
                       {label}
                     </span>
                     <ArrowRight className="w-3 h-3 opacity-30" />
@@ -685,14 +712,14 @@ export default function AdminDashboard() {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <div className="w-1 h-3.5 rounded-full" style={{ background: "hsl(38 75% 42%)" }} />
-                <p className="text-[12px] font-medium tracking-wide" style={{ color: "hsl(224 40% 28%)" }}>
+                <p className="text-[12px] font-medium tracking-wide" style={{ color: T_HEADING }}>
                   Activité récente
                 </p>
               </div>
-              <Clock className="w-3.5 h-3.5" style={{ color: "hsl(224 15% 62%)" }} />
+              <Clock className="w-3.5 h-3.5" style={{ color: T_MUTED }} />
             </div>
             {activity.length === 0 ? (
-              <p className="text-[12px] font-light py-4 text-center" style={{ color: "hsl(224 12% 60%)" }}>
+              <p className="text-[12px] font-light py-4 text-center" style={{ color: T_MUTED }}>
                 Aucune activité
               </p>
             ) : (
@@ -700,21 +727,20 @@ export default function AdminDashboard() {
                 {activity.map((item, i) => (
                   <Link key={i} to={item.to}
                     className="flex items-start gap-2.5 py-2.5 group transition-opacity hover:opacity-70"
-                    style={{ borderBottom: i < activity.length - 1 ? "1px solid hsl(224 20% 12% / 0.05)" : "none" }}>
-                    {/* Icon badge with initials for leads */}
+                    style={{ borderBottom: i < activity.length - 1 ? "1px solid hsl(0 0% 100% / 0.06)" : "none" }}>
                     <div className="w-7 h-7 rounded-lg flex-shrink-0 flex items-center justify-center mt-0.5 text-[10px] font-semibold"
-                      style={{ background: item.color + "18", color: item.color }}>
+                      style={{ background: item.color + "22", color: item.color }}>
                       <item.icon className="w-3 h-3" style={{ color: item.color }} strokeWidth={1.5} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-[11px] font-medium truncate leading-tight"
-                        style={{ color: "hsl(224 30% 25%)" }}>{item.text}</p>
+                        style={{ color: T_HEADING }}>{item.text}</p>
                       {item.sub && (
-                        <p className="text-[10px] font-light truncate" style={{ color: "hsl(224 15% 55%)" }}>
+                        <p className="text-[10px] font-light truncate" style={{ color: T_SECONDARY }}>
                           {item.sub}
                         </p>
                       )}
-                      <p className="text-[9px] mt-0.5" style={{ color: "hsl(224 12% 65%)" }}>
+                      <p className="text-[9px] mt-0.5" style={{ color: T_MUTED }}>
                         {fmtRelative(item.time)}
                       </p>
                     </div>
@@ -730,17 +756,17 @@ export default function AdminDashboard() {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <div className="w-1 h-3.5 rounded-full" style={{ background: "hsl(218 55% 42%)" }} />
-                <p className="text-[12px] font-medium tracking-wide" style={{ color: "hsl(224 40% 28%)" }}>
+                <p className="text-[12px] font-medium tracking-wide" style={{ color: T_HEADING }}>
                   Pipeline des leads
                 </p>
               </div>
               <Link to="/admin/leads" className="text-[10px] font-medium hover:opacity-75"
-                style={{ color: "hsl(218 55% 42%)" }}>
+                style={{ color: "hsl(218 65% 65%)" }}>
                 Voir tout →
               </Link>
             </div>
             {leads.length === 0 ? (
-              <p className="text-[12px] font-light py-4 text-center" style={{ color: "hsl(224 12% 60%)" }}>
+              <p className="text-[12px] font-light py-4 text-center" style={{ color: T_MUTED }}>
                 Aucun lead
               </p>
             ) : (
@@ -748,8 +774,8 @@ export default function AdminDashboard() {
             )}
             {leads.length > 0 && (
               <div className="mt-4 pt-3 flex items-center gap-2"
-                style={{ borderTop: "1px solid hsl(224 20% 12% / 0.06)" }}>
-                <span className="text-[10px] font-medium tabular-nums" style={{ color: "hsl(224 20% 48%)" }}>
+                style={{ borderTop: "1px solid hsl(0 0% 100% / 0.08)" }}>
+                <span className="text-[10px] font-medium tabular-nums" style={{ color: T_SECONDARY }}>
                   {leads.length} leads · {conversionRate}% convertis
                 </span>
               </div>
@@ -761,23 +787,23 @@ export default function AdminDashboard() {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <div className="w-1 h-3.5 rounded-full" style={{ background: "hsl(218 55% 42%)" }} />
-                <p className="text-[12px] font-medium tracking-wide" style={{ color: "hsl(224 40% 28%)" }}>
+                <p className="text-[12px] font-medium tracking-wide" style={{ color: T_HEADING }}>
                   Derniers articles
                 </p>
               </div>
               <Link to="/admin/articles" className="text-[10px] font-medium hover:opacity-75"
-                style={{ color: "hsl(218 55% 42%)" }}>
+                style={{ color: "hsl(218 65% 65%)" }}>
                 Voir tout →
               </Link>
             </div>
             {lastArticles.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-6 gap-3">
-                <p className="text-[12px] font-light" style={{ color: "hsl(224 12% 60%)" }}>
+                <p className="text-[12px] font-light" style={{ color: T_MUTED }}>
                   Aucun article publié
                 </p>
                 <Link to="/admin/articles/new"
                   className="inline-flex items-center gap-1.5 text-[11px] font-medium px-3 py-1.5 rounded-lg"
-                  style={{ background: "hsl(218 55% 42% / 0.10)", color: "hsl(218 48% 38%)" }}>
+                  style={{ background: "hsl(218 55% 42% / 0.18)", color: "hsl(218 80% 78%)" }}>
                   Créer le premier
                 </Link>
               </div>
@@ -791,14 +817,14 @@ export default function AdminDashboard() {
                         onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
                     ) : (
                       <div className="w-10 h-10 rounded-lg flex-shrink-0 flex items-center justify-center"
-                        style={{ background: "hsl(218 55% 42% / 0.10)" }}>
-                        <FileText className="w-4 h-4" style={{ color: "hsl(218 55% 42%)" }} strokeWidth={1.5} />
+                        style={{ background: "hsl(218 55% 42% / 0.18)" }}>
+                        <FileText className="w-4 h-4" style={{ color: "hsl(218 65% 65%)" }} strokeWidth={1.5} />
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
                       <p className="text-[11px] font-medium leading-snug line-clamp-2 group-hover:underline"
-                        style={{ color: "hsl(224 30% 25%)" }}>{a.title}</p>
-                      <p className="text-[9px] mt-0.5" style={{ color: "hsl(224 12% 62%)" }}>
+                        style={{ color: T_HEADING }}>{a.title}</p>
+                      <p className="text-[9px] mt-0.5" style={{ color: T_MUTED }}>
                         {a.date ?? a.created_at.slice(0, 10)}
                       </p>
                     </div>
@@ -816,7 +842,7 @@ export default function AdminDashboard() {
           <div className="rounded-2xl p-6" style={{ ...CARD_STYLE }}>
             <div className="flex items-center gap-2 mb-5">
               <div className="w-1 h-3.5 rounded-full" style={{ background: "hsl(258 55% 52%)" }} />
-              <p className="text-[12px] font-medium tracking-wide" style={{ color: "hsl(224 40% 28%)" }}>
+              <p className="text-[12px] font-medium tracking-wide" style={{ color: T_HEADING }}>
                 Sources des leads
               </p>
             </div>
@@ -836,17 +862,17 @@ export default function AdminDashboard() {
                   <div key={i} className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: seg.color }} />
-                      <span className="text-[11px] font-light" style={{ color: "hsl(224 20% 40%)" }}>
+                      <span className="text-[11px] font-light" style={{ color: T_LABEL }}>
                         {seg.label}
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-[11px] font-medium tabular-nums" style={{ color: "hsl(224 40% 28%)" }}>
+                      <span className="text-[11px] font-medium tabular-nums" style={{ color: T_HEADING }}>
                         {seg.count}
                       </span>
                       {leads.length > 0 && (
                         <span className="text-[10px] tabular-nums w-8 text-right"
-                          style={{ color: "hsl(224 15% 58%)" }}>
+                          style={{ color: T_MUTED }}>
                           {Math.round((seg.count / leads.length) * 100)}%
                         </span>
                       )}
@@ -862,18 +888,18 @@ export default function AdminDashboard() {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <div className="w-1 h-3.5 rounded-full" style={{ background: "hsl(38 80% 48%)" }} />
-                <p className="text-[12px] font-medium tracking-wide" style={{ color: "hsl(224 40% 28%)" }}>
+                <p className="text-[12px] font-medium tracking-wide" style={{ color: T_HEADING }}>
                   Tâches à traiter
                 </p>
               </div>
               <span className="text-[10px] font-medium px-2 py-0.5 rounded-full"
                 style={{
                   background: tasks.every((t) => t.done)
-                    ? "hsl(142 55% 38% / 0.10)"
-                    : "hsl(38 90% 50% / 0.12)",
+                    ? "hsl(142 55% 38% / 0.20)"
+                    : "hsl(38 90% 50% / 0.18)",
                   color: tasks.every((t) => t.done)
-                    ? "hsl(142 50% 30%)"
-                    : "hsl(38 70% 30%)",
+                    ? "hsl(142 65% 72%)"
+                    : "hsl(38 85% 72%)",
                 }}>
                 {tasks.filter((t) => !t.done).length} en attente
               </span>
@@ -882,9 +908,9 @@ export default function AdminDashboard() {
               {tasks.map((task, i) => (
                 <Link key={i} to={task.to}
                   className="flex items-start gap-3 px-4 py-3 rounded-xl transition-all duration-150"
-                  style={{ background: "hsl(220 25% 97%)", border: `1px solid ${task.color}22` }}
-                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(220 20% 94%)"; }}
-                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(220 25% 97%)"; }}
+                  style={{ background: INNER_BG, border: `1px solid ${task.color}28` }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(0 0% 100% / 0.10)"; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = INNER_BG; }}
                 >
                   {task.done ? (
                     <CheckCircle2 className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: task.color }} strokeWidth={1.5} />
@@ -892,10 +918,10 @@ export default function AdminDashboard() {
                     <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: task.color }} strokeWidth={1.5} />
                   )}
                   <div className="flex-1 min-w-0">
-                    <p className="text-[12px] font-medium leading-tight" style={{ color: "hsl(224 30% 25%)" }}>
+                    <p className="text-[12px] font-medium leading-tight" style={{ color: T_HEADING }}>
                       {task.label}
                     </p>
-                    <p className="text-[10px] font-light mt-0.5" style={{ color: "hsl(224 15% 55%)" }}>
+                    <p className="text-[10px] font-light mt-0.5" style={{ color: T_SECONDARY }}>
                       {task.detail}
                     </p>
                   </div>
