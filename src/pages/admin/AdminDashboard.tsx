@@ -18,15 +18,16 @@ import { useAuth } from "@/contexts/AuthContext";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
-// Solid dark used in vignettes
-const PAGE_BG = "hsl(224 60% 6%)";
+// Solid dark used in vignettes – warm-neutral to match the office interior hero photo
+const PAGE_BG = "hsl(222 30% 6%)";
 
-// Rich layered background: soft radial blobs give the blur something to render through glass
+// Radial blobs tuned to the hero photo palette (warm beige walls, wood, cool window light)
+// Muted slate-warm rather than vivid blue/purple so the glass feels like a natural extension
 const PAGE_BG_GRADIENT = `
-  radial-gradient(ellipse 75% 55% at 12% 20%, hsl(218 80% 30% / 0.60) 0%, transparent 65%),
-  radial-gradient(ellipse 55% 70% at 88% 80%, hsl(258 70% 28% / 0.55) 0%, transparent 58%),
-  radial-gradient(ellipse 60% 50% at 55% 10%, hsl(200 75% 22% / 0.35) 0%, transparent 55%),
-  radial-gradient(ellipse 100% 100% at 50% 50%, hsl(222 62% 8%) 0%, hsl(224 68% 5%) 100%)
+  radial-gradient(ellipse 75% 55% at 12% 20%, hsl(220 28% 20% / 0.48) 0%, transparent 65%),
+  radial-gradient(ellipse 55% 70% at 88% 80%, hsl(32 38% 18% / 0.42) 0%, transparent 58%),
+  radial-gradient(ellipse 60% 50% at 55% 10%, hsl(215 22% 15% / 0.32) 0%, transparent 55%),
+  radial-gradient(ellipse 100% 100% at 50% 50%, hsl(222 32% 7%) 0%, hsl(220 28% 5%) 100%)
 `.trim();
 
 // ── Liquid glass panel ─────────────────────────────────────────────────────────
@@ -481,8 +482,8 @@ export default function AdminDashboard() {
           className="absolute inset-0 pointer-events-none"
           style={{
             background: `
-              linear-gradient(to right, hsl(224 40% 8% / 0.35) 0%, transparent 38%),
-              linear-gradient(to bottom, transparent 0%, transparent 20%, hsl(224 55% 8% / 0.72) 78%, hsl(224 55% 8% / 0.85) 100%)
+              linear-gradient(to right, hsl(222 28% 7% / 0.32) 0%, transparent 38%),
+              linear-gradient(to bottom, transparent 0%, transparent 20%, hsl(222 30% 7% / 0.72) 78%, hsl(222 30% 7% / 0.85) 100%)
             `,
           }}
           aria-hidden
