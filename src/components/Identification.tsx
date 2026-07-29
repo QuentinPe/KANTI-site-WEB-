@@ -111,9 +111,9 @@ function DesktopIdentification() {
               </em>
             </h2>
           </div>
-          <div className="flex items-end">
+          <div className="flex items-end justify-end">
             <p
-              className="font-light leading-relaxed max-w-sm"
+              className="font-light leading-relaxed max-w-sm text-right"
               style={{
                 fontSize: "0.9375rem",
                 color: "hsl(0 0% 100% / 0.40)",

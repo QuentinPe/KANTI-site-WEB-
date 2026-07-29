@@ -29,7 +29,7 @@ export default function HomeFAQ() {
   const [open, setOpen] = useState<number | null>(0);
 
   return (
-    <section id="faq" className="section-padding texture-paper relative overflow-hidden">
+    <section id="faq" className="section-padding texture-paper relative [overflow:clip]">
       <div
         aria-hidden
         className="absolute -bottom-40 -left-32 w-[480px] h-[480px] rounded-full pointer-events-none opacity-50"

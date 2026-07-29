@@ -241,10 +241,12 @@ export default function HeroSticky() {
           className="relative z-10 max-w-6xl mx-auto px-6 pt-44 pb-32 w-full will-change-transform"
         >
           <div className="max-w-3xl">
-            <div
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
               className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-dark mb-8"
               style={{
-                animation: "fade-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both",
                 backgroundColor: "hsl(224 60% 5% / 0.4)",
                 backdropFilter: "blur(12px)",
                 WebkitBackdropFilter: "blur(12px)",
@@ -254,12 +256,14 @@ export default function HeroSticky() {
               <p className="text-[11px] tracking-[0.2em] uppercase text-white/85 font-medium">
                 KANTI · Cabinet · Bordeaux
               </p>
-            </div>
+            </motion.div>
 
-            <h1
+            <motion.h1
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
               className="text-5xl md:text-6xl lg:text-7xl font-heading font-light text-white leading-[1.05] mb-10 tracking-tight"
               style={{
-                animation: "fade-in-up 1s cubic-bezier(0.22, 1, 0.36, 1) 0.4s both",
                 textShadow:
                   "0 2px 24px hsl(224 60% 5% / 0.55), 0 1px 2px hsl(224 60% 5% / 0.4)",
               }}
@@ -269,19 +273,21 @@ export default function HeroSticky() {
               <span className="italic font-normal text-white">
                 un conseil à la hauteur
               </span>
-            </h1>
+            </motion.h1>
 
-            <p
+            <motion.p
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, delay: 0.7, ease: [0.22, 1, 0.36, 1] }}
               className="text-base md:text-lg text-white/65 max-w-xl leading-relaxed mb-12 font-light"
               style={{
-                animation: "fade-in-up 1s cubic-bezier(0.22, 1, 0.36, 1) 0.7s both",
                 textShadow: "0 1px 12px hsl(224 60% 5% / 0.6)",
               }}
             >
               Nous accompagnons les particuliers, les dirigeants et les familles dans la
               structuration, l'optimisation et la transmission de leur patrimoine. À Bordeaux,
               depuis plus de quinze ans.
-            </p>
+            </motion.p>
 
             <div className="flex flex-col sm:flex-row gap-4">
               <Link
@@ -303,12 +309,12 @@ export default function HeroSticky() {
               </Link>
             </div>
 
-            <div
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1, delay: 0.9 }}
               className="mt-16 flex flex-wrap gap-x-8 gap-y-3"
-              style={{
-                animation: "fade-in 1s ease-out 0.9s both",
-                textShadow: "0 1px 10px hsl(224 60% 5% / 0.6)",
-              }}
+              style={{ textShadow: "0 1px 10px hsl(224 60% 5% / 0.6)" }}
             >
               {[
                 { k: "ORIAS", v: "Inscrit & vérifié" },
@@ -321,7 +327,7 @@ export default function HeroSticky() {
                   <span className="text-xs text-white/50 font-light">{item.v}</span>
                 </div>
               ))}
-            </div>
+            </motion.div>
           </div>
         </motion.div>
 
