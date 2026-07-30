@@ -12,11 +12,10 @@ const Toaster = ({ ...props }: ToasterProps) => {
       className="toaster group"
       position="bottom-right"
       containerAriaLabel="Notifications"
-      style={{ zIndex: 999999 }}
+      style={{ zIndex: 2147483647 }}
       toastOptions={{
         style: {
-          background: "hsl(224 55% 10% / 0.92)",
-          backdropFilter: "blur(20px) saturate(180%)",
+          background: "hsl(224 55% 10%)",
           border: "1px solid hsl(0 0% 100% / 0.10)",
           color: "hsl(0 0% 100% / 0.88)",
           boxShadow: "0 20px 60px -10px hsl(0 0% 0% / 0.40), inset 0 1px 0 hsl(0 0% 100% / 0.12)",

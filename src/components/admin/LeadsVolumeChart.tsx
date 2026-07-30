@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState, useRef, useCallback, useId } from "react";
 import type { Lead, LeadStatus } from "@/lib/leadsService";
 
 export type PeriodKey = "7j" | "30j" | "3m" | "6m" | "12m" | "tout";
@@ -60,10 +60,26 @@ export function bucketLeadsByDay(
     .reverse();
 }
 
+// ── Smooth cubic bezier path ────────────────────────────────────────────────────
+
+function smoothPath(pts: { x: number; y: number }[]): string {
+  if (pts.length < 2) return "";
+  const t = 0.38; // tension
+  let d = `M ${pts[0].x.toFixed(1)},${pts[0].y.toFixed(1)}`;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p = pts[i], q = pts[i + 1];
+    const dx = (q.x - p.x) * t;
+    d += ` C ${(p.x + dx).toFixed(1)},${p.y.toFixed(1)} ${(q.x - dx).toFixed(1)},${q.y.toFixed(1)} ${q.x.toFixed(1)},${q.y.toFixed(1)}`;
+  }
+  return d;
+}
+
+// ── VolumeChart ─────────────────────────────────────────────────────────────────
+
 export function VolumeChart({
   leads,
   days,
-  height = 72,
+  height = 120,
   showConverti = false,
 }: {
   leads: Lead[];
@@ -71,58 +87,257 @@ export function VolumeChart({
   height?: number;
   showConverti?: boolean;
 }) {
+  const uid  = useId().replace(/:/g, "");
+  const gid  = `vg-${uid}`;
+  const svgRef = useRef<SVGSVGElement>(null);
+  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
+
   const buckets = useMemo(() => bucketLeadsByDay(leads, days), [leads, days]);
-  const max = Math.max(...buckets.map((b) => b.total), 1);
-  const W = 400;
-  const H = height;
-  const pad = 4;
+  const max     = Math.max(...buckets.map((b) => b.total), 1);
 
-  const pts = buckets.map((b, i) => ({
-    x: buckets.length === 1 ? W / 2 : pad + (i / (buckets.length - 1)) * (W - pad * 2),
-    y: H - pad - (b.total / max) * (H - pad * 2),
-    yC: H - pad - (b.converti / max) * (H - pad * 2),
-  }));
+  // SVG coordinate constants
+  const W   = 400;
+  const H   = height;
+  const pL  = 30;  // left pad for Y labels
+  const pR  = 6;
+  const pT  = 8;
+  const pB  = 18; // bottom pad for X labels
+  const cW  = W - pL - pR;
+  const cH  = H - pT - pB;
 
-  const area =
-    pts.length < 2
-      ? ""
-      : `M ${pts[0].x},${pts[0].y} ` +
-        pts.slice(1).map((p) => `L ${p.x},${p.y}`).join(" ") +
-        ` L ${pts[pts.length - 1].x},${H} L ${pts[0].x},${H} Z`;
+  const pts = useMemo(
+    () =>
+      buckets.map((b, i) => ({
+        x:  buckets.length === 1 ? pL + cW / 2 : pL + (i / (buckets.length - 1)) * cW,
+        y:  pT + cH - (b.total   / max) * cH,
+        yC: pT + cH - (b.converti / max) * cH,
+      })),
+    [buckets, max, cW, cH]
+  );
 
-  const line =
-    pts.length < 2
-      ? ""
-      : `M ${pts[0].x},${pts[0].y} ` + pts.slice(1).map((p) => `L ${p.x},${p.y}`).join(" ");
+  const totalLine   = smoothPath(pts.map((p) => ({ x: p.x, y: p.y  })));
+  const convertiLine = showConverti
+    ? smoothPath(pts.map((p) => ({ x: p.x, y: p.yC })))
+    : "";
+  const areaPath = totalLine
+    ? totalLine +
+      ` L ${pts.at(-1)!.x.toFixed(1)},${(pT + cH).toFixed(1)}` +
+      ` L ${pts[0].x.toFixed(1)},${(pT + cH).toFixed(1)} Z`
+    : "";
 
-  const lineC =
-    showConverti && pts.length >= 2
-      ? `M ${pts[0].x},${pts[0].yC} ` + pts.slice(1).map((p) => `L ${p.x},${p.yC}`).join(" ")
-      : "";
+  // Grid: 0, 50%, 100%
+  const grid = max === 0
+    ? []
+    : [max, Math.round(max / 2)].map((val) => ({
+        y: pT + cH - (val / max) * cH,
+        val,
+      }));
+
+  // X labels: max 7
+  const xStep = Math.max(1, Math.ceil(pts.length / 7));
+  const xLabels = pts.map((p, i) => ({ ...p, i, label: buckets[i].label }))
+    .filter((_, i) => i % xStep === 0 || i === pts.length - 1);
+
+  const handleMouseMove = useCallback(
+    (e: React.MouseEvent<SVGSVGElement>) => {
+      if (!svgRef.current || pts.length === 0) return;
+      const rect = svgRef.current.getBoundingClientRect();
+      const mx = ((e.clientX - rect.left) / rect.width) * W;
+      let best = 0, bestD = Infinity;
+      pts.forEach((p, i) => {
+        const d = Math.abs(p.x - mx);
+        if (d < bestD) { bestD = d; best = i; }
+      });
+      setHoveredIdx(best);
+    },
+    [pts]
+  );
+
+  const hp = hoveredIdx !== null ? pts[hoveredIdx] : null;
+  const hb = hoveredIdx !== null ? buckets[hoveredIdx] : null;
+
+  // Tooltip X position clamped to [5%, 95%] to avoid overflow
+  const tipPct = hp ? Math.max(5, Math.min(95, (hp.x / W) * 100)) : 0;
+  // Tooltip Y position: just above the dot, clamped to chart top
+  const tipTopPct = hp
+    ? Math.max(0, ((hp.y - 2) / H) * 100 - 36)
+    : 0;
+
+  const isEmpty = max === 1 && buckets.every((b) => b.total === 0);
 
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" className="w-full" style={{ height }}>
-      <defs>
-        <linearGradient id="volGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="hsl(218 45% 42%)" stopOpacity="0.25" />
-          <stop offset="100%" stopColor="hsl(218 45% 42%)" stopOpacity="0" />
-        </linearGradient>
-      </defs>
-      {area && <path d={area} fill="url(#volGrad)" />}
-      {line && (
-        <path d={line} fill="none" stroke="hsl(218 45% 42%)" strokeWidth="1.8"
-          strokeLinecap="round" strokeLinejoin="round" />
+    <div className="relative w-full select-none" style={{ height }}>
+      {/* Tooltip */}
+      {hp && hb && !isEmpty && (
+        <div
+          className="absolute pointer-events-none z-10"
+          style={{
+            left: `${tipPct}%`,
+            top:  `${tipTopPct}%`,
+            transform: "translateX(-50%)",
+          }}
+        >
+          <div
+            className="rounded-xl px-3 py-2 text-center"
+            style={{
+              background: "hsl(224 58% 9%)",
+              border: "1px solid rgba(255,255,255,0.14)",
+              boxShadow: "0 8px 28px rgba(0,0,0,0.50)",
+              minWidth: 68,
+            }}
+          >
+            <p className="mb-1 tracking-wide" style={{ color: "rgba(255,255,255,0.40)", fontSize: 9 }}>
+              {hb.label}
+            </p>
+            <p className="font-semibold tabular-nums" style={{ color: "hsl(218 80% 78%)", fontSize: 14 }}>
+              {hb.total}
+            </p>
+            <p style={{ color: "rgba(255,255,255,0.38)", fontSize: 9 }}>
+              lead{hb.total !== 1 ? "s" : ""}
+            </p>
+            {showConverti && hb.converti > 0 && (
+              <p className="mt-1 font-medium" style={{ color: "hsl(142 65% 55%)", fontSize: 10 }}>
+                {hb.converti} converti{hb.converti > 1 ? "s" : ""}
+              </p>
+            )}
+          </div>
+        </div>
       )}
-      {lineC && (
-        <path d={lineC} fill="none" stroke="hsl(142 50% 40%)" strokeWidth="1.4"
-          strokeDasharray="4 2" strokeLinecap="round" />
-      )}
-      {pts.map((p, i) => (
-        <circle key={i} cx={p.x} cy={p.y} r="2.5" fill="hsl(218 45% 42%)" />
-      ))}
-    </svg>
+
+      <svg
+        ref={svgRef}
+        viewBox={`0 0 ${W} ${H}`}
+        className="w-full h-full"
+        style={{ display: "block" }}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={() => setHoveredIdx(null)}
+      >
+        <defs>
+          <linearGradient id={gid} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stopColor="hsl(218 52% 55%)" stopOpacity="0.32" />
+            <stop offset="60%"  stopColor="hsl(218 52% 55%)" stopOpacity="0.07" />
+            <stop offset="100%" stopColor="hsl(218 52% 55%)" stopOpacity="0"    />
+          </linearGradient>
+        </defs>
+
+        {/* Horizontal grid lines */}
+        {grid.map(({ y, val }, i) => (
+          <g key={i}>
+            <line
+              x1={pL} y1={y} x2={W - pR} y2={y}
+              stroke="rgba(255,255,255,0.07)" strokeWidth="0.75"
+              strokeDasharray="3 5"
+            />
+            <text
+              x={pL - 5} y={y + 3.5}
+              textAnchor="end"
+              fill="rgba(255,255,255,0.30)"
+              style={{ fontSize: "8px", fontVariantNumeric: "tabular-nums" }}
+            >
+              {val}
+            </text>
+          </g>
+        ))}
+
+        {/* Baseline */}
+        <line
+          x1={pL} y1={pT + cH} x2={W - pR} y2={pT + cH}
+          stroke="rgba(255,255,255,0.12)" strokeWidth="0.75"
+        />
+
+        {/* X labels */}
+        {xLabels.map(({ x, label }) => (
+          <text
+            key={label}
+            x={x} y={H - 3}
+            textAnchor="middle"
+            fill="rgba(255,255,255,0.30)"
+            style={{ fontSize: "7.5px" }}
+          >
+            {label}
+          </text>
+        ))}
+
+        {/* Hover crosshair */}
+        {hp && !isEmpty && (
+          <line
+            x1={hp.x} y1={pT} x2={hp.x} y2={pT + cH}
+            stroke="rgba(255,255,255,0.18)" strokeWidth="1"
+            strokeDasharray="2 3"
+          />
+        )}
+
+        {/* Area fill */}
+        {areaPath && <path d={areaPath} fill={`url(#${gid})`} />}
+
+        {/* Total line */}
+        {totalLine && (
+          <path
+            d={totalLine}
+            fill="none"
+            stroke="hsl(218 52% 62%)"
+            strokeWidth="1.9"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        )}
+
+        {/* Convertis line */}
+        {convertiLine && (
+          <path
+            d={convertiLine}
+            fill="none"
+            stroke="hsl(142 55% 52%)"
+            strokeWidth="1.35"
+            strokeDasharray="4 2.5"
+            strokeLinecap="round"
+          />
+        )}
+
+        {/* Data dots */}
+        {pts.map((p, i) => {
+          const isHov = hoveredIdx === i;
+          return (
+            <g key={i}>
+              {isHov && (
+                <circle cx={p.x} cy={p.y} r="7"
+                  fill="hsl(218 52% 55%)" fillOpacity="0.14" />
+              )}
+              <circle
+                cx={p.x} cy={p.y}
+                r={isHov ? 4 : 2.5}
+                fill={isHov ? "white" : "hsl(218 52% 62%)"}
+                stroke={isHov ? "hsl(218 52% 50%)" : "transparent"}
+                strokeWidth="1.8"
+              />
+              {showConverti && buckets[i].converti > 0 && (
+                <circle
+                  cx={p.x} cy={p.yC}
+                  r={isHov ? 3.5 : 2}
+                  fill={isHov ? "hsl(142 70% 70%)" : "hsl(142 55% 52%)"}
+                />
+              )}
+            </g>
+          );
+        })}
+
+        {/* Empty state overlay */}
+        {isEmpty && (
+          <text
+            x={W / 2} y={H / 2}
+            textAnchor="middle" dominantBaseline="middle"
+            fill="rgba(255,255,255,0.22)"
+            style={{ fontSize: "11px" }}
+          >
+            Aucun lead sur la période
+          </text>
+        )}
+      </svg>
+    </div>
   );
 }
+
+// ── StatusBars ──────────────────────────────────────────────────────────────────
 
 export function StatusBars({ leads }: { leads: Lead[] }) {
   const total = leads.length || 1;
@@ -153,6 +368,8 @@ export function StatusBars({ leads }: { leads: Lead[] }) {
     </div>
   );
 }
+
+// ── PipelineHealth ──────────────────────────────────────────────────────────────
 
 export function PipelineHealth({ leads }: { leads: Lead[] }) {
   const now = Date.now();

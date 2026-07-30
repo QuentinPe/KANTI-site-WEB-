@@ -560,17 +560,8 @@ export default function AdminDashboard() {
                 </button>
               </div>
             </div>
-            <div style={{ height: 120 }}>
-              <VolumeChart leads={leads} days={chartDays} height={108} showConverti />
-            </div>
-            <div className="flex justify-between mt-1.5 px-0.5">
-              {chartBuckets
-                .filter((_, i, arr) => i === 0 || i === Math.floor(arr.length / 2) || i === arr.length - 1)
-                .map((b, i) => (
-                  <span key={i} className="text-[9px] tabular-nums" style={{ color: T_MUTED }}>
-                    {b.label}
-                  </span>
-                ))}
+            <div style={{ height: 148 }}>
+              <VolumeChart leads={leads} days={chartDays} height={148} showConverti />
             </div>
             <div className="flex items-center gap-4 mt-3 pt-3"
               style={{ borderTop: "1px solid hsl(0 0% 100% / 0.08)" }}>

@@ -2,17 +2,18 @@ import { useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Upload, Copy, Trash2, Image as ImageIcon, Check, AlertCircle,
-  X, Download, FileText, Users, User, Search, ArrowRight,
+  X, Download, FileText, Users, User, Search, ArrowRight, BookOpen,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { getArticles, updateArticle } from "@/lib/articlesService";
 import { getAllTeamMembers, updateTeamMember } from "@/lib/teamService";
 import { getAllCasClients, updateCasClient } from "@/lib/casClientsService";
+import { getAllRessources, updateRessource } from "@/lib/ressourcesService";
 import {
   GLASS, INNER_BG, INNER_BORDER,
   T_PRIMARY, T_SECONDARY, T_MUTED, T_HEADING, T_LABEL,
-  C_BLUE, C_GOLD, C_SAGE, C_CORAL, cA,
+  C_BLUE, C_GOLD, C_SAGE, C_CORAL, C_TEAL, cA,
 } from "@/lib/adminTheme";
 
 const BUCKET = "article-images";
@@ -27,7 +28,7 @@ interface MediaFile {
   size?: number;
 }
 
-type PickTarget = "article" | "team" | "cas-client";
+type PickTarget = "article" | "team" | "cas-client" | "ressource";
 
 // ── Service helpers ────────────────────────────────────────────────────────────
 
@@ -174,6 +175,9 @@ function PickerModal({
   const { data: casClients = [] } = useQuery({
     queryKey: ["cas-clients-all"], queryFn: getAllCasClients, enabled: target === "cas-client",
   });
+  const { data: ressources = [] } = useQuery({
+    queryKey: ["ressources-all"], queryFn: getAllRessources, enabled: target === "ressource",
+  });
 
   const articleMutation = useMutation({
     mutationFn: (id: string) => updateArticle(id, { image: imageUrl }),
@@ -190,13 +194,19 @@ function PickerModal({
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["cas-clients-all"] }); toast.success("Photo de cas client mise à jour"); onClose(); },
     onError: () => toast.error("Erreur lors de la mise à jour"),
   });
+  const ressourceMutation = useMutation({
+    mutationFn: (id: string) => updateRessource(id, { thumbnail: imageUrl }),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["ressources-all"] }); toast.success("Miniature de ressource mise à jour"); onClose(); },
+    onError: () => toast.error("Erreur lors de la mise à jour"),
+  });
 
-  const isPending = articleMutation.isPending || teamMutation.isPending || casMutation.isPending;
+  const isPending = articleMutation.isPending || teamMutation.isPending || casMutation.isPending || ressourceMutation.isPending;
 
   const TITLES: Record<PickTarget, string> = {
     "article":    "Couverture · Article",
     "team":       "Photo · Membre d'équipe",
     "cas-client": "Photo · Cas client",
+    "ressource":  "Miniature · Ressource",
   };
 
   type Item = { id: string; label: string; image: string | null };
@@ -205,7 +215,9 @@ function PickerModal({
       return articles.map((a) => ({ id: a.id, label: a.title, image: a.image }));
     if (target === "team")
       return teamMembers.map((m) => ({ id: m.id, label: `${m.name} · ${m.role}`, image: m.image }));
-    return casClients.map((c) => ({ id: c.id, label: `${c.profil} · ${c.category_label}`, image: c.image ?? null }));
+    if (target === "cas-client")
+      return casClients.map((c) => ({ id: c.id, label: `${c.profil} · ${c.category_label}`, image: c.image ?? null }));
+    return ressources.map((r) => ({ id: r.id, label: `${r.title} · ${r.category}`, image: r.thumbnail ?? null }));
   })();
 
   const filtered = items.filter((i) => i.label.toLowerCase().includes(search.toLowerCase()));
@@ -213,7 +225,8 @@ function PickerModal({
   const handlePick = (id: string) => {
     if (target === "article") articleMutation.mutate(id);
     else if (target === "team") teamMutation.mutate(id);
-    else casMutation.mutate(id);
+    else if (target === "cas-client") casMutation.mutate(id);
+    else ressourceMutation.mutate(id);
   };
 
   return (
@@ -473,6 +486,17 @@ function FileCard({
           >
             <Users className="w-3 h-3" />
           </button>
+
+          <button
+            onClick={() => onUseAs("ressource")}
+            className="flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-medium flex-1 justify-center transition-colors"
+            style={{ background: cA(C_TEAL, 0.18), border: `1px solid ${cA(C_TEAL, 0.30)}`, color: C_TEAL }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = cA(C_TEAL, 0.28); }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = cA(C_TEAL, 0.18); }}
+            title="Miniature de ressource"
+          >
+            <BookOpen className="w-3 h-3" />
+          </button>
         </div>
       </div>
     </div>
@@ -638,6 +662,9 @@ export default function AdminMediaLibrary() {
           </span>
           <span className="flex items-center gap-1 text-[11px]" style={{ color: C_SAGE }}>
             <Users className="w-3 h-3" /> Cas client
+          </span>
+          <span className="flex items-center gap-1 text-[11px]" style={{ color: C_TEAL }}>
+            <BookOpen className="w-3 h-3" /> Ressource
           </span>
         </div>
       )}

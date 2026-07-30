@@ -7,6 +7,7 @@ export interface Ressource {
   category: string;
   pages: number | null;
   storage_path: string;
+  thumbnail?: string | null;
   sort_order: number;
   active: boolean;
   created_at: string;
