@@ -1,6 +1,6 @@
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { FileText, LogOut, Plus, BookOpen, Users, HelpCircle, UserSquare2, Scale, LayoutDashboard, Inbox, Settings, Image, ShieldCheck, ExternalLink, Tags, Sun, Moon } from "lucide-react";
+import { FileText, LogOut, Plus, BookOpen, Users, HelpCircle, UserSquare2, Scale, LayoutDashboard, Inbox, Settings, Image, ShieldCheck, ExternalLink, Tags, Sun, Moon, BarChart2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { AdminThemeProvider, useAdminTheme } from "@/contexts/AdminThemeContext";
 import { getLeads } from "@/lib/leadsService";
@@ -71,6 +71,12 @@ function AdminLayoutInner() {
             label="Leads"
             active={isActive("/admin/leads")}
             badge={newLeadsCount || undefined}
+          />
+          <NavItem
+            to="/admin/analytics"
+            icon={<BarChart2 className="w-4 h-4" />}
+            label="Analytics"
+            active={isActive("/admin/analytics")}
           />
 
           <p className="px-3 pb-2 pt-5 text-[9px] tracking-[0.3em] uppercase font-medium" style={{ color: "hsl(0 0% 100% / 0.22)" }}>

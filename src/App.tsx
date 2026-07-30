@@ -57,6 +57,7 @@ const NotFound                  = lazy(() => import("./pages/NotFound"));
 const ProductDetailPage         = lazy(() => import("./pages/ProductDetailPage"));
 
 // ─── Admin pages (heavy: Tiptap, pdfjs, mammoth only loaded in admin) ─────────
+const AdminAnalytics    = lazy(() => import("./pages/admin/AdminAnalytics"));
 const AdminDashboard    = lazy(() => import("./pages/admin/AdminDashboard"));
 const AdminLeadsList    = lazy(() => import("./pages/admin/AdminLeadsList"));
 const AdminSiteSettings = lazy(() => import("./pages/admin/AdminSiteSettings"));
@@ -145,6 +146,7 @@ const AppShell = () => {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
                 <Route index element={<AdminDashboard />} />
+                <Route path="analytics" element={<AdminAnalytics />} />
                 <Route path="leads" element={<AdminLeadsList />} />
                 <Route path="settings" element={<AdminSiteSettings />} />
                 <Route path="media" element={<AdminMediaLibrary />} />
