@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useForm, useWatch } from "react-hook-form";
@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import logoWhite from "@/assets/logo-kanti-white.png.asset.json";
 import logoDark from "@/assets/logo-kanti-dark.png.asset.json";
+import "./LoginPage.css";
 
 const loginSchema = z.object({
   email: z.string().min(1, "Email requis").email("Adresse email invalide"),
@@ -18,9 +19,64 @@ type LoginData = z.infer<typeof loginSchema>;
 
 const GRAIN = "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")";
 
-// Colors matching admin DA
 const C_BLUE_SOLID = "hsl(215 42% 65%)";
 const C_BLUE_GLOW  = "hsl(215 52% 62% / 0.55)";
+
+// ── Constellation data ─────────────────────────────────────────────────────────
+
+const NODES = [
+  { cx: 14,  cy: 20, r: 2.2 }, // 0 — top-left
+  { cx: 52,  cy:  7, r: 1.8 }, // 1 — top-center-left
+  { cx: 90,  cy:  4, r: 2.0 }, // 2 — top-center
+  { cx: 132, cy: 10, r: 1.8 }, // 3 — top-right
+  { cx: 166, cy: 36, r: 1.5 }, // 4 — right       (email nodes 0-4)
+  { cx: 152, cy: 68, r: 2.0 }, // 5 — bottom-right (password nodes 5-8)
+  { cx: 90,  cy: 84, r: 1.8 }, // 6 — bottom-center
+  { cx: 38,  cy: 74, r: 1.5 }, // 7 — bottom-left
+  { cx: 16,  cy: 48, r: 2.2 }, // 8 — left
+];
+
+function getActiveSet(email: string, pass: string): Set<number> {
+  const s = new Set<number>();
+  if (email.length >= 1) s.add(0);
+  if (email.length >= 3) s.add(1);
+  if (email.length >= 6) s.add(2);
+  if (email.includes("@")) s.add(3);
+  if (/\.[a-z]{2,}/i.test(email)) s.add(4);
+  if (pass.length >= 1) s.add(5);
+  if (pass.length >= 3) s.add(6);
+  if (pass.length >= 6) s.add(7);
+  if (pass.length >= 8) s.add(8);
+  return s;
+}
+
+function spawnParticle(card: HTMLElement, isPass: boolean) {
+  const el = document.createElement("div");
+  el.className = `kanti-login-signal${isPass ? " kanti-login-signal--password" : ""}`;
+
+  const w  = card.clientWidth;
+  const h  = card.clientHeight;
+  const sx = 24 + Math.random() * (w - 48);
+  const sy = isPass ? h * 0.62 : h * 0.50;
+
+  el.style.left = `${sx}px`;
+  el.style.top  = `${sy}px`;
+  card.appendChild(el);
+
+  const dx = (w / 2 - sx) * 0.55 + (Math.random() - 0.5) * 38;
+  const dy = -(sy - h * 0.14) * (0.62 + Math.random() * 0.46);
+
+  el.animate(
+    [
+      { transform: "translate(0,0)",                                        opacity: 1 },
+      { transform: `translate(${dx * 0.4}px,${dy * 0.38}px)`,             opacity: 0.9, offset: 0.38 },
+      { transform: `translate(${dx}px,${dy}px)`,                           opacity: 0 },
+    ],
+    { duration: 460 + Math.random() * 210, easing: "cubic-bezier(0.2,0.8,0.2,1)", fill: "forwards" }
+  ).addEventListener("finish", () => el.remove());
+}
+
+// ── Component ──────────────────────────────────────────────────────────────────
 
 export default function LoginPage() {
   const { signIn, resetPassword } = useAuth();
@@ -32,10 +88,48 @@ export default function LoginPage() {
   const [resetSent, setResetSent]     = useState(false);
   const [focused, setFocused]         = useState<"email" | "password" | null>(null);
 
+  // Constellation state
+  const cardRef        = useRef<HTMLDivElement>(null);
+  const prevActiveRef  = useRef<Set<number>>(new Set());
+  const [activeNodes,  setActiveNodes]  = useState<Set<number>>(new Set());
+  const [pulsingNodes, setPulsingNodes] = useState<Set<number>>(new Set());
+
   const { register: regLogin, handleSubmit: handleLogin, formState: { errors: loginErrors, isSubmitting: loginPending }, control } = useForm<LoginData>({ resolver: zodResolver(loginSchema) });
 
   const emailVal    = useWatch({ control, name: "email",    defaultValue: "" });
   const passwordVal = useWatch({ control, name: "password", defaultValue: "" });
+
+  const isComplete = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal) && passwordVal.length >= 6;
+
+  // Track which nodes just became active and fire pulse animation
+  useEffect(() => {
+    const next = getActiveSet(emailVal, passwordVal);
+    const prev = prevActiveRef.current;
+
+    const newlyActive: number[] = [];
+    next.forEach((n) => { if (!prev.has(n)) newlyActive.push(n); });
+    setActiveNodes(new Set(next));
+
+    if (newlyActive.length > 0) {
+      setPulsingNodes((p) => { const s = new Set(p); newlyActive.forEach((n) => s.add(n)); return s; });
+      const t = setTimeout(() => {
+        setPulsingNodes((p) => { const s = new Set(p); newlyActive.forEach((n) => s.delete(n)); return s; });
+      }, 760);
+      prevActiveRef.current = next;
+      return () => clearTimeout(t);
+    }
+    prevActiveRef.current = next;
+  }, [emailVal, passwordVal]);
+
+  const spawnEmail = () => { if (cardRef.current) spawnParticle(cardRef.current, false); };
+  const spawnPass  = () => { if (cardRef.current) spawnParticle(cardRef.current, true);  };
+
+  const cardClass = [
+    "kanti-login-card w-full max-w-[420px] rounded-[28px] relative z-20 overflow-hidden",
+    isComplete   ? "is-complete"   : "",
+    loginPending ? "is-submitting" : "",
+    globalError  ? "has-error"     : "",
+  ].filter(Boolean).join(" ");
 
   const onLogin = async (data: LoginData) => {
     setGlobalError("");
@@ -84,28 +178,13 @@ export default function LoginPage() {
         backgroundAttachment: "fixed",
       }}
     >
-      {/* Dark overlay matching admin */}
+      {/* Dark overlay */}
       <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(160deg, rgba(8,11,24,0.84) 0%, rgba(6,9,20,0.90) 100%)" }} />
 
-      {/* Animated ambient orbs */}
-      <Orb
-        size={520} color="hsl(215 55% 50% / 0.10)"
-        initial={{ x: -180, y: -120 }}
-        animate={{ x: [-180, -120, -180], y: [-120, -80, -120] }}
-        duration={14}
-      />
-      <Orb
-        size={380} color="hsl(270 35% 55% / 0.08)"
-        initial={{ x: 200, y: 160 }}
-        animate={{ x: [200, 160, 200], y: [160, 200, 160] }}
-        duration={18}
-      />
-      <Orb
-        size={300} color="hsl(158 40% 45% / 0.07)"
-        initial={{ x: 80, y: -200 }}
-        animate={{ x: [80, 110, 80], y: [-200, -170, -200] }}
-        duration={22}
-      />
+      {/* Ambient orbs */}
+      <Orb size={520} color="hsl(215 55% 50% / 0.10)" initial={{ x: -180, y: -120 }} animate={{ x: [-180, -120, -180], y: [-120, -80, -120] }} duration={14} />
+      <Orb size={380} color="hsl(270 35% 55% / 0.08)" initial={{ x: 200, y: 160 }}   animate={{ x: [200, 160, 200], y: [160, 200, 160] }}     duration={18} />
+      <Orb size={300} color="hsl(158 40% 45% / 0.07)" initial={{ x: 80, y: -200 }}   animate={{ x: [80, 110, 80], y: [-200, -170, -200] }}     duration={22} />
 
       {/* Grain */}
       <div aria-hidden className="fixed inset-0 opacity-[0.022] pointer-events-none z-10"
@@ -114,8 +193,7 @@ export default function LoginPage() {
       {/* Loading overlay */}
       <AnimatePresence>
         {loginPending && (
-          <motion.div
-            key="login-loading"
+          <motion.div key="login-loading"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             transition={{ duration: 0.18 }}
             className="fixed inset-0 z-[9999] flex flex-col items-center justify-center"
@@ -134,13 +212,11 @@ export default function LoginPage() {
       </AnimatePresence>
 
       {/* Back link */}
-      <motion.div
-        className="fixed top-6 left-6 z-20"
+      <motion.div className="fixed top-6 left-6 z-20"
         initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.4, duration: 0.4 }}
       >
-        <Link
-          to="/"
+        <Link to="/"
           className="inline-flex items-center gap-2 text-[12px] font-medium tracking-wide transition-all duration-200 hover:gap-3"
           style={{ color: "hsl(0 0% 100% / 0.42)" }}
           onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "hsl(0 0% 100% / 0.70)"; }}
@@ -153,22 +229,20 @@ export default function LoginPage() {
 
       {/* Card */}
       <motion.div
-        className="w-full max-w-[420px] rounded-[28px] relative z-20 overflow-hidden"
+        ref={cardRef}
+        className={cardClass}
         style={{
           background: "rgba(255,255,255,0.09)",
           backdropFilter: "blur(56px) saturate(200%)",
           WebkitBackdropFilter: "blur(56px) saturate(200%)",
           border: "1px solid rgba(255,255,255,0.14)",
-          boxShadow: [
-            "inset 0 -1px 0 rgba(0,0,0,0.12)",
-            "0 40px 100px rgba(0,0,0,0.50)",
-          ].join(", "),
+          boxShadow: "inset 0 -1px 0 rgba(0,0,0,0.12), 0 40px 100px rgba(0,0,0,0.50)",
         }}
         initial={{ opacity: 0, scale: 0.94, y: 28 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
       >
-        {/* Top glow bar that reacts to focus */}
+        {/* Top focus glow bar */}
         <motion.div
           className="absolute top-0 left-0 right-0 h-px"
           animate={{
@@ -185,13 +259,38 @@ export default function LoginPage() {
             style={{ backgroundImage: GRAIN, backgroundSize: "200px" }} />
 
           <div className="px-8 py-8">
-            {/* Logo + divider */}
+            {/* Logo + constellation */}
             <motion.div
-              className="flex justify-center mb-6"
+              className="kanti-login-header mb-2"
               initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.18, duration: 0.4 }}
             >
-              <img src={logoWhite.url} alt="KANTI" className="h-7 w-auto" style={{ opacity: 0.88 }} />
+              <div className="kanti-logo-anchor">
+                <img src={logoWhite.url} alt="KANTI" className="kanti-login-logo" style={{ opacity: 0.88 }} />
+                <svg
+                  className="kanti-constellation"
+                  viewBox="0 0 180 90"
+                  aria-hidden="true"
+                >
+                  {/* Orbit lines — only visible when is-complete */}
+                  <ellipse className="kanti-constellation__orbit" cx="90" cy="45" rx="78" ry="38" />
+                  <ellipse className="kanti-constellation__orbit" cx="90" cy="45" rx="56" ry="26"
+                    transform="rotate(14,90,45)" />
+
+                  {/* Nodes — activated by typing */}
+                  {NODES.map((n, i) => (
+                    <circle
+                      key={i}
+                      className={[
+                        "kanti-constellation__node",
+                        activeNodes.has(i)  ? "is-active"  : "",
+                        pulsingNodes.has(i) ? "is-pulsing" : "",
+                      ].filter(Boolean).join(" ")}
+                      cx={n.cx} cy={n.cy} r={n.r}
+                    />
+                  ))}
+                </svg>
+              </div>
             </motion.div>
 
             <motion.div
@@ -260,7 +359,7 @@ export default function LoginPage() {
                     </p>
                   </div>
 
-                  {/* Email field */}
+                  {/* Email */}
                   <div className="flex flex-col gap-1.5">
                     <motion.label
                       className="text-[11px] font-medium tracking-[0.08em] uppercase flex items-center gap-1.5"
@@ -269,7 +368,10 @@ export default function LoginPage() {
                     >
                       <motion.span
                         className="inline-block w-1 h-1 rounded-full"
-                        animate={{ background: (focused === "email" || !!emailVal) ? C_BLUE_SOLID : "rgba(255,255,255,0.28)", scale: (focused === "email" || !!emailVal) ? 1.4 : 1 }}
+                        animate={{
+                          background: (focused === "email" || !!emailVal) ? C_BLUE_SOLID : "rgba(255,255,255,0.28)",
+                          scale: (focused === "email" || !!emailVal) ? 1.4 : 1,
+                        }}
                         transition={{ duration: 0.25 }}
                       />
                       Email
@@ -279,6 +381,7 @@ export default function LoginPage() {
                       isFocused={focused === "email"} hasValue={!!emailVal}
                       registration={regLogin("email")}
                       onFocus={() => setFocused("email")} onBlur={() => setFocused(null)}
+                      onKeyDown={spawnEmail}
                     />
                     <AnimatePresence>
                       {loginErrors.email && (
@@ -290,7 +393,7 @@ export default function LoginPage() {
                     </AnimatePresence>
                   </div>
 
-                  {/* Password field */}
+                  {/* Password */}
                   <div className="flex flex-col gap-1.5">
                     <motion.label
                       className="text-[11px] font-medium tracking-[0.08em] uppercase flex items-center gap-1.5"
@@ -299,7 +402,10 @@ export default function LoginPage() {
                     >
                       <motion.span
                         className="inline-block w-1 h-1 rounded-full"
-                        animate={{ background: (focused === "password" || !!passwordVal) ? C_BLUE_SOLID : "rgba(255,255,255,0.28)", scale: (focused === "password" || !!passwordVal) ? 1.4 : 1 }}
+                        animate={{
+                          background: (focused === "password" || !!passwordVal) ? C_BLUE_SOLID : "rgba(255,255,255,0.28)",
+                          scale: (focused === "password" || !!passwordVal) ? 1.4 : 1,
+                        }}
                         transition={{ duration: 0.25 }}
                       />
                       Mot de passe
@@ -309,6 +415,7 @@ export default function LoginPage() {
                       isFocused={focused === "password"} hasValue={!!passwordVal}
                       registration={regLogin("password")}
                       onFocus={() => setFocused("password")} onBlur={() => setFocused(null)}
+                      onKeyDown={spawnPass}
                       rightSlot={
                         <button type="button" onClick={() => setShowPw((v) => !v)}
                           aria-label={showPw ? "Masquer" : "Afficher"}
@@ -319,7 +426,7 @@ export default function LoginPage() {
                       }
                     />
 
-                    {/* Password strength dots */}
+                    {/* Password strength bars */}
                     <AnimatePresence>
                       {focused === "password" && !!passwordVal && (
                         <motion.div
@@ -368,14 +475,15 @@ export default function LoginPage() {
 
                   {/* Submit */}
                   <motion.button
-                    type="submit" disabled={loginPending}
-                    className="relative w-full py-3 rounded-xl text-[14px] font-medium overflow-hidden disabled:opacity-60"
+                    type="submit"
+                    disabled={loginPending}
+                    className="kanti-login-submit relative w-full py-3 rounded-xl text-[14px] font-medium overflow-hidden disabled:opacity-60"
                     style={{ background: "white", color: "hsl(224 60% 12%)" }}
                     whileHover={{ scale: 1.01 }}
                     whileTap={{ scale: 0.98 }}
                     transition={{ duration: 0.15 }}
                   >
-                    {/* Shimmer on hover */}
+                    {/* Shimmer sweep */}
                     <motion.span
                       aria-hidden
                       className="absolute inset-0 pointer-events-none"
@@ -386,7 +494,8 @@ export default function LoginPage() {
                     />
                     {loginPending ? (
                       <span className="flex items-center justify-center gap-2 relative z-10">
-                        <span className="w-4 h-4 rounded-full border-2 animate-spin" style={{ borderColor: "hsl(224 40% 25% / 0.20)", borderTopColor: "hsl(224 60% 14%)" }} />
+                        <span className="w-4 h-4 rounded-full border-2 animate-spin"
+                          style={{ borderColor: "hsl(224 40% 25% / 0.20)", borderTopColor: "hsl(224 60% 14%)" }} />
                         Connexion…
                       </span>
                     ) : (
@@ -450,7 +559,7 @@ function Orb({ size, color, initial, animate: anim, duration }: {
 
 function AnimatedInput({
   type, icon: Icon, placeholder, isFocused, hasValue,
-  registration, onFocus, onBlur, rightSlot,
+  registration, onFocus, onBlur, onKeyDown, rightSlot,
 }: {
   type: string;
   icon: React.ElementType;
@@ -460,6 +569,7 @@ function AnimatedInput({
   registration: ReturnType<import("react-hook-form").UseFormRegister<LoginData>>;
   onFocus: () => void;
   onBlur: () => void;
+  onKeyDown?: () => void;
   rightSlot?: React.ReactNode;
 }) {
   return (
@@ -493,6 +603,7 @@ function AnimatedInput({
         {...registration}
         onFocus={() => onFocus()}
         onBlur={(e) => { registration.onBlur(e); onBlur(); }}
+        onKeyDown={() => onKeyDown?.()}
       />
       {rightSlot}
     </motion.div>

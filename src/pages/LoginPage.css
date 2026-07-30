@@ -1,0 +1,406 @@
+.kanti-login-card {
+  --signal-blue: 174, 204, 255;
+  --signal-white: 235, 242, 255;
+  --card-border: rgba(205, 220, 255, 0.2);
+
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* Les particules sont ajoutées temporairement dans la carte. */
+.kanti-login-signal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 4;
+
+  width: 5px;
+  height: 5px;
+
+  pointer-events: none;
+  border-radius: 999px;
+
+  background: rgba(var(--signal-blue), 0.95);
+
+  box-shadow:
+    0 0 5px rgba(var(--signal-blue), 0.45),
+    0 0 12px rgba(var(--signal-blue), 0.18);
+
+  will-change: transform, opacity;
+}
+
+.kanti-login-signal--password {
+  width: 4px;
+  height: 4px;
+  border-radius: 1.5px;
+
+  background: rgba(var(--signal-white), 0.88);
+
+  box-shadow:
+    0 0 5px rgba(var(--signal-white), 0.34),
+    0 0 11px rgba(var(--signal-blue), 0.12);
+}
+
+.kanti-login-header {
+  position: relative;
+  z-index: 5;
+
+  display: flex;
+  justify-content: center;
+}
+
+.kanti-logo-anchor {
+  position: relative;
+
+  display: grid;
+  place-items: center;
+
+  width: 220px;
+  min-height: 94px;
+}
+
+.kanti-login-logo {
+  position: relative;
+  z-index: 2;
+
+  display: block;
+  width: 104px;
+  height: auto;
+
+  transition:
+    filter 500ms ease,
+    opacity 500ms ease,
+    transform 500ms
+      cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.kanti-constellation {
+  position: absolute;
+  z-index: 1;
+  inset: 50% auto auto 50%;
+
+  width: 180px;
+  height: 90px;
+
+  overflow: visible;
+  pointer-events: none;
+
+  transform: translate(-50%, -50%);
+  transform-origin: center;
+
+  opacity: 0.82;
+
+  transition:
+    opacity 500ms ease,
+    transform 700ms
+      cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.kanti-constellation__orbit {
+  fill: none;
+
+  stroke: rgba(var(--signal-blue), 0.3);
+  stroke-width: 0.75;
+  stroke-linecap: round;
+
+  stroke-dasharray: 1.5 9;
+  stroke-dashoffset: 0;
+
+  opacity: 0;
+
+  transition:
+    opacity 600ms ease,
+    stroke 600ms ease;
+}
+
+.kanti-constellation__node {
+  fill: rgb(var(--signal-blue));
+
+  opacity: 0.1;
+
+  transform-box: fill-box;
+  transform-origin: center;
+
+  transition:
+    opacity 420ms ease,
+    transform 420ms ease,
+    filter 420ms ease;
+}
+
+.kanti-constellation__node:nth-of-type(3n) {
+  animation: kanti-node-breathe 5.5s ease-in-out infinite;
+}
+
+.kanti-constellation__node:nth-of-type(4n) {
+  animation-delay: -2s;
+}
+
+.kanti-constellation__node.is-active {
+  opacity: 0.56;
+
+  filter:
+    drop-shadow(
+      0 0 3px rgba(var(--signal-blue), 0.42)
+    );
+}
+
+.kanti-constellation__node.is-pulsing {
+  animation:
+    kanti-node-pulse 720ms
+      cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Quand les deux champs sont complétés. */
+.kanti-login-card.is-complete
+  .kanti-constellation__orbit {
+  opacity: 0.62;
+
+  animation:
+    kanti-orbit-drift 9s linear infinite;
+}
+
+.kanti-login-card.is-complete
+  .kanti-constellation {
+  animation:
+    kanti-constellation-float 8s ease-in-out
+      infinite;
+}
+
+.kanti-login-card.is-complete
+  .kanti-login-logo {
+  transform: scale(1.015);
+
+  filter:
+    drop-shadow(
+      0 0 8px rgba(var(--signal-white), 0.13)
+    );
+}
+
+/* Halo du bouton prêt à être utilisé. */
+.kanti-login-submit {
+  position: relative;
+  isolation: isolate;
+
+  transition:
+    transform 220ms ease,
+    box-shadow 500ms ease,
+    opacity 220ms ease;
+}
+
+.kanti-login-submit::before {
+  content: "";
+
+  position: absolute;
+  z-index: -1;
+  inset: -5px;
+
+  pointer-events: none;
+  border-radius: inherit;
+
+  background:
+    radial-gradient(
+      ellipse at center,
+      rgba(var(--signal-blue), 0.2),
+      transparent 68%
+    );
+
+  opacity: 0;
+  transform: scale(0.96);
+
+  transition:
+    opacity 500ms ease,
+    transform 500ms ease;
+}
+
+.kanti-login-card.is-complete
+  .kanti-login-submit::before {
+  opacity: 0.65;
+  transform: scale(1);
+}
+
+.kanti-login-submit:not(:disabled):hover {
+  transform: translateY(-1px);
+}
+
+.kanti-login-submit:disabled {
+  cursor: not-allowed;
+}
+
+/* Contraction au lancement de l'authentification. */
+.kanti-login-card.is-submitting
+  .kanti-constellation {
+  animation:
+    kanti-constellation-close 620ms
+      cubic-bezier(0.4, 0, 0.15, 1)
+      forwards;
+}
+
+.kanti-login-card.is-submitting
+  .kanti-login-logo {
+  animation:
+    kanti-logo-confirm 620ms
+      cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Réaction discrète en cas d'erreur. */
+.kanti-login-card.has-error
+  .kanti-constellation {
+  animation:
+    kanti-constellation-error 380ms ease;
+}
+
+.kanti-login-card.has-error
+  .kanti-constellation__node:nth-of-type(3n) {
+  opacity: 0.04;
+}
+
+/* Animations */
+
+@keyframes kanti-node-breathe {
+  0%,
+  100% {
+    opacity: 0.08;
+  }
+
+  50% {
+    opacity: 0.16;
+  }
+}
+
+@keyframes kanti-node-pulse {
+  0% {
+    opacity: 0.16;
+    transform: scale(0.7);
+  }
+
+  42% {
+    opacity: 0.94;
+    transform: scale(1.85);
+
+    filter:
+      drop-shadow(
+        0 0 6px rgba(var(--signal-blue), 0.56)
+      );
+  }
+
+  100% {
+    opacity: 0.45;
+    transform: scale(1);
+  }
+}
+
+@keyframes kanti-orbit-drift {
+  to {
+    stroke-dashoffset: -42;
+  }
+}
+
+@keyframes kanti-constellation-float {
+  0%,
+  100% {
+    transform:
+      translate(-50%, -50%)
+      rotate(-0.8deg)
+      scale(1);
+  }
+
+  50% {
+    transform:
+      translate(-50%, -51%)
+      rotate(0.8deg)
+      scale(1.012);
+  }
+}
+
+@keyframes kanti-constellation-close {
+  0% {
+    opacity: 1;
+
+    transform:
+      translate(-50%, -50%)
+      scale(1);
+  }
+
+  62% {
+    opacity: 0.92;
+
+    transform:
+      translate(-50%, -50%)
+      scale(0.44);
+  }
+
+  100% {
+    opacity: 0;
+
+    transform:
+      translate(-50%, -50%)
+      scale(0.12);
+  }
+}
+
+@keyframes kanti-logo-confirm {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  55% {
+    transform: scale(1.045);
+
+    filter:
+      drop-shadow(
+        0 0 12px rgba(var(--signal-white), 0.24)
+      );
+  }
+}
+
+@keyframes kanti-constellation-error {
+  0%,
+  100% {
+    transform: translate(-50%, -50%);
+  }
+
+  25% {
+    transform: translate(
+      calc(-50% - 3px),
+      -50%
+    );
+  }
+
+  50% {
+    transform: translate(
+      calc(-50% + 3px),
+      -50%
+    );
+  }
+
+  75% {
+    transform: translate(
+      calc(-50% - 2px),
+      -50%
+    );
+  }
+}
+
+/* Accessibilité */
+
+@media (prefers-reduced-motion: reduce) {
+  .kanti-login-signal {
+    display: none;
+  }
+
+  .kanti-constellation,
+  .kanti-constellation__orbit,
+  .kanti-constellation__node,
+  .kanti-login-logo,
+  .kanti-login-submit {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .kanti-login-card.is-complete
+    .kanti-constellation__orbit {
+    opacity: 0.42;
+  }
+}
