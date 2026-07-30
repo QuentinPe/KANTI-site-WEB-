@@ -1,12 +1,12 @@
-import { useMemo, useState, useId } from "react";
+import { useMemo, useState, useId, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   TrendingUp, TrendingDown, Minus, Info,
   Eye, Activity, Target, Inbox, FileText,
   ShieldCheck, CheckCircle2, AlertCircle, XCircle,
   ArrowRight, ExternalLink, Settings, Zap,
-  MousePointerClick, BarChart2, Loader2,
+  MousePointerClick, BarChart2, Loader2, RefreshCw,
 } from "lucide-react";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid,
@@ -22,19 +22,43 @@ import {
 } from "@/lib/adminTheme";
 import type { Lead } from "@/lib/leadsService";
 
-// ── PostHog fetchers ───────────────────────────────────────────────────────────
+// ── Vercel Analytics ───────────────────────────────────────────────────────────
 
-type PHResult = {
-  event: string; name: string; count: number;
-  series?: number[]; error?: number | string;
-};
+type VARow = { key: string; value: number };
+type VAResponse =
+  | { configured: false }
+  | { configured: true; data?: { result?: VARow[] }; error?: number | string };
+
+async function fetchVercelMetric(metric: string, from: string, to: string): Promise<VAResponse> {
+  const res = await fetch(
+    `/api/analytics-proxy?metric=${metric}&from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`
+  );
+  return res.json() as Promise<VAResponse>;
+}
+
+function vaSum(r: VAResponse | undefined): number | null {
+  if (!r || !r.configured || "error" in r) return null;
+  const rows = r.data?.result;
+  if (!rows?.length) return null;
+  return rows.reduce((s, row) => s + row.value, 0);
+}
+
+function vaSeries(r: VAResponse | undefined): number[] {
+  if (!r || !r.configured || "error" in r) return [];
+  return (r.data?.result ?? []).map(row => row.value);
+}
+
+// ── PostHog ────────────────────────────────────────────────────────────────────
+
+type PHResult = { event: string; name: string; count: number; series?: number[]; error?: number | string };
 type PHResponse =
   | { configured: false }
   | { configured: true; results?: PHResult[]; error?: string };
 
 async function fetchPosthog(type: "clicks" | "cta", from: string, to: string): Promise<PHResponse> {
-  const url = `/api/posthog-proxy?type=${type}&from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`;
-  const res = await fetch(url);
+  const res = await fetch(
+    `/api/posthog-proxy?type=${type}&from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`
+  );
   return res.json() as Promise<PHResponse>;
 }
 
@@ -55,6 +79,8 @@ const SOURCE_COLORS: Record<string, string> = {
   "Appel direct":        C_CORAL,
 };
 
+const REFETCH_MS = 1000 * 60 * 5; // 5 min auto-refresh
+
 // ── Recharts theme ─────────────────────────────────────────────────────────────
 
 const RC_TIP = {
@@ -66,15 +92,14 @@ const RC_TIP = {
     fontSize: 12,
     color: "rgba(255,255,255,0.88)",
   },
-  labelStyle: { color: "rgba(255,255,255,0.38)", fontSize: 10, marginBottom: 2 },
-  itemStyle:  { color: "rgba(255,255,255,0.70)" },
-  cursor:     { stroke: "rgba(255,255,255,0.12)", strokeWidth: 1 },
+  labelStyle:  { color: "rgba(255,255,255,0.38)", fontSize: 10, marginBottom: 2 },
+  itemStyle:   { color: "rgba(255,255,255,0.70)" },
+  cursor:      { stroke: "rgba(255,255,255,0.12)", strokeWidth: 1 },
 };
 
 // ── Utils ──────────────────────────────────────────────────────────────────────
 
 function filterByPeriod(leads: Lead[], days: number, offset = 0): Lead[] {
-  if (days === 9999) return offset === 0 ? leads : [];
   const now   = Date.now();
   const end   = now - offset       * days * 86_400_000;
   const start = now - (offset + 1) * days * 86_400_000;
@@ -91,17 +116,19 @@ function fmtN(n: number): string {
 }
 
 function fmtPct(n: number, d = 1): string {
-  return new Intl.NumberFormat("fr-FR", { minimumFractionDigits: d, maximumFractionDigits: d }).format(n) + " %";
+  return (
+    new Intl.NumberFormat("fr-FR", { minimumFractionDigits: d, maximumFractionDigits: d }).format(n) + " %"
+  );
 }
 
 function getLeadSource(lead: Lead): string {
-  const s = (lead.sujet ?? "").toLowerCase();
+  const s = (lead.sujet  ?? "").toLowerCase();
   const f = (lead.format ?? "").toLowerCase();
   if (s.includes("profil de risque") || s.includes("diagnostic")) return "Diagnostic";
-  if (s.includes("simulateur") || s.includes("simulation"))        return "Simulateur";
-  if (s.includes("bilan patrimonial"))                             return "Bilan patrimonial";
+  if (s.includes("simulateur") || s.includes("simulation"))       return "Simulateur";
+  if (s.includes("bilan patrimonial"))                            return "Bilan patrimonial";
   if (s.includes("ressource") || s.includes("guide") || s.includes("pdf")) return "Ressources";
-  if (f.includes("téléphone") || f.includes("appel"))              return "Appel direct";
+  if (f.includes("téléphone") || f.includes("appel"))             return "Appel direct";
   return "Formulaire contact";
 }
 
@@ -128,13 +155,10 @@ function Sparkline({ values, color }: { values: number[]; color: string }) {
           </linearGradient>
         </defs>
         <Area
-          type="monotone"
-          dataKey="v"
-          stroke={color}
-          strokeWidth={1.8}
+          type="monotone" dataKey="v"
+          stroke={color} strokeWidth={1.8}
           fill={`url(#spk-${uid})`}
-          dot={false}
-          isAnimationActive={false}
+          dot={false} isAnimationActive={false}
         />
       </AreaChart>
     </ResponsiveContainer>
@@ -144,14 +168,15 @@ function Sparkline({ values, color }: { values: number[]; color: string }) {
 // ── MetricCard ─────────────────────────────────────────────────────────────────
 
 function MetricCard({
-  label, value, delta, sparkValues, color, tooltip,
+  label, value, loading, delta, sparkValues, color, tooltip,
 }: {
-  label: string; value: string | null; delta?: number | null;
+  label: string; value: string | null; loading?: boolean; delta?: number | null;
   sparkValues?: number[]; color: string; tooltip?: string;
 }) {
   const [tip, setTip] = useState(false);
 
   const deltaEl = (() => {
+    if (loading) return <span className="text-[10px]" style={{ color: T_MUTED }}>Chargement…</span>;
     if (delta === undefined || value === null) return (
       <span className="text-[10px]" style={{ color: T_MUTED }}>Non configuré</span>
     );
@@ -163,13 +188,11 @@ function MetricCard({
     const icon = delta > 0
       ? <TrendingUp className="w-3 h-3" />
       : delta < 0 ? <TrendingDown className="w-3 h-3" /> : <Minus className="w-3 h-3" />;
-    const col = delta > 0
-      ? "hsl(142 55% 52%)"
-      : delta < 0 ? C_CORAL : T_MUTED;
+    const col = delta > 0 ? "hsl(142 55% 52%)" : delta < 0 ? C_CORAL : T_MUTED;
     return (
       <span className="flex items-center gap-1 text-[10px]" style={{ color: col }}>
         {icon}
-        {delta !== 0 ? `${delta > 0 ? "+" : ""}${delta} %` : "Stable"}
+        {delta !== 0 ? `${delta > 0 ? "+" : ""}${delta} %` : "Stable"}
         <span style={{ color: T_MUTED }}>vs période préc.</span>
       </span>
     );
@@ -182,11 +205,7 @@ function MetricCard({
           <p className="text-[11px] font-medium tracking-wide" style={{ color: T_MUTED }}>{label}</p>
           {tooltip && (
             <div className="relative">
-              <button
-                onMouseEnter={() => setTip(true)}
-                onMouseLeave={() => setTip(false)}
-                aria-label="Information"
-              >
+              <button onMouseEnter={() => setTip(true)} onMouseLeave={() => setTip(false)} aria-label="Information">
                 <Info className="w-3 h-3" style={{ color: T_MUTED, opacity: 0.6 }} />
               </button>
               {tip && (
@@ -204,9 +223,9 @@ function MetricCard({
       </div>
       <p
         className="text-[28px] font-heading font-light tabular-nums leading-none mb-1.5"
-        style={{ color: value !== null ? T_HEADING : T_MUTED }}
+        style={{ color: value !== null && !loading ? T_HEADING : T_MUTED }}
       >
-        {value ?? "—"}
+        {loading ? <Loader2 className="w-6 h-6 animate-spin inline" style={{ color: T_MUTED }} /> : (value ?? "—")}
       </p>
       {deltaEl}
     </div>
@@ -216,18 +235,34 @@ function MetricCard({
 // ── VisitsChart ────────────────────────────────────────────────────────────────
 
 function VisitsChart({
-  buckets,
+  buckets, vaSeries: vaPV, vaConfigured,
 }: {
   buckets: { label: string; total: number; converti: number }[];
+  vaSeries: number[];
+  vaConfigured: boolean;
 }) {
   const uid  = useId().replace(/:/g, "");
-  const data = buckets.map(b => ({ label: b.label, leads: b.total, convertis: b.converti }));
+
+  const data = buckets.map((b, i) => ({
+    label:     b.label,
+    leads:     b.total,
+    convertis: b.converti,
+    visiteurs: vaPV[i] ?? null,
+  }));
+
+  const showVA = vaConfigured && vaPV.length > 0;
 
   return (
     <div>
       <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
         <p className="text-[14px] font-medium" style={{ color: T_HEADING }}>Évolution des visites</p>
-        <div className="flex items-center gap-5">
+        <div className="flex items-center gap-4 flex-wrap">
+          {showVA && (
+            <span className="flex items-center gap-1.5 text-[10px]" style={{ color: T_SECONDARY }}>
+              <span className="inline-block w-5 rounded" style={{ height: 2, background: C_MAUVE }} />
+              Visiteurs web
+            </span>
+          )}
           <span className="flex items-center gap-1.5 text-[10px]" style={{ color: T_SECONDARY }}>
             <span className="inline-block w-5 rounded" style={{ height: 2, background: C_BLUE }} />
             Leads reçus
@@ -236,12 +271,14 @@ function VisitsChart({
             <span className="inline-block w-5 rounded" style={{ height: 1, border: `1px dashed ${C_SAGE}` }} />
             Convertis
           </span>
-          <span
-            className="text-[9px] px-2 py-0.5 rounded-full"
-            style={{ background: cA(C_GOLD, 0.14), color: C_GOLD, border: `1px solid ${cA(C_GOLD, 0.28)}` }}
-          >
-            Proxy · Analytics Vercel non configuré
-          </span>
+          {!showVA && (
+            <span
+              className="text-[9px] px-2 py-0.5 rounded-full"
+              style={{ background: cA(C_GOLD, 0.14), color: C_GOLD, border: `1px solid ${cA(C_GOLD, 0.28)}` }}
+            >
+              Vercel Analytics non configuré
+            </span>
+          )}
         </div>
       </div>
 
@@ -250,26 +287,21 @@ function VisitsChart({
           <AreaChart data={data} margin={{ top: 4, right: 8, bottom: 0, left: 0 }}>
             <defs>
               <linearGradient id={`vca-${uid}`} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%"   stopColor={C_BLUE} stopOpacity={0.30} />
-                <stop offset="100%" stopColor={C_BLUE} stopOpacity={0}    />
+                <stop offset="0%"   stopColor={C_BLUE}  stopOpacity={0.30} />
+                <stop offset="100%" stopColor={C_BLUE}  stopOpacity={0}    />
               </linearGradient>
               <linearGradient id={`vcb-${uid}`} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%"   stopColor={C_SAGE} stopOpacity={0.22} />
-                <stop offset="100%" stopColor={C_SAGE} stopOpacity={0}    />
+                <stop offset="0%"   stopColor={C_SAGE}  stopOpacity={0.22} />
+                <stop offset="100%" stopColor={C_SAGE}  stopOpacity={0}    />
+              </linearGradient>
+              <linearGradient id={`vcc-${uid}`} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%"   stopColor={C_MAUVE} stopOpacity={0.22} />
+                <stop offset="100%" stopColor={C_MAUVE} stopOpacity={0}    />
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 5" stroke="rgba(255,255,255,0.07)" />
-            <XAxis
-              dataKey="label"
-              tick={{ fill: "rgba(255,255,255,0.35)", fontSize: 9 }}
-              axisLine={false} tickLine={false}
-            />
-            <YAxis
-              tick={{ fill: "rgba(255,255,255,0.35)", fontSize: 9 }}
-              axisLine={false} tickLine={false}
-              width={28}
-              allowDecimals={false}
-            />
+            <XAxis dataKey="label" tick={{ fill: "rgba(255,255,255,0.35)", fontSize: 9 }} axisLine={false} tickLine={false} />
+            <YAxis tick={{ fill: "rgba(255,255,255,0.35)", fontSize: 9 }} axisLine={false} tickLine={false} width={28} allowDecimals={false} />
             <RechartsTip
               contentStyle={RC_TIP.contentStyle}
               labelStyle={RC_TIP.labelStyle}
@@ -277,25 +309,15 @@ function VisitsChart({
               cursor={RC_TIP.cursor}
               formatter={(v: number, name: string) => [fmtN(v), name]}
             />
-            <Area
-              type="monotone"
-              dataKey="leads"
-              name="Leads reçus"
-              stroke={C_BLUE}
-              strokeWidth={2}
-              fill={`url(#vca-${uid})`}
-              dot={false}
-            />
-            <Area
-              type="monotone"
-              dataKey="convertis"
-              name="Convertis"
-              stroke={C_SAGE}
-              strokeWidth={1.5}
-              strokeDasharray="4 2"
-              fill={`url(#vcb-${uid})`}
-              dot={false}
-            />
+            {showVA && (
+              <Area type="monotone" dataKey="visiteurs" name="Visiteurs web"
+                stroke={C_MAUVE} strokeWidth={1.5} fill={`url(#vcc-${uid})`} dot={false} connectNulls />
+            )}
+            <Area type="monotone" dataKey="leads"     name="Leads reçus"
+              stroke={C_BLUE}  strokeWidth={2}   fill={`url(#vca-${uid})`} dot={false} />
+            <Area type="monotone" dataKey="convertis" name="Convertis"
+              stroke={C_SAGE}  strokeWidth={1.5} strokeDasharray="4 2"
+              fill={`url(#vcb-${uid})`} dot={false} />
           </AreaChart>
         </ResponsiveContainer>
       </div>
@@ -310,27 +332,24 @@ function HorizontalFunnel({ leads }: { leads: Lead[] }) {
   const appele   = leads.filter(l => ["appele","traite","converti"].includes(l.status)).length;
   const traite   = leads.filter(l => ["traite","converti"].includes(l.status)).length;
   const converti = leads.filter(l => l.status === "converti").length;
+  const globalRate = total === 0 ? 0 : (converti / total) * 100;
 
   const steps = [
-    { Icon: Inbox,    label: "Lead reçu",   sub: "Total",     count: total,    color: C_BLUE },
-    { Icon: Activity, label: "Contacté",    sub: "Appelé",    count: appele,   color: C_TEAL },
-    { Icon: FileText, label: "Traité",      sub: "Dossier",   count: traite,   color: C_GOLD },
-    { Icon: Target,   label: "Converti",    sub: "Client",    count: converti, color: C_SAGE },
+    { Icon: Inbox,    label: "Lead reçu",  sub: "Total",   count: total,    color: C_BLUE },
+    { Icon: Activity, label: "Contacté",   sub: "Appelé",  count: appele,   color: C_TEAL },
+    { Icon: FileText, label: "Traité",     sub: "Dossier", count: traite,   color: C_GOLD },
+    { Icon: Target,   label: "Converti",   sub: "Client",  count: converti, color: C_SAGE },
   ] as const;
-
-  const globalRate = total === 0 ? 0 : (converti / total) * 100;
 
   return (
     <div>
       <p className="text-[14px] font-medium mb-5" style={{ color: T_HEADING }}>Tunnel de conversion</p>
-
       {total === 0 ? (
         <div className="flex items-center justify-center h-28">
           <p className="text-[12px]" style={{ color: T_MUTED }}>Aucun lead sur la période</p>
         </div>
       ) : (
         <>
-          {/* Steps */}
           <div className="flex items-start gap-1">
             {steps.map((step, i) => {
               const passRate = i === 0 ? null
@@ -339,27 +358,19 @@ function HorizontalFunnel({ leads }: { leads: Lead[] }) {
               return (
                 <div key={step.label} className="flex items-start gap-1 flex-1">
                   <div className="flex-1 flex flex-col items-center gap-1.5">
-                    {/* Icon */}
                     <div
                       className="w-10 h-10 rounded-xl flex items-center justify-center"
                       style={{ background: cA(step.color, 0.16), border: `1px solid ${cA(step.color, 0.30)}` }}
                     >
                       <step.Icon className="w-4 h-4" style={{ color: step.color }} />
                     </div>
-                    {/* Label */}
-                    <p className="text-[10px] font-medium text-center leading-tight" style={{ color: T_HEADING }}>
-                      {step.label}
-                    </p>
+                    <p className="text-[10px] font-medium text-center leading-tight" style={{ color: T_HEADING }}>{step.label}</p>
                     <p className="text-[9px] text-center" style={{ color: T_MUTED }}>{step.sub}</p>
-                    {/* Count */}
                     <p className="text-[18px] font-heading font-light tabular-nums" style={{ color: step.color }}>
                       {fmtN(step.count)}
                     </p>
-                    {/* Pass rate */}
                     {passRate !== null && (
-                      <p className="text-[10px] tabular-nums" style={{ color: T_MUTED }}>
-                        {passRate} %
-                      </p>
+                      <p className="text-[10px] tabular-nums" style={{ color: T_MUTED }}>{passRate} %</p>
                     )}
                   </div>
                   {i < steps.length - 1 && (
@@ -372,7 +383,6 @@ function HorizontalFunnel({ leads }: { leads: Lead[] }) {
             })}
           </div>
 
-          {/* Global rate */}
           <div className="mt-4 pt-3" style={{ borderTop: `1px solid ${INNER_BORDER}` }}>
             <div className="flex items-center justify-between mb-1.5">
               <span className="text-[10px]" style={{ color: T_MUTED }}>Taux de conversion global</span>
@@ -415,16 +425,10 @@ function TrafficSourcesTable({ leads }: { leads: Lead[] }) {
           {rows.slice(0, 5).map((r, i) => (
             <div key={r.name}>
               <div className="flex items-center gap-2 mb-0.5">
-                <span className="text-[10px] w-3 text-right tabular-nums" style={{ color: T_MUTED }}>
-                  {i + 1}
-                </span>
+                <span className="text-[10px] w-3 text-right tabular-nums" style={{ color: T_MUTED }}>{i + 1}</span>
                 <span className="flex-1 text-[11px] truncate" style={{ color: T_SECONDARY }}>{r.name}</span>
-                <span className="text-[11px] tabular-nums font-medium" style={{ color: T_HEADING }}>
-                  {fmtN(r.count)}
-                </span>
-                <span className="text-[10px] w-11 text-right tabular-nums" style={{ color: T_MUTED }}>
-                  {fmtPct(r.pct, 1)}
-                </span>
+                <span className="text-[11px] tabular-nums font-medium" style={{ color: T_HEADING }}>{fmtN(r.count)}</span>
+                <span className="text-[10px] w-11 text-right tabular-nums" style={{ color: T_MUTED }}>{fmtPct(r.pct, 1)}</span>
               </div>
               <div className="ml-5 h-1 rounded-full overflow-hidden" style={{ background: INNER_BG }}>
                 <div
@@ -436,18 +440,16 @@ function TrafficSourcesTable({ leads }: { leads: Lead[] }) {
           ))}
         </div>
       )}
-      <p className="mt-3 text-[9px]" style={{ color: T_MUTED }}>Sources des leads · Vercel Analytics requis pour le trafic web réel</p>
+      <p className="mt-3 text-[9px]" style={{ color: T_MUTED }}>
+        Sources des leads · Vercel Analytics requis pour le trafic web réel
+      </p>
     </div>
   );
 }
 
 // ── TopPagesTable ──────────────────────────────────────────────────────────────
 
-function TopPagesTable({
-  articles,
-}: {
-  articles: { id: string; title: string; views: number }[];
-}) {
+function TopPagesTable({ articles }: { articles: { id: string; title: string; views: number }[] }) {
   const top = useMemo(
     () => [...articles].filter(a => a.views > 0).sort((a, b) => b.views - a.views).slice(0, 5),
     [articles]
@@ -462,28 +464,22 @@ function TopPagesTable({
         <div className="space-y-2.5">
           {top.map((a, i) => (
             <div key={a.id} className="flex items-center gap-2">
-              <span className="text-[10px] w-3 text-right tabular-nums flex-shrink-0" style={{ color: T_MUTED }}>
-                {i + 1}
-              </span>
-              <span className="flex-1 text-[11px] truncate leading-snug" style={{ color: T_SECONDARY }}>
-                {a.title}
-              </span>
-              <span className="text-[11px] tabular-nums font-medium flex-shrink-0" style={{ color: T_HEADING }}>
-                {fmtN(a.views)}
-              </span>
+              <span className="text-[10px] w-3 text-right tabular-nums flex-shrink-0" style={{ color: T_MUTED }}>{i + 1}</span>
+              <span className="flex-1 text-[11px] truncate leading-snug" style={{ color: T_SECONDARY }}>{a.title}</span>
+              <span className="text-[11px] tabular-nums font-medium flex-shrink-0" style={{ color: T_HEADING }}>{fmtN(a.views)}</span>
             </div>
           ))}
         </div>
       )}
       <p className="mt-3 text-[9px]" style={{ color: T_MUTED }}>
         <Eye className="w-2.5 h-2.5 inline mr-0.5" />
-        Vues articles — toutes périodes
+        Vues cumulées · incrémentées à chaque lecture d'article
       </p>
     </div>
   );
 }
 
-// ── PostHog event panels ───────────────────────────────────────────────────────
+// ── PHEventPanel ───────────────────────────────────────────────────────────────
 
 function PHEventPanel({
   title, icon: Icon, type, from, to,
@@ -491,15 +487,20 @@ function PHEventPanel({
   title: string; icon: React.ElementType;
   type: "clicks" | "cta"; from: string; to: string;
 }) {
+  // useState MUST be at the top level — never inside a conditional
+  const [open, setOpen] = useState(false);
+
   const { data, isLoading } = useQuery<PHResponse>({
     queryKey: ["posthog", type, from, to],
-    queryFn: () => fetchPosthog(type, from, to),
-    staleTime: 1000 * 60 * 5,
+    queryFn:  () => fetchPosthog(type, from, to),
+    staleTime: REFETCH_MS,
+    refetchInterval: REFETCH_MS,
   });
 
-  const configured = data && "configured" in data ? data.configured : undefined;
+  const configured = data ? data.configured : undefined;
   const results: PHResult[] = (configured && "results" in data && data.results) ? data.results : [];
   const total = results.reduce((s, r) => s + (r.count ?? 0), 0);
+  const maxCount = Math.max(...results.map(r => r.count), 1);
 
   if (isLoading) {
     return (
@@ -513,7 +514,6 @@ function PHEventPanel({
   }
 
   if (configured === false) {
-    const [open, setOpen] = useState(false);
     return (
       <div>
         <p className="text-[13px] font-medium mb-3" style={{ color: T_HEADING }}>{title}</p>
@@ -528,10 +528,14 @@ function PHEventPanel({
             <Icon className="w-4 h-4" style={{ color: C_GOLD }} />
           </div>
           <p className="text-[10px] leading-relaxed" style={{ color: T_MUTED }}>
-            Nécessite <strong style={{ color: T_SECONDARY }}>POSTHOG_PERSONAL_API_KEY</strong> et <strong style={{ color: T_SECONDARY }}>POSTHOG_PROJECT_ID</strong> dans les variables d'env Vercel.
+            Nécessite{" "}
+            <strong style={{ color: T_SECONDARY }}>POSTHOG_PERSONAL_API_KEY</strong>
+            {" "}et{" "}
+            <strong style={{ color: T_SECONDARY }}>POSTHOG_PROJECT_ID</strong>
+            {" "}dans les variables Vercel.
           </p>
           <button
-            onClick={() => setOpen(!open)}
+            onClick={() => setOpen(o => !o)}
             className="flex items-center gap-1 text-[10px] font-medium"
             style={{ color: C_TEAL }}
           >
@@ -544,7 +548,7 @@ function PHEventPanel({
                 className="rounded-lg px-3 py-2 font-mono text-[9px] overflow-x-auto leading-loose"
                 style={{ background: "hsl(224 58% 8%)", border: `1px solid ${INNER_BORDER}`, color: T_SECONDARY, whiteSpace: "pre" }}
               >
-                {`POSTHOG_PERSONAL_API_KEY=phx_...\nPOSTHOG_PROJECT_ID=<votre-id>`}
+                {"POSTHOG_PERSONAL_API_KEY=phx_...\nPOSTHOG_PROJECT_ID=<votre-id>"}
               </div>
               <a
                 href="https://eu.posthog.com/settings/user-api-keys"
@@ -561,15 +565,11 @@ function PHEventPanel({
     );
   }
 
-  const maxCount = Math.max(...results.map(r => r.count), 1);
-
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
         <p className="text-[13px] font-medium" style={{ color: T_HEADING }}>{title}</p>
-        <span className="text-[11px] tabular-nums font-medium" style={{ color: T_SECONDARY }}>
-          {fmtN(total)}
-        </span>
+        <span className="text-[11px] tabular-nums font-medium" style={{ color: T_SECONDARY }}>{fmtN(total)}</span>
       </div>
       {results.length === 0 ? (
         <p className="text-[11px] py-4 text-center" style={{ color: T_MUTED }}>Aucun événement sur la période</p>
@@ -578,18 +578,19 @@ function PHEventPanel({
           {results.map((r, i) => (
             <div key={r.event}>
               <div className="flex items-center gap-2 mb-0.5">
-                <span className="text-[10px] w-3 text-right tabular-nums flex-shrink-0" style={{ color: T_MUTED }}>
-                  {i + 1}
-                </span>
+                <span className="text-[10px] w-3 text-right tabular-nums flex-shrink-0" style={{ color: T_MUTED }}>{i + 1}</span>
                 <span className="flex-1 text-[11px] truncate" style={{ color: T_SECONDARY }}>{r.name}</span>
-                <span className="text-[11px] tabular-nums font-medium flex-shrink-0" style={{ color: T_HEADING }}>
-                  {fmtN(r.count)}
-                </span>
+                <span className="text-[11px] tabular-nums font-medium flex-shrink-0" style={{ color: T_HEADING }}>{fmtN(r.count)}</span>
               </div>
               <div className="ml-5 h-1 rounded-full overflow-hidden" style={{ background: INNER_BG }}>
                 <div
                   className="h-full rounded-full"
-                  style={{ width: `${(r.count / maxCount) * 100}%`, background: type === "clicks" ? C_TEAL : C_MAUVE, opacity: 0.72, transition: "width 600ms ease" }}
+                  style={{
+                    width: `${(r.count / maxCount) * 100}%`,
+                    background: type === "clicks" ? C_TEAL : C_MAUVE,
+                    opacity: 0.72,
+                    transition: "width 600ms ease",
+                  }}
                 />
               </div>
             </div>
@@ -618,10 +619,10 @@ function DiagnosticSteps({ leads }: { leads: Lead[] }) {
   const convRate   = total === 0 ? 0 : (converti / total) * 100;
 
   const steps = [
-    { label: "Soumis",         count: total,      pct: 100 },
-    { label: "En traitement",  count: traitement, pct: total === 0 ? 0 : Math.round((traitement / total) * 100) },
-    { label: "Converti",       count: converti,   pct: total === 0 ? 0 : Math.round((converti / total) * 100) },
-    { label: "Archivé",        count: archive,    pct: total === 0 ? 0 : Math.round((archive / total) * 100) },
+    { label: "Soumis",        count: total,      pct: 100 },
+    { label: "En traitement", count: traitement, pct: total === 0 ? 0 : Math.round((traitement / total) * 100) },
+    { label: "Converti",      count: converti,   pct: total === 0 ? 0 : Math.round((converti / total) * 100) },
+    { label: "Archivé",       count: archive,    pct: total === 0 ? 0 : Math.round((archive / total) * 100) },
   ];
 
   return (
@@ -634,7 +635,6 @@ function DiagnosticSteps({ leads }: { leads: Lead[] }) {
         </div>
       ) : (
         <>
-          {/* Step bar */}
           <div className="flex items-end gap-1 mb-4">
             {steps.map((step, i) => (
               <div key={step.label} className="flex-1 flex flex-col items-center gap-1.5">
@@ -642,8 +642,8 @@ function DiagnosticSteps({ leads }: { leads: Lead[] }) {
                   className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-semibold flex-shrink-0"
                   style={{
                     background: i === 0 ? C_BLUE : step.count > 0 ? cA(C_TEAL, 0.22) : INNER_BG,
-                    color: i === 0 ? "white" : step.count > 0 ? C_TEAL : T_MUTED,
-                    border: `1px solid ${i === 0 ? C_BLUE : step.count > 0 ? cA(C_TEAL, 0.40) : INNER_BORDER}`,
+                    color:      i === 0 ? "white" : step.count > 0 ? C_TEAL : T_MUTED,
+                    border:     `1px solid ${i === 0 ? C_BLUE : step.count > 0 ? cA(C_TEAL, 0.40) : INNER_BORDER}`,
                   }}
                 >
                   {i + 1}
@@ -652,20 +652,15 @@ function DiagnosticSteps({ leads }: { leads: Lead[] }) {
                 <p className="text-[14px] font-heading font-light tabular-nums" style={{ color: T_HEADING }}>
                   {fmtN(step.count)}
                 </p>
-                {i > 0 && (
-                  <p className="text-[9px] tabular-nums" style={{ color: T_MUTED }}>{step.pct} %</p>
-                )}
+                {i > 0 && <p className="text-[9px] tabular-nums" style={{ color: T_MUTED }}>{step.pct} %</p>}
               </div>
             ))}
           </div>
 
-          {/* Conversion bar */}
           <div className="rounded-xl p-3" style={{ background: INNER_BG, border: `1px solid ${INNER_BORDER}` }}>
             <div className="flex items-center justify-between mb-1.5">
               <span className="text-[10px]" style={{ color: T_MUTED }}>Taux de conversion post-diagnostic</span>
-              <span className="text-[12px] font-medium tabular-nums" style={{ color: C_SAGE }}>
-                {fmtPct(convRate, 0)}
-              </span>
+              <span className="text-[12px] font-medium tabular-nums" style={{ color: C_SAGE }}>{fmtPct(convRate, 0)}</span>
             </div>
             <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.06)" }}>
               <div
@@ -674,10 +669,6 @@ function DiagnosticSteps({ leads }: { leads: Lead[] }) {
               />
             </div>
           </div>
-
-          <p className="mt-2.5 text-[9px] leading-relaxed" style={{ color: T_MUTED }}>
-            Suivi par étape individuelle disponible avec PostHog (tracking d'événements).
-          </p>
         </>
       )}
     </div>
@@ -686,19 +677,58 @@ function DiagnosticSteps({ leads }: { leads: Lead[] }) {
 
 // ── PrivacyStatusCard ──────────────────────────────────────────────────────────
 
-function PrivacyStatusCard() {
+function PrivacyStatusCard({
+  vaConfigured, phConfigured,
+}: {
+  vaConfigured: boolean | null; phConfigured: boolean | null;
+}) {
   const checks = [
-    { ok: true,  warn: false, label: "Authentification admin requise",      detail: "ProtectedRoute + table admin_users Supabase" },
-    { ok: true,  warn: false, label: "Données sensibles hors analytics",     detail: "Aucun nom/email/données patrimoniales envoyés à un outil tiers" },
-    { ok: true,  warn: false, label: "Clés privées hors bundle client",      detail: "service_role dans les Edge Functions Vercel uniquement" },
-    { ok: false, warn: false, label: "Fournisseur analytics configuré",      detail: "VERCEL_ACCESS_TOKEN absent — trafic non collecté" },
-    { ok: false, warn: true,  label: "Consentement cookies vérifié",         detail: "CookieBanner présent, à tester avec analytics actif" },
+    {
+      ok: true, warn: false,
+      label:  "Authentification admin requise",
+      detail: "ProtectedRoute + table admin_users Supabase",
+    },
+    {
+      ok: true, warn: false,
+      label:  "Données sensibles hors analytics",
+      detail: "Aucun nom/email/données patrimoniales envoyés à un outil tiers",
+    },
+    {
+      ok: true, warn: false,
+      label:  "Clés privées hors bundle client",
+      detail: "service_role, POSTHOG_PERSONAL_API_KEY, VERCEL_ACCESS_TOKEN côté serveur uniquement",
+    },
+    {
+      ok:   vaConfigured === true,
+      warn: vaConfigured === null,
+      label:  "Vercel Analytics configuré",
+      detail: vaConfigured === true
+        ? "VERCEL_ACCESS_TOKEN présent — trafic collecté"
+        : vaConfigured === null
+        ? "Vérification en cours…"
+        : "VERCEL_ACCESS_TOKEN absent — visiteurs/sessions non disponibles",
+    },
+    {
+      ok:   phConfigured === true,
+      warn: phConfigured === null,
+      label:  "PostHog configuré",
+      detail: phConfigured === true
+        ? "POSTHOG_PERSONAL_API_KEY présent — événements CTA actifs"
+        : phConfigured === null
+        ? "Vérification en cours…"
+        : "POSTHOG_PERSONAL_API_KEY absent — clics CTA non trackés",
+    },
+    {
+      ok: false, warn: true,
+      label:  "Consentement cookies vérifié",
+      detail: "CookieBanner présent — à valider juridiquement (DPO) avec analytics actif",
+    },
   ];
 
   const passed = checks.filter(c => c.ok).length;
-  const statusColor = passed === checks.length ? C_SAGE : passed >= 3 ? C_GOLD : C_CORAL;
-  const statusLabel = passed === checks.length ? "Configuré" : passed >= 3 ? "Partiel" : "Incomplet";
-  const StatusIcon  = passed === checks.length ? CheckCircle2 : passed >= 3 ? AlertCircle : XCircle;
+  const statusColor = passed >= checks.length - 1 ? C_SAGE : passed >= 3 ? C_GOLD : C_CORAL;
+  const statusLabel = passed >= checks.length - 1 ? "Opérationnel" : passed >= 3 ? "Partiel" : "Incomplet";
+  const StatusIcon  = passed >= checks.length - 1 ? CheckCircle2 : passed >= 3 ? AlertCircle : XCircle;
 
   return (
     <div>
@@ -716,9 +746,11 @@ function PrivacyStatusCard() {
       <div className="space-y-2.5">
         {checks.map((c, i) => (
           <div key={i} className="flex items-start gap-2.5">
-            {c.ok    ? <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" style={{ color: C_SAGE }} />
-             : c.warn ? <AlertCircle  className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" style={{ color: C_GOLD }} />
-                      : <XCircle     className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" style={{ color: C_CORAL }} />}
+            {c.ok
+              ? <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" style={{ color: C_SAGE }} />
+              : c.warn
+              ? <AlertCircle  className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" style={{ color: C_GOLD }} />
+              : <XCircle      className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" style={{ color: C_CORAL }} />}
             <div>
               <p className="text-[11px] font-medium" style={{ color: T_HEADING }}>{c.label}</p>
               <p className="text-[10px]" style={{ color: T_MUTED }}>{c.detail}</p>
@@ -746,35 +778,77 @@ function Sk({ h }: { h: number }) {
 // ── Main page ──────────────────────────────────────────────────────────────────
 
 export default function AdminAnalytics() {
-  const [sp, setSp] = useSearchParams();
+  const [sp, setSp]   = useSearchParams();
+  const [refreshing, setRefreshing] = useState(false);
+  const qc            = useQueryClient();
+
   const rangeParam = parseInt(sp.get("range") ?? "30", 10);
-  const range = RANGE_OPTIONS.find(r => r.value === rangeParam)?.value ?? 30;
-  const setRange = (d: number) => setSp({ range: String(d) }, { replace: true });
+  const range      = RANGE_OPTIONS.find(r => r.value === rangeParam)?.value ?? 30;
+  const setRange   = (d: number) => setSp({ range: String(d) }, { replace: true });
 
-  const { data: leads    = [], isLoading: ll } = useQuery({ queryKey: ["leads"],    queryFn: getLeads    });
-  const { data: articles = [], isLoading: al } = useQuery({ queryKey: ["articles"], queryFn: getArticles });
-  const isLoading = ll || al;
+  const { from, to } = getPeriodDates(range);
 
+  // ── Supabase ──
+  const { data: leads    = [], isLoading: ll } = useQuery({
+    queryKey: ["leads"],
+    queryFn:  getLeads,
+    staleTime: REFETCH_MS,
+    refetchInterval: REFETCH_MS,
+  });
+  const { data: articles = [], isLoading: al } = useQuery({
+    queryKey: ["articles"],
+    queryFn:  getArticles,
+    staleTime: REFETCH_MS,
+    refetchInterval: REFETCH_MS,
+  });
+
+  // ── Vercel Analytics ──
+  const { data: vaVisitors,  isLoading: vaVL } = useQuery({
+    queryKey: ["va-visitors", from, to],
+    queryFn:  () => fetchVercelMetric("visitor-counts", from, to),
+    staleTime: REFETCH_MS,
+    refetchInterval: REFETCH_MS,
+  });
+  const { data: vaPageviews, isLoading: vaPVL } = useQuery({
+    queryKey: ["va-pageviews", from, to],
+    queryFn:  () => fetchVercelMetric("page-views", from, to),
+    staleTime: REFETCH_MS,
+    refetchInterval: REFETCH_MS,
+  });
+
+  // ── Derived ──
   const currentLeads  = useMemo(() => filterByPeriod(leads, range, 0), [leads, range]);
   const previousLeads = useMemo(() => filterByPeriod(leads, range, 1), [leads, range]);
   const sparkBuckets  = useMemo(() => bucketLeadsByDay(leads, 7), [leads]);
   const chartBuckets  = useMemo(() => bucketLeadsByDay(currentLeads, range), [currentLeads, range]);
 
+  const vaConfigured  = vaVisitors  ? vaVisitors.configured  : null;
+  const phConfigured  = null; // resolved inside PHEventPanel per-query
+
+  const visitorsTotal  = vaSum(vaVisitors);
+  const pageviewsTotal = vaSum(vaPageviews);
+  const vaChartSeries  = vaSeries(vaPageviews);
+
   const sparkTotals    = sparkBuckets.map(b => b.total);
   const sparkConvertis = sparkBuckets.map(b => b.converti);
+  const sparkVA        = vaSeries(vaVisitors).slice(-7);
 
   const kpi = useMemo(() => {
-    const c   = currentLeads.length;
-    const p   = previousLeads.length;
-    const cc  = currentLeads .filter(l => l.status === "converti").length;
-    const pc  = previousLeads.filter(l => l.status === "converti").length;
-    return {
-      leads:    { value: c,  prev: p  },
-      converti: { value: cc, prev: pc },
-    };
+    const c  = currentLeads.length;
+    const p  = previousLeads.length;
+    const cc = currentLeads .filter(l => l.status === "converti").length;
+    const pc = previousLeads.filter(l => l.status === "converti").length;
+    return { leads: { value: c, prev: p }, converti: { value: cc, prev: pc } };
   }, [currentLeads, previousLeads]);
 
-  const { from } = getPeriodDates(range);
+  const isLoading = ll || al;
+
+  // ── Manual refresh ──
+  const handleRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await qc.invalidateQueries();
+    setTimeout(() => setRefreshing(false), 800);
+  }, [qc]);
 
   return (
     <div className="min-h-screen pb-16">
@@ -787,27 +861,42 @@ export default function AdminAnalytics() {
               Analytics & Tracking
             </h1>
             <p className="text-[12px] font-light" style={{ color: T_SECONDARY }}>
-              Suivez la performance de votre site et l'expérience client
+              Mise à jour automatique toutes les 5 min · données Supabase, Vercel Analytics, PostHog
             </p>
           </div>
-          <div
-            className="flex items-center gap-1 rounded-xl p-1"
-            style={{ background: INNER_BG, border: `1px solid ${INNER_BORDER}` }}
-          >
-            {RANGE_OPTIONS.map(opt => (
-              <button
-                key={opt.value}
-                onClick={() => setRange(opt.value)}
-                className="px-4 py-1.5 rounded-lg text-[12px] font-medium transition-all duration-150"
-                style={{
-                  background: range === opt.value ? cA(C_BLUE, 0.22) : "transparent",
-                  color:      range === opt.value ? C_BLUE            : T_MUTED,
-                  border:     range === opt.value ? `1px solid ${cA(C_BLUE, 0.40)}` : "1px solid transparent",
-                }}
-              >
-                {opt.label}
-              </button>
-            ))}
+
+          <div className="flex items-center gap-3">
+            {/* Refresh button */}
+            <button
+              onClick={handleRefresh}
+              disabled={refreshing}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-[12px] font-medium transition-all duration-150 disabled:opacity-50"
+              style={{ background: INNER_BG, border: `1px solid ${INNER_BORDER}`, color: T_SECONDARY }}
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? "animate-spin" : ""}`} />
+              Rafraîchir
+            </button>
+
+            {/* Period selector */}
+            <div
+              className="flex items-center gap-1 rounded-xl p-1"
+              style={{ background: INNER_BG, border: `1px solid ${INNER_BORDER}` }}
+            >
+              {RANGE_OPTIONS.map(opt => (
+                <button
+                  key={opt.value}
+                  onClick={() => setRange(opt.value)}
+                  className="px-4 py-1.5 rounded-lg text-[12px] font-medium transition-all duration-150"
+                  style={{
+                    background: range === opt.value ? cA(C_BLUE, 0.22) : "transparent",
+                    color:      range === opt.value ? C_BLUE            : T_MUTED,
+                    border:     range === opt.value ? `1px solid ${cA(C_BLUE, 0.40)}` : "1px solid transparent",
+                  }}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -817,34 +906,38 @@ export default function AdminAnalytics() {
         {/* ── ROW 1 · 4 KPI cards ── */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <MetricCard
-            label="Visiteurs"
-            value={null}
-            sparkValues={sparkTotals}
+            label="Visiteurs uniques"
+            loading={vaVL}
+            value={visitorsTotal !== null ? fmtN(visitorsTotal) : null}
+            sparkValues={sparkVA.length > 0 ? sparkVA : sparkTotals}
             color={C_BLUE}
-            tooltip="Visiteurs uniques — nécessite Vercel Analytics (VERCEL_ACCESS_TOKEN)"
+            tooltip="Visiteurs uniques · Vercel Analytics. Nécessite VERCEL_ACCESS_TOKEN."
           />
           <MetricCard
-            label="Sessions"
-            value={null}
-            sparkValues={sparkTotals.map(v => Math.round(v * 1.45))}
+            label="Pages vues"
+            loading={vaPVL}
+            value={pageviewsTotal !== null ? fmtN(pageviewsTotal) : null}
+            sparkValues={sparkVA.length > 0 ? sparkVA.map(v => Math.round(v * 1.45)) : sparkTotals.map(v => Math.round(v * 1.45))}
             color={C_TEAL}
-            tooltip="Sessions web — nécessite Vercel Analytics"
+            tooltip="Pages vues · Vercel Analytics. Nécessite VERCEL_ACCESS_TOKEN."
           />
           <MetricCard
             label="Conversions"
-            value={isLoading ? "—" : fmtN(kpi.converti.value)}
-            delta={isLoading ? undefined : calcDelta(kpi.converti.value, kpi.converti.prev)}
+            loading={ll}
+            value={ll ? null : fmtN(kpi.converti.value)}
+            delta={ll ? undefined : calcDelta(kpi.converti.value, kpi.converti.prev)}
             sparkValues={sparkConvertis}
             color={C_SAGE}
-            tooltip="Leads au statut « Converti » sur la période."
+            tooltip="Leads au statut « Converti » sur la période · Supabase."
           />
           <MetricCard
-            label="Rendez-vous pris"
-            value={isLoading ? "—" : fmtN(kpi.leads.value)}
-            delta={isLoading ? undefined : calcDelta(kpi.leads.value, kpi.leads.prev)}
+            label="Leads reçus"
+            loading={ll}
+            value={ll ? null : fmtN(kpi.leads.value)}
+            delta={ll ? undefined : calcDelta(kpi.leads.value, kpi.leads.prev)}
             sparkValues={sparkTotals}
             color={C_GOLD}
-            tooltip="Total des leads reçus sur la période — utilisé comme proxy de rendez-vous."
+            tooltip="Total des leads reçus sur la période · Supabase."
           />
         </div>
 
@@ -853,7 +946,11 @@ export default function AdminAnalytics() {
           <div className="col-span-5 lg:col-span-3 rounded-2xl p-5" style={{ ...GLASS }}>
             {isLoading
               ? <><Sk h={24} /><div className="mt-4"><Sk h={200} /></div></>
-              : <VisitsChart buckets={chartBuckets} />
+              : <VisitsChart
+                  buckets={chartBuckets}
+                  vaSeries={vaChartSeries}
+                  vaConfigured={vaConfigured === true}
+                />
             }
           </div>
           <div className="col-span-5 lg:col-span-2 rounded-2xl p-5" style={{ ...GLASS }}>
@@ -870,22 +967,10 @@ export default function AdminAnalytics() {
             {al ? <Sk h={160} /> : <TopPagesTable articles={articles} />}
           </div>
           <div className="rounded-2xl p-4" style={{ ...GLASS }}>
-            <PHEventPanel
-              title="Clics principaux"
-              icon={MousePointerClick}
-              type="clicks"
-              from={from}
-              to={getPeriodDates(range).to}
-            />
+            <PHEventPanel title="Clics principaux"   icon={MousePointerClick} type="clicks" from={from} to={to} />
           </div>
           <div className="rounded-2xl p-4" style={{ ...GLASS }}>
-            <PHEventPanel
-              title="Performance des CTA"
-              icon={BarChart2}
-              type="cta"
-              from={from}
-              to={getPeriodDates(range).to}
-            />
+            <PHEventPanel title="Performance des CTA" icon={BarChart2}         type="cta"    from={from} to={to} />
           </div>
         </div>
 
@@ -895,7 +980,7 @@ export default function AdminAnalytics() {
             {isLoading ? <Sk h={220} /> : <DiagnosticSteps leads={currentLeads} />}
           </div>
           <div className="col-span-5 lg:col-span-2 rounded-2xl p-5" style={{ ...GLASS }}>
-            <PrivacyStatusCard />
+            <PrivacyStatusCard vaConfigured={vaConfigured} phConfigured={phConfigured} />
           </div>
         </div>
 
