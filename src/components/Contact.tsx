@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { posthog } from "@/lib/posthog";
 
 export default function Contact() {
   return (
@@ -44,6 +45,7 @@ export default function Contact() {
                 <Link
                   to="/contact"
                   className="group flex items-center justify-between w-full py-4 px-6 btn-primary-glass text-sm font-medium tracking-wide reflection-sweep"
+                  onClick={() => posthog.capture("contact_cta_clicked", { cta: "prendre_rendez_vous" })}
                 >
                   <span>Prendre rendez-vous</span>
                   <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -53,6 +55,7 @@ export default function Contact() {
                 <Link
                   to="/bilan-patrimonial-bordeaux"
                   className="group flex items-center justify-between w-full py-4 px-6 glass border border-foreground/10 text-foreground rounded-full text-sm font-medium tracking-wide hover:border-foreground/20 transition-all duration-300"
+                  onClick={() => posthog.capture("contact_cta_clicked", { cta: "bilan_patrimonial" })}
                 >
                   <span>Demander un bilan patrimonial</span>
                   <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -62,6 +65,7 @@ export default function Contact() {
                 <Link
                   to="/contact"
                   className="group flex items-center justify-between w-full py-4 px-6 glass border border-foreground/10 text-foreground rounded-full text-sm font-medium tracking-wide hover:border-foreground/20 transition-all duration-300"
+                  onClick={() => posthog.capture("contact_cta_clicked", { cta: "etre_rappele" })}
                 >
                   <span>Être rappelé</span>
                   <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>

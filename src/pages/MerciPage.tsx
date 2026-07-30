@@ -1,8 +1,10 @@
 import { Link, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 import { motion } from "framer-motion";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Seo from "@/components/Seo";
+import { posthog } from "@/lib/posthog";
 
 /**
  * Page de confirmation après envoi du formulaire de contact ou
@@ -13,6 +15,12 @@ export default function MerciPage() {
     state?: { name?: string; subject?: "contact" | "ressource"; resourceTitle?: string };
   };
   const isResource = state?.subject === "ressource";
+
+  useEffect(() => {
+    posthog.capture("merci_page_viewed", {
+      subject: state?.subject ?? "contact",
+    });
+  }, []);
 
   return (
     <>

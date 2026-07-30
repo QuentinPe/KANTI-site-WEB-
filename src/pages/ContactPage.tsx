@@ -1,6 +1,7 @@
 ﻿import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createLead } from "@/lib/leadsService";
+import { posthog } from "@/lib/posthog";
 import { z } from "zod";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
@@ -181,6 +182,12 @@ export default function ContactPage() {
         body: JSON.stringify(parsed.data),
       });
       if (!res.ok) throw new Error("server_error");
+      posthog.capture("contact_form_submitted", {
+        conseiller: parsed.data.conseiller || undefined,
+        format: parsed.data.format || undefined,
+        timing: parsed.data.timing || undefined,
+        sujet: parsed.data.sujet || undefined,
+      });
       navigate("/merci", { state: { name: parsed.data.nom.split(" ")[0], subject: "contact" } });
     } catch {
       toast.error("Une erreur est survenue. Veuillez réessayer ou nous appeler directement.");

@@ -6,6 +6,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Seo from "@/components/Seo";
 import { createLead } from "@/lib/leadsService";
+import { posthog } from "@/lib/posthog";
 import {
   RISK_QUESTIONS,
   RISK_SECTIONS,
@@ -39,6 +40,10 @@ export default function ProfilRisquePage() {
   const [pdfGenerating, setPdfGenerating] = useState(false);
 
   const triggerPdfDownload = async () => {
+    posthog.capture("risk_profile_pdf_downloaded", {
+      sri: profile.sri,
+      sri_label: profile.shortLabel,
+    });
     setPdfGenerating(true);
     try {
       await generatePdf(profile, answers);
@@ -65,8 +70,15 @@ export default function ProfilRisquePage() {
   }, [answers]);
 
   const goNext = () => {
-    if (step < total - 1) setStep((s) => s + 1);
-    else setPhase("result");
+    if (step < total - 1) {
+      setStep((s) => s + 1);
+    } else {
+      posthog.capture("risk_profile_quiz_completed", {
+        sri: profile.sri,
+        sri_label: profile.shortLabel,
+      });
+      setPhase("result");
+    }
   };
 
   const handleSelect = (qid: string, score: number, idx: number) => {
@@ -94,7 +106,7 @@ export default function ProfilRisquePage() {
       />
       <Header />
       <main id="main">
-        <ProfilRisqueHero total={total} onStart={() => setPhase("quiz")} />
+        <ProfilRisqueHero total={total} onStart={() => { posthog.capture("risk_profile_quiz_started", { total_questions: total }); setPhase("quiz"); }} />
 
         <section id="profil-risque-quiz" className="section-padding relative overflow-hidden">
           <div
@@ -110,7 +122,7 @@ export default function ProfilRisquePage() {
           <div className="max-w-4xl mx-auto relative z-10">
             <AnimatePresence mode="wait">
               {phase === "intro" && (
-                <Intro key="intro" onStart={() => setPhase("quiz")} total={total} />
+                <Intro key="intro" onStart={() => { posthog.capture("risk_profile_quiz_started", { total_questions: total }); setPhase("quiz"); }} total={total} />
               )}
 
               {phase === "quiz" && current && (
@@ -740,6 +752,10 @@ function SendModal({ profile, onClose, onAfterSend }: { profile: SriProfile; onC
       const sujet = `Profil de risque · SRI ${profile.sri}/7 (${profile.shortLabel})`;
       const message = `${profile.description}\n\nScore précis : ${(profile.sriPrecise ?? profile.sri).toFixed(2)}/7`;
       await createLead({ nom: fullNom, email: email.trim(), telephone: telephone.trim() || null, sujet, message });
+      posthog.capture("risk_profile_sent_to_advisor", {
+        sri: profile.sri,
+        sri_label: profile.shortLabel,
+      });
       try {
         await fetch("/api/contact", {
           method: "POST",

@@ -6,7 +6,7 @@ import {
   Eye, Activity, Target, Inbox, FileText,
   ShieldCheck, CheckCircle2, AlertCircle, XCircle,
   ArrowRight, ExternalLink, Settings, Zap,
-  MousePointerClick, BarChart2,
+  MousePointerClick, BarChart2, Loader2,
 } from "lucide-react";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid,
@@ -21,6 +21,22 @@ import {
   C_BLUE, C_GOLD, C_SAGE, C_CORAL, C_TEAL, C_MAUVE, cA,
 } from "@/lib/adminTheme";
 import type { Lead } from "@/lib/leadsService";
+
+// ── PostHog fetchers ───────────────────────────────────────────────────────────
+
+type PHResult = {
+  event: string; name: string; count: number;
+  series?: number[]; error?: number | string;
+};
+type PHResponse =
+  | { configured: false }
+  | { configured: true; results?: PHResult[]; error?: string };
+
+async function fetchPosthog(type: "clicks" | "cta", from: string, to: string): Promise<PHResponse> {
+  const url = `/api/posthog-proxy?type=${type}&from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`;
+  const res = await fetch(url);
+  return res.json() as Promise<PHResponse>;
+}
 
 // ── Constants ──────────────────────────────────────────────────────────────────
 
@@ -467,55 +483,122 @@ function TopPagesTable({
   );
 }
 
-// ── NotConfiguredCard ──────────────────────────────────────────────────────────
+// ── PostHog event panels ───────────────────────────────────────────────────────
 
-function NotConfiguredCard({
-  title, description, icon: Icon,
+function PHEventPanel({
+  title, icon: Icon, type, from, to,
 }: {
-  title: string; description: string; icon: React.ElementType;
+  title: string; icon: React.ElementType;
+  type: "clicks" | "cta"; from: string; to: string;
 }) {
-  const [open, setOpen] = useState(false);
+  const { data, isLoading } = useQuery<PHResponse>({
+    queryKey: ["posthog", type, from, to],
+    queryFn: () => fetchPosthog(type, from, to),
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const configured = data && "configured" in data ? data.configured : undefined;
+  const results: PHResult[] = (configured && "results" in data && data.results) ? data.results : [];
+  const total = results.reduce((s, r) => s + (r.count ?? 0), 0);
+
+  if (isLoading) {
+    return (
+      <div>
+        <p className="text-[13px] font-medium mb-3" style={{ color: T_HEADING }}>{title}</p>
+        <div className="flex items-center justify-center h-28">
+          <Loader2 className="w-5 h-5 animate-spin" style={{ color: T_MUTED }} />
+        </div>
+      </div>
+    );
+  }
+
+  if (configured === false) {
+    const [open, setOpen] = useState(false);
+    return (
+      <div>
+        <p className="text-[13px] font-medium mb-3" style={{ color: T_HEADING }}>{title}</p>
+        <div
+          className="rounded-xl flex flex-col items-center justify-center gap-2.5 py-5 px-3 text-center"
+          style={{ background: INNER_BG, border: `1px dashed ${INNER_BORDER}` }}
+        >
+          <div
+            className="w-9 h-9 rounded-xl flex items-center justify-center"
+            style={{ background: cA(C_GOLD, 0.14), border: `1px solid ${cA(C_GOLD, 0.28)}` }}
+          >
+            <Icon className="w-4 h-4" style={{ color: C_GOLD }} />
+          </div>
+          <p className="text-[10px] leading-relaxed" style={{ color: T_MUTED }}>
+            Nécessite <strong style={{ color: T_SECONDARY }}>POSTHOG_PERSONAL_API_KEY</strong> et <strong style={{ color: T_SECONDARY }}>POSTHOG_PROJECT_ID</strong> dans les variables d'env Vercel.
+          </p>
+          <button
+            onClick={() => setOpen(!open)}
+            className="flex items-center gap-1 text-[10px] font-medium"
+            style={{ color: C_TEAL }}
+          >
+            <Settings className="w-3 h-3" />
+            {open ? "Fermer" : "Voir les variables"}
+          </button>
+          {open && (
+            <div className="w-full mt-1 text-left">
+              <div
+                className="rounded-lg px-3 py-2 font-mono text-[9px] overflow-x-auto leading-loose"
+                style={{ background: "hsl(224 58% 8%)", border: `1px solid ${INNER_BORDER}`, color: T_SECONDARY, whiteSpace: "pre" }}
+              >
+                {`POSTHOG_PERSONAL_API_KEY=phx_...\nPOSTHOG_PROJECT_ID=<votre-id>`}
+              </div>
+              <a
+                href="https://eu.posthog.com/settings/user-api-keys"
+                target="_blank" rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-[10px] font-medium mt-2"
+                style={{ color: C_BLUE }}
+              >
+                Créer une clé API <ExternalLink className="w-2.5 h-2.5" />
+              </a>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  const maxCount = Math.max(...results.map(r => r.count), 1);
+
   return (
     <div>
-      <p className="text-[13px] font-medium mb-3" style={{ color: T_HEADING }}>{title}</p>
-      <div
-        className="rounded-xl flex flex-col items-center justify-center gap-2.5 py-5 px-3 text-center"
-        style={{ background: INNER_BG, border: `1px dashed ${INNER_BORDER}` }}
-      >
-        <div
-          className="w-9 h-9 rounded-xl flex items-center justify-center"
-          style={{ background: cA(C_GOLD, 0.14), border: `1px solid ${cA(C_GOLD, 0.28)}` }}
-        >
-          <Icon className="w-4 h-4" style={{ color: C_GOLD }} />
-        </div>
-        <p className="text-[10px] leading-relaxed" style={{ color: T_MUTED }}>{description}</p>
-        <button
-          onClick={() => setOpen(!open)}
-          className="flex items-center gap-1 text-[10px] font-medium"
-          style={{ color: C_TEAL }}
-        >
-          <Settings className="w-3 h-3" />
-          {open ? "Fermer" : "Configurer PostHog"}
-        </button>
-        {open && (
-          <div className="w-full mt-1 text-left">
-            <div
-              className="rounded-lg px-3 py-2 font-mono text-[9px] overflow-x-auto leading-loose"
-              style={{ background: "hsl(224 58% 8%)", border: `1px solid ${INNER_BORDER}`, color: T_SECONDARY, whiteSpace: "pre" }}
-            >
-              {`VITE_POSTHOG_KEY=phc_...\nVITE_POSTHOG_HOST=https://eu.posthog.com`}
-            </div>
-            <a
-              href="https://posthog.com"
-              target="_blank" rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-[10px] font-medium mt-2"
-              style={{ color: C_BLUE }}
-            >
-              posthog.com <ExternalLink className="w-2.5 h-2.5" />
-            </a>
-          </div>
-        )}
+      <div className="flex items-center justify-between mb-3">
+        <p className="text-[13px] font-medium" style={{ color: T_HEADING }}>{title}</p>
+        <span className="text-[11px] tabular-nums font-medium" style={{ color: T_SECONDARY }}>
+          {fmtN(total)}
+        </span>
       </div>
+      {results.length === 0 ? (
+        <p className="text-[11px] py-4 text-center" style={{ color: T_MUTED }}>Aucun événement sur la période</p>
+      ) : (
+        <div className="space-y-2">
+          {results.map((r, i) => (
+            <div key={r.event}>
+              <div className="flex items-center gap-2 mb-0.5">
+                <span className="text-[10px] w-3 text-right tabular-nums flex-shrink-0" style={{ color: T_MUTED }}>
+                  {i + 1}
+                </span>
+                <span className="flex-1 text-[11px] truncate" style={{ color: T_SECONDARY }}>{r.name}</span>
+                <span className="text-[11px] tabular-nums font-medium flex-shrink-0" style={{ color: T_HEADING }}>
+                  {fmtN(r.count)}
+                </span>
+              </div>
+              <div className="ml-5 h-1 rounded-full overflow-hidden" style={{ background: INNER_BG }}>
+                <div
+                  className="h-full rounded-full"
+                  style={{ width: `${(r.count / maxCount) * 100}%`, background: type === "clicks" ? C_TEAL : C_MAUVE, opacity: 0.72, transition: "width 600ms ease" }}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+      <p className="mt-3 text-[9px]" style={{ color: T_MUTED }}>
+        Événements PostHog · {from} → {to}
+      </p>
     </div>
   );
 }
@@ -787,17 +870,21 @@ export default function AdminAnalytics() {
             {al ? <Sk h={160} /> : <TopPagesTable articles={articles} />}
           </div>
           <div className="rounded-2xl p-4" style={{ ...GLASS }}>
-            <NotConfiguredCard
+            <PHEventPanel
               title="Clics principaux"
               icon={MousePointerClick}
-              description="Nécessite un outil de tracking d'événements pour capturer les clics sur les boutons."
+              type="clicks"
+              from={from}
+              to={getPeriodDates(range).to}
             />
           </div>
           <div className="rounded-2xl p-4" style={{ ...GLASS }}>
-            <NotConfiguredCard
+            <PHEventPanel
               title="Performance des CTA"
               icon={BarChart2}
-              description="Taux de clic par CTA disponible après configuration de PostHog avec les identifiants de boutons."
+              type="cta"
+              from={from}
+              to={getPeriodDates(range).to}
             />
           </div>
         </div>
