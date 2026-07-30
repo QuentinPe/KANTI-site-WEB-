@@ -10,6 +10,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import logoWhite from "@/assets/logo-kanti-white.png.asset.json";
 import logoDark from "@/assets/logo-kanti-dark.png.asset.json";
 import "./LoginPage.css";
+import { posthog } from "@/lib/posthog";
 
 const loginSchema = z.object({
   email: z.string().min(1, "Email requis").email("Adresse email invalide"),
@@ -158,6 +159,8 @@ export default function LoginPage() {
         boxShadow: "0 20px 60px -10px hsl(0 0% 0% / 0.50), inset 0 1px 0 hsl(0 0% 100% / 0.14)",
       },
     });
+    posthog.identify(data.email, { role: "admin" });
+    posthog.capture("admin_signed_in");
     navigate("/admin");
   };
 

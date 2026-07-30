@@ -1,6 +1,7 @@
 ﻿import { useState, useMemo } from "react";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
+import { posthog } from "@/lib/posthog";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import {
   ArrowRight, ChevronLeft, ChevronRight, Plus, X,
@@ -194,6 +195,7 @@ function FinancementEmailCapture({ result, debtRatio }: { result: LoanResult; de
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ nom: '—', email: email.trim(), sujet: 'Simulation financement', message }),
       });
+      posthog.capture("financing_simulator_email_submitted");
       setSent(true);
       toast.success('Simulation envoyée ! Vérifiez votre boîte mail.');
     } catch {
@@ -308,6 +310,12 @@ export default function SimulateurFinancementPage() {
   function saveScenario() {
     if (!result) return;
     const label = `Scénario ${nextId} · ${form.durationYears} ans · ${(form.annualRate * 100).toFixed(2)} %`;
+    posthog.capture("financing_scenario_saved", {
+      project_type: form.projectType,
+      duration_years: form.durationYears,
+      loan_type: form.loanType,
+      scenario_count: savedScenarios.length + 1,
+    });
     setSavedScenarios(prev => [
       ...prev.slice(-2),
       { id: nextId, label, form: { ...form }, monthlyPaymentWithInsurance: result.monthlyPaymentWithInsurance, totalCost: result.totalCost, debtRatio },
