@@ -757,6 +757,7 @@ export default function AdminDashboard() {
                     className="flex items-center gap-2.5 group" style={{ textDecoration: "none" }}>
                     {a.image ? (
                       <img src={a.image} alt="" className="w-10 h-10 rounded-lg object-cover flex-shrink-0"
+                        style={{ boxShadow: "0 0 0 1.5px rgba(0,0,0,0.45), 0 0 0 3px rgba(0,0,0,0.18)" }}
                         onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
                     ) : (
                       <div className="w-10 h-10 rounded-lg flex-shrink-0 flex items-center justify-center"
