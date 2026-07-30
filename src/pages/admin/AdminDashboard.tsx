@@ -18,7 +18,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import {
   GLASS, GLASS_HOVER_SHADOW, INNER_BG, INNER_BORDER,
   T_PRIMARY, T_SECONDARY, T_MUTED, T_HEADING, T_LABEL,
-  C_BLUE, C_GOLD, C_SAGE, C_MAUVE, C_CORAL, C_TEAL,
+  C_BLUE, C_GOLD, C_SAGE, C_MAUVE, C_CORAL, C_TEAL, cA,
 } from "@/lib/adminTheme";
 
 const CARD_STYLE = GLASS;
@@ -141,7 +141,7 @@ function KpiCard({
       <div className="flex flex-col gap-3.5 px-5 pt-5 pb-5">
         <div className="flex items-start justify-between">
           <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-            style={{ background: color + "22" }}>
+            style={{ background: cA(color, 0.16) }}>
             <Icon className="w-4 h-4" style={{ color }} strokeWidth={1.5} />
           </div>
           <div className="relative flex items-center justify-center" style={{ width: 46, height: 46 }}>
@@ -672,7 +672,7 @@ export default function AdminDashboard() {
                     className="flex items-start gap-2.5 py-2.5 group transition-opacity hover:opacity-70"
                     style={{ borderBottom: i < activity.length - 1 ? "1px solid hsl(0 0% 100% / 0.06)" : "none" }}>
                     <div className="w-7 h-7 rounded-lg flex-shrink-0 flex items-center justify-center mt-0.5 text-[10px] font-semibold"
-                      style={{ background: item.color + "22", color: item.color }}>
+                      style={{ background: cA(item.color, 0.16), color: item.color }}>
                       <item.icon className="w-3 h-3" style={{ color: item.color }} strokeWidth={1.5} />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -851,7 +851,7 @@ export default function AdminDashboard() {
               {tasks.map((task, i) => (
                 <Link key={i} to={task.to}
                   className="flex items-start gap-3 px-4 py-3 rounded-xl transition-all duration-150"
-                  style={{ background: INNER_BG, border: `1px solid ${task.color}28` }}
+                  style={{ background: INNER_BG, border: `1px solid ${cA(task.color, 0.20)}` }}
                   onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(0 0% 100% / 0.10)"; }}
                   onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = INNER_BG; }}
                 >

@@ -7,11 +7,11 @@ import type { AdminUser } from "@/lib/adminUsersService";
 import {
   GLASS, GLASS_HOVER_SHADOW, INNER_BG, INNER_BORDER,
   T_PRIMARY, T_SECONDARY, T_MUTED, T_HEADING, T_LABEL,
-  C_BLUE, C_SAGE, C_CORAL, INPUT_STYLE,
+  C_BLUE, C_SAGE, C_CORAL, INPUT_STYLE, cA,
 } from "@/lib/adminTheme";
 
 const inputClass = "w-full px-3.5 py-2.5 rounded-xl text-[13px] outline-none transition-all duration-150";
-const inputFocus = { borderColor: C_BLUE, boxShadow: `0 0 0 3px ${C_BLUE}30` };
+const inputFocus = { borderColor: C_BLUE, boxShadow: `0 0 0 3px ${cA(C_BLUE, 0.18)}` };
 const inputBlur  = { boxShadow: "none", borderColor: INNER_BORDER };
 
 function fmtDate(iso: string) {
@@ -98,7 +98,7 @@ export default function AdminAccessList() {
 
       {/* Info banner */}
       <div className="flex items-start gap-3 px-4 py-4 rounded-xl mb-6"
-        style={{ background: `${C_BLUE}12`, border: `1px solid ${C_BLUE}28` }}>
+        style={{ background: cA(C_BLUE, 0.08), border: `1px solid ${cA(C_BLUE, 0.22)}` }}>
         <Info className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: C_BLUE }} />
         <p className="text-[12px] font-light leading-relaxed" style={{ color: T_SECONDARY }}>
           Ajouter un admin ici lui donne accès au panneau. La personne doit d'abord créer un compte sur{" "}
@@ -110,7 +110,7 @@ export default function AdminAccessList() {
       {/* Error state */}
       {isError && (
         <div className="mb-6 px-4 py-3 rounded-xl text-[13px]"
-          style={{ background: `${C_CORAL}18`, color: C_CORAL, border: `1px solid ${C_CORAL}35` }}>
+          style={{ background: cA(C_CORAL, 0.14), color: C_CORAL, border: `1px solid ${cA(C_CORAL, 0.28)}` }}>
           Impossible de charger la liste. Vérifiez que la table <strong>admin_users</strong> existe dans Supabase.
         </div>
       )}
@@ -142,7 +142,7 @@ export default function AdminAccessList() {
                   style={{ borderBottom: isLast ? "none" : `1px solid ${INNER_BORDER}`, opacity: admin.active ? 1 : 0.5 }}>
                   {/* Avatar */}
                   <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
-                    style={{ background: isSelf ? `${C_SAGE}20` : `${C_BLUE}15`, border: `1px solid ${INNER_BORDER}` }}>
+                    style={{ background: isSelf ? cA(C_SAGE, 0.18) : cA(C_BLUE, 0.14), border: `1px solid ${INNER_BORDER}` }}>
                     <ShieldCheck className="w-4 h-4"
                       style={{ color: isSelf ? C_SAGE : C_BLUE }}
                       strokeWidth={1.5} />
@@ -173,9 +173,9 @@ export default function AdminAccessList() {
                   {/* Role badge */}
                   <span className="text-[10px] tracking-[0.18em] uppercase font-medium px-2.5 py-1 rounded-full flex-shrink-0"
                     style={{
-                      background: admin.role === "super_admin" ? `${C_BLUE}18` : INNER_BG,
+                      background: admin.role === "super_admin" ? cA(C_BLUE, 0.18) : INNER_BG,
                       color: admin.role === "super_admin" ? C_BLUE : T_LABEL,
-                      border: `1px solid ${admin.role === "super_admin" ? C_BLUE + "35" : INNER_BORDER}`,
+                      border: `1px solid ${admin.role === "super_admin" ? cA(C_BLUE, 0.30) : INNER_BORDER}`,
                     }}>
                     {admin.role === "super_admin" ? "Super Admin" : "Admin"}
                   </span>
@@ -199,7 +199,7 @@ export default function AdminAccessList() {
                         title="Supprimer"
                         className="p-1.5 rounded-lg transition-all duration-150"
                         style={{ color: C_CORAL }}
-                        onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = `${C_CORAL}15`; }}
+                        onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = cA(C_CORAL, 0.12); }}
                         onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -323,7 +323,7 @@ CREATE POLICY "Admin can write" ON admin_users FOR ALL TO authenticated
 
               {inviteError && (
                 <p className="text-[12px] px-3 py-2 rounded-lg"
-                  style={{ background: `${C_CORAL}18`, color: C_CORAL, border: `1px solid ${C_CORAL}35` }}>
+                  style={{ background: cA(C_CORAL, 0.14), color: C_CORAL, border: `1px solid ${cA(C_CORAL, 0.28)}` }}>
                   {inviteError}
                 </p>
               )}
@@ -366,7 +366,7 @@ CREATE POLICY "Admin can write" ON admin_users FOR ALL TO authenticated
               <button onClick={() => deleteMutation.mutate(confirmDelete)}
                 disabled={deleteMutation.isPending}
                 className="flex-1 py-2.5 rounded-xl text-[13px] font-medium transition-opacity disabled:opacity-60"
-                style={{ background: `${C_CORAL}28`, border: `1px solid ${C_CORAL}45`, color: C_CORAL }}>
+                style={{ background: cA(C_CORAL, 0.22), border: `1px solid ${cA(C_CORAL, 0.38)}`, color: C_CORAL }}>
                 {deleteMutation.isPending ? "Suppression…" : "Supprimer"}
               </button>
               <button onClick={() => setConfirmDelete(null)}

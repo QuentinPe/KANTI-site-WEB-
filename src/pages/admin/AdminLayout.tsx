@@ -1,14 +1,24 @@
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { FileText, LogOut, Plus, BookOpen, Users, HelpCircle, UserSquare2, Scale, LayoutDashboard, Inbox, Settings, Image, ShieldCheck, ExternalLink, Tags } from "lucide-react";
+import { FileText, LogOut, Plus, BookOpen, Users, HelpCircle, UserSquare2, Scale, LayoutDashboard, Inbox, Settings, Image, ShieldCheck, ExternalLink, Tags, Sun, Moon } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { AdminThemeProvider, useAdminTheme } from "@/contexts/AdminThemeContext";
 import { getLeads } from "@/lib/leadsService";
 import logoWhite from "@/assets/logo-kanti-white.png.asset.json";
 
 export default function AdminLayout() {
+  return (
+    <AdminThemeProvider>
+      <AdminLayoutInner />
+    </AdminThemeProvider>
+  );
+}
+
+function AdminLayoutInner() {
   const { user, signOut } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useAdminTheme();
 
   const { data: leads = [] } = useQuery({ queryKey: ["leads"], queryFn: getLeads });
   const newLeadsCount = leads.filter((l) => l.status === "nouveau").length;
@@ -30,7 +40,7 @@ export default function AdminLayout() {
         backgroundAttachment: "fixed",
       }}
     >
-      {/* Sidebar */}
+      {/* Sidebar — always dark for consistent nav contrast */}
       <aside
         className="w-64 flex flex-col flex-shrink-0"
         style={{
@@ -166,7 +176,7 @@ export default function AdminLayout() {
         </div>
 
         {/* View site + User + logout */}
-        <div className="px-3 pb-4 pt-2">
+        <div className="px-3 pb-2 pt-2">
           <a
             href="/"
             target="_blank"
@@ -180,7 +190,21 @@ export default function AdminLayout() {
             Voir le site
           </a>
         </div>
-        <div className="px-4 py-5 border-t" style={{ borderColor: "hsl(0 0% 100% / 0.08)" }}>
+
+        <div className="px-4 py-4 border-t" style={{ borderColor: "hsl(0 0% 100% / 0.08)" }}>
+          {/* Theme toggle */}
+          <button
+            onClick={toggleTheme}
+            className="flex items-center gap-2 w-full px-3 py-2 rounded-xl text-[12px] font-medium transition-all duration-200 mb-3"
+            style={{ background: "hsl(0 0% 100% / 0.06)", color: "hsl(0 0% 100% / 0.55)" }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(0 0% 100% / 0.10)"; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(0 0% 100% / 0.06)"; }}
+          >
+            {theme === "dark"
+              ? <><Sun className="w-3.5 h-3.5" />Mode clair</>
+              : <><Moon className="w-3.5 h-3.5" />Mode sombre</>}
+          </button>
+
           <p className="text-[11px] font-light mb-3 truncate" style={{ color: "hsl(0 0% 100% / 0.40)" }}>
             {user?.email}
           </p>
@@ -195,8 +219,8 @@ export default function AdminLayout() {
         </div>
       </aside>
 
-      {/* Main — dark overlay so all page content sits on the glass surface */}
-      <main className="flex-1 overflow-auto" style={{ background: "linear-gradient(160deg, rgba(11,14,28,0.82) 0%, rgba(8,11,22,0.88) 100%)" }}>
+      {/* Main — background driven by CSS var (dark/light toggle) */}
+      <main className="flex-1 overflow-auto" style={{ background: "var(--at-main-bg)" }}>
         <Outlet />
       </main>
     </div>

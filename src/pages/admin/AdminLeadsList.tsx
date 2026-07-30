@@ -18,8 +18,11 @@ import {
   GLASS, GLASS_HOVER_SHADOW, INNER_BG, INNER_BORDER,
   T_PRIMARY, T_SECONDARY, T_MUTED, T_HEADING, T_LABEL,
   C_BLUE, C_GOLD, C_SAGE, C_MAUVE, C_CORAL, C_TEAL,
-  INPUT_STYLE, statusChipStyle,
+  INPUT_STYLE, statusChipStyle, cA,
 } from "@/lib/adminTheme";
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from "@/components/ui/select";
 
 /* ─── Helpers ─── */
 function fmtDate(iso: string) {
@@ -497,7 +500,7 @@ function LeadDetailPanel({ lead, onClose }: { lead: Lead; onClose: () => void })
               className="w-full resize-none rounded-xl px-3.5 py-2.5 text-[13px] font-light outline-none transition-all"
               style={{
                 ...INPUT_STYLE,
-                border: `1px solid ${notesDirty ? `${C_BLUE}66` : INNER_BORDER}`,
+                border: `1px solid ${notesDirty ? cA(C_BLUE, 0.66) : INNER_BORDER}`,
               }} />
             {notesDirty && (
               <button onClick={() => notesMut.mutate(notes)} disabled={notesMut.isPending}
@@ -955,22 +958,58 @@ export default function AdminLeadsList() {
                   className="pl-9 pr-4 py-2 rounded-lg text-[13px] outline-none w-52"
                   style={{ ...INPUT_STYLE }} />
               </div>
-              <select value={dateRange} onChange={(e) => setDateRange(e.target.value as typeof dateRange)}
-                className="text-[12px] px-3 py-2 rounded-lg outline-none cursor-pointer"
-                style={{ ...INPUT_STYLE }}>
-                <option value="tous">Toute période</option>
-                <option value="aujourd">Aujourd'hui</option>
-                <option value="7j">7 derniers jours</option>
-                <option value="30j">30 derniers jours</option>
-              </select>
-              <select value={sort} onChange={(e) => setSort(e.target.value as SortKey)}
-                className="text-[12px] px-3 py-2 rounded-lg outline-none cursor-pointer"
-                style={{ ...INPUT_STYLE }}>
-                <option value="date_desc">Récents d'abord</option>
-                <option value="date_asc">Anciens d'abord</option>
-                <option value="urgent">Urgents d'abord</option>
-                <option value="score_desc">Score décroissant</option>
-              </select>
+              <Select value={dateRange} onValueChange={(v) => setDateRange(v as typeof dateRange)}>
+                <SelectTrigger
+                  className="h-auto w-auto text-[12px] rounded-lg border-0 shadow-none ring-0 focus:ring-0 focus:ring-offset-0 min-w-[140px]"
+                  style={{ ...INPUT_STYLE, padding: "0.5rem 0.75rem" }}
+                >
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent
+                  className="min-w-[160px] rounded-xl border-0 p-1"
+                  style={{
+                    background: "hsl(224 58% 9% / 0.97)",
+                    backdropFilter: "blur(24px) saturate(180%)",
+                    border: "1px solid rgba(255,255,255,0.12)",
+                    boxShadow: "0 20px 60px rgba(0,0,0,0.50)",
+                  }}
+                >
+                  {(["tous", "aujourd", "7j", "30j"] as const).map((v, i) => (
+                    <SelectItem key={v} value={v}
+                      className="text-[12px] rounded-lg cursor-pointer data-[highlighted]:bg-white/10 data-[highlighted]:text-white"
+                      style={{ color: "rgba(255,255,255,0.78)" }}
+                    >
+                      {["Toute période", "Aujourd'hui", "7 derniers jours", "30 derniers jours"][i]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={sort} onValueChange={(v) => setSort(v as SortKey)}>
+                <SelectTrigger
+                  className="h-auto w-auto text-[12px] rounded-lg border-0 shadow-none ring-0 focus:ring-0 focus:ring-offset-0 min-w-[160px]"
+                  style={{ ...INPUT_STYLE, padding: "0.5rem 0.75rem" }}
+                >
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent
+                  className="min-w-[180px] rounded-xl border-0 p-1"
+                  style={{
+                    background: "hsl(224 58% 9% / 0.97)",
+                    backdropFilter: "blur(24px) saturate(180%)",
+                    border: "1px solid rgba(255,255,255,0.12)",
+                    boxShadow: "0 20px 60px rgba(0,0,0,0.50)",
+                  }}
+                >
+                  {(["date_desc", "date_asc", "urgent", "score_desc"] as const).map((v, i) => (
+                    <SelectItem key={v} value={v}
+                      className="text-[12px] rounded-lg cursor-pointer data-[highlighted]:bg-white/10 data-[highlighted]:text-white"
+                      style={{ color: "rgba(255,255,255,0.78)" }}
+                    >
+                      {["Récents d'abord", "Anciens d'abord", "Urgents d'abord", "Score décroissant"][i]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <button onClick={() => setShowNewLead(true)}
               className="flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-medium flex-shrink-0"

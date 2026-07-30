@@ -12,7 +12,7 @@ import { getAllCasClients, updateCasClient } from "@/lib/casClientsService";
 import {
   GLASS, INNER_BG, INNER_BORDER,
   T_PRIMARY, T_SECONDARY, T_MUTED, T_HEADING, T_LABEL,
-  C_BLUE, C_GOLD, C_SAGE, C_CORAL,
+  C_BLUE, C_GOLD, C_SAGE, C_CORAL, cA,
 } from "@/lib/adminTheme";
 
 const BUCKET = "article-images";
@@ -56,8 +56,12 @@ async function uploadMedia(file: File): Promise<string> {
   return supabase.storage.from(BUCKET).getPublicUrl(name).data.publicUrl;
 }
 
-// Routes through Edge Function with service_role key to bypass storage RLS DELETE policy
 async function deleteMedia(name: string): Promise<void> {
+  // Try direct SDK first (requires a Supabase Storage DELETE RLS policy)
+  const { error: sdkErr } = await supabase.storage.from(BUCKET).remove([name]);
+  if (!sdkErr) return;
+
+  // Fallback: Edge Function with service_role key (requires SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY in Vercel)
   const res = await fetch("/api/delete-media", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -65,7 +69,8 @@ async function deleteMedia(name: string): Promise<void> {
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    throw new Error(err.error ?? "Erreur de suppression");
+    // Surface the original SDK error if the API also fails
+    throw new Error(err.error ?? sdkErr.message ?? "Erreur de suppression");
   }
 }
 
@@ -80,6 +85,70 @@ async function downloadFile(url: string, name: string): Promise<void> {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(blobUrl);
+}
+
+// ── SQL setup hint ─────────────────────────────────────────────────────────────
+
+const SQL_LS_KEY = "kanti-media-sql-hint-dismissed";
+
+const SQL_POLICY = `-- Run once in Supabase SQL Editor to enable delete
+CREATE POLICY "Admins can delete from article-images"
+ON storage.objects FOR DELETE TO authenticated
+USING (bucket_id = 'article-images');`;
+
+function SqlHint() {
+  const [dismissed, setDismissed] = useState(() => {
+    try { return localStorage.getItem(SQL_LS_KEY) === "1"; }
+    catch { return false; }
+  });
+  const [copied, setCopied] = useState(false);
+
+  if (dismissed) return null;
+
+  const copy = () => {
+    navigator.clipboard.writeText(SQL_POLICY).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
+  const dismiss = () => {
+    try { localStorage.setItem(SQL_LS_KEY, "1"); } catch { /* noop */ }
+    setDismissed(true);
+  };
+
+  return (
+    <div className="rounded-xl p-4 mb-5 flex gap-3 items-start"
+      style={{ background: cA(C_BLUE, 0.08), border: `1px solid ${cA(C_BLUE, 0.20)}` }}>
+      <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: C_BLUE }} />
+      <div className="flex-1 min-w-0">
+        <p className="text-[12px] font-medium mb-1" style={{ color: T_HEADING }}>
+          Autoriser la suppression de fichiers
+        </p>
+        <p className="text-[11px] font-light mb-3 leading-relaxed" style={{ color: T_SECONDARY }}>
+          Exécutez cette requête <strong className="font-medium" style={{ color: T_HEADING }}>une seule fois</strong> dans l'éditeur SQL Supabase pour activer la suppression.
+        </p>
+        <div className="rounded-lg px-3 py-2 font-mono text-[10px] leading-relaxed mb-3 overflow-x-auto"
+          style={{ background: INNER_BG, border: `1px solid ${INNER_BORDER}`, color: T_LABEL, whiteSpace: "pre" }}>
+          {SQL_POLICY}
+        </div>
+        <div className="flex items-center gap-2">
+          <button onClick={copy}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors"
+            style={{ background: cA(C_BLUE, 0.18), color: C_BLUE, border: `1px solid ${cA(C_BLUE, 0.30)}` }}>
+            {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+            {copied ? "Copié !" : "Copier le SQL"}
+          </button>
+          <button onClick={dismiss}
+            className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-[11px] font-medium"
+            style={{ color: T_MUTED }}>
+            <X className="w-3 h-3" />
+            Masquer
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 // ── Picker modal ───────────────────────────────────────────────────────────────
@@ -341,7 +410,7 @@ function FileCard({
               <button
                 onClick={() => setConfirming(true)}
                 className="w-9 h-9 rounded-full flex items-center justify-center transition-transform hover:scale-110"
-                style={{ background: `${C_CORAL}30`, border: `1px solid ${C_CORAL}50`, color: C_CORAL }}
+                style={{ background: cA(C_CORAL, 0.20), border: `1px solid ${cA(C_CORAL, 0.35)}`, color: C_CORAL }}
                 title="Supprimer"
               >
                 <Trash2 className="w-4 h-4" />
@@ -375,9 +444,9 @@ function FileCard({
           <button
             onClick={() => onUseAs("article")}
             className="flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-medium flex-1 justify-center transition-colors"
-            style={{ background: `${C_BLUE}18`, border: `1px solid ${C_BLUE}30`, color: C_BLUE }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = `${C_BLUE}28`; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = `${C_BLUE}18`; }}
+            style={{ background: cA(C_BLUE, 0.18), border: `1px solid ${cA(C_BLUE, 0.30)}`, color: C_BLUE }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = cA(C_BLUE, 0.28); }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = cA(C_BLUE, 0.18); }}
             title="Couverture d'article"
           >
             <FileText className="w-3 h-3" />
@@ -386,9 +455,9 @@ function FileCard({
           <button
             onClick={() => onUseAs("team")}
             className="flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-medium flex-1 justify-center transition-colors"
-            style={{ background: `${C_GOLD}18`, border: `1px solid ${C_GOLD}30`, color: C_GOLD }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = `${C_GOLD}28`; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = `${C_GOLD}18`; }}
+            style={{ background: cA(C_GOLD, 0.18), border: `1px solid ${cA(C_GOLD, 0.30)}`, color: C_GOLD }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = cA(C_GOLD, 0.28); }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = cA(C_GOLD, 0.18); }}
             title="Photo de membre d'équipe"
           >
             <User className="w-3 h-3" />
@@ -397,9 +466,9 @@ function FileCard({
           <button
             onClick={() => onUseAs("cas-client")}
             className="flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-medium flex-1 justify-center transition-colors"
-            style={{ background: `${C_SAGE}18`, border: `1px solid ${C_SAGE}30`, color: C_SAGE }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = `${C_SAGE}28`; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = `${C_SAGE}18`; }}
+            style={{ background: cA(C_SAGE, 0.18), border: `1px solid ${cA(C_SAGE, 0.30)}`, color: C_SAGE }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = cA(C_SAGE, 0.28); }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = cA(C_SAGE, 0.18); }}
             title="Photo de cas client"
           >
             <Users className="w-3 h-3" />
@@ -479,6 +548,9 @@ export default function AdminMediaLibrary() {
         </button>
       </div>
 
+      {/* SQL setup hint — shown until dismissed */}
+      <SqlHint />
+
       {/* Search + drop zone */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <div className="relative flex items-center">
@@ -497,7 +569,7 @@ export default function AdminMediaLibrary() {
           className="rounded-xl flex items-center justify-center gap-3 cursor-pointer transition-all duration-200"
           style={{
             padding: "14px 20px",
-            background: dragging ? `${C_BLUE}15` : INNER_BG,
+            background: dragging ? cA(C_BLUE, 0.12) : INNER_BG,
             border: `2px dashed ${dragging ? C_BLUE : INNER_BORDER}`,
           }}
           onClick={() => inputRef.current?.click()}
@@ -524,7 +596,7 @@ export default function AdminMediaLibrary() {
       {error && (
         <div
           className="flex items-center gap-3 px-4 py-3 rounded-xl mb-4"
-          style={{ background: `${C_CORAL}20`, border: `1px solid ${C_CORAL}35` }}
+          style={{ background: cA(C_CORAL, 0.12), border: `1px solid ${cA(C_CORAL, 0.22)}` }}
         >
           <AlertCircle className="w-4 h-4 flex-shrink-0" style={{ color: C_CORAL }} />
           <p className="text-[12px] font-light" style={{ color: T_SECONDARY }}>
