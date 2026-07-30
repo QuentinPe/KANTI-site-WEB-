@@ -10,6 +10,7 @@ function ScrollToTop() {
   return null;
 }
 import { HelmetProvider } from "react-helmet-async";
+import { Analytics } from "@vercel/analytics/react";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -102,6 +103,7 @@ const AppShell = () => {
   useLenis();
   return (
     <TooltipProvider>
+      <Analytics />
       <Toaster />
       <Sonner />
       <Suspense fallback={null}>
