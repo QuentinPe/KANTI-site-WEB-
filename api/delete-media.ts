@@ -31,9 +31,9 @@ export default async function handler(req: Request): Promise<Response> {
     return new Response(JSON.stringify({ error: "Corps invalide — attendu { name: string }" }), { status: 400, headers: cors });
   }
 
-  // Supabase Storage REST API — bulk delete (same endpoint used by the JS SDK)
+  // Supabase Storage REST API bulk delete: POST /storage/v1/object/delete/{bucket}
   const storageRes = await fetch(`${supabaseUrl}/storage/v1/object/delete/${BUCKET}`, {
-    method: "DELETE",
+    method: "POST",
     headers: {
       "Authorization": `Bearer ${serviceKey}`,
       "apikey": serviceKey,

@@ -1,4 +1,11 @@
-﻿import {
+﻿import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { ArrowLeft, Save, Star, CheckCircle2 } from "lucide-react";
+import { toast } from "sonner";
+import { getAllRessources } from "@/lib/ressourcesService";
+import { getSiteSettingsMap, upsertSettings } from "@/lib/siteSettingsService";
+import {
   GLASS, INNER_BG, INNER_BORDER,
   T_PRIMARY, T_SECONDARY, T_MUTED, T_HEADING, T_LABEL,
   C_BLUE, C_GOLD, C_SAGE,

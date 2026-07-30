@@ -1,4 +1,8 @@
-﻿import {
+﻿import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { Pencil, Scale, Clock } from "lucide-react";
+import { getAllLegalContent } from "@/lib/legalService";
+import {
   GLASS, INNER_BG, INNER_BORDER,
   T_PRIMARY, T_SECONDARY, T_MUTED, T_HEADING,
   C_BLUE,

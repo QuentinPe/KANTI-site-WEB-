@@ -1,4 +1,20 @@
-﻿import {
+﻿import { useState, useMemo, useEffect, useRef } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import {
+  Search, Download, BarChart3, X, Phone, Mail,
+  Trash2, Clock, TrendingUp, Users, CheckCircle2, ExternalLink, Archive,
+} from "lucide-react";
+import {
+  getLeads, updateLeadStatus, updateLeadNotes, deleteLead, exportLeadsCSV, createLead,
+} from "@/lib/leadsService";
+import type { Lead, LeadStatus, LeadInput } from "@/lib/leadsService";
+import { ADVISOR_LABELS, ADVISOR_INITIALS, FORMAT_LABELS, TIMING_LABELS } from "@/lib/leadsConfig";
+import {
+  StatusBars, PipelineHealth, bucketLeadsByDay, PERIODS, STATUS_CONFIG, STATUS_ORDER,
+} from "@/components/admin/LeadsVolumeChart";
+import type { PeriodKey } from "@/components/admin/LeadsVolumeChart";
+import {
   GLASS, GLASS_HOVER_SHADOW, INNER_BG, INNER_BORDER,
   T_PRIMARY, T_SECONDARY, T_MUTED, T_HEADING, T_LABEL,
   C_BLUE, C_GOLD, C_SAGE, C_MAUVE, C_CORAL, C_TEAL,

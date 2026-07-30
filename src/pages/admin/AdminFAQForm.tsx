@@ -1,4 +1,14 @@
-﻿import {
+﻿import { useEffect, useState } from "react";
+import { useNavigate, useParams, Link } from "react-router-dom";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ArrowLeft } from "lucide-react";
+import { getAllFaq, createFaqItem, updateFaqItem } from "@/lib/faqService";
+import type { FaqInput } from "@/lib/faqService";
+import { getCategories } from "@/lib/categoriesService";
+import {
   INNER_BG, INNER_BORDER,
   T_PRIMARY, T_SECONDARY, T_MUTED, T_LABEL,
   C_BLUE, C_CORAL,

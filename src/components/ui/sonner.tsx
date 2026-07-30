@@ -11,6 +11,8 @@ const Toaster = ({ ...props }: ToasterProps) => {
       theme={theme as ToasterProps["theme"]}
       className="toaster group"
       position="bottom-right"
+      containerAriaLabel="Notifications"
+      style={{ zIndex: 999999 }}
       toastOptions={{
         style: {
           background: "hsl(224 55% 10% / 0.92)",

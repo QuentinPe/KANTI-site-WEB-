@@ -17,7 +17,6 @@ export const GLASS: CSSProperties = {
   WebkitBackdropFilter: "blur(48px) saturate(200%)",
   border: "1px solid rgba(255, 255, 255, 0.14)",
   boxShadow: [
-    "inset 0 1.5px 0 rgba(255,255,255,0.24)",
     "inset 0 -1px 0 rgba(0,0,0,0.10)",
     "0 20px 56px rgba(0,0,0,0.28)",
   ].join(", "),
@@ -26,7 +25,6 @@ export const GLASS: CSSProperties = {
 export const GLASS_HOVER: CSSProperties = {
   ...GLASS,
   boxShadow: [
-    "inset 0 1.5px 0 rgba(255,255,255,0.32)",
     "inset 0 -1px 0 rgba(0,0,0,0.12)",
     "0 28px 72px rgba(0,0,0,0.40)",
   ].join(", "),

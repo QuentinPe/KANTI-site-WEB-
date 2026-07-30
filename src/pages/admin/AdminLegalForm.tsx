@@ -1,4 +1,10 @@
-﻿import {
+﻿import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { ArrowLeft, Scale, ExternalLink } from "lucide-react";
+import { getLegalContent, updateLegalContent } from "@/lib/legalService";
+import RichEditor from "@/components/admin/RichEditor";
+import {
   INNER_BORDER,
   T_PRIMARY, T_SECONDARY, T_MUTED, T_LABEL,
   C_BLUE, C_SAGE, C_CORAL,

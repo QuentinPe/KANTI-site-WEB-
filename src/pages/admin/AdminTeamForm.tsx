@@ -1,4 +1,18 @@
-﻿import {
+﻿import { useEffect, useRef, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useForm, useFieldArray } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { ArrowLeft, Plus, Trash2, UserSquare2, ImagePlus } from "lucide-react";
+import {
+  getTeamMemberById,
+  createTeamMember,
+  updateTeamMember,
+  uploadTeamImage,
+  TeamMemberInput,
+} from "@/lib/teamService";
+import {
   INNER_BG, INNER_BORDER,
   T_PRIMARY, T_SECONDARY, T_MUTED, T_LABEL,
   C_BLUE, C_CORAL,

@@ -1,4 +1,11 @@
-﻿import {
+﻿import { useState } from "react";
+import { Link } from "react-router-dom";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Plus, Pencil, Trash2, HelpCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { getAllFaq, deleteFaqItem, reorderFaqItems } from "@/lib/faqService";
+import { getCategories } from "@/lib/categoriesService";
+import type { FaqItem } from "@/lib/faqService";
+import {
   GLASS, INNER_BG, INNER_BORDER,
   T_PRIMARY, T_SECONDARY, T_MUTED, T_HEADING,
   C_BLUE, C_CORAL,

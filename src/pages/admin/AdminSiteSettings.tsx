@@ -1,4 +1,10 @@
-﻿import {
+﻿import { useEffect, useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Save, Globe, Phone, BarChart3, Search, Scale, FileUp } from "lucide-react";
+import { supabase } from "@/lib/supabase";
+import { getSiteSettings, upsertSettings } from "@/lib/siteSettingsService";
+import { toast } from "sonner";
+import {
   GLASS, INNER_BG, INNER_BORDER,
   T_PRIMARY, T_SECONDARY, T_MUTED, T_HEADING, T_LABEL,
   C_BLUE, C_SAGE,

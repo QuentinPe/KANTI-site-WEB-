@@ -1,4 +1,10 @@
-﻿import {
+﻿import { useState } from "react";
+import { Link } from "react-router-dom";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Plus, Pencil, Trash2, BookOpen, CheckCircle2, XCircle, Star, Settings2 } from "lucide-react";
+import { getAllRessources, deleteRessource } from "@/lib/ressourcesService";
+import { getSiteSettingsMap, upsertSetting } from "@/lib/siteSettingsService";
+import {
   GLASS, INNER_BG, INNER_BORDER,
   T_PRIMARY, T_SECONDARY, T_MUTED, T_HEADING,
   C_BLUE, C_GOLD, C_SAGE, C_CORAL,

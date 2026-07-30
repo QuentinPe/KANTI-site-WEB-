@@ -1,4 +1,13 @@
-﻿import {
+﻿import { useState, useRef, useEffect } from "react";
+import { useNavigate, useParams, Link } from "react-router-dom";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ArrowLeft, Upload, FileText, X } from "lucide-react";
+import { getAllRessources, createRessource, updateRessource, uploadPDF } from "@/lib/ressourcesService";
+import type { RessourceInput } from "@/lib/ressourcesService";
+import {
   INNER_BG, INNER_BORDER,
   T_PRIMARY, T_SECONDARY, T_MUTED, T_HEADING, T_LABEL,
   C_BLUE, C_CORAL,

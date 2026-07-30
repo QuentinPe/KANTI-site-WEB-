@@ -1,4 +1,9 @@
-﻿import {
+﻿import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
+import { Plus, Pencil, Trash2, Star, ChevronUp, ChevronDown } from "lucide-react";
+import { getArticles, deleteArticle, reorderArticles } from "@/lib/articlesService";
+import type { Article } from "@/lib/articlesService";
+import {
   GLASS, INNER_BG, INNER_BORDER,
   T_PRIMARY, T_SECONDARY, T_MUTED, T_HEADING, T_LABEL,
   C_BLUE, C_GOLD, C_CORAL,
