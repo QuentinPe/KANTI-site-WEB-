@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
@@ -12,6 +12,12 @@ import type { ArticleInput } from "@/lib/articlesService";
 import { getCategories } from "@/lib/categoriesService";
 import { getSiteSettingsMap } from "@/lib/siteSettingsService";
 import RichEditor from "@/components/admin/RichEditor";
+import {
+  GLASS, INNER_BG, INNER_BORDER,
+  T_PRIMARY, T_SECONDARY, T_MUTED, T_LABEL,
+  C_BLUE, C_GOLD, C_MAUVE, C_CORAL,
+  INPUT_STYLE,
+} from "@/lib/adminTheme";
 
 const FALLBACK_CATEGORIES = ["Investissement", "Épargne", "Transmission", "Fiscalité", "Retraite", "Immobilier", "Dirigeants", "Allocation", "Prévoyance"];
 
@@ -58,26 +64,21 @@ function Field({ label, hint, error, children }: { label: string; hint?: string;
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex items-baseline gap-2">
-        <label className="text-[12px] font-medium tracking-wide" style={{ color: "hsl(224 25% 38%)" }}>{label}</label>
-        {hint && <span className="text-[11px] font-light" style={{ color: "hsl(224 15% 58%)" }}>{hint}</span>}
+        <label className="text-[12px] font-medium tracking-wide" style={{ color: T_LABEL }}>{label}</label>
+        {hint && <span className="text-[11px] font-light" style={{ color: T_MUTED }}>{hint}</span>}
       </div>
       {children}
-      {error && <p className="text-[11px]" style={{ color: "hsl(0 60% 48%)" }}>{error}</p>}
+      {error && <p className="text-[11px]" style={{ color: C_CORAL }}>{error}</p>}
     </div>
   );
 }
 
 const inputClass = "w-full px-3.5 py-2.5 rounded-xl text-[13px] outline-none transition-all duration-150";
-const inputStyle = {
-  background: "white",
-  border: "1px solid hsl(224 20% 12% / 0.12)",
-  color: "hsl(224 55% 12%)",
-};
 const inputFocus = {
-  borderColor: "hsl(224 60% 18% / 0.40)",
-  boxShadow: "0 0 0 3px hsl(224 60% 18% / 0.08)",
+  borderColor: "rgba(255,255,255,0.30)",
+  boxShadow: "0 0 0 3px rgba(255,255,255,0.06)",
 };
-const inputBlur = { boxShadow: "none", borderColor: "hsl(224 20% 12% / 0.12)" };
+const inputBlur = { boxShadow: "none", borderColor: "rgba(255,255,255,0.12)" };
 
 export default function AdminArticleForm() {
   const { id } = useParams<{ id: string }>();
@@ -265,7 +266,10 @@ export default function AdminArticleForm() {
   if (isEdit && articlesLoading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="w-7 h-7 rounded-full border-2 border-foreground/15 border-t-foreground/60 animate-spin" />
+        <div
+          className="w-7 h-7 rounded-full border-2 animate-spin"
+          style={{ borderColor: "rgba(255,255,255,0.15)", borderTopColor: "rgba(255,255,255,0.60)" }}
+        />
       </div>
     );
   }
@@ -273,8 +277,8 @@ export default function AdminArticleForm() {
   if (isEdit && !existing && !articlesLoading) {
     return (
       <div className="p-8 max-w-2xl mx-auto">
-        <p className="text-[14px]" style={{ color: "hsl(0 60% 45%)" }}>Article introuvable.</p>
-        <Link to="/admin/articles" className="mt-4 block text-[13px] underline" style={{ color: "hsl(224 55% 35%)" }}>← Retour</Link>
+        <p className="text-[14px]" style={{ color: C_CORAL }}>Article introuvable.</p>
+        <Link to="/admin/articles" className="mt-4 block text-[13px] underline" style={{ color: C_BLUE }}>← Retour</Link>
       </div>
     );
   }
@@ -282,7 +286,6 @@ export default function AdminArticleForm() {
   return (
     <div
       className={fullscreen ? "fixed inset-0 overflow-y-auto z-[400]" : "p-8 max-w-3xl mx-auto"}
-      style={fullscreen ? { background: "hsl(220 25% 97%)" } : undefined}
     >
     <div className={fullscreen ? "p-8 max-w-5xl mx-auto" : ""}>
       {/* Header */}
@@ -290,14 +293,14 @@ export default function AdminArticleForm() {
         <Link
           to="/admin/articles"
           className="p-2 rounded-lg transition-all duration-150"
-          style={{ color: "hsl(224 25% 45%)" }}
-          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(224 60% 18% / 0.07)"; }}
+          style={{ color: T_SECONDARY }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = INNER_BG; }}
           onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}
         >
           <ArrowLeft className="w-5 h-5" />
         </Link>
         <div className="flex-1">
-          <h1 className="text-2xl font-heading font-light tracking-tight" style={{ color: "hsl(224 55% 12%)" }}>
+          <h1 className="text-2xl font-heading font-light tracking-tight" style={{ color: T_PRIMARY }}>
             {isEdit ? "Modifier l'article" : "Nouvel article"}
           </h1>
         </div>
@@ -306,8 +309,8 @@ export default function AdminArticleForm() {
           onClick={() => setFullscreen(v => !v)}
           title={fullscreen ? "Quitter le plein écran" : "Plein écran"}
           className="p-2 rounded-lg transition-all duration-150"
-          style={{ color: "hsl(224 25% 45%)" }}
-          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(224 60% 18% / 0.07)"; }}
+          style={{ color: T_SECONDARY }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = INNER_BG; }}
           onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}
         >
           {fullscreen ? <Minimize2 className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
@@ -318,9 +321,9 @@ export default function AdminArticleForm() {
             target="_blank"
             rel="noreferrer"
             className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-medium transition-all duration-150"
-            style={{ background: "hsl(224 60% 18% / 0.08)", color: "hsl(224 40% 32%)", border: "1px solid hsl(224 60% 18% / 0.12)" }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(224 60% 18% / 0.14)"; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(224 60% 18% / 0.08)"; }}
+            style={{ background: "hsl(215 42% 65% / 0.12)", color: C_BLUE, border: `1px solid hsl(215 42% 65% / 0.25)` }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(215 42% 65% / 0.20)"; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(215 42% 65% / 0.12)"; }}
           >
             <Eye className="w-4 h-4" />
             Prévisualiser
@@ -331,7 +334,7 @@ export default function AdminArticleForm() {
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
         {/* Image de couverture */}
         <div className="flex flex-col gap-1.5">
-          <p className="text-[12px] font-medium tracking-wide" style={{ color: "hsl(224 25% 38%)" }}>
+          <p className="text-[12px] font-medium tracking-wide" style={{ color: T_LABEL }}>
             Image de couverture *
           </p>
           <ImagePicker
@@ -344,7 +347,7 @@ export default function AdminArticleForm() {
         <Field label="Titre *" error={errors.title?.message}>
           <input
             className={inputClass}
-            style={inputStyle}
+            style={INPUT_STYLE}
             placeholder="Titre de l'article"
             {...register("title")}
             onFocus={(e) => Object.assign((e.target as HTMLElement).style, inputFocus)}
@@ -355,10 +358,10 @@ export default function AdminArticleForm() {
         <div className="flex flex-col gap-1.5">
           <div className="flex items-center justify-between">
             <div className="flex items-baseline gap-2">
-              <label className="text-[12px] font-medium tracking-wide" style={{ color: "hsl(224 25% 38%)" }}>
+              <label className="text-[12px] font-medium tracking-wide" style={{ color: T_LABEL }}>
                 Extrait *
               </label>
-              <span className="text-[11px] font-light" style={{ color: "hsl(224 15% 58%)" }}>
+              <span className="text-[11px] font-light" style={{ color: T_MUTED }}>
                 Court résumé affiché dans la liste des articles
               </span>
             </div>
@@ -367,7 +370,7 @@ export default function AdminArticleForm() {
               onClick={() => callAI("summarize")}
               disabled={aiSummarizing || aiReformatting}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all duration-200 disabled:opacity-50"
-              style={{ background: "hsl(270 60% 55% / 0.10)", color: "hsl(270 55% 40%)", border: "1px solid hsl(270 55% 55% / 0.20)" }}
+              style={{ background: "hsl(270 26% 66% / 0.12)", color: C_MAUVE, border: `1px solid hsl(270 26% 66% / 0.25)` }}
               title="Générer l'extrait automatiquement depuis le contenu de l'article"
             >
               {aiSummarizing ? (
@@ -380,24 +383,24 @@ export default function AdminArticleForm() {
           </div>
           <textarea
             className={inputClass}
-            style={{ ...inputStyle, resize: "vertical", minHeight: "80px" }}
+            style={{ ...INPUT_STYLE, resize: "vertical", minHeight: "80px" }}
             placeholder="Résumé de l'article (2–3 phrases)"
             {...register("excerpt")}
             onFocus={(e) => Object.assign((e.target as HTMLElement).style, inputFocus)}
             onBlur={(e) => Object.assign((e.target as HTMLElement).style, inputBlur)}
           />
           {errors.excerpt?.message && (
-            <p className="text-[11px]" style={{ color: "hsl(0 60% 48%)" }}>{errors.excerpt.message}</p>
+            <p className="text-[11px]" style={{ color: C_CORAL }}>{errors.excerpt.message}</p>
           )}
         </div>
 
         {/* Rich text body */}
         <div className="flex flex-col gap-1.5">
           <div className="flex items-baseline gap-2">
-            <label className="text-[12px] font-medium tracking-wide" style={{ color: "hsl(224 25% 38%)" }}>
+            <label className="text-[12px] font-medium tracking-wide" style={{ color: T_LABEL }}>
               Contenu de l'article
             </label>
-            <span className="text-[11px] font-light" style={{ color: "hsl(224 15% 58%)" }}>
+            <span className="text-[11px] font-light" style={{ color: T_MUTED }}>
               Éditeur riche · import Word ou PDF possible
             </span>
           </div>
@@ -408,7 +411,7 @@ export default function AdminArticleForm() {
           />
           {/* AI reformat */}
           <div className="flex items-center justify-between mt-1">
-            <p className="text-[11px] font-light" style={{ color: "hsl(224 15% 60%)" }}>
+            <p className="text-[11px] font-light" style={{ color: T_MUTED }}>
               L'IA analyse et restructure votre contenu selon les normes rédactionnelles
             </p>
             <button
@@ -416,7 +419,7 @@ export default function AdminArticleForm() {
               onClick={() => callAI("reformat")}
               disabled={aiSummarizing || aiReformatting}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all duration-200 disabled:opacity-50 flex-shrink-0 ml-4"
-              style={{ background: "hsl(218 55% 42% / 0.10)", color: "hsl(218 55% 35%)", border: "1px solid hsl(218 55% 50% / 0.20)" }}
+              style={{ background: "hsl(215 42% 65% / 0.12)", color: C_BLUE, border: `1px solid hsl(215 42% 65% / 0.25)` }}
               title="Améliorer la structure et le style de l'article avec l'IA"
             >
               {aiReformatting ? (
@@ -429,7 +432,7 @@ export default function AdminArticleForm() {
           </div>
           {aiError && (
             <p className="py-2 px-3 rounded-lg text-[12px]"
-              style={{ background: "hsl(0 60% 96%)", color: "hsl(0 60% 40%)", border: "1px solid hsl(0 60% 88%)" }}>
+              style={{ background: "hsl(5 45% 56% / 0.12)", color: C_CORAL, border: `1px solid hsl(5 45% 56% / 0.30)` }}>
               IA : {aiError}
             </p>
           )}
@@ -439,7 +442,7 @@ export default function AdminArticleForm() {
           <Field label="Catégorie *" error={errors.tag?.message}>
             <select
               className={inputClass}
-              style={{ ...inputStyle, cursor: "pointer" }}
+              style={{ ...INPUT_STYLE, cursor: "pointer" }}
               {...register("tag")}
               onFocus={(e) => Object.assign((e.target as HTMLElement).style, inputFocus)}
               onBlur={(e) => Object.assign((e.target as HTMLElement).style, inputBlur)}
@@ -451,7 +454,7 @@ export default function AdminArticleForm() {
           <Field label="Date *" error={errors.date?.message}>
             <input
               className={inputClass}
-              style={inputStyle}
+              style={INPUT_STYLE}
               placeholder="ex: Juillet 2025"
               {...register("date")}
               onFocus={(e) => Object.assign((e.target as HTMLElement).style, inputFocus)}
@@ -463,7 +466,7 @@ export default function AdminArticleForm() {
         <Field label="Temps de lecture *" hint="Calculé automatiquement à partir du contenu" error={errors.reading_time?.message}>
           <input
             className={inputClass}
-            style={inputStyle}
+            style={INPUT_STYLE}
             placeholder="ex: 5 min"
             {...register("reading_time")}
             onInput={() => setReadingTimeManuallyEdited(true)}
@@ -474,46 +477,46 @@ export default function AdminArticleForm() {
 
         <label className="flex items-center gap-3 cursor-pointer select-none">
           <input type="checkbox" className="w-4 h-4 rounded" {...register("featured")} />
-          <span className="text-[13px] font-medium" style={{ color: "hsl(224 40% 30%)" }}>
+          <span className="text-[13px] font-medium" style={{ color: T_LABEL }}>
             Mettre cet article à la une
           </span>
         </label>
 
         {/* ── Articles liés ── */}
-        <div className="rounded-2xl overflow-hidden" style={{ border: "1px solid hsl(224 20% 12% / 0.10)" }}>
+        <div style={{ ...GLASS, borderRadius: "1rem", overflow: "hidden" }}>
           <button
             type="button"
             onClick={() => setRelatedOpen((v) => !v)}
             className="w-full flex items-center justify-between px-5 py-4 text-left transition-colors duration-150"
-            style={{ background: relatedOpen ? "hsl(218 55% 18%)" : "hsl(224 20% 97%)" }}
+            style={{ background: relatedOpen ? "rgba(255,255,255,0.10)" : INNER_BG }}
           >
             <div className="flex items-center gap-2.5">
-              <Link2 className="w-4 h-4" style={{ color: relatedOpen ? "hsl(0 0% 100% / 0.70)" : "hsl(218 50% 42%)" }} />
-              <span className="text-[13px] font-medium" style={{ color: relatedOpen ? "hsl(0 0% 100% / 0.85)" : "hsl(224 40% 30%)" }}>
+              <Link2 className="w-4 h-4" style={{ color: relatedOpen ? T_SECONDARY : C_BLUE }} />
+              <span className="text-[13px] font-medium" style={{ color: relatedOpen ? T_PRIMARY : T_LABEL }}>
                 Articles liés
               </span>
               {selectedRelated.length > 0 && (
                 <span className="text-[10px] tracking-wide px-2 py-0.5 rounded-full font-medium"
-                  style={{ background: relatedOpen ? "hsl(0 0% 100% / 0.16)" : "hsl(218 50% 42% / 0.12)", color: relatedOpen ? "hsl(0 0% 100% / 0.85)" : "hsl(218 50% 38%)" }}>
+                  style={{ background: relatedOpen ? "rgba(255,255,255,0.14)" : "hsl(215 42% 65% / 0.15)", color: relatedOpen ? T_PRIMARY : C_BLUE }}>
                   {selectedRelated.length} sélectionné{selectedRelated.length > 1 ? "s" : ""}
                 </span>
               )}
               {selectedRelated.length === 0 && (
                 <span className="text-[10px] tracking-wide px-2 py-0.5 rounded-full"
-                  style={{ background: relatedOpen ? "hsl(0 0% 100% / 0.12)" : "hsl(224 55% 18% / 0.09)", color: relatedOpen ? "hsl(0 0% 100% / 0.55)" : "hsl(224 40% 45%)" }}>
+                  style={{ background: "rgba(255,255,255,0.08)", color: T_MUTED }}>
                   Optionnel
                 </span>
               )}
             </div>
             <ChevronDown
               className="w-4 h-4 transition-transform duration-300"
-              style={{ transform: relatedOpen ? "rotate(180deg)" : "rotate(0deg)", color: relatedOpen ? "hsl(0 0% 100% / 0.50)" : "hsl(224 20% 52%)" }}
+              style={{ transform: relatedOpen ? "rotate(180deg)" : "rotate(0deg)", color: T_MUTED }}
             />
           </button>
 
           {relatedOpen && (
-            <div className="px-5 py-5 flex flex-col gap-4" style={{ background: "hsl(220 30% 98%)", borderTop: "1px solid hsl(224 20% 12% / 0.07)" }}>
-              <p className="text-[12px] font-light" style={{ color: "hsl(224 15% 52%)" }}>
+            <div className="px-5 py-5 flex flex-col gap-4" style={{ background: INNER_BG, borderTop: `1px solid ${INNER_BORDER}` }}>
+              <p className="text-[12px] font-light" style={{ color: T_MUTED }}>
                 Choisissez jusqu'à 3 articles à afficher dans la section "Pour aller plus loin" en bas de cet article. Sans sélection, les articles récents sont affichés automatiquement.
               </p>
 
@@ -526,7 +529,7 @@ export default function AdminArticleForm() {
                     return (
                       <span key={rid}
                         className="inline-flex items-center gap-1.5 text-[11px] font-medium px-3 py-1 rounded-full"
-                        style={{ background: "hsl(218 45% 42% / 0.10)", color: "hsl(218 45% 36%)", border: "1px solid hsl(218 45% 42% / 0.20)" }}>
+                        style={{ background: "hsl(215 42% 65% / 0.12)", color: C_BLUE, border: `1px solid hsl(215 42% 65% / 0.25)` }}>
                         {a.title.length > 35 ? a.title.slice(0, 35) + "…" : a.title}
                         <button type="button" onClick={() => setSelectedRelated(prev => prev.filter(x => x !== rid))}
                           className="hover:opacity-60 transition-opacity">
@@ -540,13 +543,13 @@ export default function AdminArticleForm() {
 
               {/* Search */}
               <div className="relative">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style={{ color: "hsl(224 15% 55%)" }} />
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style={{ color: T_MUTED }} />
                 <input
                   value={relatedSearch}
                   onChange={(e) => setRelatedSearch(e.target.value)}
                   placeholder="Rechercher un article…"
                   className={inputClass}
-                  style={{ ...inputStyle, paddingLeft: "2.25rem" }}
+                  style={{ ...INPUT_STYLE, paddingLeft: "2.25rem" }}
                   onFocus={(e) => Object.assign((e.target as HTMLElement).style, inputFocus)}
                   onBlur={(e) => Object.assign((e.target as HTMLElement).style, inputBlur)}
                 />
@@ -565,8 +568,8 @@ export default function AdminArticleForm() {
                         key={a.id}
                         className="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-150"
                         style={{
-                          background: checked ? "hsl(218 45% 42% / 0.08)" : "white",
-                          border: `1px solid ${checked ? "hsl(218 45% 42% / 0.22)" : "hsl(224 20% 12% / 0.08)"}`,
+                          background: checked ? "hsl(215 42% 65% / 0.10)" : "transparent",
+                          border: `1px solid ${checked ? "hsl(215 42% 65% / 0.25)" : INNER_BORDER}`,
                           opacity: maxReached ? 0.4 : 1,
                           cursor: maxReached ? "not-allowed" : "pointer",
                         }}
@@ -583,59 +586,59 @@ export default function AdminArticleForm() {
                             }
                           }}
                           className="w-3.5 h-3.5 rounded flex-shrink-0"
-                          style={{ accentColor: "hsl(218 45% 42%)" }}
+                          style={{ accentColor: C_BLUE }}
                         />
                         <div className="flex-1 min-w-0">
-                          <p className="text-[12px] font-medium truncate" style={{ color: "hsl(224 40% 22%)" }}>{a.title}</p>
-                          <p className="text-[10px] font-light" style={{ color: "hsl(224 15% 55%)" }}>{a.tag} · {a.date}</p>
+                          <p className="text-[12px] font-medium truncate" style={{ color: T_PRIMARY }}>{a.title}</p>
+                          <p className="text-[10px] font-light" style={{ color: T_MUTED }}>{a.tag} · {a.date}</p>
                         </div>
                       </label>
                     );
                   })}
               </div>
               {selectedRelated.length >= 3 && (
-                <p className="text-[11px]" style={{ color: "hsl(25 70% 45%)" }}>Maximum 3 articles liés atteint.</p>
+                <p className="text-[11px]" style={{ color: C_GOLD }}>Maximum 3 articles liés atteint.</p>
               )}
             </div>
           )}
         </div>
 
         {/* ── SEO ── */}
-        <div className="rounded-2xl overflow-hidden" style={{ border: "1px solid hsl(224 20% 12% / 0.10)" }}>
+        <div style={{ ...GLASS, borderRadius: "1rem", overflow: "hidden" }}>
           <button
             type="button"
             onClick={() => setSeoOpen((v) => !v)}
             className="w-full flex items-center justify-between px-5 py-4 text-left transition-colors duration-150"
-            style={{ background: seoOpen ? "hsl(224 55% 12%)" : "hsl(224 20% 97%)" }}
+            style={{ background: seoOpen ? "rgba(255,255,255,0.10)" : INNER_BG }}
           >
             <div className="flex items-center gap-2.5">
-              <Search className="w-4 h-4" style={{ color: seoOpen ? "hsl(0 0% 100% / 0.70)" : "hsl(224 40% 42%)" }} />
-              <span className="text-[13px] font-medium" style={{ color: seoOpen ? "hsl(0 0% 100% / 0.85)" : "hsl(224 40% 30%)" }}>
+              <Search className="w-4 h-4" style={{ color: seoOpen ? T_SECONDARY : C_BLUE }} />
+              <span className="text-[13px] font-medium" style={{ color: seoOpen ? T_PRIMARY : T_LABEL }}>
                 Référencement (SEO)
               </span>
               <span className="text-[10px] tracking-wide px-2 py-0.5 rounded-full"
-                style={{ background: seoOpen ? "hsl(0 0% 100% / 0.12)" : "hsl(224 55% 18% / 0.09)", color: seoOpen ? "hsl(0 0% 100% / 0.55)" : "hsl(224 40% 45%)" }}>
+                style={{ background: "rgba(255,255,255,0.08)", color: T_MUTED }}>
                 Optionnel
               </span>
             </div>
             <ChevronDown
               className="w-4 h-4 transition-transform duration-300"
-              style={{ transform: seoOpen ? "rotate(180deg)" : "rotate(0deg)", color: seoOpen ? "hsl(0 0% 100% / 0.50)" : "hsl(224 20% 52%)" }}
+              style={{ transform: seoOpen ? "rotate(180deg)" : "rotate(0deg)", color: T_MUTED }}
             />
           </button>
 
           {seoOpen && (
-            <div className="px-5 py-5 flex flex-col gap-5" style={{ background: "hsl(220 30% 98%)", borderTop: "1px solid hsl(224 20% 12% / 0.07)" }}>
+            <div className="px-5 py-5 flex flex-col gap-5" style={{ background: INNER_BG, borderTop: `1px solid ${INNER_BORDER}` }}>
 
               {/* Slug */}
               <Field label="Slug (URL)" hint="Généré automatiquement · modifiable" error={errors.slug?.message}>
                 <div className="relative">
-                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[12px] select-none pointer-events-none" style={{ color: "hsl(224 15% 58%)" }}>
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[12px] select-none pointer-events-none" style={{ color: T_MUTED }}>
                     /actualites/
                   </span>
                   <input
                     className={inputClass}
-                    style={{ ...inputStyle, paddingLeft: "88px" }}
+                    style={{ ...INPUT_STYLE, paddingLeft: "88px" }}
                     placeholder="mon-article-2026"
                     {...register("slug")}
                     onChange={(e) => {
@@ -653,7 +656,7 @@ export default function AdminArticleForm() {
                 <div className="relative">
                   <input
                     className={inputClass}
-                    style={{ ...inputStyle, paddingRight: "52px" }}
+                    style={{ ...INPUT_STYLE, paddingRight: "52px" }}
                     placeholder={titleValue || "Titre de l'article"}
                     {...register("meta_title")}
                     onFocus={(e) => Object.assign((e.target as HTMLElement).style, inputFocus)}
@@ -661,21 +664,21 @@ export default function AdminArticleForm() {
                   />
                   <span
                     className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[11px] tabular-nums"
-                    style={{ color: metaTitleValue.length > 55 ? "hsl(25 80% 48%)" : "hsl(224 15% 60%)" }}
+                    style={{ color: metaTitleValue.length > 55 ? C_GOLD : T_MUTED }}
                   >
                     {metaTitleValue.length}/60
                   </span>
                 </div>
                 {/* Google SERP preview */}
-                <div className="mt-2 p-3 rounded-xl" style={{ background: "white", border: "1px solid hsl(224 15% 88%)" }}>
-                  <p className="text-[11px] mb-1.5 font-medium" style={{ color: "hsl(224 12% 55%)" }}>Aperçu Google</p>
-                  <p className="text-[15px] font-medium leading-snug mb-0.5" style={{ color: "hsl(220 80% 38%)" }}>
+                <div className="mt-2 p-3 rounded-xl" style={{ background: INNER_BG, border: `1px solid ${INNER_BORDER}` }}>
+                  <p className="text-[11px] mb-1.5 font-medium" style={{ color: T_MUTED }}>Aperçu Google</p>
+                  <p className="text-[15px] font-medium leading-snug mb-0.5" style={{ color: C_BLUE }}>
                     {metaTitleValue || titleValue || "Titre de l'article"}, KANTI
                   </p>
-                  <p className="text-[12px] leading-snug" style={{ color: "hsl(130 30% 28%)" }}>
+                  <p className="text-[12px] leading-snug" style={{ color: T_MUTED }}>
                     {settingsMap["site_domain"] || "votre-domaine.fr"} › actualites › {watch("slug") || "slug"}
                   </p>
-                  <p className="text-[13px] leading-snug mt-1" style={{ color: "hsl(224 10% 38%)" }}>
+                  <p className="text-[13px] leading-snug mt-1" style={{ color: T_SECONDARY }}>
                     {metaDescValue || watch("excerpt") || "Description de l'article..."}
                   </p>
                 </div>
@@ -686,7 +689,7 @@ export default function AdminArticleForm() {
                 <div className="relative">
                   <textarea
                     className={inputClass}
-                    style={{ ...inputStyle, resize: "vertical", minHeight: "72px", paddingRight: "52px", paddingBottom: "28px" }}
+                    style={{ ...INPUT_STYLE, resize: "vertical", minHeight: "72px", paddingRight: "52px", paddingBottom: "28px" }}
                     placeholder={watch("excerpt") || "Description pour les moteurs de recherche…"}
                     {...register("meta_description")}
                     onFocus={(e) => Object.assign((e.target as HTMLElement).style, inputFocus)}
@@ -694,7 +697,7 @@ export default function AdminArticleForm() {
                   />
                   <span
                     className="absolute right-3 bottom-3 text-[11px] tabular-nums"
-                    style={{ color: metaDescValue.length > 140 ? "hsl(25 80% 48%)" : "hsl(224 15% 60%)" }}
+                    style={{ color: metaDescValue.length > 140 ? C_GOLD : T_MUTED }}
                   >
                     {metaDescValue.length}/155
                   </span>
@@ -705,7 +708,7 @@ export default function AdminArticleForm() {
               <Field label="Auteur" hint="Affiché dans les résultats Google et le balisage JSON-LD" error={errors.author_name?.message}>
                 <input
                   className={inputClass}
-                  style={inputStyle}
+                  style={INPUT_STYLE}
                   placeholder="ex: Nom Prénom"
                   {...register("author_name")}
                   onFocus={(e) => Object.assign((e.target as HTMLElement).style, inputFocus)}
@@ -717,7 +720,7 @@ export default function AdminArticleForm() {
               <Field label="Piste audio" hint="URL du fichier audio MP3 ou OGG pour la lecture en ligne" error={errors.audio_url?.message}>
                 <input
                   className={inputClass}
-                  style={inputStyle}
+                  style={INPUT_STYLE}
                   placeholder="https://… /audio.mp3"
                   {...register("audio_url")}
                   onFocus={(e) => Object.assign((e.target as HTMLElement).style, inputFocus)}
@@ -731,7 +734,7 @@ export default function AdminArticleForm() {
 
         {globalError && (
           <p className="py-2.5 px-4 rounded-xl text-[13px]"
-            style={{ background: "hsl(0 60% 96%)", color: "hsl(0 60% 40%)", border: "1px solid hsl(0 60% 88%)" }}>
+            style={{ background: "hsl(5 45% 56% / 0.12)", color: C_CORAL, border: `1px solid hsl(5 45% 56% / 0.30)` }}>
             {globalError}
           </p>
         )}
@@ -741,14 +744,14 @@ export default function AdminArticleForm() {
             type="submit"
             disabled={isSubmitting}
             className="flex-1 py-2.5 rounded-xl text-[14px] font-medium transition-opacity disabled:opacity-60"
-            style={{ background: "hsl(224 60% 18%)", color: "white" }}
+            style={{ background: "hsl(215 42% 65% / 0.18)", color: C_BLUE, border: `1px solid hsl(215 42% 65% / 0.35)` }}
           >
             {isSubmitting ? "Enregistrement…" : isEdit ? "Mettre à jour" : "Publier l'article"}
           </button>
           <Link
             to="/admin/articles"
             className="px-5 py-2.5 rounded-xl text-[14px] font-medium transition-all duration-150"
-            style={{ background: "hsl(224 20% 12% / 0.07)", color: "hsl(224 40% 35%)" }}
+            style={{ background: INNER_BG, color: T_SECONDARY }}
           >
             Annuler
           </Link>

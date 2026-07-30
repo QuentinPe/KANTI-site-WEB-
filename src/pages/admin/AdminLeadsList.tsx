@@ -1,19 +1,9 @@
-﻿import { useState, useMemo, useEffect, useRef } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
-import {
-  Search, Download, BarChart3, X, Phone, Mail,
-  Trash2, Clock, TrendingUp, Users, CheckCircle2, ExternalLink, Archive,
-} from "lucide-react";
-import {
-  getLeads, updateLeadStatus, updateLeadNotes, deleteLead, exportLeadsCSV, createLead,
-} from "@/lib/leadsService";
-import type { Lead, LeadStatus, LeadInput } from "@/lib/leadsService";
-import { ADVISOR_LABELS, ADVISOR_INITIALS, FORMAT_LABELS, TIMING_LABELS } from "@/lib/leadsConfig";
-import {
-  StatusBars, PipelineHealth, bucketLeadsByDay, PERIODS, STATUS_CONFIG, STATUS_ORDER,
-} from "@/components/admin/LeadsVolumeChart";
-import type { PeriodKey } from "@/components/admin/LeadsVolumeChart";
+﻿import {
+  GLASS, GLASS_HOVER_SHADOW, INNER_BG, INNER_BORDER,
+  T_PRIMARY, T_SECONDARY, T_MUTED, T_HEADING, T_LABEL,
+  C_BLUE, C_GOLD, C_SAGE, C_MAUVE, C_CORAL, C_TEAL,
+  INPUT_STYLE, statusChipStyle,
+} from "@/lib/adminTheme";
 
 /* ─── Helpers ─── */
 function fmtDate(iso: string) {
@@ -50,9 +40,9 @@ function computeScore(lead: Lead): { score: number; level: "Élevé" | "Moyen" |
   return { score, level: score >= 70 ? "Élevé" : score >= 40 ? "Moyen" : "Faible" };
 }
 function scoreMeta(level: "Élevé" | "Moyen" | "Faible") {
-  if (level === "Élevé") return { color: "hsl(142 50% 35%)", bg: "hsl(142 50% 35% / 0.10)" };
-  if (level === "Moyen") return { color: "hsl(38 65% 36%)", bg: "hsl(38 65% 36% / 0.10)" };
-  return { color: "hsl(224 15% 50%)", bg: "hsl(224 15% 90%)" };
+  if (level === "Élevé") return { color: C_SAGE, bg: "hsl(158 32% 56% / 0.15)" };
+  if (level === "Moyen") return { color: C_GOLD, bg: "hsl(40 50% 62% / 0.15)" };
+  return { color: T_MUTED, bg: "rgba(255,255,255,0.06)" };
 }
 
 /* ─── Multi-line chart ─── */
@@ -110,32 +100,32 @@ function MultiLineChart({ leads, days }: { leads: Lead[]; days: number }) {
       <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" className="w-full" style={{ height: 140 }}>
         <defs>
           <linearGradient id="mlg-total" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="hsl(218 55% 50%)" stopOpacity="0.18" />
-            <stop offset="100%" stopColor="hsl(218 55% 50%)" stopOpacity="0.02" />
+            <stop offset="0%" stopColor="hsl(215 42% 65%)" stopOpacity="0.22" />
+            <stop offset="100%" stopColor="hsl(215 42% 65%)" stopOpacity="0.02" />
           </linearGradient>
           <linearGradient id="mlg-traite" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="hsl(200 65% 52%)" stopOpacity="0.12" />
-            <stop offset="100%" stopColor="hsl(200 65% 52%)" stopOpacity="0.01" />
+            <stop offset="0%" stopColor="hsl(180 32% 54%)" stopOpacity="0.16" />
+            <stop offset="100%" stopColor="hsl(180 32% 54%)" stopOpacity="0.01" />
           </linearGradient>
         </defs>
         {[0.25, 0.5, 0.75, 1].map((f) => (
           <line key={f} x1={0} y1={H - padY - f * (H - padY * 2)} x2={W} y2={H - padY - f * (H - padY * 2)}
-            stroke="hsl(224 20% 12% / 0.05)" strokeWidth="0.8" />
+            stroke="rgba(255,255,255,0.07)" strokeWidth="0.8" />
         ))}
         {totalLine.area && <path d={totalLine.area} fill="url(#mlg-total)" />}
         {traiteLine.area && <path d={traiteLine.area} fill="url(#mlg-traite)" />}
-        {totalLine.path && <path d={totalLine.path} fill="none" stroke="hsl(218 55% 48%)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />}
-        {traiteLine.path && <path d={traiteLine.path} fill="none" stroke="hsl(200 65% 52%)" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />}
-        {convertiLine.path && <path d={convertiLine.path} fill="none" stroke="hsl(142 52% 42%)" strokeWidth="1.4" strokeDasharray="4 2" strokeLinecap="round" />}
+        {totalLine.path && <path d={totalLine.path} fill="none" stroke={C_BLUE} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />}
+        {traiteLine.path && <path d={traiteLine.path} fill="none" stroke={C_TEAL} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />}
+        {convertiLine.path && <path d={convertiLine.path} fill="none" stroke={C_SAGE} strokeWidth="1.4" strokeDasharray="4 2" strokeLinecap="round" />}
         {totalLine.pts.length > 0 && (
           <circle cx={totalLine.pts[totalLine.pts.length - 1].x} cy={totalLine.pts[totalLine.pts.length - 1].y}
-            r="3" fill="white" stroke="hsl(218 55% 48%)" strokeWidth="1.8" />
+            r="3" fill="rgba(255,255,255,0.9)" stroke={C_BLUE} strokeWidth="1.8" />
         )}
       </svg>
       <div className="relative" style={{ height: 18 }}>
         {xLabels.map(({ label, i }) => (
           <span key={i} className="absolute text-[9px] -translate-x-1/2 tabular-nums"
-            style={{ left: `${(i / Math.max(count - 1, 1)) * 100}%`, color: "hsl(224 12% 60%)" }}>
+            style={{ left: `${(i / Math.max(count - 1, 1)) * 100}%`, color: T_MUTED }}>
             {label}
           </span>
         ))}
@@ -146,7 +136,7 @@ function MultiLineChart({ leads, days }: { leads: Lead[]; days: number }) {
 
 /* ─── Donut chart ─── */
 function DonutChart({ leads }: { leads: Lead[] }) {
-  const COLORS = ["hsl(218 55% 52%)", "hsl(38 75% 48%)", "hsl(142 50% 42%)", "hsl(280 50% 52%)", "hsl(0 55% 52%)"];
+  const COLORS = [C_BLUE, C_GOLD, C_SAGE, C_MAUVE, C_CORAL];
   const groups = useMemo(() => {
     const map = new Map<string, number>();
     leads.forEach((l) => { const src = getSource(l); map.set(src, (map.get(src) ?? 0) + 1); });
@@ -156,7 +146,7 @@ function DonutChart({ leads }: { leads: Lead[] }) {
   }, [leads]);
 
   const total = leads.length;
-  if (total === 0) return <p className="text-[11px] text-center py-4" style={{ color: "hsl(224 15% 60%)" }}>Aucune donnée</p>;
+  if (total === 0) return <p className="text-[11px] text-center py-4" style={{ color: T_MUTED }}>Aucune donnée</p>;
 
   const cx = 50, cy = 50, R = 42, r = 26;
   let angle = -Math.PI / 2;
@@ -179,16 +169,16 @@ function DonutChart({ leads }: { leads: Lead[] }) {
     <div className="flex items-center gap-5">
       <svg viewBox="0 0 100 100" className="flex-shrink-0" style={{ width: 88, height: 88 }}>
         {arcs.map((a, i) => <path key={i} d={a.path} fill={a.color} />)}
-        <text x={cx} y={cy - 5} textAnchor="middle" fontSize="13" fontWeight="600" fill="hsl(224 55% 12%)">{total}</text>
-        <text x={cx} y={cy + 9} textAnchor="middle" fontSize="7" fill="hsl(224 15% 55%)">Total</text>
+        <text x={cx} y={cy - 5} textAnchor="middle" fontSize="13" fontWeight="600" fill={T_PRIMARY}>{total}</text>
+        <text x={cx} y={cy + 9} textAnchor="middle" fontSize="7" fill={T_MUTED}>Total</text>
       </svg>
       <div className="space-y-2 flex-1 min-w-0">
         {arcs.map((a) => (
           <div key={a.label} className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: a.color }} />
-            <span className="text-[11px] font-light truncate flex-1" style={{ color: "hsl(224 20% 38%)" }}>{a.label}</span>
-            <span className="text-[11px] font-medium tabular-nums flex-shrink-0" style={{ color: "hsl(224 40% 25%)" }}>{a.count}</span>
-            <span className="text-[10px] flex-shrink-0" style={{ color: "hsl(224 15% 58%)" }}>({Math.round(a.count / total * 100)}%)</span>
+            <span className="text-[11px] font-light truncate flex-1" style={{ color: T_SECONDARY }}>{a.label}</span>
+            <span className="text-[11px] font-medium tabular-nums flex-shrink-0" style={{ color: T_PRIMARY }}>{a.count}</span>
+            <span className="text-[10px] flex-shrink-0" style={{ color: T_MUTED }}>({Math.round(a.count / total * 100)}%)</span>
           </div>
         ))}
       </div>
@@ -211,28 +201,30 @@ function ChartsModal({ leads, onClose }: { leads: Lead[]; onClose: () => void })
       style={{ zIndex: 300, background: "hsl(224 60% 6% / 0.55)", backdropFilter: "blur(6px)" }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
       <div className="w-full max-w-3xl rounded-2xl overflow-hidden"
-        style={{ background: "white", boxShadow: "0 32px 80px -20px hsl(224 60% 12% / 0.22)" }}>
-        <div className="flex items-center justify-between px-7 py-5" style={{ borderBottom: "1px solid hsl(224 20% 12% / 0.08)" }}>
+        style={{ ...GLASS, boxShadow: "0 32px 80px -20px rgba(0,0,0,0.5)" }}>
+        <div className="flex items-center justify-between px-7 py-5" style={{ borderBottom: `1px solid ${INNER_BORDER}` }}>
           <div>
-            <h2 className="text-lg font-heading font-light" style={{ color: "hsl(224 55% 12%)" }}>Analyse des leads</h2>
-            <p className="text-[12px] font-light mt-0.5" style={{ color: "hsl(224 15% 52%)" }}>
+            <h2 className="text-lg font-heading font-light" style={{ color: T_PRIMARY }}>Analyse des leads</h2>
+            <p className="text-[12px] font-light mt-0.5" style={{ color: T_SECONDARY }}>
               {totalInPeriod} leads · {convertiInPeriod} convertis · {taux}% de conversion
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1 p-1 rounded-lg" style={{ background: "hsl(220 25% 97%)" }}>
+            <div className="flex items-center gap-1 p-1 rounded-lg" style={{ background: INNER_BG }}>
               {PERIODS.map((p) => (
                 <button key={p.key} onClick={() => setPeriod(p.key)}
                   className="px-2.5 py-1 rounded-md text-[11px] font-medium transition-all"
                   style={{
-                    background: period === p.key ? "white" : "transparent",
-                    color: period === p.key ? "hsl(218 48% 38%)" : "hsl(224 15% 52%)",
-                    boxShadow: period === p.key ? "0 1px 3px -1px hsl(224 20% 12% / 0.12)" : "none",
+                    background: period === p.key ? "rgba(255,255,255,0.12)" : "transparent",
+                    color: period === p.key ? C_BLUE : T_SECONDARY,
+                    boxShadow: "none",
                   }}>{p.label}</button>
               ))}
             </div>
-            <button onClick={onClose} className="p-2 rounded-lg hover:bg-[hsl(224_20%_12%/0.06)]">
-              <X className="w-4 h-4" style={{ color: "hsl(224 20% 45%)" }} />
+            <button onClick={onClose} className="p-2 rounded-lg"
+              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.08)"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
+              <X className="w-4 h-4" style={{ color: T_SECONDARY }} />
             </button>
           </div>
         </div>
@@ -246,19 +238,19 @@ function ChartsModal({ leads, onClose }: { leads: Lead[]; onClose: () => void })
               { label: "Max / j", value: maxBucket },
             ].map((s) => (
               <div key={s.label} className="rounded-xl p-3 text-center"
-                style={{ background: "hsl(220 25% 97%)", border: "1px solid hsl(224 20% 12% / 0.07)" }}>
-                <p className="text-xl font-heading font-light tabular-nums" style={{ color: "hsl(224 55% 12%)" }}>{s.value}</p>
-                <p className="text-[10px] uppercase tracking-wide mt-0.5" style={{ color: "hsl(224 15% 55%)" }}>{s.label}</p>
+                style={{ background: INNER_BG, border: `1px solid ${INNER_BORDER}` }}>
+                <p className="text-xl font-heading font-light tabular-nums" style={{ color: T_PRIMARY }}>{s.value}</p>
+                <p className="text-[10px] uppercase tracking-wide mt-0.5" style={{ color: T_MUTED }}>{s.label}</p>
               </div>
             ))}
           </div>
-          <div className="grid grid-cols-2 gap-6 pt-2" style={{ borderTop: "1px solid hsl(224 20% 12% / 0.07)" }}>
+          <div className="grid grid-cols-2 gap-6 pt-2" style={{ borderTop: `1px solid ${INNER_BORDER}` }}>
             <div>
-              <p className="text-[11px] font-medium uppercase tracking-wide mb-4" style={{ color: "hsl(224 15% 52%)" }}>Répartition</p>
+              <p className="text-[11px] font-medium uppercase tracking-wide mb-4" style={{ color: T_SECONDARY }}>Répartition</p>
               <StatusBars leads={leads} />
             </div>
             <div>
-              <p className="text-[11px] font-medium uppercase tracking-wide mb-4" style={{ color: "hsl(224 15% 52%)" }}>Délai de traitement</p>
+              <p className="text-[11px] font-medium uppercase tracking-wide mb-4" style={{ color: T_SECONDARY }}>Délai de traitement</p>
               <PipelineHealth leads={leads} />
             </div>
           </div>
@@ -289,80 +281,81 @@ function NewLeadModal({ onClose }: { onClose: () => void }) {
   };
 
   const inputCls = "w-full px-3 py-2 rounded-lg text-[13px] outline-none";
-  const inputSt = { background: "hsl(220 25% 97%)", border: "1px solid hsl(224 20% 12% / 0.10)", color: "hsl(224 30% 25%)" };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center p-4"
       style={{ zIndex: 300, background: "hsl(224 60% 6% / 0.50)", backdropFilter: "blur(5px)" }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
       <div className="w-full max-w-lg rounded-2xl overflow-hidden"
-        style={{ background: "white", boxShadow: "0 24px 60px -16px hsl(224 60% 12% / 0.22)" }}>
-        <div className="flex items-center justify-between px-6 py-5" style={{ borderBottom: "1px solid hsl(224 20% 12% / 0.08)" }}>
-          <h2 className="text-[16px] font-medium" style={{ color: "hsl(224 55% 12%)" }}>Nouveau lead</h2>
-          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-[hsl(224_20%_12%/0.06)]">
-            <X className="w-4 h-4" style={{ color: "hsl(224 20% 45%)" }} />
+        style={{ ...GLASS, boxShadow: "0 24px 60px -16px rgba(0,0,0,0.5)" }}>
+        <div className="flex items-center justify-between px-6 py-5" style={{ borderBottom: `1px solid ${INNER_BORDER}` }}>
+          <h2 className="text-[16px] font-medium" style={{ color: T_PRIMARY }}>Nouveau lead</h2>
+          <button onClick={onClose} className="p-1.5 rounded-lg"
+            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.08)"; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
+            <X className="w-4 h-4" style={{ color: T_SECONDARY }} />
           </button>
         </div>
         <div className="px-6 py-5 space-y-4">
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-[11px] font-medium mb-1.5" style={{ color: "hsl(224 20% 48%)" }}>Nom *</label>
-              <input className={inputCls} style={inputSt} placeholder="Jean Dupont"
+              <label className="block text-[11px] font-medium mb-1.5" style={{ color: T_LABEL }}>Nom *</label>
+              <input className={inputCls} style={{ ...INPUT_STYLE }} placeholder="Jean Dupont"
                 value={form.nom ?? ""} onChange={(e) => set("nom", e.target.value)} />
             </div>
             <div>
-              <label className="block text-[11px] font-medium mb-1.5" style={{ color: "hsl(224 20% 48%)" }}>Email *</label>
-              <input type="email" className={inputCls} style={inputSt} placeholder="jean@example.com"
+              <label className="block text-[11px] font-medium mb-1.5" style={{ color: T_LABEL }}>Email *</label>
+              <input type="email" className={inputCls} style={{ ...INPUT_STYLE }} placeholder="jean@example.com"
                 value={form.email ?? ""} onChange={(e) => set("email", e.target.value)} />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-[11px] font-medium mb-1.5" style={{ color: "hsl(224 20% 48%)" }}>Téléphone</label>
-              <input className={inputCls} style={inputSt} placeholder="06 XX XX XX XX"
+              <label className="block text-[11px] font-medium mb-1.5" style={{ color: T_LABEL }}>Téléphone</label>
+              <input className={inputCls} style={{ ...INPUT_STYLE }} placeholder="06 XX XX XX XX"
                 value={form.telephone ?? ""} onChange={(e) => set("telephone", e.target.value)} />
             </div>
             <div>
-              <label className="block text-[11px] font-medium mb-1.5" style={{ color: "hsl(224 20% 48%)" }}>Sujet</label>
-              <input className={inputCls} style={inputSt} placeholder="Retraite, immobilier…"
+              <label className="block text-[11px] font-medium mb-1.5" style={{ color: T_LABEL }}>Sujet</label>
+              <input className={inputCls} style={{ ...INPUT_STYLE }} placeholder="Retraite, immobilier…"
                 value={form.sujet ?? ""} onChange={(e) => set("sujet", e.target.value)} />
             </div>
           </div>
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <label className="block text-[11px] font-medium mb-1.5" style={{ color: "hsl(224 20% 48%)" }}>Conseiller</label>
-              <select className={inputCls} style={inputSt} value={form.conseiller ?? "any"} onChange={(e) => set("conseiller", e.target.value)}>
+              <label className="block text-[11px] font-medium mb-1.5" style={{ color: T_LABEL }}>Conseiller</label>
+              <select className={inputCls} style={{ ...INPUT_STYLE }} value={form.conseiller ?? "any"} onChange={(e) => set("conseiller", e.target.value)}>
                 {Object.entries(ADVISOR_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-[11px] font-medium mb-1.5" style={{ color: "hsl(224 20% 48%)" }}>Format</label>
-              <select className={inputCls} style={inputSt} value={form.format ?? "visio"} onChange={(e) => set("format", e.target.value)}>
+              <label className="block text-[11px] font-medium mb-1.5" style={{ color: T_LABEL }}>Format</label>
+              <select className={inputCls} style={{ ...INPUT_STYLE }} value={form.format ?? "visio"} onChange={(e) => set("format", e.target.value)}>
                 {Object.entries(FORMAT_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-[11px] font-medium mb-1.5" style={{ color: "hsl(224 20% 48%)" }}>Disponibilité</label>
-              <select className={inputCls} style={inputSt} value={form.timing ?? "asap"} onChange={(e) => set("timing", e.target.value)}>
+              <label className="block text-[11px] font-medium mb-1.5" style={{ color: T_LABEL }}>Disponibilité</label>
+              <select className={inputCls} style={{ ...INPUT_STYLE }} value={form.timing ?? "asap"} onChange={(e) => set("timing", e.target.value)}>
                 {Object.entries(TIMING_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
               </select>
             </div>
           </div>
           <div>
-            <label className="block text-[11px] font-medium mb-1.5" style={{ color: "hsl(224 20% 48%)" }}>Message</label>
-            <textarea className={inputCls} style={{ ...inputSt, resize: "vertical", minHeight: 72 }} rows={3}
+            <label className="block text-[11px] font-medium mb-1.5" style={{ color: T_LABEL }}>Message</label>
+            <textarea className={inputCls} style={{ ...INPUT_STYLE, resize: "vertical", minHeight: 72 }} rows={3}
               placeholder="Contexte ou besoin du prospect…"
               value={form.message ?? ""} onChange={(e) => set("message", e.target.value)} />
           </div>
         </div>
-        <div className="flex justify-end gap-3 px-6 py-4" style={{ borderTop: "1px solid hsl(224 20% 12% / 0.08)" }}>
+        <div className="flex justify-end gap-3 px-6 py-4" style={{ borderTop: `1px solid ${INNER_BORDER}` }}>
           <button onClick={onClose} className="px-4 py-2 rounded-xl text-[13px]"
-            style={{ background: "hsl(220 25% 97%)", color: "hsl(224 20% 45%)", border: "1px solid hsl(224 20% 12% / 0.10)" }}>
+            style={{ background: INNER_BG, color: T_SECONDARY, border: `1px solid ${INNER_BORDER}` }}>
             Annuler
           </button>
           <button onClick={handleSave} disabled={saving}
             className="px-5 py-2 rounded-xl text-[13px] font-medium disabled:opacity-50"
-            style={{ background: "hsl(224 60% 18%)", color: "white" }}>
+            style={{ background: "hsl(215 42% 65% / 0.18)", color: C_BLUE, border: `1px solid hsl(215 42% 65% / 0.30)` }}>
             {saving ? "Création…" : "Créer le lead"}
           </button>
         </div>
@@ -403,22 +396,24 @@ function LeadDetailPanel({ lead, onClose }: { lead: Lead; onClose: () => void })
       <div className="fixed inset-0" style={{ zIndex: 200, background: "hsl(224 60% 6% / 0.30)" }} onClick={onClose} />
       {/* Panel */}
       <div className="fixed right-0 top-0 h-full w-full max-w-md flex flex-col"
-        style={{ zIndex: 201, background: "white", borderLeft: "1px solid hsl(224 20% 12% / 0.10)", boxShadow: "-24px 0 60px -20px hsl(224 60% 12% / 0.14)" }}>
-        <div className="flex items-start justify-between px-6 py-5" style={{ borderBottom: "1px solid hsl(224 20% 12% / 0.08)" }}>
+        style={{ zIndex: 201, ...GLASS, borderLeft: `1px solid ${INNER_BORDER}`, boxShadow: "-24px 0 60px -20px rgba(0,0,0,0.4)", borderRadius: 0 }}>
+        <div className="flex items-start justify-between px-6 py-5" style={{ borderBottom: `1px solid ${INNER_BORDER}` }}>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full flex items-center justify-center text-[13px] font-semibold flex-shrink-0"
               style={{ background: `hsl(${hue} 55% 88%)`, color: `hsl(${hue} 55% 28%)` }}>
               {getInitials(lead.nom)}
             </div>
             <div>
-              <p className="text-[15px] font-medium" style={{ color: "hsl(224 55% 12%)" }}>{lead.nom}</p>
-              <a href={`mailto:${lead.email}`} className="text-[12px] font-light hover:underline" style={{ color: "hsl(218 45% 40%)" }}>
+              <p className="text-[15px] font-medium" style={{ color: T_PRIMARY }}>{lead.nom}</p>
+              <a href={`mailto:${lead.email}`} className="text-[12px] font-light hover:underline" style={{ color: C_BLUE }}>
                 {lead.email}
               </a>
             </div>
           </div>
-          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-[hsl(224_20%_12%/0.06)]">
-            <X className="w-4 h-4" style={{ color: "hsl(224 20% 45%)" }} />
+          <button onClick={onClose} className="p-1.5 rounded-lg"
+            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.08)"; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
+            <X className="w-4 h-4" style={{ color: T_SECONDARY }} />
           </button>
         </div>
 
@@ -443,13 +438,13 @@ function LeadDetailPanel({ lead, onClose }: { lead: Lead; onClose: () => void })
               { label: "Reçu le",      value: fmtDate(lead.created_at) },
             ].map((f) => (
               <div key={f.label}>
-                <p className="text-[10px] uppercase tracking-[0.18em] font-medium mb-0.5" style={{ color: "hsl(224 15% 58%)" }}>{f.label}</p>
+                <p className="text-[10px] uppercase tracking-[0.18em] font-medium mb-0.5" style={{ color: T_MUTED }}>{f.label}</p>
                 {f.label === "Téléphone" && lead.telephone ? (
-                  <a href={`tel:${lead.telephone}`} className="text-[13px] font-light hover:underline" style={{ color: "hsl(218 45% 38%)" }}>
+                  <a href={`tel:${lead.telephone}`} className="text-[13px] font-light hover:underline" style={{ color: C_BLUE }}>
                     {lead.telephone}
                   </a>
                 ) : (
-                  <p className="text-[13px] font-light" style={{ color: "hsl(224 25% 30%)" }}>{f.value}</p>
+                  <p className="text-[13px] font-light" style={{ color: T_SECONDARY }}>{f.value}</p>
                 )}
               </div>
             ))}
@@ -457,13 +452,13 @@ function LeadDetailPanel({ lead, onClose }: { lead: Lead; onClose: () => void })
 
           {lead.message && (
             <div>
-              <p className="text-[10px] uppercase tracking-[0.18em] font-medium mb-2" style={{ color: "hsl(224 15% 58%)" }}>Message</p>
-              <p className="text-[13px] font-light leading-relaxed" style={{ color: "hsl(224 20% 32%)" }}>{lead.message}</p>
+              <p className="text-[10px] uppercase tracking-[0.18em] font-medium mb-2" style={{ color: T_MUTED }}>Message</p>
+              <p className="text-[13px] font-light leading-relaxed" style={{ color: T_SECONDARY }}>{lead.message}</p>
             </div>
           )}
 
           <div>
-            <p className="text-[10px] uppercase tracking-[0.18em] font-medium mb-2" style={{ color: "hsl(224 15% 58%)" }}>Changer le statut</p>
+            <p className="text-[10px] uppercase tracking-[0.18em] font-medium mb-2" style={{ color: T_MUTED }}>Changer le statut</p>
             <div className="flex flex-wrap gap-1.5">
               {STATUS_ORDER.filter((s) => s !== lead.status).map((s) => {
                 const c = STATUS_CONFIG[s];
@@ -479,46 +474,45 @@ function LeadDetailPanel({ lead, onClose }: { lead: Lead; onClose: () => void })
           </div>
 
           <div>
-            <p className="text-[10px] uppercase tracking-[0.18em] font-medium mb-2" style={{ color: "hsl(224 15% 58%)" }}>Notes internes</p>
+            <p className="text-[10px] uppercase tracking-[0.18em] font-medium mb-2" style={{ color: T_MUTED }}>Notes internes</p>
             <textarea value={notes} rows={3}
               onChange={(e) => { setNotes(e.target.value); setNotesDirty(e.target.value !== (lead.notes ?? "")); }}
               placeholder="Suivi, rappels, observations…"
               className="w-full resize-none rounded-xl px-3.5 py-2.5 text-[13px] font-light outline-none transition-all"
               style={{
-                background: "hsl(220 25% 97%)",
-                border: `1px solid ${notesDirty ? "hsl(218 45% 42% / 0.4)" : "hsl(224 20% 12% / 0.10)"}`,
-                color: "hsl(224 30% 25%)",
+                ...INPUT_STYLE,
+                border: `1px solid ${notesDirty ? `${C_BLUE}66` : INNER_BORDER}`,
               }} />
             {notesDirty && (
               <button onClick={() => notesMut.mutate(notes)} disabled={notesMut.isPending}
                 className="mt-2 text-[11px] font-medium px-3 py-1.5 rounded-lg disabled:opacity-60"
-                style={{ background: "hsl(218 45% 42%)", color: "white" }}>
+                style={{ background: "hsl(215 42% 65% / 0.18)", color: C_BLUE, border: `1px solid hsl(215 42% 65% / 0.30)` }}>
                 {notesMut.isPending ? "Enregistrement…" : "Enregistrer"}
               </button>
             )}
           </div>
         </div>
 
-        <div className="px-6 py-4 flex items-center gap-3" style={{ borderTop: "1px solid hsl(224 20% 12% / 0.08)" }}>
+        <div className="px-6 py-4 flex items-center gap-3" style={{ borderTop: `1px solid ${INNER_BORDER}` }}>
           {lead.telephone && (
             <a href={`tel:${lead.telephone}`}
               onClick={() => { if (lead.status !== "appele") statusMut.mutate("appele"); }}
               className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-[13px] font-medium"
-              style={{ background: "hsl(218 55% 42% / 0.08)", color: "hsl(218 50% 36%)", border: "1px solid hsl(218 55% 42% / 0.18)" }}>
+              style={{ background: "hsl(215 42% 65% / 0.12)", color: C_BLUE, border: `1px solid hsl(215 42% 65% / 0.25)` }}>
               <Phone className="w-4 h-4" />Appeler
             </a>
           )}
           <a href={`mailto:${lead.email}`}
             className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-[13px] font-medium"
-            style={{ background: "hsl(220 25% 97%)", color: "hsl(224 30% 38%)", border: "1px solid hsl(224 20% 12% / 0.10)" }}>
+            style={{ background: INNER_BG, color: T_SECONDARY, border: `1px solid ${INNER_BORDER}` }}>
             <Mail className="w-4 h-4" />Email
           </a>
           {lead.status !== "archive" && (
             <button onClick={() => { statusMut.mutate("archive"); onClose(); }}
               title="Archiver ce lead"
               className="p-2.5 rounded-xl transition-colors"
-              style={{ color: "hsl(38 65% 38%)", border: "1px solid hsl(38 65% 42% / 0.20)" }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(38 65% 42% / 0.10)"; }}
+              style={{ color: C_GOLD, border: `1px solid hsl(40 50% 62% / 0.25)` }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(40 50% 62% / 0.12)"; }}
               onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
               <Archive className="w-4 h-4" />
             </button>
@@ -526,8 +520,8 @@ function LeadDetailPanel({ lead, onClose }: { lead: Lead; onClose: () => void })
           <button onClick={() => { if (confirm(`Supprimer le lead de ${lead.nom} ?`)) deleteMut.mutate(); }}
             title="Supprimer définitivement"
             className="p-2.5 rounded-xl transition-colors"
-            style={{ color: "hsl(0 55% 48%)", border: "1px solid hsl(0 55% 52% / 0.18)" }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(0 55% 96%)"; }}
+            style={{ color: C_CORAL, border: `1px solid hsl(5 45% 56% / 0.25)` }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(5 45% 56% / 0.12)"; }}
             onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
             <Trash2 className="w-4 h-4" />
           </button>
@@ -556,18 +550,18 @@ function LeadTableRow({ lead, onClick, selected, onSelect, seen }: {
   return (
     <tr className="group transition-colors cursor-pointer"
       style={{
-        borderBottom: "1px solid hsl(224 20% 12% / 0.06)",
-        background: selected ? "hsl(218 55% 42% / 0.04)" : isUnseen ? "hsl(38 75% 52% / 0.05)" : "white",
-        borderLeft: isUnseen ? "3px solid hsl(38 75% 52%)" : "3px solid transparent",
+        borderBottom: `1px solid ${INNER_BORDER}`,
+        background: selected ? "hsl(215 42% 65% / 0.08)" : isUnseen ? "hsl(40 50% 62% / 0.08)" : "transparent",
+        borderLeft: isUnseen ? `3px solid ${C_GOLD}` : "3px solid transparent",
       }}
-      onMouseEnter={(e) => { if (!selected) (e.currentTarget as HTMLElement).style.background = isUnseen ? "hsl(38 75% 52% / 0.09)" : "hsl(220 30% 99%)"; }}
-      onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = selected ? "hsl(218 55% 42% / 0.04)" : isUnseen ? "hsl(38 75% 52% / 0.05)" : "white"; }}
+      onMouseEnter={(e) => { if (!selected) (e.currentTarget as HTMLElement).style.background = isUnseen ? "hsl(40 50% 62% / 0.12)" : INNER_BG; }}
+      onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = selected ? "hsl(215 42% 65% / 0.08)" : isUnseen ? "hsl(40 50% 62% / 0.08)" : "transparent"; }}
       onClick={onClick}>
 
       {/* Checkbox */}
       <td className="pl-5 pr-2 py-3.5 w-8" onClick={(e) => e.stopPropagation()}>
         <input type="checkbox" checked={selected} onChange={(e) => onSelect(e.target.checked)}
-          className="w-3.5 h-3.5 rounded" style={{ accentColor: "hsl(218 55% 42%)" }} />
+          className="w-3.5 h-3.5 rounded" style={{ accentColor: C_BLUE }} />
       </td>
 
       {/* Lead */}
@@ -579,12 +573,12 @@ function LeadTableRow({ lead, onClick, selected, onSelect, seen }: {
           </div>
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <p className="text-[13px] font-medium truncate" style={{ color: "hsl(224 50% 15%)" }}>{lead.nom}</p>
+              <p className="text-[13px] font-medium truncate" style={{ color: T_PRIMARY }}>{lead.nom}</p>
               {isUnseen && (
-                <span className="flex-shrink-0 w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: "hsl(38 75% 52%)" }} />
+                <span className="flex-shrink-0 w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: C_GOLD }} />
               )}
             </div>
-            <p className="text-[11px] font-light truncate" style={{ color: "hsl(224 15% 55%)" }}>{lead.email}</p>
+            <p className="text-[11px] font-light truncate" style={{ color: T_SECONDARY }}>{lead.email}</p>
           </div>
         </div>
       </td>
@@ -592,7 +586,7 @@ function LeadTableRow({ lead, onClick, selected, onSelect, seen }: {
       {/* Source */}
       <td className="py-3.5 pr-4">
         <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium"
-          style={{ background: "hsl(218 55% 42% / 0.08)", color: "hsl(218 48% 38%)" }}>
+          style={{ background: "hsl(215 42% 65% / 0.12)", color: C_BLUE }}>
           {getSource(lead)}
         </span>
       </td>
@@ -614,7 +608,7 @@ function LeadTableRow({ lead, onClick, selected, onSelect, seen }: {
       {/* Score */}
       <td className="py-3.5 pr-4">
         <div className="flex items-center gap-2">
-          <span className="text-[13px] font-medium tabular-nums" style={{ color: "hsl(224 50% 18%)" }}>{score}</span>
+          <span className="text-[13px] font-medium tabular-nums" style={{ color: T_PRIMARY }}>{score}</span>
           <span className="text-[10px] font-medium px-1.5 py-0.5 rounded" style={{ background: levelBg, color: levelColor }}>
             {level}
           </span>
@@ -626,21 +620,21 @@ function LeadTableRow({ lead, onClick, selected, onSelect, seen }: {
         {lead.conseiller && lead.conseiller !== "any" ? (
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold flex-shrink-0"
-              style={{ background: "hsl(218 55% 42% / 0.14)", color: "hsl(218 50% 36%)" }}>
+              style={{ background: "hsl(215 42% 65% / 0.15)", color: C_BLUE }}>
               {ADVISOR_INITIALS[lead.conseiller] ?? "?"}
             </div>
-            <span className="text-[12px] font-light truncate" style={{ color: "hsl(224 25% 38%)" }}>
+            <span className="text-[12px] font-light truncate" style={{ color: T_LABEL }}>
               {ADVISOR_LABELS[lead.conseiller] ?? lead.conseiller}
             </span>
           </div>
         ) : (
-          <span className="text-[12px]" style={{ color: "hsl(224 15% 60%)" }}>—</span>
+          <span className="text-[12px]" style={{ color: T_MUTED }}>—</span>
         )}
       </td>
 
       {/* Date */}
       <td className="py-3.5 pr-4">
-        <p className="text-[12px] font-light tabular-nums" style={{ color: "hsl(224 15% 48%)" }}>
+        <p className="text-[12px] font-light tabular-nums" style={{ color: T_SECONDARY }}>
           {fmtDate(lead.created_at)}
         </p>
       </td>
@@ -651,16 +645,16 @@ function LeadTableRow({ lead, onClick, selected, onSelect, seen }: {
           {lead.telephone && (
             <a href={`tel:${lead.telephone}`}
               className="p-1.5 rounded-lg transition-colors"
-              style={{ color: "hsl(200 65% 38%)" }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(200 65% 38% / 0.10)"; }}
+              style={{ color: C_TEAL }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(180 32% 54% / 0.12)"; }}
               onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
               <Phone className="w-3.5 h-3.5" />
             </a>
           )}
           <a href={`mailto:${lead.email}`}
             className="p-1.5 rounded-lg transition-colors"
-            style={{ color: "hsl(218 50% 42%)" }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(218 50% 42% / 0.10)"; }}
+            style={{ color: C_BLUE }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(215 42% 65% / 0.12)"; }}
             onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
             <Mail className="w-3.5 h-3.5" />
           </a>
@@ -797,44 +791,44 @@ export default function AdminLeadsList() {
   ];
 
   const statCards = [
-    { label: "Total leads",       value: counts.tous,       t: trend(leadsInPeriod.length, leadsInPrev.length),                                                                                          icon: Users,         color: "hsl(218 55% 48%)" },
-    { label: "Nouveaux leads",    value: counts.nouveau,    t: trend(leadsInPeriod.filter((l) => l.status === "nouveau").length,  leadsInPrev.filter((l) => l.status === "nouveau").length),             icon: TrendingUp,    color: "hsl(200 65% 42%)" },
-    { label: "Convertis",         value: counts.converti,   t: trend(leadsInPeriod.filter((l) => l.status === "converti").length, leadsInPrev.filter((l) => l.status === "converti").length),            icon: CheckCircle2,  color: "hsl(142 50% 38%)" },
-    { label: "Taux de conversion",value: `${conversionRate}%`, t: null,                                                                                                                                   icon: Clock,         color: "hsl(38 70% 42%)" },
+    { label: "Total leads",       value: counts.tous,       t: trend(leadsInPeriod.length, leadsInPrev.length),                                                                                          icon: Users,         color: C_BLUE,  iconBg: "hsl(215 42% 65% / 0.12)" },
+    { label: "Nouveaux leads",    value: counts.nouveau,    t: trend(leadsInPeriod.filter((l) => l.status === "nouveau").length,  leadsInPrev.filter((l) => l.status === "nouveau").length),             icon: TrendingUp,    color: C_TEAL,  iconBg: "hsl(180 32% 54% / 0.12)" },
+    { label: "Convertis",         value: counts.converti,   t: trend(leadsInPeriod.filter((l) => l.status === "converti").length, leadsInPrev.filter((l) => l.status === "converti").length),            icon: CheckCircle2,  color: C_SAGE,  iconBg: "hsl(158 32% 56% / 0.12)" },
+    { label: "Taux de conversion",value: `${conversionRate}%`, t: null,                                                                                                                                   icon: Clock,         color: C_GOLD,  iconBg: "hsl(40 50% 62% / 0.12)" },
   ];
 
   return (
-    <div className="min-h-screen" style={{ background: "hsl(220 25% 97%)" }}>
+    <div className="min-h-screen">
       <div className="p-7 space-y-5">
 
         {/* ── Header ── */}
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
-            <h1 className="text-2xl font-heading font-light tracking-tight" style={{ color: "hsl(224 55% 12%)" }}>Leads</h1>
-            <p className="text-[13px] font-light mt-0.5" style={{ color: "hsl(224 15% 52%)" }}>
+            <h1 className="text-2xl font-heading font-light tracking-tight" style={{ color: T_PRIMARY }}>Leads</h1>
+            <p className="text-[13px] font-light mt-0.5" style={{ color: T_SECONDARY }}>
               Gérez et analysez vos leads générés depuis votre site web.
             </p>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
             <a href="/" target="_blank" rel="noreferrer"
               className="flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-medium transition-all"
-              style={{ background: "white", border: "1px solid hsl(224 20% 12% / 0.12)", color: "hsl(224 30% 38%)" }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(220 25% 95%)"; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "white"; }}>
+              style={{ background: INNER_BG, border: `1px solid ${INNER_BORDER}`, color: T_SECONDARY }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.10)"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = INNER_BG; }}>
               <ExternalLink className="w-3.5 h-3.5" />Voir le site
             </a>
             <button onClick={() => setShowCharts(true)}
               className="flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-medium transition-all"
-              style={{ background: "white", border: "1px solid hsl(224 20% 12% / 0.12)", color: "hsl(224 30% 38%)" }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(220 25% 95%)"; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "white"; }}>
+              style={{ background: INNER_BG, border: `1px solid ${INNER_BORDER}`, color: T_SECONDARY }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.10)"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = INNER_BG; }}>
               <BarChart3 className="w-4 h-4" />Analyse
             </button>
             <button onClick={() => exportLeadsCSV(leads)} disabled={leads.length === 0}
               className="flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-medium transition-all disabled:opacity-40"
-              style={{ background: "white", border: "1px solid hsl(224 20% 12% / 0.12)", color: "hsl(224 30% 38%)" }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(220 25% 95%)"; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "white"; }}>
+              style={{ background: INNER_BG, border: `1px solid ${INNER_BORDER}`, color: T_SECONDARY }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.10)"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = INNER_BG; }}>
               <Download className="w-4 h-4" />Exporter
             </button>
           </div>
@@ -843,56 +837,56 @@ export default function AdminLeadsList() {
         {/* ── Stat cards ── */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {statCards.map((s) => (
-            <div key={s.label} className="rounded-2xl p-5" style={{ background: "white", border: "1px solid hsl(224 20% 12% / 0.07)" }}>
+            <div key={s.label} className="rounded-2xl p-5" style={{ ...GLASS }}>
               <div className="flex items-start justify-between mb-3">
-                <p className="text-[12px] font-medium" style={{ color: "hsl(224 15% 52%)" }}>{s.label}</p>
-                <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: s.color + "15" }}>
+                <p className="text-[12px] font-medium" style={{ color: T_SECONDARY }}>{s.label}</p>
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: s.iconBg }}>
                   <s.icon className="w-4 h-4" style={{ color: s.color }} strokeWidth={1.5} />
                 </div>
               </div>
-              <p className="text-3xl font-heading font-light tabular-nums" style={{ color: "hsl(224 55% 12%)" }}>{s.value}</p>
+              <p className="text-3xl font-heading font-light tabular-nums" style={{ color: T_PRIMARY }}>{s.value}</p>
               {s.t !== null ? (
-                <p className="text-[11px] font-light mt-1.5" style={{ color: s.t >= 0 ? "hsl(142 50% 38%)" : "hsl(0 55% 45%)" }}>
+                <p className="text-[11px] font-light mt-1.5" style={{ color: s.t >= 0 ? C_SAGE : C_CORAL }}>
                   {s.t >= 0 ? "↑" : "↓"} {Math.abs(s.t)}% vs période précédente
                 </p>
               ) : (
-                <p className="text-[11px] font-light mt-1.5" style={{ color: "hsl(224 12% 62%)" }}>Période : {chartPeriod}</p>
+                <p className="text-[11px] font-light mt-1.5" style={{ color: T_MUTED }}>Période : {chartPeriod}</p>
               )}
             </div>
           ))}
         </div>
 
         {/* ── Chart section ── */}
-        <div className="rounded-2xl" style={{ background: "white", border: "1px solid hsl(224 20% 12% / 0.07)" }}>
-          <div className="px-6 py-4 flex items-center justify-between flex-wrap gap-3" style={{ borderBottom: "1px solid hsl(224 20% 12% / 0.07)" }}>
+        <div className="rounded-2xl" style={{ ...GLASS }}>
+          <div className="px-6 py-4 flex items-center justify-between flex-wrap gap-3" style={{ borderBottom: `1px solid ${INNER_BORDER}` }}>
             <div className="flex items-center gap-4 flex-wrap">
-              <p className="text-[14px] font-medium" style={{ color: "hsl(224 40% 22%)" }}>Évolution des leads</p>
-              <div className="flex items-center gap-1 p-1 rounded-lg" style={{ background: "hsl(220 25% 97%)" }}>
+              <p className="text-[14px] font-medium" style={{ color: T_HEADING }}>Évolution des leads</p>
+              <div className="flex items-center gap-1 p-1 rounded-lg" style={{ background: INNER_BG }}>
                 {PERIODS.map((p) => (
                   <button key={p.key} onClick={() => setChartPeriod(p.key)}
                     className="px-2.5 py-1 rounded-md text-[11px] font-medium transition-all"
                     style={{
-                      background: chartPeriod === p.key ? "white" : "transparent",
-                      color: chartPeriod === p.key ? "hsl(218 48% 38%)" : "hsl(224 15% 52%)",
-                      boxShadow: chartPeriod === p.key ? "0 1px 3px -1px hsl(224 20% 12% / 0.12)" : "none",
+                      background: chartPeriod === p.key ? "rgba(255,255,255,0.12)" : "transparent",
+                      color: chartPeriod === p.key ? C_BLUE : T_SECONDARY,
+                      boxShadow: "none",
                     }}>{p.label}</button>
                 ))}
               </div>
             </div>
-            <div className="flex items-center gap-4 text-[11px]" style={{ color: "hsl(224 15% 55%)" }}>
+            <div className="flex items-center gap-4 text-[11px]" style={{ color: T_SECONDARY }}>
               <span className="flex items-center gap-1.5">
-                <span className="w-5 h-0.5 rounded inline-block" style={{ background: "hsl(218 55% 48%)" }} />Nouveaux
+                <span className="w-5 h-0.5 rounded inline-block" style={{ background: C_BLUE }} />Nouveaux
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="w-5 h-0.5 rounded inline-block" style={{ background: "hsl(200 65% 52%)" }} />Traités
+                <span className="w-5 h-0.5 rounded inline-block" style={{ background: C_TEAL }} />Traités
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="w-5 inline-block" style={{ height: 1, borderTop: "2px dashed hsl(142 52% 42%)" }} />Convertis
+                <span className="w-5 inline-block" style={{ height: 1, borderTop: `2px dashed ${C_SAGE}` }} />Convertis
               </span>
             </div>
           </div>
           <div className="grid lg:grid-cols-[1fr_300px]">
-            <div className="p-6" style={{ borderRight: "1px solid hsl(224 20% 12% / 0.06)" }}>
+            <div className="p-6" style={{ borderRight: `1px solid ${INNER_BORDER}` }}>
               <MultiLineChart leads={leads} days={chartDays} />
             </div>
             <div className="p-6 space-y-6">
@@ -900,23 +894,23 @@ export default function AdminLeadsList() {
                 {[
                   { label: "Nouveaux / Assignés", count: counts.nouveau + counts.appele,
                     t: trend(leadsInPeriod.filter((l) => l.status === "nouveau" || l.status === "appele").length, leadsInPrev.filter((l) => l.status === "nouveau" || l.status === "appele").length),
-                    color: "hsl(218 55% 48%)" },
+                    color: C_BLUE },
                   { label: "Traités", count: counts.traite,
                     t: trend(leadsInPeriod.filter((l) => l.status === "traite").length, leadsInPrev.filter((l) => l.status === "traite").length),
-                    color: "hsl(200 65% 52%)" },
+                    color: C_TEAL },
                   { label: "Convertis", count: counts.converti,
                     t: trend(leadsInPeriod.filter((l) => l.status === "converti").length, leadsInPrev.filter((l) => l.status === "converti").length),
-                    color: "hsl(142 52% 42%)" },
+                    color: C_SAGE },
                 ].map((item) => (
                   <div key={item.label} className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 rounded-full" style={{ background: item.color }} />
-                      <span className="text-[12px] font-light" style={{ color: "hsl(224 15% 45%)" }}>{item.label}</span>
+                      <span className="text-[12px] font-light" style={{ color: T_SECONDARY }}>{item.label}</span>
                     </div>
                     <div className="text-right">
-                      <p className="text-[14px] font-medium tabular-nums" style={{ color: "hsl(224 50% 15%)" }}>{item.count}</p>
+                      <p className="text-[14px] font-medium tabular-nums" style={{ color: T_PRIMARY }}>{item.count}</p>
                       {item.t !== null && (
-                        <p className="text-[10px]" style={{ color: item.t >= 0 ? "hsl(142 50% 38%)" : "hsl(0 55% 45%)" }}>
+                        <p className="text-[10px]" style={{ color: item.t >= 0 ? C_SAGE : C_CORAL }}>
                           {item.t >= 0 ? "↑" : "↓"} {Math.abs(item.t)}%
                         </p>
                       )}
@@ -924,8 +918,8 @@ export default function AdminLeadsList() {
                   </div>
                 ))}
               </div>
-              <div style={{ borderTop: "1px solid hsl(224 20% 12% / 0.07)", paddingTop: "1.25rem" }}>
-                <p className="text-[11px] font-medium uppercase tracking-wide mb-3" style={{ color: "hsl(224 15% 52%)" }}>Sources des leads</p>
+              <div style={{ borderTop: `1px solid ${INNER_BORDER}`, paddingTop: "1.25rem" }}>
+                <p className="text-[11px] font-medium uppercase tracking-wide mb-3" style={{ color: T_SECONDARY }}>Sources des leads</p>
                 <DonutChart leads={leads} />
               </div>
             </div>
@@ -933,21 +927,21 @@ export default function AdminLeadsList() {
         </div>
 
         {/* ── Table section ── */}
-        <div className="rounded-2xl overflow-hidden" style={{ background: "white", border: "1px solid hsl(224 20% 12% / 0.07)" }}>
+        <div className="rounded-2xl overflow-hidden" style={{ ...GLASS }}>
           {/* Toolbar */}
           <div className="px-5 py-4 flex items-center justify-between gap-3 flex-wrap"
-            style={{ borderBottom: "1px solid hsl(224 20% 12% / 0.07)" }}>
+            style={{ borderBottom: `1px solid ${INNER_BORDER}` }}>
             <div className="flex items-center gap-2 flex-wrap flex-1">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style={{ color: "hsl(224 15% 58%)" }} />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style={{ color: T_MUTED }} />
                 <input type="text" value={search} onChange={(e) => setSearch(e.target.value)}
                   placeholder="Rechercher un lead…"
                   className="pl-9 pr-4 py-2 rounded-lg text-[13px] outline-none w-52"
-                  style={{ background: "hsl(220 25% 97%)", border: "1px solid hsl(224 20% 12% / 0.10)", color: "hsl(224 30% 25%)" }} />
+                  style={{ ...INPUT_STYLE }} />
               </div>
               <select value={dateRange} onChange={(e) => setDateRange(e.target.value as typeof dateRange)}
                 className="text-[12px] px-3 py-2 rounded-lg outline-none cursor-pointer"
-                style={{ background: "hsl(220 25% 97%)", border: "1px solid hsl(224 20% 12% / 0.10)", color: "hsl(224 30% 38%)" }}>
+                style={{ ...INPUT_STYLE }}>
                 <option value="tous">Toute période</option>
                 <option value="aujourd">Aujourd'hui</option>
                 <option value="7j">7 derniers jours</option>
@@ -955,7 +949,7 @@ export default function AdminLeadsList() {
               </select>
               <select value={sort} onChange={(e) => setSort(e.target.value as SortKey)}
                 className="text-[12px] px-3 py-2 rounded-lg outline-none cursor-pointer"
-                style={{ background: "hsl(220 25% 97%)", border: "1px solid hsl(224 20% 12% / 0.10)", color: "hsl(224 30% 38%)" }}>
+                style={{ ...INPUT_STYLE }}>
                 <option value="date_desc">Récents d'abord</option>
                 <option value="date_asc">Anciens d'abord</option>
                 <option value="urgent">Urgents d'abord</option>
@@ -964,7 +958,7 @@ export default function AdminLeadsList() {
             </div>
             <button onClick={() => setShowNewLead(true)}
               className="flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-medium flex-shrink-0"
-              style={{ background: "hsl(224 60% 18%)", color: "white" }}>
+              style={{ background: "hsl(215 42% 65% / 0.18)", color: C_BLUE, border: `1px solid hsl(215 42% 65% / 0.30)` }}>
               + Nouveau lead
             </button>
           </div>
@@ -972,36 +966,36 @@ export default function AdminLeadsList() {
           {/* Bulk actions bar */}
           {selectedRows.size > 0 && (
             <div className="px-5 py-2.5 flex items-center gap-3 flex-wrap"
-              style={{ background: "hsl(218 55% 42% / 0.05)", borderBottom: "1px solid hsl(218 55% 42% / 0.12)" }}>
-              <span className="text-[12px] font-medium" style={{ color: "hsl(218 50% 36%)" }}>
+              style={{ background: "hsl(215 42% 65% / 0.08)", borderBottom: `1px solid hsl(215 42% 65% / 0.15)` }}>
+              <span className="text-[12px] font-medium" style={{ color: C_BLUE }}>
                 {selectedRows.size} sélectionné{selectedRows.size > 1 ? "s" : ""}
               </span>
               <button onClick={handleBulkArchive}
                 className="flex items-center gap-1.5 text-[12px] px-3 py-1.5 rounded-lg font-medium transition-colors"
-                style={{ background: "hsl(38 65% 42% / 0.12)", color: "hsl(38 60% 30%)", border: "1px solid hsl(38 65% 42% / 0.20)" }}>
+                style={{ background: "hsl(40 50% 62% / 0.12)", color: C_GOLD, border: `1px solid hsl(40 50% 62% / 0.25)` }}>
                 <Archive className="w-3.5 h-3.5" />Archiver
               </button>
               <button onClick={handleBulkDelete}
                 className="flex items-center gap-1.5 text-[12px] px-3 py-1.5 rounded-lg font-medium transition-colors"
-                style={{ background: "hsl(0 55% 52% / 0.08)", color: "hsl(0 55% 38%)", border: "1px solid hsl(0 55% 52% / 0.18)" }}>
+                style={{ background: "hsl(5 45% 56% / 0.10)", color: C_CORAL, border: `1px solid hsl(5 45% 56% / 0.25)` }}>
                 <Trash2 className="w-3.5 h-3.5" />Supprimer
               </button>
               <button onClick={() => setSelectedRows(new Set())}
                 className="ml-auto text-[11px] font-light transition-opacity hover:opacity-70"
-                style={{ color: "hsl(224 15% 55%)" }}>
+                style={{ color: T_MUTED }}>
                 Désélectionner tout
               </button>
             </div>
           )}
 
           {/* Tabs */}
-          <div className="flex items-center gap-0 px-5 overflow-x-auto" style={{ borderBottom: "1px solid hsl(224 20% 12% / 0.07)" }}>
+          <div className="flex items-center gap-0 px-5 overflow-x-auto" style={{ borderBottom: `1px solid ${INNER_BORDER}` }}>
             {TABS.map((tab) => (
               <button key={tab.key} onClick={() => setTabFilter(tab.key)}
                 className="px-4 py-3 text-[13px] font-medium whitespace-nowrap transition-all"
                 style={{
-                  color: tabFilter === tab.key ? "hsl(218 55% 40%)" : "hsl(224 15% 52%)",
-                  borderBottom: tabFilter === tab.key ? "2px solid hsl(218 55% 42%)" : "2px solid transparent",
+                  color: tabFilter === tab.key ? C_BLUE : T_SECONDARY,
+                  borderBottom: tabFilter === tab.key ? `2px solid ${C_BLUE}` : "2px solid transparent",
                   background: "transparent",
                 }}>
                 {tab.label}
@@ -1012,11 +1006,12 @@ export default function AdminLeadsList() {
           {/* Table */}
           {isLoading ? (
             <div className="flex justify-center py-16">
-              <div className="w-6 h-6 rounded-full border-2 border-foreground/15 border-t-foreground/60 animate-spin" />
+              <div className="w-6 h-6 rounded-full border-2 animate-spin"
+                style={{ borderColor: INNER_BORDER, borderTopColor: T_SECONDARY }} />
             </div>
           ) : filtered.length === 0 ? (
             <div className="text-center py-16">
-              <p className="text-[14px] font-light" style={{ color: "hsl(224 12% 55%)" }}>
+              <p className="text-[14px] font-light" style={{ color: T_SECONDARY }}>
                 {search ? "Aucun résultat pour cette recherche" : "Aucun lead dans cette catégorie"}
               </p>
             </div>
@@ -1024,19 +1019,19 @@ export default function AdminLeadsList() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr style={{ borderBottom: "1px solid hsl(224 20% 12% / 0.07)", background: "hsl(220 25% 98%)" }}>
+                  <tr style={{ borderBottom: `1px solid ${INNER_BORDER}`, background: INNER_BG }}>
                     <th className="pl-5 pr-2 py-3 w-8">
                       <input type="checkbox" checked={allPageSelected}
                         onChange={(e) => setSelectedRows(e.target.checked ? new Set(paginated.map((l) => l.id)) : new Set())}
-                        className="w-3.5 h-3.5 rounded" style={{ accentColor: "hsl(218 55% 42%)" }} />
+                        className="w-3.5 h-3.5 rounded" style={{ accentColor: C_BLUE }} />
                     </th>
                     {["Lead", "Source", "Statut", "Score", "Assigné à", "Date", "Actions"].map((h) => (
                       <th key={h} className="py-3 pr-4 text-left text-[11px] font-medium uppercase tracking-wide"
-                        style={{ color: "hsl(224 15% 50%)" }}>{h}</th>
+                        style={{ color: T_MUTED }}>{h}</th>
                     ))}
                   </tr>
                 </thead>
-                <tbody style={{ background: "white" }}>
+                <tbody style={{ background: "transparent" }}>
                   {paginated.map((lead) => (
                     <LeadTableRow key={lead.id} lead={lead}
                       selected={selectedRows.has(lead.id)}
@@ -1060,29 +1055,29 @@ export default function AdminLeadsList() {
           {/* Pagination */}
           {filtered.length > PER_PAGE && (
             <div className="flex items-center justify-between px-5 py-3.5"
-              style={{ borderTop: "1px solid hsl(224 20% 12% / 0.07)" }}>
-              <p className="text-[12px] font-light" style={{ color: "hsl(224 15% 52%)" }}>
+              style={{ borderTop: `1px solid ${INNER_BORDER}` }}>
+              <p className="text-[12px] font-light" style={{ color: T_SECONDARY }}>
                 {(page - 1) * PER_PAGE + 1}–{Math.min(page * PER_PAGE, filtered.length)} sur {filtered.length} leads
               </p>
               <div className="flex items-center gap-1.5">
                 <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1}
                   className="w-7 h-7 rounded flex items-center justify-center text-[12px] disabled:opacity-30"
-                  style={{ border: "1px solid hsl(224 20% 12% / 0.12)", color: "hsl(224 25% 42%)" }}>‹</button>
+                  style={{ border: `1px solid ${INNER_BORDER}`, color: T_SECONDARY }}>‹</button>
                 {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                   const p = Math.max(1, Math.min(totalPages - 4, page - 2)) + i;
                   return (
                     <button key={p} onClick={() => setPage(p)}
                       className="w-7 h-7 rounded text-[12px] font-medium"
                       style={{
-                        background: page === p ? "hsl(218 55% 42%)" : "transparent",
-                        color: page === p ? "white" : "hsl(224 25% 42%)",
-                        border: page === p ? "none" : "1px solid hsl(224 20% 12% / 0.12)",
+                        background: page === p ? "hsl(215 42% 65% / 0.22)" : "transparent",
+                        color: page === p ? C_BLUE : T_SECONDARY,
+                        border: page === p ? "none" : `1px solid ${INNER_BORDER}`,
                       }}>{p}</button>
                   );
                 })}
                 <button onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={page === totalPages}
                   className="w-7 h-7 rounded flex items-center justify-center text-[12px] disabled:opacity-30"
-                  style={{ border: "1px solid hsl(224 20% 12% / 0.12)", color: "hsl(224 25% 42%)" }}>›</button>
+                  style={{ border: `1px solid ${INNER_BORDER}`, color: T_SECONDARY }}>›</button>
               </div>
             </div>
           )}

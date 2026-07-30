@@ -1,13 +1,9 @@
-import { useEffect, useState } from "react";
-import { useNavigate, useParams, Link } from "react-router-dom";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft } from "lucide-react";
-import { getAllFaq, createFaqItem, updateFaqItem } from "@/lib/faqService";
-import type { FaqInput } from "@/lib/faqService";
-import { getCategories } from "@/lib/categoriesService";
+﻿import {
+  INNER_BG, INNER_BORDER,
+  T_PRIMARY, T_SECONDARY, T_MUTED, T_LABEL,
+  C_BLUE, C_CORAL,
+  INPUT_STYLE,
+} from "@/lib/adminTheme";
 
 const FALLBACK_CATEGORIES = [
   { value: "cabinet", label: "Le cabinet" },
@@ -28,17 +24,16 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
-const inputClass = "w-full px-3.5 py-2.5 rounded-xl text-[13px] outline-none transition-all duration-150";
-const inputStyle = { background: "white", border: "1px solid hsl(224 20% 12% / 0.12)", color: "hsl(224 55% 12%)" };
-const inputFocus = { borderColor: "hsl(224 60% 18% / 0.40)", boxShadow: "0 0 0 3px hsl(224 60% 18% / 0.08)" };
-const inputBlur = { boxShadow: "none", borderColor: "hsl(224 20% 12% / 0.12)" };
+const inputClass = "w-full text-[13px] transition-all duration-150";
+const inputFocus = { border: "1px solid rgba(255,255,255,0.28)", background: "rgba(255,255,255,0.10)", boxShadow: "0 0 0 3px rgba(255,255,255,0.06)" };
+const inputBlur = { border: "1px solid rgba(255,255,255,0.12)", background: "rgba(255,255,255,0.07)", boxShadow: "none" };
 
 function Field({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-[12px] font-medium tracking-wide" style={{ color: "hsl(224 25% 38%)" }}>{label}</label>
+      <label className="text-[12px] font-medium tracking-wide" style={{ color: T_LABEL }}>{label}</label>
       {children}
-      {error && <p className="text-[11px]" style={{ color: "hsl(0 60% 48%)" }}>{error}</p>}
+      {error && <p className="text-[11px]" style={{ color: C_CORAL }}>{error}</p>}
     </div>
   );
 }
@@ -111,7 +106,8 @@ export default function AdminFAQForm() {
   if (isEdit && isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="w-7 h-7 rounded-full border-2 border-foreground/15 border-t-foreground/60 animate-spin" />
+        <div className="w-7 h-7 rounded-full border-2 animate-spin"
+          style={{ borderColor: T_MUTED, borderTopColor: T_SECONDARY }} />
       </div>
     );
   }
@@ -120,19 +116,19 @@ export default function AdminFAQForm() {
     <div className="p-8 max-w-2xl mx-auto">
       <div className="flex items-center gap-4 mb-8">
         <Link to="/admin/faq" className="p-2 rounded-lg transition-all duration-150"
-          style={{ color: "hsl(224 25% 45%)" }}
-          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(224 60% 18% / 0.07)"; }}
+          style={{ color: T_SECONDARY }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = INNER_BG; }}
           onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
           <ArrowLeft className="w-5 h-5" />
         </Link>
-        <h1 className="text-2xl font-heading font-light tracking-tight" style={{ color: "hsl(224 55% 12%)" }}>
+        <h1 className="text-2xl font-heading font-light tracking-tight" style={{ color: T_PRIMARY }}>
           {isEdit ? "Modifier la Q&A" : "Nouvelle Q&A"}
         </h1>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
         <Field label="Catégorie *" error={errors.category?.message}>
-          <select className={inputClass} style={{ ...inputStyle, cursor: "pointer" }}
+          <select className={inputClass} style={{ ...INPUT_STYLE, cursor: "pointer" }}
             {...register("category")}
             onFocus={(e) => Object.assign((e.target as HTMLElement).style, inputFocus)}
             onBlur={(e) => Object.assign((e.target as HTMLElement).style, inputBlur)}>
@@ -141,7 +137,7 @@ export default function AdminFAQForm() {
         </Field>
 
         <Field label="Question *" error={errors.question?.message}>
-          <input className={inputClass} style={inputStyle}
+          <input className={inputClass} style={{ ...INPUT_STYLE }}
             placeholder="ex: Comment se passe le premier rendez-vous ?"
             {...register("question")}
             onFocus={(e) => Object.assign((e.target as HTMLElement).style, inputFocus)}
@@ -150,7 +146,7 @@ export default function AdminFAQForm() {
 
         <Field label="Réponse *" error={errors.answer?.message}>
           <textarea className={inputClass}
-            style={{ ...inputStyle, resize: "vertical", minHeight: "140px" }}
+            style={{ ...INPUT_STYLE, resize: "vertical", minHeight: "140px" }}
             placeholder="Réponse complète à la question"
             {...register("answer")}
             onFocus={(e) => Object.assign((e.target as HTMLElement).style, inputFocus)}
@@ -159,7 +155,7 @@ export default function AdminFAQForm() {
 
         <div className="grid grid-cols-2 gap-4">
           <Field label="Ordre d'affichage">
-            <input type="number" className={inputClass} style={inputStyle} placeholder="0"
+            <input type="number" className={inputClass} style={{ ...INPUT_STYLE }} placeholder="0"
               {...register("sort_order")}
               onFocus={(e) => Object.assign((e.target as HTMLElement).style, inputFocus)}
               onBlur={(e) => Object.assign((e.target as HTMLElement).style, inputBlur)} />
@@ -167,14 +163,14 @@ export default function AdminFAQForm() {
           <div className="flex flex-col justify-end pb-1">
             <label className="flex items-center gap-3 cursor-pointer select-none">
               <input type="checkbox" className="w-4 h-4 rounded" {...register("active")} />
-              <span className="text-[13px] font-medium" style={{ color: "hsl(224 40% 30%)" }}>Visible sur le site</span>
+              <span className="text-[13px] font-medium" style={{ color: T_LABEL }}>Visible sur le site</span>
             </label>
           </div>
         </div>
 
         {globalError && (
           <p className="py-2.5 px-4 rounded-xl text-[13px]"
-            style={{ background: "hsl(0 60% 96%)", color: "hsl(0 60% 40%)", border: "1px solid hsl(0 60% 88%)" }}>
+            style={{ background: "hsl(5 45% 56% / 0.12)", color: C_CORAL, border: "1px solid hsl(5 45% 56% / 0.28)" }}>
             {globalError}
           </p>
         )}
@@ -183,12 +179,12 @@ export default function AdminFAQForm() {
           <button type="submit"
             disabled={isSubmitting || createMutation.isPending || updateMutation.isPending}
             className="flex-1 py-2.5 rounded-xl text-[14px] font-medium transition-opacity disabled:opacity-60"
-            style={{ background: "hsl(224 60% 18%)", color: "white" }}>
+            style={{ background: "hsl(215 42% 65% / 0.18)", color: C_BLUE, border: "1px solid hsl(215 42% 65% / 0.3)" }}>
             {isSubmitting ? "Enregistrement…" : isEdit ? "Mettre à jour" : "Créer la Q&A"}
           </button>
           <Link to="/admin/faq"
             className="px-5 py-2.5 rounded-xl text-[14px] font-medium transition-all duration-150"
-            style={{ background: "hsl(224 20% 12% / 0.07)", color: "hsl(224 40% 35%)" }}>
+            style={{ background: INNER_BG, color: T_SECONDARY, border: `1px solid ${INNER_BORDER}` }}>
             Annuler
           </Link>
         </div>

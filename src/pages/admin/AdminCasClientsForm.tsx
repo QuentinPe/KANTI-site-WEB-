@@ -8,6 +8,12 @@ import { ArrowLeft, Plus, X, Trash2 } from "lucide-react";
 import { getAllCasClients, createCasClient, updateCasClient } from "@/lib/casClientsService";
 import type { CasClientInput } from "@/lib/casClientsService";
 import { supabase } from "@/lib/supabase";
+import {
+  INNER_BG, INNER_BORDER,
+  T_PRIMARY, T_SECONDARY, T_MUTED, T_LABEL,
+  C_BLUE, C_CORAL,
+  INPUT_STYLE,
+} from "@/lib/adminTheme";
 
 const CATEGORIES = [
   { value: "particulier", label: "Particulier" },
@@ -40,16 +46,15 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 const inputClass = "w-full px-3.5 py-2.5 rounded-xl text-[13px] outline-none transition-all duration-150";
-const inputStyle = { background: "white", border: "1px solid hsl(224 20% 12% / 0.12)", color: "hsl(224 55% 12%)" };
-const inputFocus = { borderColor: "hsl(224 60% 18% / 0.40)", boxShadow: "0 0 0 3px hsl(224 60% 18% / 0.08)" };
-const inputBlur = { boxShadow: "none", borderColor: "hsl(224 20% 12% / 0.12)" };
+const inputFocus = { borderColor: "rgba(255,255,255,0.28)", background: "rgba(255,255,255,0.10)", boxShadow: "0 0 0 3px rgba(255,255,255,0.06)" };
+const inputBlur = { boxShadow: "none", borderColor: "rgba(255,255,255,0.12)", background: "rgba(255,255,255,0.07)" };
 
 function Field({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-[12px] font-medium tracking-wide" style={{ color: "hsl(224 25% 38%)" }}>{label}</label>
+      <label className="text-[12px] font-medium tracking-wide" style={{ color: T_LABEL }}>{label}</label>
       {children}
-      {error && <p className="text-[11px]" style={{ color: "hsl(0 60% 48%)" }}>{error}</p>}
+      {error && <p className="text-[11px]" style={{ color: C_CORAL }}>{error}</p>}
     </div>
   );
 }
@@ -57,10 +62,10 @@ function Field({ label, error, children }: { label: string; error?: string; chil
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
     <div className="pt-2">
-      <p className="text-[11px] tracking-[0.22em] uppercase font-medium mb-3" style={{ color: "hsl(224 40% 45%)" }}>
+      <p className="text-[11px] tracking-[0.22em] uppercase font-medium mb-3" style={{ color: T_MUTED }}>
         {children}
       </p>
-      <div style={{ height: 1, background: "hsl(224 20% 12% / 0.08)" }} />
+      <div style={{ height: 1, background: INNER_BORDER }} />
     </div>
   );
 }
@@ -179,18 +184,23 @@ export default function AdminCasClientsForm() {
   };
 
   if (isEdit && isLoading) {
-    return <div className="flex items-center justify-center py-20"><div className="w-7 h-7 rounded-full border-2 border-foreground/15 border-t-foreground/60 animate-spin" /></div>;
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="w-7 h-7 rounded-full border-2 animate-spin"
+          style={{ borderColor: "rgba(255,255,255,0.15)", borderTopColor: "rgba(255,255,255,0.6)" }} />
+      </div>
+    );
   }
 
   return (
     <div className="p-8 max-w-2xl mx-auto">
       <div className="flex items-center gap-4 mb-8">
-        <Link to="/admin/cas-clients" className="p-2 rounded-lg transition-all duration-150" style={{ color: "hsl(224 25% 45%)" }}
-          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(224 60% 18% / 0.07)"; }}
+        <Link to="/admin/cas-clients" className="p-2 rounded-lg transition-all duration-150" style={{ color: T_SECONDARY }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.08)"; }}
           onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
           <ArrowLeft className="w-5 h-5" />
         </Link>
-        <h1 className="text-2xl font-heading font-light tracking-tight" style={{ color: "hsl(224 55% 12%)" }}>
+        <h1 className="text-2xl font-heading font-light tracking-tight" style={{ color: T_PRIMARY }}>
           {isEdit ? "Modifier le cas client" : "Nouveau cas client"}
         </h1>
       </div>
@@ -200,7 +210,7 @@ export default function AdminCasClientsForm() {
 
         <div className="grid grid-cols-2 gap-4">
           <Field label="Catégorie *" error={errors.category?.message}>
-            <select className={inputClass} style={{ ...inputStyle, cursor: "pointer" }}
+            <select className={inputClass} style={{ ...INPUT_STYLE, cursor: "pointer" }}
               {...register("category")}
               onFocus={(e) => Object.assign((e.target as HTMLElement).style, inputFocus)}
               onBlur={(e) => Object.assign((e.target as HTMLElement).style, inputBlur)}>
@@ -208,7 +218,7 @@ export default function AdminCasClientsForm() {
             </select>
           </Field>
           <Field label="Profil *" error={errors.profil?.message}>
-            <input className={inputClass} style={inputStyle} placeholder="ex: Cadre dirigeant 48 ans"
+            <input className={inputClass} style={{ ...INPUT_STYLE }} placeholder="ex: Cadre dirigeant 48 ans"
               {...register("profil")}
               onFocus={(e) => Object.assign((e.target as HTMLElement).style, inputFocus)}
               onBlur={(e) => Object.assign((e.target as HTMLElement).style, inputBlur)} />
@@ -216,7 +226,7 @@ export default function AdminCasClientsForm() {
         </div>
 
         <Field label="Expertise (thème principal) *" error={errors.expertise?.message}>
-          <input className={inputClass} style={inputStyle} placeholder="ex: Optimisation fiscale & retraite"
+          <input className={inputClass} style={{ ...INPUT_STYLE }} placeholder="ex: Optimisation fiscale & retraite"
             {...register("expertise")}
             onFocus={(e) => Object.assign((e.target as HTMLElement).style, inputFocus)}
             onBlur={(e) => Object.assign((e.target as HTMLElement).style, inputBlur)} />
@@ -224,13 +234,13 @@ export default function AdminCasClientsForm() {
 
         <div className="grid grid-cols-2 gap-4">
           <Field label="Âge">
-            <input type="number" className={inputClass} style={inputStyle} placeholder="48"
+            <input type="number" className={inputClass} style={{ ...INPUT_STYLE }} placeholder="48"
               {...register("age")}
               onFocus={(e) => Object.assign((e.target as HTMLElement).style, inputFocus)}
               onBlur={(e) => Object.assign((e.target as HTMLElement).style, inputBlur)} />
           </Field>
           <Field label="Durée accompagnement">
-            <input className={inputClass} style={inputStyle} placeholder="ex: 8 mois"
+            <input className={inputClass} style={{ ...INPUT_STYLE }} placeholder="ex: 8 mois"
               {...register("duration")}
               onFocus={(e) => Object.assign((e.target as HTMLElement).style, inputFocus)}
               onBlur={(e) => Object.assign((e.target as HTMLElement).style, inputBlur)} />
@@ -240,12 +250,12 @@ export default function AdminCasClientsForm() {
         {/* Image */}
         <Field label="Image (URL ou upload)">
           <div className="flex gap-2">
-            <input className={inputClass} style={inputStyle} placeholder="https://… ou uploader ci-dessous"
+            <input className={inputClass} style={{ ...INPUT_STYLE }} placeholder="https://… ou uploader ci-dessous"
               {...register("image")}
               onFocus={(e) => Object.assign((e.target as HTMLElement).style, inputFocus)}
               onBlur={(e) => Object.assign((e.target as HTMLElement).style, inputBlur)} />
             <label className="flex items-center gap-1.5 px-3 py-2 rounded-xl cursor-pointer text-[12px] font-medium flex-shrink-0 transition-all"
-              style={{ background: "hsl(224 20% 12% / 0.07)", color: "hsl(224 40% 35%)" }}>
+              style={{ background: INNER_BG, color: T_SECONDARY, border: `1px solid ${INNER_BORDER}` }}>
               {uploading ? "…" : "Upload"}
               <input type="file" accept="image/*" className="hidden"
                 onChange={(e) => { const f = e.target.files?.[0]; if (f) handleImageUpload(f); }} />
@@ -256,7 +266,7 @@ export default function AdminCasClientsForm() {
         <SectionTitle>Contenu</SectionTitle>
 
         <Field label="Contexte">
-          <textarea className={inputClass} style={{ ...inputStyle, resize: "vertical", minHeight: "80px" }}
+          <textarea className={inputClass} style={{ ...INPUT_STYLE, resize: "vertical", minHeight: "80px" }}
             placeholder="Situation initiale du client"
             {...register("contexte")}
             onFocus={(e) => Object.assign((e.target as HTMLElement).style, inputFocus)}
@@ -268,21 +278,21 @@ export default function AdminCasClientsForm() {
           <div className="flex flex-col gap-2">
             {diagFields.map((field, i) => (
               <div key={field.id} className="flex gap-2">
-                <input className={inputClass} style={inputStyle} placeholder={`Point ${i + 1}`}
+                <input className={inputClass} style={{ ...INPUT_STYLE }} placeholder={`Point ${i + 1}`}
                   {...register(`diagnostic.${i}.value`)}
                   onFocus={(e) => Object.assign((e.target as HTMLElement).style, inputFocus)}
                   onBlur={(e) => Object.assign((e.target as HTMLElement).style, inputBlur)} />
                 <button type="button" onClick={() => removeDiag(i)}
-                  className="p-2 rounded-lg transition-all flex-shrink-0" style={{ color: "hsl(224 15% 60%)" }}
-                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "hsl(0 60% 45%)"; }}
-                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "hsl(224 15% 60%)"; }}>
+                  className="p-2 rounded-lg transition-all flex-shrink-0" style={{ color: T_MUTED }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = C_CORAL; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = T_MUTED; }}>
                   <X className="w-4 h-4" />
                 </button>
               </div>
             ))}
             <button type="button" onClick={() => appendDiag({ value: "" })}
               className="flex items-center gap-1.5 text-[12px] font-medium mt-1 transition-opacity hover:opacity-70"
-              style={{ color: "hsl(224 55% 32%)" }}>
+              style={{ color: C_BLUE }}>
               <Plus className="w-3.5 h-3.5" /> Ajouter un point
             </button>
           </div>
@@ -293,28 +303,28 @@ export default function AdminCasClientsForm() {
           <div className="flex flex-col gap-2">
             {stratFields.map((field, i) => (
               <div key={field.id} className="flex gap-2">
-                <input className={inputClass} style={inputStyle} placeholder={`Action ${i + 1}`}
+                <input className={inputClass} style={{ ...INPUT_STYLE }} placeholder={`Action ${i + 1}`}
                   {...register(`strategie.${i}.value`)}
                   onFocus={(e) => Object.assign((e.target as HTMLElement).style, inputFocus)}
                   onBlur={(e) => Object.assign((e.target as HTMLElement).style, inputBlur)} />
                 <button type="button" onClick={() => removeStrat(i)}
-                  className="p-2 rounded-lg transition-all flex-shrink-0" style={{ color: "hsl(224 15% 60%)" }}
-                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "hsl(0 60% 45%)"; }}
-                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "hsl(224 15% 60%)"; }}>
+                  className="p-2 rounded-lg transition-all flex-shrink-0" style={{ color: T_MUTED }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = C_CORAL; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = T_MUTED; }}>
                   <X className="w-4 h-4" />
                 </button>
               </div>
             ))}
             <button type="button" onClick={() => appendStrat({ value: "" })}
               className="flex items-center gap-1.5 text-[12px] font-medium mt-1 transition-opacity hover:opacity-70"
-              style={{ color: "hsl(224 55% 32%)" }}>
+              style={{ color: C_BLUE }}>
               <Plus className="w-3.5 h-3.5" /> Ajouter une action
             </button>
           </div>
         </Field>
 
         <Field label="Résultat">
-          <textarea className={inputClass} style={{ ...inputStyle, resize: "vertical", minHeight: "60px" }}
+          <textarea className={inputClass} style={{ ...INPUT_STYLE, resize: "vertical", minHeight: "60px" }}
             placeholder="Ce qui a été accompli"
             {...register("resultat")}
             onFocus={(e) => Object.assign((e.target as HTMLElement).style, inputFocus)}
@@ -326,32 +336,32 @@ export default function AdminCasClientsForm() {
           <div className="flex flex-col gap-2">
             {kpiFields.map((field, i) => (
               <div key={field.id} className="flex gap-2">
-                <input className={inputClass} style={inputStyle} placeholder="Label (ex: Économie fiscale)"
+                <input className={inputClass} style={{ ...INPUT_STYLE }} placeholder="Label (ex: Économie fiscale)"
                   {...register(`kpis.${i}.label`)}
                   onFocus={(e) => Object.assign((e.target as HTMLElement).style, inputFocus)}
                   onBlur={(e) => Object.assign((e.target as HTMLElement).style, inputBlur)} />
-                <input className={`${inputClass} w-28 flex-shrink-0`} style={inputStyle} placeholder="Valeur"
+                <input className={`${inputClass} flex-shrink-0`} style={{ ...INPUT_STYLE, width: "7rem" }} placeholder="Valeur"
                   {...register(`kpis.${i}.value`)}
                   onFocus={(e) => Object.assign((e.target as HTMLElement).style, inputFocus)}
-                  onBlur={(e) => Object.assign((e.target as HTMLElement).style, inputBlur)} />
+                  onBlur={(e) => Object.assign((e.target as HTMLElement).style, { ...inputBlur, width: "7rem" })} />
                 <button type="button" onClick={() => removeKpi(i)}
-                  className="p-2 rounded-lg transition-all flex-shrink-0" style={{ color: "hsl(224 15% 60%)" }}
-                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "hsl(0 60% 45%)"; }}
-                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "hsl(224 15% 60%)"; }}>
+                  className="p-2 rounded-lg transition-all flex-shrink-0" style={{ color: T_MUTED }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = C_CORAL; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = T_MUTED; }}>
                   <Trash2 className="w-4 h-4" />
                 </button>
               </div>
             ))}
             <button type="button" onClick={() => appendKpi({ label: "", value: "" })}
               className="flex items-center gap-1.5 text-[12px] font-medium mt-1 transition-opacity hover:opacity-70"
-              style={{ color: "hsl(224 55% 32%)" }}>
+              style={{ color: C_BLUE }}>
               <Plus className="w-3.5 h-3.5" /> Ajouter un KPI
             </button>
           </div>
         </Field>
 
         <Field label="Point de vigilance">
-          <input className={inputClass} style={inputStyle} placeholder="ex: Attention à la requalification LMNP"
+          <input className={inputClass} style={{ ...INPUT_STYLE }} placeholder="ex: Attention à la requalification LMNP"
             {...register("vigilance")}
             onFocus={(e) => Object.assign((e.target as HTMLElement).style, inputFocus)}
             onBlur={(e) => Object.assign((e.target as HTMLElement).style, inputBlur)} />
@@ -360,7 +370,7 @@ export default function AdminCasClientsForm() {
         <SectionTitle>Témoignage (optionnel)</SectionTitle>
 
         <Field label="Citation du client">
-          <textarea className={inputClass} style={{ ...inputStyle, resize: "vertical", minHeight: "60px" }}
+          <textarea className={inputClass} style={{ ...INPUT_STYLE, resize: "vertical", minHeight: "60px" }}
             placeholder="Ce que dit le client de l'accompagnement"
             {...register("verbatim")}
             onFocus={(e) => Object.assign((e.target as HTMLElement).style, inputFocus)}
@@ -368,7 +378,7 @@ export default function AdminCasClientsForm() {
         </Field>
 
         <Field label="Auteur (anonymisé)">
-          <input className={inputClass} style={inputStyle} placeholder="ex: M. D., 48 ans, Bordeaux"
+          <input className={inputClass} style={{ ...INPUT_STYLE }} placeholder="ex: M. D., 48 ans, Bordeaux"
             {...register("verbatim_author")}
             onFocus={(e) => Object.assign((e.target as HTMLElement).style, inputFocus)}
             onBlur={(e) => Object.assign((e.target as HTMLElement).style, inputBlur)} />
@@ -378,7 +388,7 @@ export default function AdminCasClientsForm() {
 
         <div className="grid grid-cols-2 gap-4">
           <Field label="Ordre d'affichage">
-            <input type="number" className={inputClass} style={inputStyle} placeholder="0"
+            <input type="number" className={inputClass} style={{ ...INPUT_STYLE }} placeholder="0"
               {...register("sort_order")}
               onFocus={(e) => Object.assign((e.target as HTMLElement).style, inputFocus)}
               onBlur={(e) => Object.assign((e.target as HTMLElement).style, inputBlur)} />
@@ -386,14 +396,14 @@ export default function AdminCasClientsForm() {
           <div className="flex flex-col justify-end pb-1">
             <label className="flex items-center gap-3 cursor-pointer select-none">
               <input type="checkbox" className="w-4 h-4 rounded" {...register("active")} />
-              <span className="text-[13px] font-medium" style={{ color: "hsl(224 40% 30%)" }}>Visible sur le site</span>
+              <span className="text-[13px] font-medium" style={{ color: T_SECONDARY }}>Visible sur le site</span>
             </label>
           </div>
         </div>
 
         {globalError && (
           <p className="py-2.5 px-4 rounded-xl text-[13px]"
-            style={{ background: "hsl(0 60% 96%)", color: "hsl(0 60% 40%)", border: "1px solid hsl(0 60% 88%)" }}>
+            style={{ background: "hsl(5 45% 56% / 0.12)", color: C_CORAL, border: "1px solid hsl(5 45% 56% / 0.25)" }}>
             {globalError}
           </p>
         )}
@@ -401,12 +411,12 @@ export default function AdminCasClientsForm() {
         <div className="flex gap-3 pt-2">
           <button type="submit" disabled={isSubmitting || createMutation.isPending || updateMutation.isPending}
             className="flex-1 py-2.5 rounded-xl text-[14px] font-medium transition-opacity disabled:opacity-60"
-            style={{ background: "hsl(224 60% 18%)", color: "white" }}>
+            style={{ background: "hsl(215 42% 65% / 0.18)", color: C_BLUE, border: "1px solid hsl(215 42% 65% / 0.35)" }}>
             {isSubmitting ? "Enregistrement…" : isEdit ? "Mettre à jour" : "Créer le cas"}
           </button>
           <Link to="/admin/cas-clients"
             className="px-5 py-2.5 rounded-xl text-[14px] font-medium transition-all duration-150"
-            style={{ background: "hsl(224 20% 12% / 0.07)", color: "hsl(224 40% 35%)" }}>
+            style={{ background: INNER_BG, color: T_SECONDARY, border: `1px solid ${INNER_BORDER}` }}>
             Annuler
           </Link>
         </div>

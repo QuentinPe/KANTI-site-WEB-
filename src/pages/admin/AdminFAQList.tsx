@@ -1,10 +1,8 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Pencil, Trash2, HelpCircle, ChevronDown, ChevronUp } from "lucide-react";
-import { getAllFaq, deleteFaqItem, reorderFaqItems } from "@/lib/faqService";
-import { getCategories } from "@/lib/categoriesService";
-import type { FaqItem } from "@/lib/faqService";
+﻿import {
+  GLASS, INNER_BG, INNER_BORDER,
+  T_PRIMARY, T_SECONDARY, T_MUTED, T_HEADING,
+  C_BLUE, C_CORAL,
+} from "@/lib/adminTheme";
 
 const FALLBACK_LABELS: Record<string, string> = {
   cabinet: "Le cabinet",
@@ -83,17 +81,17 @@ export default function AdminFAQList() {
     <div className="p-8 max-w-4xl mx-auto">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-heading font-light tracking-tight" style={{ color: "hsl(224 55% 12%)" }}>
+          <h1 className="text-2xl font-heading font-light tracking-tight" style={{ color: T_PRIMARY }}>
             FAQ
           </h1>
-          <p className="text-[13px] font-light mt-1" style={{ color: "hsl(224 20% 50%)" }}>
+          <p className="text-[13px] font-light mt-1" style={{ color: T_SECONDARY }}>
             {items.length} question{items.length !== 1 ? "s" : ""} au total · {Object.keys(grouped).length} catégorie{Object.keys(grouped).length !== 1 ? "s" : ""}
           </p>
         </div>
         <Link
           to="/admin/faq/new"
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-[13px] font-medium text-white transition-all duration-200 hover:opacity-90"
-          style={{ background: "hsl(224 60% 18%)" }}
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 hover:opacity-90"
+          style={{ background: "hsl(215 42% 65% / 0.18)", color: C_BLUE, border: "1px solid hsl(215 42% 65% / 0.35)" }}
         >
           <Plus className="w-4 h-4" />
           Nouvelle Q&A
@@ -102,18 +100,21 @@ export default function AdminFAQList() {
 
       {isLoading ? (
         <div className="flex items-center justify-center py-20">
-          <div className="w-7 h-7 rounded-full border-2 border-foreground/15 border-t-foreground/60 animate-spin" />
+          <div
+            className="w-7 h-7 rounded-full animate-spin"
+            style={{ border: `2px solid ${INNER_BORDER}`, borderTopColor: T_SECONDARY }}
+          />
         </div>
       ) : items.length === 0 ? (
-        <div className="text-center py-24 rounded-2xl" style={{ background: "white", border: "1px solid hsl(224 20% 12% / 0.07)" }}>
-          <HelpCircle className="w-10 h-10 mx-auto mb-4" style={{ color: "hsl(224 20% 72%)" }} />
-          <p className="text-[15px] font-heading font-light" style={{ color: "hsl(224 40% 35%)" }}>
+        <div className="text-center py-24" style={{ ...GLASS, borderRadius: "1rem" }}>
+          <HelpCircle className="w-10 h-10 mx-auto mb-4" style={{ color: T_MUTED }} />
+          <p className="text-[15px] font-heading font-light" style={{ color: T_SECONDARY }}>
             Aucune question pour le moment
           </p>
           <Link
             to="/admin/faq/new"
-            className="inline-flex items-center gap-2 mt-6 px-5 py-2.5 rounded-xl text-[13px] font-medium text-white"
-            style={{ background: "hsl(224 60% 18%)" }}
+            className="inline-flex items-center gap-2 mt-6 px-5 py-2.5 rounded-xl text-[13px] font-medium"
+            style={{ background: "hsl(215 42% 65% / 0.18)", color: C_BLUE, border: "1px solid hsl(215 42% 65% / 0.35)" }}
           >
             <Plus className="w-4 h-4" /> Ajouter une Q&A
           </Link>
@@ -124,77 +125,103 @@ export default function AdminFAQList() {
             const isExpanded = expandedCategories.has(cat);
             const label = categoryLabel(cat);
             return (
-              <div key={cat} className="rounded-2xl overflow-hidden"
-                style={{ background: "white", border: "1px solid hsl(224 20% 12% / 0.07)", boxShadow: "0 2px 8px -4px hsl(224 60% 12% / 0.05)" }}>
+              <div key={cat} className="overflow-hidden" style={{ ...GLASS, borderRadius: "1rem" }}>
                 {/* Category header */}
                 <button
                   type="button"
                   onClick={() => toggleCategory(cat)}
                   className="w-full flex items-center justify-between px-5 py-4 text-left transition-all duration-150"
-                  style={{ borderBottom: isExpanded ? "1px solid hsl(224 20% 12% / 0.07)" : "none" }}
+                  style={{ borderBottom: isExpanded ? `1px solid ${INNER_BORDER}` : "none" }}
                 >
                   <div className="flex items-center gap-3">
-                    <span className="text-[13.5px] font-medium" style={{ color: "hsl(224 55% 12%)" }}>{label}</span>
-                    <span className="px-2 py-0.5 rounded-full text-[11px]"
-                      style={{ background: "hsl(224 60% 18% / 0.08)", color: "hsl(224 55% 32%)" }}>
+                    <span className="text-[13.5px] font-medium" style={{ color: T_HEADING }}>{label}</span>
+                    <span
+                      className="px-2 py-0.5 rounded-full text-[11px]"
+                      style={{ background: "hsl(215 42% 65% / 0.12)", color: C_BLUE }}
+                    >
                       {catItems.length}
                     </span>
                   </div>
                   {isExpanded
-                    ? <ChevronUp className="w-4 h-4" style={{ color: "hsl(224 20% 55%)" }} />
-                    : <ChevronDown className="w-4 h-4" style={{ color: "hsl(224 20% 55%)" }} />
+                    ? <ChevronUp className="w-4 h-4" style={{ color: T_MUTED }} />
+                    : <ChevronDown className="w-4 h-4" style={{ color: T_MUTED }} />
                   }
                 </button>
 
                 {/* Items */}
                 {isExpanded && catItems.map((item, idx) => (
-                  <div key={item.id} className="px-5 py-4 flex items-start gap-4"
-                    style={{ borderBottom: idx < catItems.length - 1 ? "1px solid hsl(224 20% 12% / 0.04)" : "none" }}
-                    onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(224 20% 99%)"; }}
-                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
+                  <div
+                    key={item.id}
+                    className="px-5 py-4 flex items-start gap-4"
+                    style={{ borderBottom: idx < catItems.length - 1 ? `1px solid ${INNER_BORDER}` : "none" }}
+                    onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = INNER_BG; }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}
+                  >
                     {/* Reorder */}
                     <div className="flex flex-col gap-0.5 flex-shrink-0 pt-0.5">
-                      <button type="button" onClick={() => moveItem(item, "up")} disabled={idx === 0}
+                      <button
+                        type="button"
+                        onClick={() => moveItem(item, "up")}
+                        disabled={idx === 0}
                         className="p-0.5 rounded transition-opacity disabled:opacity-20"
-                        style={{ color: "hsl(224 20% 60%)" }}>
+                        style={{ color: T_MUTED }}
+                      >
                         <ChevronUp className="w-3.5 h-3.5" />
                       </button>
-                      <button type="button" onClick={() => moveItem(item, "down")} disabled={idx === catItems.length - 1}
+                      <button
+                        type="button"
+                        onClick={() => moveItem(item, "down")}
+                        disabled={idx === catItems.length - 1}
                         className="p-0.5 rounded transition-opacity disabled:opacity-20"
-                        style={{ color: "hsl(224 20% 60%)" }}>
+                        style={{ color: T_MUTED }}
+                      >
                         <ChevronDown className="w-3.5 h-3.5" />
                       </button>
                     </div>
 
                     {/* Content */}
                     <div className="flex-1 min-w-0">
-                      <p className="text-[13px] font-medium" style={{ color: "hsl(224 50% 18%)" }}>{item.question}</p>
-                      <p className="text-[12px] font-light mt-1 line-clamp-2" style={{ color: "hsl(224 15% 50%)" }}>{item.answer}</p>
+                      <p className="text-[13px] font-medium" style={{ color: T_PRIMARY }}>{item.question}</p>
+                      <p className="text-[12px] font-light mt-1 line-clamp-2" style={{ color: T_SECONDARY }}>{item.answer}</p>
                     </div>
 
                     {/* Actions */}
                     <div className="flex items-center gap-2 flex-shrink-0">
-                      <Link to={`/admin/faq/${item.id}/edit`}
-                        className="p-1.5 rounded-lg transition-all duration-150" style={{ color: "hsl(224 40% 45%)" }}
-                        onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(224 60% 18% / 0.08)"; }}
-                        onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
+                      <Link
+                        to={`/admin/faq/${item.id}/edit`}
+                        className="p-1.5 rounded-lg transition-all duration-150"
+                        style={{ color: C_BLUE }}
+                        onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = INNER_BG; }}
+                        onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}
+                      >
                         <Pencil className="w-4 h-4" />
                       </Link>
                       {confirmId === item.id ? (
                         <div className="flex items-center gap-1.5">
-                          <button onClick={() => deleteMutation.mutate(item.id)} disabled={deleteMutation.isPending}
-                            className="px-2.5 py-1 rounded-lg text-[11px] font-medium text-white disabled:opacity-60"
-                            style={{ background: "hsl(0 60% 45%)" }}>
+                          <button
+                            onClick={() => deleteMutation.mutate(item.id)}
+                            disabled={deleteMutation.isPending}
+                            className="px-2.5 py-1 rounded-lg text-[11px] font-medium disabled:opacity-60"
+                            style={{ background: "hsl(5 45% 56% / 0.18)", color: C_CORAL, border: "1px solid hsl(5 45% 56% / 0.35)" }}
+                          >
                             {deleteMutation.isPending ? "…" : "Oui"}
                           </button>
-                          <button onClick={() => setConfirmId(null)} className="px-2.5 py-1 rounded-lg text-[11px]"
-                            style={{ color: "hsl(224 25% 50%)" }}>Non</button>
+                          <button
+                            onClick={() => setConfirmId(null)}
+                            className="px-2.5 py-1 rounded-lg text-[11px]"
+                            style={{ color: T_SECONDARY }}
+                          >
+                            Non
+                          </button>
                         </div>
                       ) : (
-                        <button onClick={() => setConfirmId(item.id)} className="p-1.5 rounded-lg transition-all duration-150"
-                          style={{ color: "hsl(224 15% 65%)" }}
-                          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "hsl(0 60% 45%)"; }}
-                          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "hsl(224 15% 65%)"; }}>
+                        <button
+                          onClick={() => setConfirmId(item.id)}
+                          className="p-1.5 rounded-lg transition-all duration-150"
+                          style={{ color: T_MUTED }}
+                          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = C_CORAL; }}
+                          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = T_MUTED; }}
+                        >
                           <Trash2 className="w-4 h-4" />
                         </button>
                       )}

@@ -1,10 +1,9 @@
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Save, Star, CheckCircle2 } from "lucide-react";
-import { toast } from "sonner";
-import { getAllRessources } from "@/lib/ressourcesService";
-import { getSiteSettingsMap, upsertSettings } from "@/lib/siteSettingsService";
+﻿import {
+  GLASS, INNER_BG, INNER_BORDER,
+  T_PRIMARY, T_SECONDARY, T_MUTED, T_HEADING, T_LABEL,
+  C_BLUE, C_GOLD, C_SAGE,
+  INPUT_STYLE,
+} from "@/lib/adminTheme";
 
 const DEFAULT_BULLETS = [
   "Comprendre les règles clés de la transmission",
@@ -19,17 +18,11 @@ const DEFAULT_CHECKLIST = [
   "À jour des dernières lois",
 ];
 
-const INPUT_STYLE: React.CSSProperties = {
-  background: "hsl(220 25% 97%)",
-  border: "1px solid hsl(224 20% 84%)",
-  color: "hsl(224 55% 12%)",
-};
-
 function Card({ title, sub, children }: { title: string; sub: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-2xl p-7" style={{ background: "white", border: "1px solid hsl(224 20% 12% / 0.07)", boxShadow: "0 2px 12px -4px hsl(224 60% 12% / 0.05)" }}>
-      <h2 className="text-[14px] font-medium mb-1" style={{ color: "hsl(224 55% 12%)" }}>{title}</h2>
-      <p className="text-[12px] font-light mb-5" style={{ color: "hsl(224 15% 55%)" }}>{sub}</p>
+    <div className="rounded-2xl p-7" style={{ ...GLASS, borderRadius: "1rem", overflow: "hidden" }}>
+      <h2 className="text-[14px] font-medium mb-1" style={{ color: T_HEADING }}>{title}</h2>
+      <p className="text-[12px] font-light mb-5" style={{ color: T_SECONDARY }}>{sub}</p>
       {children}
     </div>
   );
@@ -84,19 +77,19 @@ export default function AdminFeaturedResource() {
         <Link
           to="/admin/ressources"
           className="p-2 rounded-lg transition-colors"
-          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(224 20% 96%)"; }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = INNER_BG; }}
           onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}
         >
-          <ArrowLeft className="w-4 h-4" style={{ color: "hsl(224 40% 45%)" }} />
+          <ArrowLeft className="w-4 h-4" style={{ color: T_LABEL }} />
         </Link>
         <div>
           <div className="flex items-center gap-2">
-            <Star className="w-4 h-4" fill="currentColor" style={{ color: "hsl(42 90% 48%)" }} />
-            <h1 className="text-2xl font-heading font-light tracking-tight" style={{ color: "hsl(224 55% 12%)" }}>
+            <Star className="w-4 h-4" fill="currentColor" style={{ color: C_GOLD }} />
+            <h1 className="text-2xl font-heading font-light tracking-tight" style={{ color: T_PRIMARY }}>
               Ressource mise en avant
             </h1>
           </div>
-          <p className="text-[13px] font-light mt-1" style={{ color: "hsl(224 20% 50%)" }}>
+          <p className="text-[13px] font-light mt-1" style={{ color: T_SECONDARY }}>
             Choisissez la ressource et personnalisez le texte de l'encart de mise en avant.
           </p>
         </div>
@@ -133,7 +126,7 @@ export default function AdminFeaturedResource() {
               <div key={i} className="flex items-center gap-3">
                 <span
                   className="text-[11px] font-semibold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
-                  style={{ background: "hsl(218 55% 42% / 0.10)", color: "hsl(218 55% 42%)" }}
+                  style={{ background: `rgba(100,140,210,0.18)`, color: C_BLUE }}
                 >
                   {i + 1}
                 </span>
@@ -161,7 +154,7 @@ export default function AdminFeaturedResource() {
                 <CheckCircle2
                   className="w-4 h-4 flex-shrink-0"
                   strokeWidth={1.5}
-                  style={{ color: "hsl(142 52% 42%)" }}
+                  style={{ color: C_SAGE }}
                 />
                 <input
                   type="text"
@@ -178,14 +171,14 @@ export default function AdminFeaturedResource() {
 
         {/* Save */}
         <div className="flex items-center justify-between pt-2">
-          <p className="text-[12px] font-light" style={{ color: "hsl(224 15% 58%)" }}>
+          <p className="text-[12px] font-light" style={{ color: T_MUTED }}>
             Les modifications sont appliquées immédiatement sur la page publique.
           </p>
           <button
             onClick={() => saveMutation.mutate()}
             disabled={saveMutation.isPending || !featuredId}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-[13px] font-medium text-white transition-all duration-200 disabled:opacity-50"
-            style={{ background: "hsl(224 60% 18%)", boxShadow: "0 8px 24px -8px hsl(224 60% 18% / 0.38)" }}
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-[13px] font-medium transition-all duration-200 disabled:opacity-50"
+            style={{ background: "rgba(100,140,210,0.18)", color: C_BLUE, border: `1px solid rgba(100,140,210,0.25)` }}
           >
             <Save className="w-4 h-4" />
             {saveMutation.isPending ? "Sauvegarde…" : "Sauvegarder"}
