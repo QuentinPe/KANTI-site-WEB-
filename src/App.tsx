@@ -1,6 +1,32 @@
-﻿import { lazy, Suspense, useLayoutEffect } from "react";
+﻿import { lazy, Suspense, useLayoutEffect, Component } from "react";
+import type { ReactNode, ErrorInfo } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
+import { Analytics } from "@vercel/analytics/react";
+
+// ─── Global error boundary — shows error instead of blank white page ─────────
+class ErrorBoundary extends Component<{ children: ReactNode }, { error: Error | null }> {
+  state = { error: null };
+  static getDerivedStateFromError(error: Error) { return { error }; }
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    console.error("[ErrorBoundary]", error, info);
+  }
+  render() {
+    const { error } = this.state;
+    if (!error) return this.props.children;
+    return (
+      <div style={{ padding: 32, fontFamily: "monospace", background: "#0b1220", color: "#f87171", minHeight: "100vh" }}>
+        <h1 style={{ fontSize: 18, marginBottom: 12 }}>Une erreur est survenue</h1>
+        <pre style={{ whiteSpace: "pre-wrap", fontSize: 12, color: "#fca5a5", background: "#1e293b", padding: 16, borderRadius: 8 }}>
+          {error.message}
+          {"\n\n"}
+          {error.stack}
+        </pre>
+      </div>
+    );
+  }
+}
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -9,8 +35,6 @@ function ScrollToTop() {
   }, [pathname]);
   return null;
 }
-import { HelmetProvider } from "react-helmet-async";
-import { Analytics } from "@vercel/analytics/react";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -103,13 +127,13 @@ const AppShell = () => {
   useLenis();
   return (
     <TooltipProvider>
-      <Analytics />
       <Toaster />
       <Sonner />
       <Suspense fallback={null}>
         <PremiumCursor />
       </Suspense>
       <BrowserRouter>
+        <Analytics />
         <ScrollToTop />
         <AuthProvider>
           <Suspense fallback={null}>
@@ -184,11 +208,13 @@ const AppShell = () => {
 };
 
 const App = () => (
-  <HelmetProvider>
-    <QueryClientProvider client={queryClient}>
-      <AppShell />
-    </QueryClientProvider>
-  </HelmetProvider>
+  <ErrorBoundary>
+    <HelmetProvider>
+      <QueryClientProvider client={queryClient}>
+        <AppShell />
+      </QueryClientProvider>
+    </HelmetProvider>
+  </ErrorBoundary>
 );
 
 export default App;

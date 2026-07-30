@@ -20,11 +20,15 @@ if (!host && import.meta.env.DEV) {
 }
 
 if (key && host) {
-  posthog.init(key, {
-    api_host: host,
-    defaults: "2026-05-30",
-    capture_pageview: "history_change",
-  });
+  try {
+    posthog.init(key, {
+      api_host: host,
+      defaults: "2026-05-30",
+      capture_pageview: "history_change",
+    });
+  } catch (e) {
+    console.warn("[posthog] init failed:", e);
+  }
 }
 
 export { posthog };
