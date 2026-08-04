@@ -1,4 +1,16 @@
-﻿import { createRoot } from "react-dom/client";
+﻿// ── Pre-React crash reporter ─────────────────────────────────────────────────
+// Catches any error that happens before React mounts and shows it in the DOM.
+window.addEventListener("error", (e) => {
+  const root = document.getElementById("root");
+  if (root && !root.innerHTML) {
+    root.innerHTML = `<div style="padding:32px;font-family:monospace;background:#0b1220;color:#f87171;min-height:100vh">
+      <b style="font-size:16px">Erreur au démarrage</b><br/><br/>
+      <pre style="white-space:pre-wrap;font-size:11px;background:#1e293b;padding:16px;border-radius:8px;color:#fca5a5">${e.message}\n\n${e.filename}:${e.lineno}\n\n${e.error?.stack ?? ""}</pre>
+    </div>`;
+  }
+});
+
+import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
 import "./lib/posthog";
