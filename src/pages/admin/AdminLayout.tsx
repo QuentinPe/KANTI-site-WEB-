@@ -32,6 +32,7 @@ function AdminLayoutInner() {
 
   return (
     <div
+      data-admin="true"
       className="min-h-screen flex"
       style={{
         backgroundImage: "url(/admin-hero.jpg)",

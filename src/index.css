@@ -649,6 +649,23 @@
   50% { box-shadow: 0 0 40px hsl(210 100% 60% / 0.4); }
 }
 
+/* ───── ADMIN SCOPE — no blue overflow rings ───── */
+/* Override Tailwind --ring to a muted neutral so shadcn focus rings don't bleed blue */
+[data-admin] {
+  --ring: 215 20% 60%;
+}
+/* Suppress browser-native blue focus outline on plain <a>/<button> inside admin.
+   Mouse clicks won't show any outline; keyboard focus gets a subtle white ring instead. */
+[data-admin] a:focus,
+[data-admin] button:focus {
+  outline: none;
+}
+[data-admin] a:focus-visible,
+[data-admin] button:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.22);
+  outline-offset: 2px;
+}
+
 /* ───── SCROLL REVEAL ───── */
 @media (prefers-reduced-motion: no-preference) {
   .reveal {
