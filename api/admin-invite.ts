@@ -108,7 +108,6 @@ export default async function handler(req: Request): Promise<Response> {
         active: true,
         status: "invited",
         invited_by: actorEmail,
-        permissions,
       }),
     });
 
