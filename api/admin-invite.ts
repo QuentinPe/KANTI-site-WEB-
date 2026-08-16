@@ -93,25 +93,40 @@ export default async function handler(req: Request): Promise<Response> {
       }
     }
 
-    // Upsert via RPC — bypasses PostgREST schema cache entirely
-    const upsertRes = await fetch(`${supabaseUrl}/rest/v1/rpc/upsert_invited_admin`, {
+    // Upsert avec uniquement les colonnes de base (email, role, active)
+    // Les colonnes étendues (status, display_name…) sont ajoutées via ALTER TABLE séparé
+    const upsertRes = await fetch(`${supabaseUrl}/rest/v1/admin_users`, {
       method: "POST",
       headers: {
         apikey: svc, Authorization: `Bearer ${svc}`,
         "Content-Type": "application/json",
+        Prefer: "resolution=merge-duplicates,return=minimal",
       },
-      body: JSON.stringify({
-        p_email:        email,
-        p_display_name: display_name || null,
-        p_role:         role,
-        p_invited_by:   actorEmail,
-      }),
+      body: JSON.stringify({ email, role, active: true }),
     });
 
     if (!upsertRes.ok) {
       const err = await upsertRes.json().catch(() => ({}));
       return json({ error: "Erreur d'enregistrement : " + JSON.stringify(err) }, 500);
     }
+
+    // Mise à jour des champs étendus si les colonnes existent (best-effort, pas bloquant)
+    await fetch(
+      `${supabaseUrl}/rest/v1/admin_users?email=eq.${encodeURIComponent(email)}`,
+      {
+        method: "PATCH",
+        headers: {
+          apikey: svc, Authorization: `Bearer ${svc}`,
+          "Content-Type": "application/json",
+          Prefer: "return=minimal",
+        },
+        body: JSON.stringify({
+          ...(display_name ? { display_name } : {}),
+          status: "invited",
+          invited_by: actorEmail,
+        }),
+      },
+    ).catch(() => {});
 
     await log(supabaseUrl, svc, actorEmail, "invite_sent", email, { role });
     return json({ ok: true });
