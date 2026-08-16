@@ -93,21 +93,18 @@ export default async function handler(req: Request): Promise<Response> {
       }
     }
 
-    // Upsert admin_users record (merge if email already exists)
-    const upsertRes = await fetch(`${supabaseUrl}/rest/v1/admin_users`, {
+    // Upsert via RPC — bypasses PostgREST schema cache entirely
+    const upsertRes = await fetch(`${supabaseUrl}/rest/v1/rpc/upsert_invited_admin`, {
       method: "POST",
       headers: {
         apikey: svc, Authorization: `Bearer ${svc}`,
         "Content-Type": "application/json",
-        Prefer: "resolution=merge-duplicates,return=minimal",
       },
       body: JSON.stringify({
-        email,
-        display_name: display_name || null,
-        role,
-        active: true,
-        status: "invited",
-        invited_by: actorEmail,
+        p_email:        email,
+        p_display_name: display_name || null,
+        p_role:         role,
+        p_invited_by:   actorEmail,
       }),
     });
 
