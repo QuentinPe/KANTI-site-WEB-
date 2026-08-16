@@ -636,7 +636,7 @@ function LeadTableRow({ lead, onClick, selected, onSelect, seen }: {
             {STATUS_ORDER.map((s) => {
               const sc = STATUS_CONFIG[s];
               return (
-                <SelectItem key={s} value={s}
+                <SelectItem key={s} value={s} textValue={sc.label}
                   className="text-[12px] rounded-lg cursor-pointer data-[highlighted]:bg-white/10 data-[highlighted]:text-white"
                   style={{ color: "rgba(255,255,255,0.78)" }}
                 >

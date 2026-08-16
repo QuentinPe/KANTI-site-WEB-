@@ -232,12 +232,17 @@ function PickerModal({
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ background: "rgba(8,11,22,0.72)", backdropFilter: "blur(12px)" }}
+      style={{ background: "rgba(4,6,14,0.88)" }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div
         className="w-full max-w-lg rounded-2xl overflow-hidden flex flex-col"
-        style={{ ...GLASS, maxHeight: "80vh" }}
+        style={{
+          background: "hsl(224 62% 9%)",
+          border: "1px solid rgba(255,255,255,0.13)",
+          boxShadow: "0 32px 80px rgba(0,0,0,0.75)",
+          maxHeight: "80vh",
+        }}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: `1px solid ${INNER_BORDER}` }}>
@@ -371,7 +376,7 @@ function FileCard({
       className="rounded-xl overflow-hidden flex flex-col"
       style={{ ...GLASS, transition: "box-shadow 0.2s ease" }}
       onMouseEnter={() => setHovering(true)}
-      onMouseLeave={() => { setHovering(false); setConfirming(false); }}
+      onMouseLeave={() => { setHovering(false); }}
     >
       {/* Image preview */}
       <div
@@ -389,7 +394,7 @@ function FileCard({
         {/* Hover overlay */}
         <div
           className="absolute inset-0 flex items-center justify-center gap-2 transition-opacity duration-200"
-          style={{ background: "rgba(8,11,22,0.52)", opacity: hovering ? 1 : 0, pointerEvents: hovering ? "auto" : "none" }}
+          style={{ background: "rgba(8,11,22,0.52)", opacity: hovering || confirming ? 1 : 0, pointerEvents: hovering || confirming ? "auto" : "none" }}
         >
           {confirming ? (
             <>
