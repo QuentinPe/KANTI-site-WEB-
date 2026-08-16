@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
 import { posthog } from "@/lib/posthog";
+import { updateLastLogin } from "@/lib/adminUsersService";
 
 interface AuthContextType {
   user: User | null;
@@ -27,11 +28,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(false);
     }).catch(() => setLoading(false));
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
         posthog.identify(session.user.id, { role: "admin" });
+        if (event === "SIGNED_IN" && session.user.email) {
+          updateLastLogin(session.user.email).catch(() => {});
+        }
       }
     });
 
