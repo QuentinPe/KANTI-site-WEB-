@@ -16,8 +16,8 @@ function stripHtml(html: string) {
 }
 
 async function verifySupabaseToken(token: string): Promise<boolean> {
-  const supabaseUrl = process.env.VITE_SUPABASE_URL;
-  const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
+  const supabaseUrl = process.env.VITE_SUPABASE_URL ?? "https://zoqpsjodmlazmottqshl.supabase.co";
+  const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY ?? "sb_publishable_GLFFA7Uvvu7ZxM1pqWO4lQ_4XIQ2Sdy";
   if (!supabaseUrl || !supabaseKey) return false;
   try {
     const res = await fetch(`${supabaseUrl}/auth/v1/user`, {
@@ -82,19 +82,21 @@ export default async function handler(req: Request): Promise<Response> {
     reformat: {
       system:
         "Tu es rédacteur expert en contenu patrimonial et financier pour le cabinet KANTI. " +
-        "Tu maîtrises les meilleures pratiques rédactionnelles : hiérarchie claire, paragraphes aérés, " +
-        "formulations percutantes, style éditorial professionnel et accessible.",
+        "Ta mission est de REFORMATER uniquement — jamais de supprimer, résumer ou raccourcir le contenu. " +
+        "Tu restructures, aères et améliores le style sans rien enlever au fond.",
       user:
-        `Reformate et améliore ce contenu HTML d'article. Consignes strictes :\n` +
-        `- Utilise des balises h2 et h3 pour structurer\n` +
-        `- Aère les paragraphes (pas plus de 3 phrases par paragraphe)\n` +
-        `- Reformule les phrases trop longues ou ambiguës\n` +
-        `- Conserve fidèlement le sens, les données chiffrées et les exemples\n` +
-        `- Ajoute des listes ul/li si pertinent pour les énumérations\n` +
-        `- Style : expert, accessible, éditorial (pas de jargon inutile)\n` +
+        `Reformate ce contenu HTML d'article en conservant INTÉGRALEMENT toutes les informations. Consignes strictes :\n` +
+        `- NE SUPPRIME AUCUNE information, section, exemple ou donnée chiffrée — le texte final doit être au moins aussi long que l'original\n` +
+        `- NE RÉSUME PAS et n'omets aucun paragraphe existant\n` +
+        `- Ajoute des balises h2 et h3 pour structurer les grandes sections\n` +
+        `- Découpe les paragraphes trop longs en paragraphes de 2 à 4 phrases maximum\n` +
+        `- Reformule uniquement les phrases confuses ou grammaticalement incorrectes\n` +
+        `- Transforme les listes en énumération ul/li si le contenu s'y prête\n` +
+        `- Mets en strong les concepts clés importants\n` +
+        `- Style : expert, accessible, éditorial — ni jargon inutile ni langage simpliste\n` +
         `- Renvoie UNIQUEMENT du HTML valide (h2, h3, p, ul, ol, li, strong, em). ` +
-        `Pas de doctype, pas de html, pas de body, pas de div, pas de markdown.\n\n` +
-        `Contenu :\n${content.slice(0, 6000)}`,
+        `Pas de doctype, pas de html, pas de body, pas de div, pas de class, pas de markdown.\n\n` +
+        `Contenu à reformater :\n${content.slice(0, 8000)}`,
     },
   };
 
@@ -114,7 +116,7 @@ export default async function handler(req: Request): Promise<Response> {
           { role: "system", content: prompt.system },
           { role: "user", content: prompt.user },
         ],
-        max_tokens: 2000,
+        max_tokens: action === "reformat" ? 6000 : 2000,
         temperature: 0.65,
       }),
     });

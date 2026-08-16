@@ -46,6 +46,128 @@ function getSource(lead: Lead): string {
   if (s.includes("dirigeant") || s.includes("société")) return "Dirigeants";
   return "Formulaire contact";
 }
+/* ─── Email templates ─── */
+const EMAIL_TEMPLATES = [
+  {
+    id: "prise_contact",
+    label: "Prise de contact",
+    subject: "Suite à votre demande – Cabinet KANTI",
+    body: (nom: string) =>
+      `Bonjour ${nom},\n\nNous avons bien reçu votre demande et vous en remercions.\n\n` +
+      `En tant que cabinet de gestion patrimoniale à Bordeaux, KANTI accompagne ses clients dans leurs projets d'épargne, d'investissement immobilier et d'optimisation fiscale.\n\n` +
+      `Nous serions ravis d'échanger avec vous lors d'un entretien personnalisé. Pourriez-vous nous indiquer vos disponibilités ?\n\nCordialement,\nL'équipe KANTI`,
+  },
+  {
+    id: "relance",
+    label: "Relance",
+    subject: "Relance – Votre projet patrimonial",
+    body: (nom: string) =>
+      `Bonjour ${nom},\n\nNous nous permettons de vous recontacter suite à votre demande auprès du cabinet KANTI.\n\n` +
+      `Votre projet nous tient à cœur et nous souhaitons nous assurer que vous avez bien reçu nos précédents messages.\n\n` +
+      `N'hésitez pas à nous répondre directement ou à nous appeler. Nous restons à votre disposition.\n\nCordialement,\nL'équipe KANTI`,
+  },
+  {
+    id: "confirmation_rdv",
+    label: "Confirmation RDV",
+    subject: "Confirmation de votre rendez-vous – KANTI",
+    body: (nom: string) =>
+      `Bonjour ${nom},\n\nNous confirmons votre rendez-vous avec notre équipe.\n\n` +
+      `Date : [DATE]\nHeure : [HEURE]\nLieu : [LIEU / Visioconférence]\n\n` +
+      `Merci de nous prévenir en cas d'empêchement. Nous vous attendons avec plaisir.\n\nCordialement,\nL'équipe KANTI`,
+  },
+  {
+    id: "envoi_docs",
+    label: "Envoi de documents",
+    subject: "Documents – Votre dossier KANTI",
+    body: (nom: string) =>
+      `Bonjour ${nom},\n\nVeuillez trouver ci-joint les documents relatifs à votre dossier.\n\n` +
+      `N'hésitez pas à nous contacter si vous avez des questions ou souhaitez les commenter lors d'un entretien.\n\nCordialement,\nL'équipe KANTI`,
+  },
+];
+
+function MailTemplatePicker({ lead, variant = "icon" }: { lead: Lead; variant?: "icon" | "button" }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const onOutside = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", onOutside);
+    return () => document.removeEventListener("mousedown", onOutside);
+  }, [open]);
+
+  const buildMailto = (t: typeof EMAIL_TEMPLATES[0]) =>
+    `mailto:${lead.email}?subject=${encodeURIComponent(t.subject)}&body=${encodeURIComponent(t.body(lead.nom))}`;
+
+  const dropdown = open && (
+    <div
+      className="absolute z-[300] rounded-xl p-1.5"
+      style={{
+        bottom: "calc(100% + 6px)",
+        left: 0,
+        minWidth: 200,
+        background: "hsl(224 58% 8% / 0.97)",
+        backdropFilter: "blur(24px) saturate(180%)",
+        border: "1px solid rgba(255,255,255,0.13)",
+        boxShadow: "0 20px 60px rgba(0,0,0,0.55)",
+      }}
+    >
+      <p className="px-2.5 py-1.5 text-[10px] font-medium uppercase tracking-wide" style={{ color: T_MUTED }}>
+        Modèle d'email
+      </p>
+      {EMAIL_TEMPLATES.map((t) => (
+        <a key={t.id} href={buildMailto(t)} target="_blank" rel="noreferrer"
+          onClick={() => setOpen(false)}
+          className="flex items-center px-2.5 py-2 rounded-lg text-[12px] transition-colors hover:bg-white/10"
+          style={{ color: "rgba(255,255,255,0.80)" }}
+        >
+          {t.label}
+        </a>
+      ))}
+      <div className="my-1" style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }} />
+      <a href={`mailto:${lead.email}`} onClick={() => setOpen(false)}
+        className="flex items-center px-2.5 py-2 rounded-lg text-[12px] transition-colors hover:bg-white/10"
+        style={{ color: "rgba(255,255,255,0.38)" }}
+      >
+        Email vierge
+      </a>
+    </div>
+  );
+
+  if (variant === "button") {
+    return (
+      <div ref={ref} className="flex-1 relative" onClick={(e) => e.stopPropagation()}>
+        <button
+          onClick={() => setOpen((v) => !v)}
+          className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-[13px] font-medium"
+          style={{ background: INNER_BG, color: T_SECONDARY, border: `1px solid ${INNER_BORDER}` }}
+        >
+          <Mail className="w-4 h-4" />Email
+        </button>
+        {dropdown}
+      </div>
+    );
+  }
+
+  return (
+    <div ref={ref} className="relative" onClick={(e) => e.stopPropagation()}>
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="p-1.5 rounded-lg transition-colors"
+        style={{ color: C_BLUE }}
+        onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(215 42% 65% / 0.12)"; }}
+        onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}
+        title="Envoyer un email"
+      >
+        <Mail className="w-3.5 h-3.5" />
+      </button>
+      {dropdown}
+    </div>
+  );
+}
+
 function computeScore(lead: Lead): { score: number; level: "Élevé" | "Moyen" | "Faible" } {
   let s = 0;
   if (lead.timing === "asap") s += 50;
@@ -521,11 +643,7 @@ function LeadDetailPanel({ lead, onClose }: { lead: Lead; onClose: () => void })
               <Phone className="w-4 h-4" />Appeler
             </a>
           )}
-          <a href={`mailto:${lead.email}`}
-            className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-[13px] font-medium"
-            style={{ background: INNER_BG, color: T_SECONDARY, border: `1px solid ${INNER_BORDER}` }}>
-            <Mail className="w-4 h-4" />Email
-          </a>
+          <MailTemplatePicker lead={lead} variant="button" />
           {lead.status !== "archive" && (
             <button onClick={() => { statusMut.mutate("archive"); onClose(); }}
               title="Archiver ce lead"
@@ -697,13 +815,7 @@ function LeadTableRow({ lead, onClick, selected, onSelect, seen }: {
               <Phone className="w-3.5 h-3.5" />
             </a>
           )}
-          <a href={`mailto:${lead.email}`}
-            className="p-1.5 rounded-lg transition-colors"
-            style={{ color: C_BLUE }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(215 42% 65% / 0.12)"; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
-            <Mail className="w-3.5 h-3.5" />
-          </a>
+          <MailTemplatePicker lead={lead} variant="icon" />
         </div>
       </td>
     </tr>
