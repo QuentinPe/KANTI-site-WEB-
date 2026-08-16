@@ -610,18 +610,45 @@ function LeadTableRow({ lead, onClick, selected, onSelect, seen }: {
         </span>
       </td>
 
-      {/* Statut · native select styled as badge */}
+      {/* Statut · Radix Select styled as badge */}
       <td className="py-3.5 pr-4" onClick={(e) => e.stopPropagation()}>
-        <select
+        <Select
           value={lead.status}
-          onChange={(e) => statusMut.mutate(e.target.value as LeadStatus)}
+          onValueChange={(v) => statusMut.mutate(v as LeadStatus)}
           disabled={statusMut.isPending}
-          className="text-[11px] font-medium px-2.5 py-1 rounded-full cursor-pointer outline-none transition-all disabled:opacity-50"
-          style={{ background: cfg.bg, color: cfg.color, border: `1px solid ${cfg.dot}44` }}>
-          {STATUS_ORDER.map((s) => (
-            <option key={s} value={s}>{STATUS_CONFIG[s].label}</option>
-          ))}
-        </select>
+        >
+          <SelectTrigger
+            className="h-auto ring-0 focus:ring-0 focus:ring-offset-0 shadow-none text-[11px] font-medium rounded-full px-2.5 py-1 gap-1 [&>svg]:w-3 [&>svg]:h-3 [&>svg]:opacity-50 disabled:opacity-50"
+            style={{ background: cfg.bg, color: cfg.color, border: `1px solid ${cfg.dot}55`, minWidth: 90 }}
+          >
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent
+            className="min-w-[148px] rounded-xl border-0 p-1"
+            style={{
+              background: "hsl(224 58% 8% / 0.97)",
+              backdropFilter: "blur(24px) saturate(180%)",
+              border: "1px solid rgba(255,255,255,0.13)",
+              boxShadow: "0 20px 60px rgba(0,0,0,0.55)",
+              zIndex: 999,
+            }}
+          >
+            {STATUS_ORDER.map((s) => {
+              const sc = STATUS_CONFIG[s];
+              return (
+                <SelectItem key={s} value={s}
+                  className="text-[12px] rounded-lg cursor-pointer data-[highlighted]:bg-white/10 data-[highlighted]:text-white"
+                  style={{ color: "rgba(255,255,255,0.78)" }}
+                >
+                  <span className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: sc.dot }} />
+                    {sc.label}
+                  </span>
+                </SelectItem>
+              );
+            })}
+          </SelectContent>
+        </Select>
       </td>
 
       {/* Score */}
@@ -685,6 +712,96 @@ function LeadTableRow({ lead, onClick, selected, onSelect, seen }: {
 
 /* ─── Main page ─── */
 type SortKey = "date_desc" | "date_asc" | "urgent" | "score_desc";
+
+/* ─── Convertis Panel ─── */
+function ConvertisHeader({ leads }: { leads: Lead[] }) {
+  const converted = leads.filter((l) => l.status === "converti");
+  const total = leads.length;
+  const rate = total === 0 ? 0 : Math.round((converted.length / total) * 100);
+
+  const sourceMap = new Map<string, number>();
+  converted.forEach((l) => {
+    const s = getSource(l);
+    sourceMap.set(s, (sourceMap.get(s) ?? 0) + 1);
+  });
+  const topSource = [...sourceMap.entries()].sort((a, b) => b[1] - a[1])[0];
+
+  const consMap = new Map<string, number>();
+  converted.forEach((l) => {
+    if (l.conseiller && l.conseiller !== "any") {
+      const label = ADVISOR_LABELS[l.conseiller] ?? l.conseiller;
+      consMap.set(label, (consMap.get(label) ?? 0) + 1);
+    }
+  });
+  const topCons = [...consMap.entries()].sort((a, b) => b[1] - a[1])[0];
+
+  const avgDays = converted.length === 0 ? null : Math.round(
+    converted.reduce((s, l) => s + (Date.now() - new Date(l.created_at).getTime()) / 86_400_000, 0) / converted.length,
+  );
+
+  if (converted.length === 0) return null;
+
+  const cards = [
+    {
+      label: "Total convertis",
+      value: String(converted.length),
+      sub: `sur ${total} lead${total !== 1 ? "s" : ""} au pipeline`,
+      big: true,
+    },
+    {
+      label: "Taux de conversion",
+      value: `${rate}%`,
+      sub: "du pipeline total",
+      big: true,
+    },
+    {
+      label: "Source principale",
+      value: topSource ? topSource[0] : "—",
+      sub: topSource ? `${topSource[1]} converti${topSource[1] !== 1 ? "s" : ""}` : "Aucune donnée",
+      big: false,
+    },
+    {
+      label: "Conseiller top",
+      value: topCons ? topCons[0] : "Non assigné",
+      sub: topCons ? `${topCons[1]} converti${topCons[1] !== 1 ? "s" : ""}` : `Ancienneté moy. ${avgDays ?? "—"}j`,
+      big: false,
+    },
+  ];
+
+  return (
+    <div className="px-5 pt-5">
+      <div className="grid grid-cols-4 gap-3 mb-4">
+        {cards.map((card) => (
+          <div key={card.label} className="rounded-xl p-4"
+            style={{ background: "hsl(142 55% 38% / 0.08)", border: "1px solid hsl(142 55% 38% / 0.20)" }}>
+            <p className="text-[10px] font-medium uppercase tracking-wide mb-1.5" style={{ color: T_MUTED }}>
+              {card.label}
+            </p>
+            {card.big ? (
+              <p className="text-[26px] font-light tabular-nums leading-none" style={{ color: C_SAGE }}>
+                {card.value}
+              </p>
+            ) : (
+              <p className="text-[15px] font-medium leading-snug" style={{ color: T_PRIMARY }}>
+                {card.value}
+              </p>
+            )}
+            <p className="text-[10px] mt-1.5 leading-snug" style={{ color: T_MUTED }}>{card.sub}</p>
+          </div>
+        ))}
+      </div>
+      <div className="flex items-center gap-2 pb-3" style={{ borderBottom: `1px solid ${INNER_BORDER}` }}>
+        <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" style={{ color: C_SAGE }} />
+        <p className="text-[12px] font-medium" style={{ color: C_SAGE }}>
+          {converted.length} lead{converted.length !== 1 ? "s" : ""} converti{converted.length !== 1 ? "s" : ""}
+        </p>
+        <span className="text-[11px]" style={{ color: T_MUTED }}>
+          · ancienneté moyenne {avgDays ?? "—"} jour{avgDays !== 1 ? "s" : ""}
+        </span>
+      </div>
+    </div>
+  );
+}
 
 export default function AdminLeadsList() {
   const qc = useQueryClient();
@@ -1057,6 +1174,9 @@ export default function AdminLeadsList() {
               </button>
             ))}
           </div>
+
+          {/* Convertis stats panel */}
+          {tabFilter === "converti" && <ConvertisHeader leads={leads} />}
 
           {/* Table */}
           {isLoading ? (
