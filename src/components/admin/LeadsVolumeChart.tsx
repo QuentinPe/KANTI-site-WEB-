@@ -13,11 +13,11 @@ export const PERIODS: { key: PeriodKey; label: string; days: number }[] = [
 ];
 
 export const STATUS_CONFIG: Record<LeadStatus, { label: string; bg: string; color: string; dot: string }> = {
-  nouveau:  { label: "Nouveau",  bg: "hsl(38 90% 50% / 0.12)",  color: "hsl(38 70% 34%)",  dot: "hsl(38 80% 48%)"  },
-  appele:   { label: "Appelé",   bg: "hsl(200 70% 45% / 0.12)", color: "hsl(200 60% 32%)", dot: "hsl(200 70% 42%)" },
-  traite:   { label: "Traité",   bg: "hsl(218 55% 42% / 0.10)", color: "hsl(218 48% 38%)", dot: "hsl(218 50% 42%)" },
-  converti: { label: "Converti", bg: "hsl(142 55% 38% / 0.10)", color: "hsl(142 50% 30%)", dot: "hsl(142 52% 36%)" },
-  archive:  { label: "Archivé",  bg: "hsl(224 12% 55% / 0.10)", color: "hsl(224 12% 45%)", dot: "hsl(224 12% 50%)" },
+  nouveau:  { label: "Nouveau",  bg: "hsl(38 90% 58% / 0.14)",  color: "hsl(38 85% 64%)",  dot: "hsl(38 80% 58%)"  },
+  appele:   { label: "Appelé",   bg: "hsl(200 72% 55% / 0.14)", color: "hsl(200 78% 65%)", dot: "hsl(200 72% 58%)" },
+  traite:   { label: "Traité",   bg: "hsl(218 60% 52% / 0.14)", color: "hsl(218 72% 70%)", dot: "hsl(218 65% 62%)" },
+  converti: { label: "Converti", bg: "hsl(142 55% 45% / 0.15)", color: "hsl(142 65% 60%)", dot: "hsl(142 58% 52%)" },
+  archive:  { label: "Archivé",  bg: "hsl(224 12% 55% / 0.10)", color: "hsl(224 15% 62%)", dot: "hsl(224 12% 56%)" },
 };
 
 export const STATUS_ORDER: LeadStatus[] = ["nouveau", "appele", "traite", "converti", "archive"];

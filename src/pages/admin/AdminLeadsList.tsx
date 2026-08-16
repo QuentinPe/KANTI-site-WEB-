@@ -516,6 +516,7 @@ function LeadDetailPanel({ lead, onClose }: { lead: Lead; onClose: () => void })
   const statusMut = useMutation({
     mutationFn: (s: LeadStatus) => updateLeadStatus(lead.id, s),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["leads"] }); toast.success("Statut mis à jour"); },
+    onError: () => toast.error("Impossible de mettre à jour le statut"),
   });
   const notesMut = useMutation({
     mutationFn: (n: string) => updateLeadNotes(lead.id, n),
@@ -682,6 +683,7 @@ function LeadTableRow({ lead, onClick, selected, onSelect, seen }: {
   const statusMut = useMutation({
     mutationFn: (s: LeadStatus) => updateLeadStatus(lead.id, s),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["leads"] }); toast.success("Statut mis à jour"); },
+    onError: () => toast.error("Impossible de mettre à jour le statut"),
   });
 
   return (
