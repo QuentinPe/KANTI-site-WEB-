@@ -298,34 +298,6 @@ export default function NotreMethodePage() {
         </div>
       </section>
 
-      {/* ── Gouvernance ── */}
-      <section className="section-padding bg-white">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-14 reveal">
-            <h2 className="text-3xl md:text-4xl font-heading font-light tracking-tight leading-[1.05]" style={{ color: "hsl(224 55% 12%)" }}>
-              Un cadre réglementaire strict, des contrôles indépendants.
-            </h2>
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {garanties.map((g, i) => {
-              const Icon = g.icon;
-              return (
-                <div key={g.label}
-                  className={`reveal reveal-delay-${(i % 4) + 1} p-6 rounded-2xl bg-white`}
-                  style={{ border: "1px solid hsl(224 20% 12% / 0.08)", boxShadow: "0 2px 12px -4px hsl(224 60% 12% / 0.05)" }}>
-                  <div className="w-10 h-10 rounded-full flex items-center justify-center mb-4" style={{ background: "hsl(224 30% 12% / 0.04)" }}>
-                    <Icon className="w-5 h-5" strokeWidth={1.5} style={{ color: "hsl(224 40% 42%)" }} />
-                  </div>
-                  <div className="text-[10px] tracking-[0.28em] uppercase mb-2" style={{ color: "hsl(224 18% 55%)" }}>{g.label}</div>
-                  <div className="font-heading text-xl font-light tracking-tight mb-3" style={{ color: "hsl(224 55% 12%)" }}>{g.value}</div>
-                  <p className="text-sm leading-relaxed font-light" style={{ color: "hsl(224 15% 42%)" }}>{g.text}</p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
       {/* ── FAQ ── */}
       <section className="section-padding section-ivory">
         <div className="max-w-6xl mx-auto">
