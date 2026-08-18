@@ -108,7 +108,7 @@ const heroSchema = z.object({
 });
 
 const downloadSchema = z.object({
-  contact: z.string().trim().min(2, "Indiquez votre téléphone ou adresse postale").max(200),
+  email: z.string().trim().email("Adresse email invalide").max(255),
 });
 
 // ── Style constants ───────────────────────────────────────────────────────────
@@ -247,7 +247,7 @@ export default function RessourcesPage() {
 
   // Card modal state
   const [openId, setOpenId] = useState<string | null>(null);
-  const [form, setForm] = useState({ contact: "" });
+  const [form, setForm] = useState({ email: "" });
   const [loading, setLoading] = useState(false);
 
   // Filters
@@ -304,7 +304,7 @@ export default function RessourcesPage() {
     return () => window.removeEventListener("keydown", onKey);
   }, [loading]);
 
-  useEffect(() => { setForm({ contact: "" }); }, [openId]);
+  useEffect(() => { setForm({ email: "" }); }, [openId]);
 
   // Utility: trigger file download
   const triggerDownload = async (resource: DisplayResource) => {
@@ -351,6 +351,31 @@ export default function RessourcesPage() {
     if (!activeResource) return;
     setLoading(true);
     try {
+      // Niveau 2 — vérification MX du domaine email
+      const check = await fetch("/api/verify-contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: parsed.data.email }),
+      }).then((r) => r.json()).catch(() => ({ email: { valid: true } }));
+      if (check?.email?.valid === false) {
+        const msg = check.email.reason === "no_mx"
+          ? "Ce domaine email n'existe pas ou ne reçoit pas de mails."
+          : "Adresse email invalide.";
+        toast.error(msg);
+        setLoading(false);
+        return;
+      }
+      // Enregistrement du lead + téléchargement
+      await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nom: "Ressource PDF",
+          email: parsed.data.email,
+          telephone: "",
+          sujet: `Téléchargement PDF · ${activeResource.title}`,
+        }),
+      }).catch(() => {});
       await triggerDownload(activeResource);
       toast.success("Téléchargement en cours…");
       setOpenId(null);
@@ -898,21 +923,21 @@ export default function RessourcesPage() {
                     <form onSubmit={handleSubmit} className="space-y-3.5">
                       <div>
                         <label htmlFor="modal-contact" className="block text-[10px] font-medium mb-1.5 tracking-[0.18em] uppercase" style={{ color: "hsl(224 20% 52%)" }}>
-                          Téléphone ou adresse postale
+                          Email *
                         </label>
                         <div className="relative">
-                          <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" strokeWidth={1.5} style={{ color: "hsl(224 30% 55%)" }} />
+                          <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" strokeWidth={1.5} style={{ color: "hsl(224 30% 55%)" }} />
                           <input
-                            id="modal-contact" type="text" value={form.contact}
-                            onChange={(e) => setForm((p) => ({ ...p, contact: e.target.value }))}
-                            required maxLength={200} disabled={loading}
-                            placeholder="06 12 34 56 78 ou 12 rue de la Paix, Bordeaux"
+                            id="modal-contact" type="email" value={form.email}
+                            onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))}
+                            required maxLength={255} disabled={loading}
+                            placeholder="jean.dupont@exemple.fr"
                             className="w-full pl-9 pr-4 py-3 rounded-xl text-[13px] focus:outline-none transition-all duration-200 disabled:opacity-50"
                             style={{ background: "hsl(220 25% 97%)", border: "1px solid hsl(224 20% 86%)", color: "hsl(224 55% 12%)" }}
                           />
                         </div>
                         <p className="mt-1.5 text-[10px] font-light" style={{ color: "hsl(224 15% 58%)" }}>
-                          Pour que nos conseillers puissent vous contacter si besoin.
+                          Pour recevoir un suivi personnalisé de nos conseillers.
                         </p>
                       </div>
                       <div className="flex items-center justify-between gap-3 pt-1">

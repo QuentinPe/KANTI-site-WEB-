@@ -741,12 +741,43 @@ function SendModal({ profile, onClose, onAfterSend }: { profile: SriProfile; onC
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!prenom.trim() || !nom.trim() || !email.trim()) return;
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+
+    // Niveau 1 — format email strict
+    if (!/^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/.test(email.trim())) {
       setError("Adresse email invalide.");
       return;
     }
+    // Niveau 1 — format téléphone français (si renseigné)
+    if (telephone.trim()) {
+      const FR_PHONE = /^(?:(?:\+|00)33[\s.\-]?|0)[1-9](?:[\s.\-]?\d{2}){4}$/;
+      if (!FR_PHONE.test(telephone.trim())) {
+        setError("Numéro de téléphone invalide (format français attendu).");
+        return;
+      }
+    }
+
     setSubmitting(true);
     setError("");
+
+    // Niveau 2 — vérification MX
+    try {
+      const check = await fetch("/api/verify-contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim() }),
+      }).then((r) => r.json()).catch(() => ({ email: { valid: true } }));
+      if (check?.email?.valid === false) {
+        setError(
+          check.email.reason === "no_mx"
+            ? "Ce domaine email n'existe pas ou ne reçoit pas de mails."
+            : "Adresse email invalide.",
+        );
+        setSubmitting(false);
+        return;
+      }
+    } catch {
+      // fail open si l'API est indisponible
+    }
     try {
       const fullNom = `${prenom.trim()} ${nom.trim()}`;
       const sujet = `Profil de risque · SRI ${profile.sri}/7 (${profile.shortLabel})`;

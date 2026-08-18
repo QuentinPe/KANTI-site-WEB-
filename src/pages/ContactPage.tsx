@@ -145,9 +145,26 @@ export default function ContactPage() {
     setTimeout(() => setStep(next), 140);
   };
 
-  const advanceCoords = () => {
+  const advanceCoords = async () => {
     if (!form.nom.trim() || form.nom.trim().length < 2) { toast.error("Indiquez votre nom complet"); return; }
-    if (!form.email.trim() || !/\S+@\S+\.\S+/.test(form.email)) { toast.error("Email invalide"); return; }
+    // Niveau 1 — format email strict
+    if (!form.email.trim() || !/^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/.test(form.email)) {
+      toast.error("Email invalide"); return;
+    }
+    // Niveau 2 — MX check
+    try {
+      const check = await fetch("/api/verify-contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: form.email.trim() }),
+      }).then((r) => r.json()).catch(() => ({ email: { valid: true } }));
+      if (check?.email?.valid === false) {
+        toast.error(check.email.reason === "no_mx"
+          ? "Ce domaine email n'existe pas."
+          : "Email invalide.");
+        return;
+      }
+    } catch { /* fail open */ }
     setStep(4);
   };
 
@@ -155,6 +172,15 @@ export default function ContactPage() {
     e.preventDefault();
     const parsed = contactSchema.safeParse(form);
     if (!parsed.success) { toast.error(parsed.error.issues[0].message); return; }
+
+    // Niveau 1 — téléphone français (si renseigné)
+    if (parsed.data.telephone) {
+      const FR_PHONE = /^(?:(?:\+|00)33[\s.\-]?|0)[1-9](?:[\s.\-]?\d{2}){4}$/;
+      if (!FR_PHONE.test(parsed.data.telephone.trim())) {
+        toast.error("Numéro de téléphone invalide (format français attendu).");
+        return;
+      }
+    }
 
     // Honeypot · redirection silencieuse sans appel API
     if (parsed.data.website) {
