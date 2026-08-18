@@ -357,8 +357,8 @@ export default function SimulateurFinancementPage() {
     <>
       <Header />
 
-      {/* Compact image hero */}
-      <section className="relative overflow-hidden" style={{ height: 400 }}>
+      {/* Hero */}
+      <section className="relative overflow-hidden" style={{ minHeight: 480 }}>
         {/* Background image */}
         <div className="absolute inset-0">
           <img
@@ -369,31 +369,36 @@ export default function SimulateurFinancementPage() {
             decoding="sync"
           />
         </div>
-        {/* Left overlay */}
+        {/* Gradient : couvre la gauche, laisse la photo respirer à droite */}
         <div
           aria-hidden
           className="absolute inset-0 pointer-events-none"
-          style={{ background: "linear-gradient(108deg, hsl(220 25% 8% / 0.82) 0%, hsl(220 25% 8% / 0.55) 42%, hsl(220 25% 8% / 0.10) 68%, transparent 85%)" }}
+          style={{ background: "linear-gradient(105deg, hsl(220 30% 7% / 0.92) 0%, hsl(220 30% 7% / 0.70) 38%, hsl(220 30% 7% / 0.22) 62%, transparent 80%)" }}
         />
-        {/* Bottom white fade */}
+        {/* Fondu bas vers le fond de page */}
         <div
           aria-hidden
           className="absolute inset-x-0 bottom-0 pointer-events-none"
-          style={{ height: "55%", background: "linear-gradient(to top, hsl(220 30% 97%) 0%, hsl(220 30% 97% / 0.65) 30%, transparent 100%)" }}
+          style={{ height: "38%", background: "linear-gradient(to top, hsl(220 30% 97%) 0%, transparent 100%)" }}
         />
-        {/* Content */}
-        <div className="relative z-10 flex items-end h-full pb-10 px-4 md:px-8">
-          <div className="max-w-5xl mx-auto w-full">
-            <p className="text-[10px] tracking-[0.32em] uppercase text-white/50 mb-3 font-medium">
+        {/* Content — centré verticalement */}
+        <div className="relative z-10 flex items-center h-full px-6 md:px-14" style={{ minHeight: 480 }}>
+          <div className="max-w-5xl mx-auto w-full py-20">
+            <p className="text-[10px] tracking-[0.38em] uppercase font-semibold mb-5"
+              style={{ color: "hsl(210 80% 72%)" }}>
               Outil pédagogique · données simulées
             </p>
-            <h1 className="text-3xl md:text-4xl font-heading font-light text-white leading-tight tracking-tight mb-3 max-w-2xl">
-              Simulateur de financement
+            <h1 className="font-heading font-light leading-[1.06] tracking-tight mb-5 max-w-xl"
+              style={{ fontSize: "clamp(34px, 4.5vw, 56px)", color: "hsl(0 0% 100%)" }}>
+              Simulateur<br />
+              <span style={{ color: "hsl(210 70% 78%)", fontStyle: "italic" }}>de financement</span>
             </h1>
-            <p className="text-white/60 font-light text-sm max-w-xl mb-2">
-              Simulez mensualité, coût total et capacité d'emprunt. Comparez plusieurs stratégies et ajustez les paramètres en temps réel.
+            <div className="w-10 h-px mb-6" style={{ background: "hsl(210 60% 68% / 0.55)" }} />
+            <p className="font-light leading-relaxed mb-8 max-w-lg"
+              style={{ fontSize: 15, color: "hsl(0 0% 100% / 0.62)" }}>
+              Mensualité, coût total, capacité d'emprunt — comparez plusieurs stratégies et ajustez les paramètres en temps réel.
             </p>
-            <p className="text-[11px] text-white/35 italic max-w-xl">
+            <p className="text-[11px] italic" style={{ color: "hsl(0 0% 100% / 0.30)" }}>
               Indicatif uniquement · ne constitue pas une offre de prêt ou une recommandation personnalisée.
             </p>
           </div>
