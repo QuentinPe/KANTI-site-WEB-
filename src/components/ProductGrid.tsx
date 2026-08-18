@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import FlipCard from "./FlipCard";
+import SolutionCarousel from "./SolutionCarousel";
 import type { Product } from "@/data/productsCatalog";
 
 interface CtaCard {
@@ -46,60 +46,45 @@ export default function ProductGrid({
           )}
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {products.map((p, i) => (
-            <div key={p.slug} className={`reveal reveal-delay-${(i % 3) + 1}`}>
-              <FlipCard
-                tag={p.tag}
-                title={p.title}
-                pitch={p.pitch}
-                forWhom={p.forWhom}
-                benefits={p.benefits}
-                fiscality={p.fiscality}
-                horizon={p.horizon}
-                href={`/${categorySlug}/${p.slug}`}
-                hideLink={hideLinks}
-              />
-            </div>
-          ))}
+        <SolutionCarousel
+          products={products}
+          categorySlug={categorySlug}
+          hideLinks={hideLinks}
+        />
 
-          {ctaCard && (
-            <div className={`reveal reveal-delay-${(products.length % 3) + 1}`}>
-              <Link
-                to={ctaCard.href}
-                className="group flex flex-col justify-between h-[420px] rounded-[var(--radius)] p-7 md:p-8 transition-all duration-500 hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--electric))]"
-                style={{
-                  background: "linear-gradient(145deg, hsl(224 60% 14%) 0%, hsl(224 62% 8%) 100%)",
-                  boxShadow: "0 8px 40px -12px hsl(224 60% 8% / 0.5), inset 0 1px 0 hsl(0 0% 100% / 0.08)",
-                }}
-              >
-                <div>
-                  <p className="text-[10px] tracking-[0.28em] uppercase text-white/40 mb-6 font-medium">
-                    Sur mesure
-                  </p>
-                  <h3 className="font-heading text-2xl md:text-[26px] font-light text-white leading-[1.15] tracking-tight mb-4">
-                    {ctaCard.title}
-                  </h3>
-                  <p className="text-white/55 text-[14.5px] leading-relaxed font-light">
-                    {ctaCard.description}
-                  </p>
-                </div>
-
-                <div className="flex items-center justify-between pt-5 border-t border-white/10">
-                  <span className="text-white/60 text-[13px] font-medium tracking-wide group-hover:text-white transition-colors duration-300">
-                    {ctaCard.buttonText ?? "Prendre rendez-vous"}
-                  </span>
-                  <span
-                    className="w-9 h-9 rounded-full flex items-center justify-center bg-white/10 group-hover:bg-white/20 transition-colors duration-300 text-white/80 group-hover:translate-x-1"
-                    style={{ transition: "background 0.3s, transform 0.3s" }}
-                  >
-                    →
-                  </span>
-                </div>
-              </Link>
-            </div>
-          )}
-        </div>
+        {ctaCard && (
+          <div className="mt-6 reveal">
+            <Link
+              to={ctaCard.href}
+              className="group flex flex-col sm:flex-row sm:items-center justify-between rounded-[var(--radius)] p-7 md:p-8 transition-all duration-500 hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--electric))]"
+              style={{
+                background: "linear-gradient(145deg, hsl(224 60% 14%) 0%, hsl(224 62% 8%) 100%)",
+                border: "1px solid hsl(0 0% 100% / 0.07)",
+                boxShadow: "0 8px 40px -12px hsl(224 60% 8% / 0.5), inset 0 1px 0 hsl(0 0% 100% / 0.07)",
+              }}
+            >
+              <div className="mb-4 sm:mb-0">
+                <p className="text-[10px] tracking-[0.28em] uppercase text-white/40 mb-3 font-medium">
+                  Sur mesure
+                </p>
+                <h3 className="font-heading text-xl md:text-2xl font-light text-white leading-[1.2] tracking-tight mb-2">
+                  {ctaCard.title}
+                </h3>
+                <p className="text-white/50 text-[13.5px] leading-relaxed font-light max-w-xl">
+                  {ctaCard.description}
+                </p>
+              </div>
+              <div className="flex items-center gap-3 flex-shrink-0">
+                <span className="text-white/60 text-[12.5px] font-medium tracking-wide group-hover:text-white transition-colors duration-300">
+                  {ctaCard.buttonText ?? "Prendre rendez-vous"}
+                </span>
+                <span className="w-9 h-9 rounded-full flex items-center justify-center bg-white/10 group-hover:bg-white/20 group-hover:translate-x-1 transition-all duration-300 text-white/80">
+                  →
+                </span>
+              </div>
+            </Link>
+          </div>
+        )}
       </div>
     </section>
   );
