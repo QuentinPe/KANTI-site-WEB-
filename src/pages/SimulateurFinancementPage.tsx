@@ -351,6 +351,7 @@ export default function SimulateurFinancementPage() {
   // ── Input helpers ──────────────────────────────────────────────────────────
 
   const inputCls = "w-full border border-foreground/12 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-foreground/15 bg-background/50";
+  const labelCls = "block text-xs font-medium text-foreground/55 mb-1.5 tracking-wide";
 
   return (
     <>
