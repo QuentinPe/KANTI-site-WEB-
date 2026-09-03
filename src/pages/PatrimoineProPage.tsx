@@ -64,8 +64,6 @@ export default function PatrimoineProPage() {
         subtitle="Un premier échange confidentiel pour analyser votre situation et identifier les arbitrages prioritaires."
         eyebrow="Dirigeants & associés"
         index="05"
-        secondaryText="Cas clients dirigeants"
-        secondaryHref="/cas-clients"
       />
       <Footer />
     </>

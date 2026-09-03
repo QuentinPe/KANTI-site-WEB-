@@ -331,8 +331,6 @@ export default function NotreMethodePage() {
         subtitle="30 minutes pour comprendre votre situation, identifier les sujets prioritaires et juger si notre démarche vous convient."
         eyebrow="Notre méthode"
         index="07"
-        secondaryText="Voir les cas clients"
-        secondaryHref="/cas-clients"
       />
       <Footer />
     </>

@@ -8,7 +8,6 @@ import logoWhite from "@/assets/logo-kanti-white.png.asset.json";
 const navLinks = [
   { label: "Le Cabinet", href: "/cabinet" },
   { label: "Notre méthode", href: "/notre-methode" },
-  { label: "Cas clients", href: "/cas-clients" },
   { label: "Actualités", href: "/actualites" },
   {
     label: "Expertises",

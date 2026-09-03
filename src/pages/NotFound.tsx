@@ -65,7 +65,7 @@ const NotFound = () => {
                     { label: "Notre méthode", href: "/notre-methode" },
                     { label: "Le cabinet", href: "/cabinet" },
                     { label: "Gestion patrimoniale", href: "/gestion-patrimoniale" },
-                    { label: "Cas clients", href: "/cas-clients" },
+                    { label: "Contact", href: "/contact" },
                   ].map((l) => (
                     <Link
                       key={l.href}

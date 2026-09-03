@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import { motion, useReducedMotion } from "framer-motion";
 import SplitText from "./motion/SplitText";
 
@@ -105,17 +104,6 @@ export default function HomeCasClients() {
               </motion.article>
             );
           })}
-        </div>
-        <div className="mt-12 reveal">
-          <Link
-            to="/cas-clients"
-            className="inline-flex items-center gap-2 px-6 py-3 btn-primary-glass text-sm tracking-wide reflection-sweep"
-          >
-            Voir tous les cas clients
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-            </svg>
-          </Link>
         </div>
       </div>
     </section>

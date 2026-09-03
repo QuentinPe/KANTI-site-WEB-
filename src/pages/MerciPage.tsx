@@ -72,12 +72,6 @@ export default function MerciPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                 </svg>
               </Link>
-              <Link
-                to="/cas-clients"
-                className="inline-flex items-center justify-center gap-2 px-2 py-3.5 text-sm font-light text-foreground/70 hover:text-foreground transition-colors"
-              >
-                <span className="link-underline-light">Découvrir nos cas clients</span>
-              </Link>
             </div>
 
             <div className="mt-16 pt-10 border-t border-foreground/10 grid sm:grid-cols-3 gap-6 text-[11px] tracking-[0.18em] uppercase text-foreground/50">

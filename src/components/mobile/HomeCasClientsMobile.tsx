@@ -1,5 +1,3 @@
-import { Link } from "react-router-dom";
-
 const cas = [
   {
     profil: "Cadre dirigeant",
@@ -58,12 +56,6 @@ export default function HomeCasClientsMobile() {
           ))}
         </ul>
 
-        <Link
-          to="/cas-clients"
-          className="mt-8 inline-flex items-center gap-2 text-[14px] font-medium text-foreground link-underline pb-1"
-        >
-          Voir tous les cas clients →
-        </Link>
       </div>
     </section>
   );

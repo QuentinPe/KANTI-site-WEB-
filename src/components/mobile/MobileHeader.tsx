@@ -9,7 +9,6 @@ import ClientSpaceModal from "@/components/ClientSpaceModal";
 const primaryLinks = [
   { label: "Le Cabinet", href: "/cabinet" },
   { label: "Notre méthode", href: "/notre-methode" },
-  { label: "Cas clients", href: "/cas-clients" },
   { label: "Actualités", href: "/actualites" },
   { label: "Ressources", href: "/ressources" },
   { label: "Contact", href: "/contact" },
