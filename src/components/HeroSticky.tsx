@@ -139,7 +139,7 @@ export default function HeroSticky() {
       const current = currentFrameRef.current;
       const delta = target - current;
       if (Math.abs(delta) > 0.01) {
-        currentFrameRef.current = current + delta * 0.18;
+        currentFrameRef.current = current + delta * 0.35;
         const idx = Math.round(currentFrameRef.current);
         // Find nearest available frame if the exact one isn't loaded yet
         let drawIdx = idx;
@@ -187,7 +187,7 @@ export default function HeroSticky() {
       ref={sectionRef}
       id="hero"
       className="relative"
-      style={{ height: "550vh" }}
+      style={{ height: "300vh" }}
     >
       <div className="sticky top-0 h-screen w-full overflow-hidden flex items-center">
         {/* Scroll-driven canvas, frames are individual JPEGs, works on any CDN */}
