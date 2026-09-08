@@ -1,11 +1,12 @@
 ﻿import { Link } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
-import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import SplitText from "./motion/SplitText";
 import derAsset from "@/assets/der-kanti-2026.pdf.asset.json";
 import { getSiteSettings } from "@/lib/siteSettingsService";
 import { getDownloadUrl } from "@/lib/ressourcesService";
+import { createLead } from "@/lib/leadsService";
 
 function useCountUp(target: number, suffix = "", duration = 2000, delay = 0) {
   const [value, setValue] = useState("0");
@@ -46,20 +47,44 @@ function useCountUp(target: number, suffix = "", duration = 2000, delay = 0) {
 export default function About() {
   const reduce = useReducedMotion();
   const sectionRef = useRef<HTMLElement>(null);
-  const years = "Depuis 2020";
-  const clients = useCountUp(250, "+", 2000, 350);
+  const years = "Depuis 2019";
+  const clients = useCountUp(100, "+", 2000, 350);
   const fidelity = useCountUp(98, " %", 1800, 700);
+
+  const [derModalOpen, setDerModalOpen] = useState(false);
+  const [derForm, setDerForm] = useState({ nom: "", email: "" });
+  const [derSubmitting, setDerSubmitting] = useState(false);
+  const [derDone, setDerDone] = useState(false);
 
   const { data: settings = [] } = useQuery({ queryKey: ["site-settings"], queryFn: getSiteSettings });
   const derPath = settings.find((s) => s.key === "der_url")?.value ?? derAsset.url;
 
-  const handleDerDownload = async () => {
+  const triggerDownload = async () => {
     try {
       const url = await getDownloadUrl(derPath);
       window.open(url, "_blank", "noopener,noreferrer");
     } catch {
       window.open(derAsset.url, "_blank", "noopener,noreferrer");
     }
+  };
+
+  const handleDerSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!derForm.nom.trim() || !derForm.email.trim()) return;
+    setDerSubmitting(true);
+    try {
+      await createLead({ nom: derForm.nom.trim(), email: derForm.email.trim(), sujet: "DER 2026" });
+    } catch {
+      // lead save failure shouldn't block the download
+    }
+    setDerDone(true);
+    await triggerDownload();
+    setTimeout(() => {
+      setDerModalOpen(false);
+      setDerDone(false);
+      setDerForm({ nom: "", email: "" });
+      setDerSubmitting(false);
+    }, 1800);
   };
 
   const { scrollYProgress } = useScroll({
@@ -133,7 +158,7 @@ export default function About() {
               </Link>
               <button
                 type="button"
-                onClick={handleDerDownload}
+                onClick={() => setDerModalOpen(true)}
                 data-magnetic
                 className="group relative inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium text-foreground transition-all duration-500 hover:-translate-y-0.5"
                 style={{
@@ -208,6 +233,128 @@ export default function About() {
           </div>
         </div>
       </div>
+
+      {/* DER download modal */}
+      <AnimatePresence>
+        {derModalOpen && (
+          <motion.div
+            key="der-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className="fixed inset-0 z-[9999] flex items-center justify-center px-4"
+            style={{ background: "hsl(224 60% 5% / 0.55)", backdropFilter: "blur(10px)" }}
+            onClick={(e) => { if (e.target === e.currentTarget) setDerModalOpen(false); }}
+          >
+            <motion.div
+              key="der-modal"
+              initial={{ opacity: 0, y: 18, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 12, scale: 0.97 }}
+              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+              className="w-full max-w-md rounded-2xl p-8 relative"
+              style={{
+                background: "linear-gradient(145deg, hsl(0 0% 100% / 0.96) 0%, hsl(0 0% 97% / 0.96) 100%)",
+                boxShadow: "0 32px 80px -16px hsl(224 60% 8% / 0.4), 0 0 0 1px hsl(224 20% 20% / 0.08)",
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => setDerModalOpen(false)}
+                className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full text-foreground/40 hover:text-foreground hover:bg-foreground/5 transition-colors"
+                aria-label="Fermer"
+              >
+                <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+
+              {derDone ? (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.92 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="text-center py-4"
+                >
+                  <div className="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-6 h-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <p className="font-heading text-lg font-light text-foreground">Votre DER s'ouvre…</p>
+                </motion.div>
+              ) : (
+                <>
+                  <p className="text-[10px] tracking-[0.28em] uppercase font-medium text-foreground/40 mb-3">
+                    Document réglementaire
+                  </p>
+                  <h3 className="font-heading text-2xl font-light text-foreground mb-1.5 leading-tight">
+                    Télécharger notre DER 2026
+                  </h3>
+                  <p className="text-[13.5px] text-foreground/55 font-light mb-7 leading-relaxed">
+                    Renseignez vos coordonnées pour accéder au Document d'Entrée en Relation du cabinet KANTI.
+                  </p>
+
+                  <form onSubmit={handleDerSubmit} className="space-y-4">
+                    <div>
+                      <label className="block text-[11px] tracking-[0.18em] uppercase font-medium text-foreground/50 mb-1.5">
+                        Nom complet
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={derForm.nom}
+                        onChange={(e) => setDerForm((f) => ({ ...f, nom: e.target.value }))}
+                        placeholder="Jean Dupont"
+                        className="w-full rounded-xl px-4 py-3 text-sm font-light text-foreground placeholder:text-foreground/30 outline-none transition-all duration-200 focus:ring-2 focus:ring-foreground/15"
+                        style={{
+                          background: "hsl(0 0% 0% / 0.035)",
+                          border: "1px solid hsl(0 0% 0% / 0.1)",
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] tracking-[0.18em] uppercase font-medium text-foreground/50 mb-1.5">
+                        Adresse e-mail
+                      </label>
+                      <input
+                        type="email"
+                        required
+                        value={derForm.email}
+                        onChange={(e) => setDerForm((f) => ({ ...f, email: e.target.value }))}
+                        placeholder="jean@exemple.com"
+                        className="w-full rounded-xl px-4 py-3 text-sm font-light text-foreground placeholder:text-foreground/30 outline-none transition-all duration-200 focus:ring-2 focus:ring-foreground/15"
+                        style={{
+                          background: "hsl(0 0% 0% / 0.035)",
+                          border: "1px solid hsl(0 0% 0% / 0.1)",
+                        }}
+                      />
+                    </div>
+                    <button
+                      type="submit"
+                      disabled={derSubmitting}
+                      className="w-full mt-2 inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl text-sm font-medium tracking-wide transition-all duration-300 disabled:opacity-60"
+                      style={{
+                        background: "linear-gradient(145deg, hsl(224 60% 18%) 0%, hsl(224 62% 10%) 100%)",
+                        color: "white",
+                        boxShadow: "0 8px 28px -8px hsl(224 60% 10% / 0.45)",
+                      }}
+                    >
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16" />
+                      </svg>
+                      {derSubmitting ? "Ouverture…" : "Accéder au document"}
+                    </button>
+                    <p className="text-center text-[11px] text-foreground/35 font-light">
+                      Vos données restent confidentielles et ne sont jamais revendues.
+                    </p>
+                  </form>
+                </>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }
