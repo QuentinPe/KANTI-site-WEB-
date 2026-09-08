@@ -60,11 +60,15 @@ export default function About() {
   const derPath = settings.find((s) => s.key === "der_url")?.value ?? derAsset.url;
 
   const triggerDownload = async () => {
+    // derAsset.url is a Lovable CDN path that doesn't work on Vercel — skip it as fallback
+    const isLovableCdn = (p: string) => p.startsWith("/__l5e/") || p.startsWith("/__lovable");
     try {
       const url = await getDownloadUrl(derPath);
+      if (isLovableCdn(url)) throw new Error("lovable-cdn");
       window.open(url, "_blank", "noopener,noreferrer");
     } catch {
-      window.open(derAsset.url, "_blank", "noopener,noreferrer");
+      // DER not yet configured in admin settings
+      alert("Le document n'est pas encore disponible. Veuillez contacter le cabinet ou réessayer plus tard.");
     }
   };
 
