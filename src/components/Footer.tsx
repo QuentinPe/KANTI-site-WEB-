@@ -68,7 +68,6 @@ export default function Footer() {
             <Link to="/politique-de-confidentialite" className="hover:text-white transition-colors">Politique de confidentialité</Link>
             <Link to="/reclamations" className="hover:text-white transition-colors">Réclamations</Link>
             <Link to="/ressources" className="hover:text-white transition-colors">Ressources</Link>
-            <a href="https://kov-agency.site" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Site par KOV ↗</a>
           </div>
           <p>© {new Date().getFullYear()} KANTI, Tous droits réservés</p>
         </div>
@@ -76,7 +75,7 @@ export default function Footer() {
         <div className="mt-6 text-center text-[10px] tracking-[0.22em] uppercase text-white/25 font-light">
           Design &amp; développement ·{" "}
           <a href="https://kov-agency.site" target="_blank" rel="noopener noreferrer" className="hover:text-white/50 transition-colors">
-            KOV Studio
+            KOV Studio ↗
           </a>
         </div>
       </div>
