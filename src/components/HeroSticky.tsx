@@ -35,7 +35,7 @@ export default function HeroSticky() {
   // Text stays fully visible until 94% through the hero scroll, then fades out smoothly.
   // No visibility toggle — it caused CSS animations to replay, making buttons re-appear
   // while h1/p briefly reset to opacity:0 (animation-fill-mode: both replay).
-  const titleOpacity = useTransform(scrollYProgress, [0, 0.94, 0.98, 0.999], [1, 1, 0.08, 0]);
+  const titleOpacity = useTransform(scrollYProgress, [0, 0.55, 0.72, 0.85], [1, 1, 0.08, 0]);
   const titleY = useTransform(scrollYProgress, [0, 0.999], reduce ? [0, 0] : [0, -30]);
 
   // Preload all frames as <img> elements + drive canvas from scroll
@@ -319,8 +319,9 @@ export default function HeroSticky() {
               {[
                 { k: "ORIAS", v: "Inscrit & vérifié" },
                 { k: "CNCEF", v: "Membre certifié" },
-                { k: "15+ ans", v: "d'expertise" },
-                { k: "500+", v: "familles accompagnées" },
+                { k: "La Compagnie des CGP", v: "Membre" },
+                { k: "20+ ans", v: "d'expertise" },
+                { k: "100+", v: "familles accompagnées" },
               ].map((item) => (
                 <div key={item.k} className="flex items-center gap-2.5">
                   <span className="text-xs font-semibold text-white tracking-wider">{item.k}</span>

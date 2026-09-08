@@ -198,14 +198,6 @@ export default function ExpertisesPinned() {
                       </li>
                     ))}
                   </ul>
-                  <div className="flex items-baseline gap-2 mb-4 pb-4" style={{ borderBottom: CARD_BORDER }}>
-                    <span className="font-heading text-xl font-light tabular-nums" style={{ color: NAVY }}>
-                      {e.kpi.value}
-                    </span>
-                    <span className="text-[11px] font-light" style={{ color: NAVY_LIGHT }}>
-                      {e.kpi.label}
-                    </span>
-                  </div>
                   <Link
                     to={e.href}
                     className="inline-flex items-center gap-1.5 text-[13px] font-medium group"
@@ -529,23 +521,8 @@ function FeaturedCard({
           </ul>
         </div>
 
-        {/* KPI + link */}
+        {/* link */}
         <div>
-          <div
-            className="flex items-baseline gap-2.5 mb-5 pb-5"
-            style={{ borderBottom: CARD_BORDER }}
-          >
-            <span
-              className="font-heading font-light tabular-nums"
-              style={{ color: NAVY, fontSize: "clamp(1.4rem, 2.5vw, 1.75rem)" }}
-            >
-              {item.kpi.value}
-            </span>
-            <span className="text-[11px] font-light leading-snug max-w-[240px]" style={{ color: NAVY_LIGHT }}>
-              {item.kpi.label}
-            </span>
-          </div>
-
           <Link
             to={item.href}
             className="inline-flex items-center gap-2 text-[13px] font-medium group transition-all duration-200"

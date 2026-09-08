@@ -142,8 +142,9 @@ export default function Hero() {
             {[
               { k: "ORIAS", v: "Inscrit & vérifié" },
               { k: "CNCEF", v: "Membre certifié" },
-              { k: "15+ ans", v: "d'expertise" },
-              { k: "500+", v: "familles accompagnées" },
+              { k: "La Compagnie des CGP", v: "Membre" },
+              { k: "20+ ans", v: "d'expertise" },
+              { k: "100+", v: "familles accompagnées" },
             ].map((item) => (
               <div key={item.k} className="flex items-center gap-2.5">
                 <span className="text-xs font-semibold text-white tracking-wider">{item.k}</span>
