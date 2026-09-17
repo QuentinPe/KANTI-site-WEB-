@@ -2,7 +2,7 @@ export const config = { runtime: "edge" };
 
 const CORS = {
   "Content-Type": "application/json",
-  "Access-Control-Allow-Origin": process.env.ALLOWED_ORIGIN ?? "*",
+  "Access-Control-Allow-Origin": process.env.ALLOWED_ORIGIN ?? "https://kanti.fr",
 };
 
 // Niveau 1 — formats stricts

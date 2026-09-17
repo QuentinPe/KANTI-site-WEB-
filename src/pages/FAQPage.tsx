@@ -1,4 +1,5 @@
 import { useMemo, useState, useCallback } from "react";
+import DOMPurify from "dompurify";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, X } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
@@ -137,9 +138,10 @@ export default function FAQPage() {
   };
 
   const highlight = useCallback((text: string, q: string) => {
-    if (!q) return text;
-    const parts = text.split(new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'));
-    return parts.map((p, i) =>
+    const safe = DOMPurify.sanitize(text, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
+    if (!q) return safe;
+    const esc = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return safe.split(new RegExp(`(${esc})`, 'gi')).map((p) =>
       p.toLowerCase() === q.toLowerCase()
         ? `<mark style="background:hsl(218 80% 88%);color:hsl(218 60% 24%);border-radius:2px;padding:0 1px">${p}</mark>`
         : p

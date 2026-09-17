@@ -16,21 +16,23 @@ function stripHtml(html: string) {
 }
 
 async function verifySupabaseToken(token: string): Promise<boolean> {
-  const supabaseUrl = process.env.VITE_SUPABASE_URL ?? "https://zoqpsjodmlazmottqshl.supabase.co";
-  const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY ?? "sb_publishable_GLFFA7Uvvu7ZxM1pqWO4lQ_4XIQ2Sdy";
-  if (!supabaseUrl || !supabaseKey) return false;
+  const supabaseUrl = process.env.VITE_SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!supabaseUrl || !serviceKey || !token) return false;
   try {
+    // Vérification du token utilisateur avec la clé anon (lecture publique /auth/v1/user)
+    const anonKey = process.env.VITE_SUPABASE_ANON_KEY;
     const res = await fetch(`${supabaseUrl}/auth/v1/user`, {
-      headers: { Authorization: `Bearer ${token}`, apikey: supabaseKey },
+      headers: { Authorization: `Bearer ${token}`, apikey: anonKey ?? serviceKey },
     });
     if (!res.ok) return false;
     const user = await res.json();
     if (!user?.email) return false;
 
-    // Verify the authenticated user has an active row in admin_users
+    // Vérification admin_users avec la service role key (bypass RLS)
     const adminRes = await fetch(
       `${supabaseUrl}/rest/v1/admin_users?email=eq.${encodeURIComponent(user.email)}&active=eq.true&select=email&limit=1`,
-      { headers: { apikey: supabaseKey, Authorization: `Bearer ${supabaseKey}` } },
+      { headers: { apikey: serviceKey, Authorization: `Bearer ${serviceKey}` } },
     );
     if (!adminRes.ok) return false;
     const admins = await adminRes.json();
