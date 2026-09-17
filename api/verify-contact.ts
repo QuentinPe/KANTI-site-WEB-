@@ -1,5 +1,16 @@
 export const config = { runtime: "edge" };
 
+// Rate limiting par IP — par instance Edge (protection contre les rafales)
+const _hits = new Map<string, { n: number; reset: number }>();
+function rateLimit(ip: string, limit: number, windowMs: number): boolean {
+  const now = Date.now();
+  const e = _hits.get(ip);
+  if (!e || now > e.reset) { _hits.set(ip, { n: 1, reset: now + windowMs }); return true; }
+  if (e.n >= limit) return false;
+  e.n++;
+  return true;
+}
+
 const CORS = {
   "Content-Type": "application/json",
   "Access-Control-Allow-Origin": process.env.ALLOWED_ORIGIN ?? "https://kanti.fr",
@@ -27,6 +38,12 @@ async function hasMXRecord(domain: string): Promise<boolean> {
 export default async function handler(req: Request): Promise<Response> {
   if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: CORS });
   if (req.method !== "POST") return new Response(JSON.stringify({ error: "Method not allowed" }), { status: 405, headers: CORS });
+
+  // 20 validations max par minute par IP
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "unknown";
+  if (!rateLimit(ip, 20, 60 * 1000)) {
+    return new Response(JSON.stringify({ error: "Too many requests" }), { status: 429, headers: CORS });
+  }
 
   const body = await req.json().catch(() => ({})) as { email?: string; phone?: string };
   const result: {

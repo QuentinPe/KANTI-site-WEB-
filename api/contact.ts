@@ -1,5 +1,16 @@
 export const config = { runtime: "edge" };
 
+// Rate limiting par IP — par instance Edge (protection contre les rafales)
+const _hits = new Map<string, { n: number; reset: number }>();
+function rateLimit(ip: string, limit: number, windowMs: number): boolean {
+  const now = Date.now();
+  const e = _hits.get(ip);
+  if (!e || now > e.reset) { _hits.set(ip, { n: 1, reset: now + windowMs }); return true; }
+  if (e.n >= limit) return false;
+  e.n++;
+  return true;
+}
+
 const ADVISORS: Record<string, string> = {
   quentin: "Quentin Perromat (Associé Fondateur)",
   thomas: "Thomas Robert (Courtier & Assistant)",
@@ -34,6 +45,12 @@ export default async function handler(req: Request): Promise<Response> {
 
   if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: cors });
   if (req.method !== "POST") return new Response("Method not allowed", { status: 405 });
+
+  // 5 soumissions max toutes les 10 minutes par IP
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "unknown";
+  if (!rateLimit(ip, 5, 10 * 60 * 1000)) {
+    return new Response(JSON.stringify({ error: "Trop de requêtes, veuillez patienter." }), { status: 429, headers: cors });
+  }
 
   let data: Record<string, string>;
   try {

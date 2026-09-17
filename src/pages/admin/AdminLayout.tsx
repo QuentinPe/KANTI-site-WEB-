@@ -1,4 +1,4 @@
-import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
+import { Outlet, Link, useLocation, useNavigate, Navigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { FileText, LogOut, Plus, BookOpen, Users, HelpCircle, UserSquare2, Scale, LayoutDashboard, Inbox, Settings, Image, ShieldCheck, ExternalLink, Tags, Sun, Moon, BarChart2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -22,6 +22,9 @@ function AdminLayoutInner() {
 
   const { data: leads = [] } = useQuery({ queryKey: ["leads"], queryFn: getLeads });
   const newLeadsCount = leads.filter((l) => l.status === "nouveau").length;
+
+  // Garde secondaire — indépendante du ProtectedRoute parent
+  if (!user) return <Navigate to="/login" replace />;
 
   const handleSignOut = async () => {
     await signOut();
