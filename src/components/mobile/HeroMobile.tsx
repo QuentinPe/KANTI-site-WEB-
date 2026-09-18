@@ -7,7 +7,7 @@ const HERO_IMAGE = "/video/hero-office-poster.jpg";
 const trust = [
   { k: "ORIAS", v: "Inscrit & vérifié" },
   { k: "CNCEF", v: "Membre certifié" },
-  { k: "15 ans", v: "à Bordeaux" },
+  { k: "8 ans", v: "à Bordeaux" },
   { k: "500+", v: "familles" },
 ];
 
@@ -59,15 +59,15 @@ export default function HeroMobile() {
         </h1>
 
         <p className="text-white/70 text-[16px] leading-[1.55] font-light mb-8 max-w-[34ch]">
-          Conseil en gestion de patrimoine. À Bordeaux, depuis plus de 15 ans.
+          Conseil en gestion de patrimoine. À Bordeaux, depuis plus de 8 ans.
         </p>
 
         <div className="flex flex-col gap-3">
           <Link
-            to="/contact"
+            to="/gestion-patrimoniale"
             className="inline-flex items-center justify-center gap-2 h-14 rounded-full bg-white text-[hsl(var(--navy-deep))] text-[15px] font-medium tracking-wide"
           >
-            Prendre rendez-vous
+            Placement financier
             <svg
               className="w-4 h-4"
               fill="none"
@@ -83,10 +83,10 @@ export default function HeroMobile() {
             </svg>
           </Link>
           <Link
-            to="/bilan-patrimonial-bordeaux"
+            to="/courtage-patrimonial"
             className="inline-flex items-center justify-center h-14 rounded-full ring-1 ring-white/25 text-white text-[15px] font-light tracking-wide bg-white/5 backdrop-blur-sm"
           >
-            Demander un bilan patrimonial
+            Financer mon projet
           </Link>
         </div>
 

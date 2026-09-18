@@ -286,26 +286,26 @@ export default function HeroSticky() {
             >
               Nous accompagnons les particuliers, les dirigeants et les familles dans la
               structuration, l'optimisation et la transmission de leur patrimoine. À Bordeaux,
-              depuis plus de quinze ans.
+              depuis plus de huit ans.
             </motion.p>
 
             <div className="flex flex-col sm:flex-row gap-4">
               <Link
-                to="/bilan-patrimonial-bordeaux"
+                to="/gestion-patrimoniale"
                 data-magnetic
                 className="group inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-white text-navy-deep text-sm font-medium tracking-wide rounded-full reflection-sweep hover:shadow-2xl transition-all duration-300 hover:-translate-y-0.5"
               >
-                Demander un bilan patrimonial
+                Placement financier
                 <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                 </svg>
               </Link>
               <Link
-                to="/contact"
+                to="/courtage-patrimonial"
                 data-magnetic
                 className="inline-flex items-center justify-center px-7 py-3.5 btn-glass text-white text-sm font-medium tracking-wide"
               >
-                Prendre rendez-vous
+                Financer mon projet
               </Link>
             </div>
 

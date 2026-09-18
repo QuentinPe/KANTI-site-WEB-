@@ -8,7 +8,7 @@ const IMAGE_URL =
 const STATS = [
   { value: "100%", label: "Architecture ouverte" },
   { value: "0", label: "Produit maison" },
-  { value: "12+", label: "Partenaires" },
+  { value: "20+", label: "Partenaires" },
 ];
 
 export default function GestionHeroSticky() {
@@ -119,10 +119,10 @@ export default function GestionHeroSticky() {
                 </svg>
               </Link>
               <Link
-                to="/bilan-patrimonial-bordeaux"
+                to="/gestion-patrimoniale/simulateur"
                 className="inline-flex items-center px-6 py-3 rounded-full border border-white/30 text-white/85 text-sm font-medium tracking-wide hover:border-white/60 hover:text-white transition-colors duration-300"
               >
-                Bilan patrimonial
+                Accéder au simulateur
               </Link>
             </div>
 

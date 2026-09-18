@@ -380,7 +380,7 @@ function TimelineRow({
     <motion.li
       animate={{ opacity: active ? 1 : done ? 0.60 : 0.38 }}
       transition={{ duration: 0.30, ease: [0.22, 1, 0.36, 1] }}
-      className="relative flex items-center gap-4 py-2.5 pl-7"
+      className="relative flex items-start gap-4 py-2.5 pl-7"
     >
       {/* Circle dot on the rail */}
       <motion.span
@@ -393,7 +393,7 @@ function TimelineRow({
         }}
         transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
         className="absolute left-0 w-[22px] h-[22px] rounded-full flex items-center justify-center flex-shrink-0"
-        style={{ top: "50%", transform: "translateY(-50%)", zIndex: 1 }}
+        style={{ top: "0.2rem", zIndex: 1 }}
       >
         <motion.span
           animate={{ opacity: active ? 1 : 0 }}

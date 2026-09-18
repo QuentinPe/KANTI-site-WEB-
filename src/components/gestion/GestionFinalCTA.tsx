@@ -10,14 +10,8 @@ const ACTIONS = [
     primary: true,
   },
   {
-    icon: <FileText className="w-5 h-5" />,
-    label: 'Bilan patrimonial',
-    href: '/bilan-patrimonial-bordeaux',
-    primary: false,
-  },
-  {
     icon: <BarChart2 className="w-5 h-5" />,
-    label: 'Tester le simulateur',
+    label: 'Accéder au simulateur',
     href: '/gestion-patrimoniale/simulateur',
     primary: false,
   },

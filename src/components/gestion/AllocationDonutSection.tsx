@@ -18,11 +18,11 @@ const ILLUSTRATIVE_ALLOCATION = [
 ];
 
 const METRICS = [
-  { label: 'Horizon', value: '12 ans' },
+  { label: 'Horizon', value: '5 à 8 ans' },
   { label: 'Rendement central', value: '4,6 %' },
   { label: 'Volatilité', value: '8,2 %' },
   { label: 'Drawdown max', value: '−14 %' },
-  { label: 'Classes', value: '7' },
+  { label: 'Risque', value: 'SRI 4/7' },
   { label: 'Suivi', value: 'Trimestriel' },
 ];
 

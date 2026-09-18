@@ -5,7 +5,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 const IMAGE_URL = "/financement-hero.png";
 
 const STATS = [
-  { value: "20+", label: "Établissements partenaires" },
+  { value: "125", label: "Établissements partenaires" },
   { value: "100%", label: "Indépendant" },
   { value: "360°", label: "Vision patrimoniale" },
 ];

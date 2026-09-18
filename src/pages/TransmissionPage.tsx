@@ -23,8 +23,8 @@ export default function TransmissionPage() {
         breadcrumb="Transmission"
         eyebrow="Héritage & famille"
         stats={[
-          { value: "152 500€", label: "Abattement assurance-vie" },
-          { value: "15 ans", label: "Cycle des donations" },
+          { value: "Anticipée", label: "Transmission" },
+          { value: "Planifiée", label: "Donation-partage" },
           { value: "Notaire", label: "Coordination intégrée" },
         ]}
       />
@@ -36,9 +36,9 @@ export default function TransmissionPage() {
         image={heroImg}
         imageAlt="Transmission familiale KANTI"
         pillars={[
-          { title: "Donation-partage", text: "Répartir les biens de votre vivant, figer les valeurs, utiliser les abattements renouvelables tous les 15 ans." },
+          { title: "Donation-partage", text: "Répartir les biens de votre vivant, figer les valeurs, utiliser des donations planifiées selon les abattements en vigueur au moment de l'opération." },
           { title: "Démembrement de propriété", text: "Transmettre la nue-propriété en conservant l'usufruit : réduction de l'assiette taxable, maintien des revenus." },
-          { title: "Assurance-vie", text: "Clause bénéficiaire sur mesure, abattement de 152 500 € par bénéficiaire, hors succession sous conditions." },
+          { title: "Assurance-vie", text: "Clause bénéficiaire sur mesure, des plafonds d'abattement spécifiques par bénéficiaire selon les règles en vigueur, hors succession sous conditions." },
           { title: "Pacte Dutreil", text: "Exonération partielle des droits de donation pour la transmission d'une entreprise familiale." },
           { title: "Protection du conjoint", text: "Donation entre époux, changement de régime matrimonial, testament, mandat de protection future." },
           { title: "Calendrier de transmission", text: "Échelonner les donations pour utiliser pleinement les abattements et réduire les droits progressifs." },

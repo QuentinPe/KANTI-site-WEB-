@@ -17,9 +17,6 @@ import {
   Lightbulb,
   Rocket,
   TrendingUp,
-  FileSearch,
-  FileSignature,
-  ClipboardCheck,
   ShieldCheck,
   Lock,
   BadgeCheck,
@@ -31,60 +28,54 @@ const principes = [
   { icon: Scale, label: "Objectivité", text: "Aucun groupe bancaire ou assurantiel derrière nous. Nos conseils ne sont liés à aucun objectif de vente." },
   { icon: Layers, label: "Architecture ouverte", text: "Nous comparons les contrats du marché : assurance-vie, PER, SCPI, private equity. Sans produit maison ni quota." },
   { icon: Eye, label: "Transparence des frais", text: "Chaque frais et chaque rémunération est détaillé par écrit avant toute décision. Pas de coût caché." },
-  { icon: FileText, label: "Documentation", text: "Lettre de mission, rapport, recommandations, reporting : chaque étape est écrite, datée et archivée dix ans." },
+  { icon: FileText, label: "Une information claire", text: "Les éléments utiles à la mission et les recommandations formulées sont présentés au client selon la nature de son accompagnement." },
   { icon: Users, label: "Coordination", text: "Nous travaillons avec votre notaire, avocat fiscaliste et expert-comptable. La cohérence prime sur le produit isolé." },
   { icon: Phone, label: "Disponibilité", text: "Un conseiller référent joignable directement. Pas de plateau, pas de rotation d'interlocuteurs, pas de scripts." },
 ];
 
 const steps = [
   {
-    number: "01", phase: "Phase 1", duration: "30 min, gratuit",
-    title: "Écoute & découverte",
-    summary: "Comprendre votre situation avant toute recommandation.",
+    number: "01", phase: "Phase 1", duration: "Premier échange",
+    title: "Échange de découverte",
+    summary: "Un premier échange nous permet de comprendre votre situation, vos objectifs et les sujets sur lesquels vous souhaitez être accompagné.",
     description: "Nous prenons le temps d'écouter votre situation familiale, professionnelle et patrimoniale. Nous identifions les sujets qui méritent d'être creusés et ceux qui peuvent attendre. Aucune recommandation à ce stade : juste un cadrage clair de la mission.",
-    livrables: ["Compte-rendu d'échange", "Documents à transmettre", "Devis et lettre de mission"],
+    livrables: [] as string[],
     icon: MessageCircle,
   },
   {
-    number: "02", phase: "Phase 2", duration: "2 à 3 semaines",
-    title: "Audit patrimonial à 360°",
-    summary: "Un inventaire complet et un diagnostic fiable.",
+    number: "02", phase: "Phase 2", duration: "Cadrage",
+    title: "Définition de la mission",
+    summary: "Lorsque votre besoin est identifié, une lettre de mission précise le périmètre de notre intervention et les modalités de l'accompagnement proposé.",
     description: "À partir de vos documents, nous reconstituons la cartographie de votre patrimoine. Fiscalité, prévoyance, succession : nous repérons les forces, les fragilités et les marges de manœuvre. Ce travail est fait en interne, jamais sous-traité.",
-    livrables: ["Cartographie patrimoniale", "Analyse fiscale 3 ans", "Bilan prévoyance & succession"],
+    livrables: [] as string[],
     icon: Search,
   },
   {
-    number: "03", phase: "Phase 3", duration: "1 rendez-vous",
-    title: "Lettre de recommandations",
-    summary: "Un plan d'action clair, chiffré et priorisé.",
+    number: "03", phase: "Phase 3", duration: "Analyse",
+    title: "Recommandations",
+    summary: "Après analyse des éléments utiles, nous vous présentons un rapport de conseil détaillant les solutions envisagées au regard de votre situation, de vos objectifs et de votre patrimoine.",
     description: "Nous vous présentons un document écrit : diagnostic, enjeux, recommandations argumentées et scénarios comparés. Le plan d'action est classé par priorité. Ce document vous appartient, vous pouvez le partager avec vos autres conseils.",
-    livrables: ["Lettre de recommandations", "Simulations chiffrées", "Plan d'action priorisé"],
+    livrables: [] as string[],
     icon: Lightbulb,
   },
   {
     number: "04", phase: "Phase 4", duration: "Selon votre calendrier",
     title: "Mise en œuvre",
-    summary: "Sélection des contrats et coordination des intervenants.",
+    summary: "Lorsque vous souhaitez donner suite aux recommandations, nous vous accompagnons dans la mise en place des solutions retenues et dans les démarches associées.",
     description: "Si vous nous confiez la mise en œuvre, nous négocions les conditions, ouvrons les contrats et coordonnons les intervenants. Chaque étape est validée par vous par écrit. Aucun ordre n'est passé sans votre accord explicite.",
-    livrables: ["Contrats négociés", "Arbitrages exécutés", "Calendrier de mise en place"],
+    livrables: [] as string[],
     icon: Rocket,
   },
   {
-    number: "05", phase: "Phase 5", duration: "Annuel + à la demande",
-    title: "Suivi & gouvernance",
-    summary: "Un rendez-vous annuel et une disponibilité continue.",
-    description: "Chaque année, nous faisons le point sur l'évolution de votre patrimoine, les changements législatifs et les ajustements nécessaires. Vous recevez un reporting consolidé. Entre deux rendez-vous, votre conseiller reste joignable.",
-    livrables: ["Reporting annuel consolidé", "Note de veille fiscale", "Revue de stratégie"],
+    number: "05", phase: "Phase 5", duration: "Continu",
+    title: "Suivi",
+    summary: "L'accompagnement se poursuit par un suivi réglementaire et des échanges adaptés à l'évolution de votre situation, de vos projets et des solutions mises en place.",
+    description: "Chaque année, nous faisons le point sur l'évolution de votre patrimoine, les changements législatifs et les ajustements nécessaires. Entre deux rendez-vous, votre conseiller reste joignable.",
+    livrables: [] as string[],
     icon: TrendingUp,
   },
 ];
 
-const livrablesCadre = [
-  { number: "I", icon: FileSignature, title: "Lettre de mission", text: "Périmètre, livrables, calendrier, honoraires : tout est posé par écrit avant le démarrage." },
-  { number: "II", icon: FileSearch, title: "Rapport d'audit", text: "Cartographie complète de votre patrimoine et les zones de vigilance identifiées." },
-  { number: "III", icon: FileText, title: "Lettre de recommandations", text: "Recommandations argumentées, simulations chiffrées et plan d'action daté." },
-  { number: "IV", icon: TrendingUp, title: "Reporting annuel", text: "Performance, évolution patrimoniale, événements de l'année et revue de stratégie." },
-];
 
 const garanties = [
   { icon: BadgeCheck, label: "Statut", value: "CIF, ORIAS", text: "Conseiller en Investissements Financiers, immatriculé à l'ORIAS et adhérent à une association agréée par les autorités compétentes." },
@@ -148,13 +139,6 @@ export default function NotreMethodePage() {
                 Un diagnostic complet, des recommandations écrites, une mise en œuvre coordonnée et un suivi annuel. Chaque étape est claire, documentée et sans engagement jusqu'à votre accord.
               </motion.p>
 
-              <motion.div className="flex flex-wrap gap-6 text-[12px] font-light"
-                style={{ color: "hsl(224 18% 55%)" }}
-                initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 0.5 }}>
-                <span className="flex items-center gap-2"><span className="w-1 h-1 rounded-full" style={{ background: "hsl(224 50% 40%)" }} />5 phases formalisées</span>
-                <span className="flex items-center gap-2"><span className="w-1 h-1 rounded-full" style={{ background: "hsl(224 50% 40%)" }} />4 livrables écrits</span>
-                <span className="flex items-center gap-2"><span className="w-1 h-1 rounded-full" style={{ background: "hsl(224 50% 40%)" }} />10 ans d'archivage</span>
-              </motion.div>
 
             </div>
           </div>
@@ -240,13 +224,15 @@ export default function NotreMethodePage() {
                         <h3 className="font-heading text-2xl md:text-3xl font-light tracking-tight mb-3" style={{ color: "hsl(224 55% 12%)" }}>{step.title}</h3>
                         <p className="text-sm md:text-base italic mb-4" style={{ color: "hsl(224 25% 45%)" }}>{step.summary}</p>
                         <p className="text-sm md:text-[15px] leading-relaxed font-light mb-6" style={{ color: "hsl(224 15% 40%)" }}>{step.description}</p>
-                        <div className={`inline-flex flex-wrap gap-2 ${isEven ? "md:justify-end" : ""}`}>
-                          {step.livrables.map((l) => (
-                            <span key={l} className="text-[11px] px-3 py-1.5 rounded-full font-light" style={{ background: "hsl(224 30% 12% / 0.04)", color: "hsl(224 30% 40%)", border: "1px solid hsl(224 20% 12% / 0.08)" }}>
-                              {l}
-                            </span>
-                          ))}
-                        </div>
+                        {step.livrables.length > 0 && (
+                          <div className={`inline-flex flex-wrap gap-2 ${isEven ? "md:justify-end" : ""}`}>
+                            {step.livrables.map((l) => (
+                              <span key={l} className="text-[11px] px-3 py-1.5 rounded-full font-light" style={{ background: "hsl(224 30% 12% / 0.04)", color: "hsl(224 30% 40%)", border: "1px solid hsl(224 20% 12% / 0.08)" }}>
+                                {l}
+                              </span>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </div>
                     <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 z-10">
@@ -258,41 +244,6 @@ export default function NotreMethodePage() {
                   </div>
                 );
               })}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Livrables ── */}
-      <section className="section-padding section-ivory">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid lg:grid-cols-5 gap-12 lg:gap-16 items-start">
-            <div className="lg:col-span-2 reveal lg:sticky lg:top-32 lg:self-start">
-              <h2 className="text-3xl md:text-4xl font-heading font-light tracking-tight leading-[1.1] mb-5" style={{ color: "hsl(224 55% 12%)" }}>
-                Tout est écrit. Tout est conservé.
-              </h2>
-              <p className="font-light leading-relaxed" style={{ color: "hsl(224 15% 42%)" }}>
-                Quatre documents jalonnent chaque mission. Ils vous appartiennent, sont datés, signés et archivés dix ans.
-              </p>
-            </div>
-            <div className="lg:col-span-3">
-              <div className="grid sm:grid-cols-2 gap-6">
-                {livrablesCadre.map((l, i) => {
-                  const Icon = l.icon;
-                  return (
-                    <div key={l.title}
-                      className={`reveal reveal-delay-${(i % 4) + 1} p-6 rounded-2xl bg-white`}
-                      style={{ border: "1px solid hsl(224 20% 12% / 0.07)", boxShadow: "0 2px 12px -4px hsl(224 60% 12% / 0.05)" }}>
-                      <div className="w-10 h-10 rounded-full flex items-center justify-center mb-4" style={{ background: "hsl(224 30% 12% / 0.04)" }}>
-                        <Icon className="w-5 h-5" strokeWidth={1.5} style={{ color: "hsl(224 40% 42%)" }} />
-                      </div>
-                      <div className="font-heading text-2xl font-extralight mb-2 tabular-nums" style={{ color: "hsl(224 20% 75%)" }}>{l.number}</div>
-                      <h3 className="font-heading text-lg font-normal mb-2 tracking-tight" style={{ color: "hsl(224 55% 12%)" }}>{l.title}</h3>
-                      <p className="text-sm leading-relaxed font-light" style={{ color: "hsl(224 15% 42%)" }}>{l.text}</p>
-                    </div>
-                  );
-                })}
-              </div>
             </div>
           </div>
         </div>

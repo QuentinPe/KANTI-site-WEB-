@@ -36,9 +36,9 @@ export default function FiscalitePage() {
         imageAlt="Stratégie fiscale KANTI"
         pillars={[
           { title: "Impôt sur le revenu", text: "Analyse de votre tranche marginale, restructuration des revenus, versements PER, déficit foncier." },
-          { title: "IFI", text: "Évaluation de l'assiette, démembrement, contrats de capitalisation luxembourgeois, restructuration des actifs immobiliers." },
+          { title: "IFI", text: "Évaluation de l'assiette, démembrement, arbitrage entre patrimoine immobilier et liquidités, restructuration des actifs immobiliers." },
           { title: "Revenus fonciers", text: "Arbitrage location nue / meublée, régime micro ou réel, déficit foncier, SCI à l'IS." },
-          { title: "Plus-values", text: "Anticipation des cessions, report et sursis d'imposition, apport-cession (150-0 B ter), purge successorale." },
+          { title: "Plus-values", text: "Anticipation des cessions, report et sursis d'imposition, apport-cession (150-0 B ter), anticipation et organisation de la transmission." },
           { title: "Holding patrimoniale", text: "Structuration juridique pour regrouper, gérer et transmettre vos actifs de façon optimale." },
           { title: "Conformité & traçabilité", text: "Vérification systématique de la licéité des montages, documentation conforme aux exigences réglementaires et fiscales." },
         ]}
