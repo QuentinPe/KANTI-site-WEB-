@@ -14,6 +14,7 @@ import FinancingFAQSection from "@/components/financement/FinancingFAQSection";
 import PartnerApporteurSection from "@/components/financement/PartnerApporteurSection";
 import MarketComparisonSection from "@/components/financement/MarketComparisonSection";
 import FinancingFinalCTA from "@/components/financement/FinancingFinalCTA";
+import ApporteurToastPopup from "@/components/financement/ApporteurToastPopup";
 
 export default function CourtageFinancementPage() {
   useScrollReveal();
@@ -36,6 +37,7 @@ export default function CourtageFinancementPage() {
         <FinancingFinalCTA />
       </main>
       <Footer />
+      <ApporteurToastPopup />
     </>
   );
 }

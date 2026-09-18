@@ -110,7 +110,7 @@ export default function PartnerApporteurSection() {
   );
 }
 
-function PartnerModal({ onClose }: { onClose: () => void }) {
+export function PartnerModal({ onClose }: { onClose: () => void }) {
   const [form, setForm] = useState({ nom: "", societe: "", metier: "", telephone: "", email: "", message: "", consent: false });
   const [loading, setLoading] = useState(false);
   const reduce = useReducedMotion();
