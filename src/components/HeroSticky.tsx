@@ -1,6 +1,6 @@
 ﻿import { Link } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
-import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
+import { motion, useScroll, useReducedMotion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
 import Hero from "./Hero";
 
@@ -32,11 +32,6 @@ export default function HeroSticky() {
   });
 
   const titleContainerRef = useRef<HTMLDivElement>(null);
-  // Text stays fully visible until 94% through the hero scroll, then fades out smoothly.
-  // No visibility toggle — it caused CSS animations to replay, making buttons re-appear
-  // while h1/p briefly reset to opacity:0 (animation-fill-mode: both replay).
-  const titleOpacity = useTransform(scrollYProgress, [0, 0.55, 0.72, 0.85], [1, 1, 0.08, 0]);
-  const titleY = useTransform(scrollYProgress, [0, 0.999], reduce ? [0, 0] : [0, -30]);
 
   // Preload all frames as <img> elements + drive canvas from scroll
   useEffect(() => {
@@ -235,10 +230,9 @@ export default function HeroSticky() {
         />
 
         {/* Editorial content */}
-        <motion.div
+        <div
           ref={titleContainerRef}
-          style={{ opacity: titleOpacity, y: titleY }}
-          className="relative z-10 max-w-6xl mx-auto px-6 pt-44 pb-32 w-full will-change-transform"
+          className="relative z-10 max-w-6xl mx-auto px-6 pt-44 pb-32 w-full"
         >
           <div className="max-w-3xl">
             <motion.div
@@ -330,17 +324,12 @@ export default function HeroSticky() {
               ))}
             </motion.div>
           </div>
-        </motion.div>
+        </div>
 
         {/* Scroll indicator */}
-        <motion.div
-          style={{ opacity: titleOpacity }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2"
-        >
-          <div className="flex flex-col items-center gap-2">
-            <div className="w-[1px] h-10 bg-gradient-to-b from-white/50 to-transparent" />
-          </div>
-        </motion.div>
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 opacity-50">
+          <div className="w-[1px] h-10 bg-gradient-to-b from-white/50 to-transparent" />
+        </div>
       </div>
     </section>
   );
