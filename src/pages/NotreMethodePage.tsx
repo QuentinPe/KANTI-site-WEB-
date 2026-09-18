@@ -17,6 +17,7 @@ import {
   Lightbulb,
   Rocket,
   TrendingUp,
+  ClipboardCheck,
   ShieldCheck,
   Lock,
   BadgeCheck,
