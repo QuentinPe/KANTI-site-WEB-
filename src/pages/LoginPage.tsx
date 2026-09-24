@@ -126,7 +126,7 @@ export default function LoginPage() {
   const spawnPass  = () => { if (cardRef.current) spawnParticle(cardRef.current, true);  };
 
   const cardClass = [
-    "kanti-login-card w-full max-w-[520px] rounded-[28px] relative z-20 overflow-hidden",
+    "kanti-login-card w-full max-w-[420px] rounded-[28px] relative z-20 overflow-hidden",
     isComplete   ? "is-complete"   : "",
     loginPending ? "is-submitting" : "",
     globalError  ? "has-error"     : "",
@@ -173,7 +173,7 @@ export default function LoginPage() {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center lg:justify-start p-6 lg:pl-[9%] xl:pl-[11%] relative overflow-hidden"
+      className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden"
       style={{
         backgroundImage: "url(/admin-hero.jpg)",
         backgroundSize: "cover",
@@ -349,7 +349,6 @@ export default function LoginPage() {
               ) : (
                 <motion.form key="login-form"
                   onSubmit={handleLogin(onLogin)}
-                  noValidate
                   className="flex flex-col gap-5"
                   initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 16 }}
                   transition={{ duration: 0.24 }}
