@@ -1,3 +1,10 @@
+/* Supprime les halos de validation natifs du navigateur (rouge :invalid, vert :valid) */
+.kanti-login-card input:invalid,
+.kanti-login-card input:valid {
+  box-shadow: none !important;
+  outline: none !important;
+}
+
 .kanti-login-card {
   --signal-blue: 174, 204, 255;
   --signal-white: 235, 242, 255;
