@@ -39,7 +39,7 @@ export default function CookieBanner() {
       aria-label="Préférences cookies"
       className="fixed bottom-4 left-1/2 -translate-x-1/2 z-[80] w-[min(680px,calc(100vw-2rem))] animate-in fade-in slide-in-from-bottom-4 duration-500"
     >
-      <div className="glass-strong rounded-2xl p-5 md:p-6 shadow-2xl border border-foreground/10">
+      <div className="rounded-2xl p-5 md:p-6" style={{ background: "hsl(0 0% 100%)", border: "1px solid hsl(224 20% 12% / 0.08)", boxShadow: "0 20px 60px -16px hsl(224 60% 12% / 0.18), 0 4px 16px -6px hsl(224 60% 12% / 0.10)" }}>
         <div className="flex flex-col md:flex-row md:items-center gap-5">
           <div className="flex-1">
             <p className="text-[10px] tracking-[0.3em] uppercase text-foreground/50 font-medium mb-1.5">
