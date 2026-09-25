@@ -4,9 +4,10 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft, Upload, FileText, X } from "lucide-react";
+import { ArrowLeft, Upload, FileText, X, BookOpen } from "lucide-react";
 import { getAllRessources, createRessource, updateRessource, uploadPDF } from "@/lib/ressourcesService";
 import type { RessourceInput } from "@/lib/ressourcesService";
+import RichEditor from "@/components/admin/RichEditor";
 import {
   INNER_BG, INNER_BORDER,
   T_PRIMARY, T_SECONDARY, T_MUTED, T_HEADING, T_LABEL,
@@ -54,6 +55,7 @@ export default function AdminResourceForm() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [globalError, setGlobalError] = useState("");
   const [isDragging, setIsDragging] = useState(false);
+  const [bodyHtml, setBodyHtml] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: ressources = [], isLoading } = useQuery({
@@ -79,6 +81,7 @@ export default function AdminResourceForm() {
         active: existing.active,
         sort_order: existing.sort_order,
       });
+      setBodyHtml(existing.body ?? "");
     }
   }, [existing, reset]);
 
@@ -106,8 +109,8 @@ export default function AdminResourceForm() {
     setGlobalError("");
     setUploadProgress(0);
 
-    if (!isEdit && !pdfFile) {
-      setGlobalError("Veuillez sélectionner un fichier PDF.");
+    if (!isEdit && !pdfFile && !bodyHtml.trim()) {
+      setGlobalError("Fournissez un fichier PDF ou rédigez le contenu du guide.");
       return;
     }
 
@@ -128,6 +131,7 @@ export default function AdminResourceForm() {
         active: data.active,
         sort_order: data.sort_order,
         storage_path: storagePath,
+        body: bodyHtml.trim() || null,
       };
 
       if (isEdit) {
@@ -249,6 +253,28 @@ export default function AdminResourceForm() {
             onFocus={(e) => Object.assign((e.target as HTMLElement).style, inputFocus)}
             onBlur={(e) => Object.assign((e.target as HTMLElement).style, inputBlur)} />
         </Field>
+
+        {/* ── Rich content editor ───────────────────────────────────────── */}
+        <div className="flex flex-col gap-1.5">
+          <div className="flex items-center gap-2">
+            <BookOpen className="w-3.5 h-3.5" style={{ color: T_LABEL }} />
+            <label className="text-[12px] font-medium tracking-wide" style={{ color: T_LABEL }}>
+              Contenu du guide
+            </label>
+            <span className="text-[11px] font-light" style={{ color: T_MUTED }}>
+              — rédigez ici pour créer une page de lecture en ligne (optionnel si PDF joint)
+            </span>
+          </div>
+          <div
+            className="rounded-2xl overflow-hidden"
+            style={{ border: `1px solid ${INNER_BORDER}`, background: "rgba(255,255,255,0.05)" }}
+          >
+            <RichEditor value={bodyHtml} onChange={setBodyHtml} />
+          </div>
+          <p className="text-[11px] font-light" style={{ color: T_MUTED }}>
+            Le contenu sera affiché dans la page de lecture et imprimable en PDF via le navigateur.
+          </p>
+        </div>
 
         <div className="grid grid-cols-2 gap-4">
           <Field label="Catégorie *" error={errors.category?.message}>

@@ -81,6 +81,7 @@ const MerciPage                 = lazy(() => import("./pages/MerciPage"));
 const LoginPage                 = lazy(() => import("./pages/LoginPage"));
 const NotFound                  = lazy(() => import("./pages/NotFound"));
 const ProductDetailPage         = lazy(() => import("./pages/ProductDetailPage"));
+const RessourceReaderPage       = lazy(() => import("./pages/RessourceReaderPage"));
 
 // ─── Admin pages (heavy: Tiptap, pdfjs, mammoth only loaded in admin) ─────────
 const AdminAnalytics    = lazy(() => import("./pages/admin/AdminAnalytics"));
@@ -172,6 +173,7 @@ const AppShell = () => {
                 <Route path="/cas-clients" element={<CasClientsPage />} />
                 <Route path="/faq-patrimoniale" element={<FAQPage />} />
                 <Route path="/ressources" element={<RessourcesPage />} />
+                <Route path="/ressources/:id" element={<RessourceReaderPage />} />
                 <Route path="/profil-de-risque" element={<ProfilRisquePage />} />
               </Route>
               {/* Pages toujours accessibles (légal, auth) */}

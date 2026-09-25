@@ -10,6 +10,7 @@ export interface Ressource {
   thumbnail?: string | null;
   sort_order: number;
   active: boolean;
+  body?: string | null;
   created_at: string;
 }
 
@@ -68,6 +69,16 @@ export const uploadPDF = async (file: File): Promise<string> => {
     .upload(fileName, file, { contentType: "application/pdf", upsert: false });
   if (error) throw error;
   return data.path;
+};
+
+export const getRessourceById = async (id: string): Promise<Ressource | null> => {
+  const { data } = await supabase
+    .from("ressources")
+    .select("*")
+    .eq("id", id)
+    .eq("active", true)
+    .single();
+  return data ?? null;
 };
 
 export const getDownloadUrl = async (storagePath: string): Promise<string> => {

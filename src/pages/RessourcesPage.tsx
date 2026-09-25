@@ -6,7 +6,7 @@ import {
   Download, X, FileText, CheckCircle2, Shield,
   Mail, Lock, ChevronDown, Phone,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -81,6 +81,7 @@ interface DisplayResource {
   pages: number | null;
   storagePath: string;
   image?: string;
+  hasBody?: boolean;
 }
 
 const RESOURCES_FALLBACK: DisplayResource[] = [
@@ -179,6 +180,7 @@ function ResourceCard({
   onOpen: () => void; index: number;
 }) {
   const catColor = CAT_COLOR[resource.category] ?? "hsl(224 60% 15%)";
+  const locked = !heroSubmitted;
   return (
     <motion.article
       layout
@@ -186,12 +188,30 @@ function ResourceCard({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 12 }}
       transition={{ ...spring, delay: (index % 8) * 0.04 }}
-      className="cursor-pointer rounded-2xl overflow-hidden flex flex-col"
-      style={{ background: CARD_BG, border: CARD_BORDER, boxShadow: "0 2px 12px -4px hsl(224 60% 12% / 0.07)" }}
+      className="group cursor-pointer rounded-2xl overflow-hidden flex flex-col relative"
+      style={{
+        background: CARD_BG, border: CARD_BORDER,
+        boxShadow: "0 2px 12px -4px hsl(224 60% 12% / 0.07)",
+        filter: locked ? "grayscale(30%)" : undefined,
+        opacity: locked ? 0.78 : 1,
+        transition: "filter 0.25s, opacity 0.25s",
+      }}
       onClick={onOpen}
-      whileHover={{ y: -5, boxShadow: "0 20px 48px -12px hsl(224 60% 12% / 0.18)", transition: { duration: 0.22 } }}
-      aria-label={`Télécharger : ${resource.title}`}
+      whileHover={{ y: locked ? -2 : -5, boxShadow: "0 20px 48px -12px hsl(224 60% 12% / 0.18)", transition: { duration: 0.22 } }}
+      aria-label={locked ? `Débloquer : ${resource.title}` : `Accéder : ${resource.title}`}
     >
+      {/* Lock overlay on hover (locked only) */}
+      {locked && (
+        <div
+          className="absolute inset-0 z-20 flex flex-col items-center justify-center rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+          style={{ background: "hsl(224 60% 8% / 0.62)", backdropFilter: "blur(4px)" }}
+        >
+          <Lock className="w-7 h-7 text-white mb-2" strokeWidth={1.25} />
+          <p className="text-white text-[11px] font-medium tracking-wide">Débloquer l'accès</p>
+          <p className="text-white/60 text-[10px] font-light mt-0.5">Remplissez le formulaire ci-dessus</p>
+        </div>
+      )}
+
       {/* Book cover image */}
       <BookCover
         title={resource.title}
@@ -202,12 +222,25 @@ function ResourceCard({
 
       {/* Content */}
       <div className="p-5 flex flex-col flex-1">
-        <span
-          className="inline-block self-start px-2.5 py-0.5 rounded-full text-[9px] font-semibold tracking-[0.2em] uppercase mb-3"
-          style={{ background: catColor + "1a", color: catColor }}
-        >
-          {resource.category}
-        </span>
+        <div className="flex items-start justify-between mb-3">
+          <span
+            className="inline-block self-start px-2.5 py-0.5 rounded-full text-[9px] font-semibold tracking-[0.2em] uppercase"
+            style={{ background: catColor + "1a", color: catColor }}
+          >
+            {resource.category}
+          </span>
+          {resource.hasBody && heroSubmitted && (
+            <span
+              className="inline-flex items-center gap-1 text-[9px] font-medium tracking-wide px-2 py-0.5 rounded-full"
+              style={{ background: "hsl(142 50% 94%)", color: "hsl(142 45% 32%)" }}
+            >
+              <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              </svg>
+              Lire en ligne
+            </span>
+          )}
+        </div>
         <h3 className="font-heading text-[14px] font-light leading-snug tracking-tight mb-2" style={{ color: "hsl(224 55% 12%)" }}>
           {resource.title}
         </h3>
@@ -217,11 +250,11 @@ function ResourceCard({
         <div className="flex items-center justify-between pt-3 border-t" style={{ borderColor: "hsl(224 20% 12% / 0.07)" }}>
           <p className="flex items-center gap-1.5 text-[10px] font-light" style={{ color: "hsl(224 15% 60%)" }}>
             {resource.pages != null && resource.pages > 0 && <><FileText className="w-3 h-3" strokeWidth={1.5} />{resource.pages} pages · </>}
-            <Lock className="w-2.5 h-2.5" strokeWidth={2} style={{ color: heroSubmitted ? "hsl(142 52% 42%)" : undefined }} />
-            {heroSubmitted ? "Accès libre" : "Accès après formulaire"}
+            <Lock className="w-2.5 h-2.5" strokeWidth={2} style={{ color: heroSubmitted ? "hsl(142 52% 42%)" : "hsl(0 0% 60%)" }} />
+            {heroSubmitted ? "Accès libre" : "Accès verrouillé"}
           </p>
-          <span className="flex items-center gap-1 text-[11px] font-medium" style={{ color: "hsl(224 45% 36%)" }}>
-            Télécharger <Download className="w-3 h-3" strokeWidth={1.5} />
+          <span className="flex items-center gap-1 text-[11px] font-medium" style={{ color: locked ? "hsl(224 15% 60%)" : "hsl(224 45% 36%)" }}>
+            {locked ? "Verrouillé" : resource.hasBody ? "Lire →" : <>Télécharger <Download className="w-3 h-3" strokeWidth={1.5} /></>}
           </span>
         </div>
       </div>
@@ -233,6 +266,7 @@ function ResourceCard({
 
 export default function RessourcesPage() {
   useScrollReveal();
+  const navigate = useNavigate();
 
   // Hero form state
   const [heroForm, setHeroForm] = useState({ prenom: "", nom: "", email: "", telephone: "", statut: "" });
@@ -275,6 +309,7 @@ export default function RessourcesPage() {
       title: r.title,
       description: r.description,
       storagePath: r.storage_path,
+      hasBody: Boolean(r.body && r.body.trim().length > 0),
     }));
   }, [dbRessources]);
 
@@ -388,7 +423,11 @@ export default function RessourcesPage() {
   // Card click handler
   const handleCardOpen = (resource: DisplayResource) => {
     if (heroSubmitted) {
-      triggerDownload(resource).catch(() => toast.error("Erreur de téléchargement"));
+      if (resource.hasBody) {
+        navigate(`/ressources/${resource.id}`);
+      } else {
+        triggerDownload(resource).catch(() => toast.error("Erreur de téléchargement"));
+      }
     } else {
       setOpenId(resource.id);
     }
