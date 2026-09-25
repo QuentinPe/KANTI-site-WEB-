@@ -3,5 +3,6 @@ User-agent: *
 Allow: /
 Disallow: /admin
 Disallow: /login
+Disallow: /merci
 
-Sitemap: https://kanti-patrimoine-courtage.lovable.app/sitemap.xml
+Sitemap: https://www.kanti-patrimoine.com/sitemap.xml

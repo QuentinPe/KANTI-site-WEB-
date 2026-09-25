@@ -1,7 +1,7 @@
 import { Helmet } from "react-helmet-async";
 import { useLocation } from "react-router-dom";
 
-const SITE_URL = "https://kanti-patrimoine-courtage.lovable.app";
+const SITE_URL = "https://www.kanti-patrimoine.com";
 const DEFAULT_OG = `${SITE_URL}/og-default.jpg`;
 
 interface ArticleMeta {
