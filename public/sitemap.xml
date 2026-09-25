@@ -1,23 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://kanti-patrimoine-courtage.lovable.app/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
-  <url><loc>https://kanti-patrimoine-courtage.lovable.app/cabinet</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://kanti-patrimoine-courtage.lovable.app/notre-methode</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://kanti-patrimoine-courtage.lovable.app/gestion-patrimoniale</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://kanti-patrimoine-courtage.lovable.app/fiscalite</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://kanti-patrimoine-courtage.lovable.app/patrimoine-professionnel</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://kanti-patrimoine-courtage.lovable.app/financement</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://kanti-patrimoine-courtage.lovable.app/transmission-patrimoine-famille</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://kanti-patrimoine-courtage.lovable.app/patrimoine-immobilier-strategie</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://kanti-patrimoine-courtage.lovable.app/optimisation-fiscale-bordeaux</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://kanti-patrimoine-courtage.lovable.app/bilan-patrimonial-bordeaux</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://kanti-patrimoine-courtage.lovable.app/gestion-patrimoine-chef-entreprise</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://kanti-patrimoine-courtage.lovable.app/cas-clients</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://kanti-patrimoine-courtage.lovable.app/actualites</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://kanti-patrimoine-courtage.lovable.app/ressources</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://kanti-patrimoine-courtage.lovable.app/faq-patrimoniale</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://kanti-patrimoine-courtage.lovable.app/contact</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://kanti-patrimoine-courtage.lovable.app/mentions-legales</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
-  <url><loc>https://kanti-patrimoine-courtage.lovable.app/politique-de-confidentialite</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
-  <url><loc>https://kanti-patrimoine-courtage.lovable.app/reclamations</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <!-- Pages principales -->
+  <url><loc>https://www.kanti-patrimoine.com/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://www.kanti-patrimoine.com/cabinet</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.kanti-patrimoine.com/notre-methode</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.kanti-patrimoine.com/contact</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.kanti-patrimoine.com/bilan-patrimonial-bordeaux</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+
+  <!-- Expertises patrimoine -->
+  <url><loc>https://www.kanti-patrimoine.com/gestion-patrimoniale</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.kanti-patrimoine.com/fiscalite</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.kanti-patrimoine.com/patrimoine-professionnel</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.kanti-patrimoine.com/transmission-patrimoine-famille</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.kanti-patrimoine.com/patrimoine-immobilier-strategie</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.kanti-patrimoine.com/optimisation-fiscale-bordeaux</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.kanti-patrimoine.com/gestion-patrimoine-chef-entreprise</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+
+  <!-- Financement & courtage -->
+  <url><loc>https://www.kanti-patrimoine.com/courtage-patrimonial</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://www.kanti-patrimoine.com/courtage-patrimonial/simulateur-financement</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+
+  <!-- Simulateurs & outils -->
+  <url><loc>https://www.kanti-patrimoine.com/gestion-patrimoniale/simulateur</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.kanti-patrimoine.com/profil-de-risque</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+
+  <!-- Contenus -->
+  <url><loc>https://www.kanti-patrimoine.com/cas-clients</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.kanti-patrimoine.com/actualites</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.kanti-patrimoine.com/ressources</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.kanti-patrimoine.com/faq-patrimoniale</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+
+  <!-- Légal -->
+  <url><loc>https://www.kanti-patrimoine.com/mentions-legales</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://www.kanti-patrimoine.com/politique-de-confidentialite</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://www.kanti-patrimoine.com/reclamations</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
 </urlset>
