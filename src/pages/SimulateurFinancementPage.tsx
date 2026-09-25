@@ -904,10 +904,10 @@ export default function SimulateurFinancementPage() {
                     <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                   </Link>
                   <Link
-                    to={BILAN_URL}
+                    to={CONTACT_URL}
                     className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full text-sm font-light border border-foreground/15 text-foreground/60 hover:text-foreground hover:border-foreground/30 transition-all"
                   >
-                    Bilan patrimonial
+                    Prendre rendez-vous
                   </Link>
                 </div>
               </div>

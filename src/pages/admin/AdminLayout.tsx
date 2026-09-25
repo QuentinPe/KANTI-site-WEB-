@@ -1,6 +1,6 @@
 import { Outlet, Link, useLocation, useNavigate, Navigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { FileText, LogOut, Plus, BookOpen, Users, HelpCircle, UserSquare2, Scale, LayoutDashboard, Inbox, Settings, Image, ShieldCheck, ExternalLink, Tags, Sun, Moon, BarChart2 } from "lucide-react";
+import { FileText, LogOut, Plus, BookOpen, Users, HelpCircle, UserSquare2, Scale, LayoutDashboard, Inbox, Settings, Image, ShieldCheck, ExternalLink, Tags, Sun, Moon, BarChart2, ToggleLeft } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { AdminThemeProvider, useAdminTheme } from "@/contexts/AdminThemeContext";
 import { getLeads } from "@/lib/leadsService";
@@ -153,6 +153,12 @@ function AdminLayoutInner() {
             icon={<ShieldCheck className="w-4 h-4" />}
             label="Accès"
             active={isActive("/admin/acces")}
+          />
+          <NavItem
+            to="/admin/maintenance"
+            icon={<ToggleLeft className="w-4 h-4" />}
+            label="Maintenance pages"
+            active={isActive("/admin/maintenance")}
           />
         </nav>
 

@@ -84,9 +84,12 @@ export default function HeroMobile() {
           </Link>
           <Link
             to="/courtage-patrimonial"
-            className="inline-flex items-center justify-center h-14 rounded-full ring-1 ring-white/25 text-white text-[15px] font-light tracking-wide bg-white/5 backdrop-blur-sm"
+            className="group inline-flex items-center justify-center gap-2 h-14 rounded-full ring-1 ring-white/25 text-white text-[15px] font-light tracking-wide bg-white/5 backdrop-blur-sm"
           >
             Financer mon projet
+            <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
+            </svg>
           </Link>
         </div>
 

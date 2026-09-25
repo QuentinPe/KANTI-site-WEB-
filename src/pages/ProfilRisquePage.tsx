@@ -106,7 +106,13 @@ export default function ProfilRisquePage() {
       />
       <Header />
       <main id="main">
-        <ProfilRisqueHero total={total} onStart={() => { posthog.capture("risk_profile_quiz_started", { total_questions: total }); setPhase("quiz"); }} />
+        <ProfilRisqueHero total={total} onStart={() => {
+          posthog.capture("risk_profile_quiz_started", { total_questions: total });
+          setPhase("quiz");
+          setTimeout(() => {
+            document.getElementById("profil-risque-quiz")?.scrollIntoView({ behavior: "smooth", block: "start" });
+          }, 60);
+        }} />
 
         <section id="profil-risque-quiz" className="section-padding relative overflow-hidden">
           <div

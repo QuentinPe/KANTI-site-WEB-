@@ -47,7 +47,7 @@ const steps = [
     number: "02", phase: "Phase 2", duration: "Cadrage",
     title: "Définition de la mission",
     summary: "Lorsque votre besoin est identifié, une lettre de mission précise le périmètre de notre intervention et les modalités de l'accompagnement proposé.",
-    description: "À partir de vos documents, nous reconstituons la cartographie de votre patrimoine. Fiscalité, prévoyance, succession : nous repérons les forces, les fragilités et les marges de manœuvre. Ce travail est fait en interne, jamais sous-traité.",
+    description: "À partir de vos documents, nous reconstituons la cartographie de votre patrimoine. Fiscalité, prévoyance, succession : nous repérons les forces, les fragilités et les marges de manœuvre.",
     livrables: [] as string[],
     icon: Search,
   },

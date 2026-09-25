@@ -1,7 +1,7 @@
 ﻿import { lazy, Suspense, useLayoutEffect, Component } from "react";
 import type { ReactNode, ErrorInfo } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { BrowserRouter, Navigate, Outlet, Route, Routes, useLocation } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { Analytics } from "@vercel/analytics/react";
 
@@ -43,6 +43,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 // AdminLayout kept eager (small, no Tiptap) to avoid Outlet waterfall
 import AdminLayout from "./pages/admin/AdminLayout.tsx";
+import MaintenanceGuard from "@/components/MaintenanceGuard";
 
 // ─── Global UI (non-critical, lazy with null fallback) ───────────────────────
 const PremiumCursor = lazy(() => import("@/components/PremiumCursor"));
@@ -101,7 +102,8 @@ const AdminTeamList     = lazy(() => import("./pages/admin/AdminTeamList"));
 const AdminTeamForm     = lazy(() => import("./pages/admin/AdminTeamForm"));
 const AdminLegalList    = lazy(() => import("./pages/admin/AdminLegalList"));
 const AdminLegalForm    = lazy(() => import("./pages/admin/AdminLegalForm"));
-const AdminCategoriesList = lazy(() => import("./pages/admin/AdminCategoriesList"));
+const AdminCategoriesList       = lazy(() => import("./pages/admin/AdminCategoriesList"));
+const AdminPagesMaintenance     = lazy(() => import("./pages/admin/AdminPagesMaintenance"));
 
 // ─── QueryClient · 5 min stale, no refetch on focus ─────────────────────────
 const queryClient = new QueryClient({
@@ -121,6 +123,10 @@ function PageLoader() {
       <div className="w-7 h-7 rounded-full border-2 border-foreground/10 border-t-foreground/40 animate-spin" />
     </div>
   );
+}
+
+function PublicLayout() {
+  return <MaintenanceGuard><Outlet /></MaintenanceGuard>;
 }
 
 const AppShell = () => {
@@ -143,31 +149,35 @@ const AppShell = () => {
           </Suspense>
           <Suspense fallback={<PageLoader />}>
             <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/cabinet" element={<CabinetPage />} />
-              <Route path="/gestion-patrimoniale" element={<GestionPatrimonialePage />} />
-              <Route path="/gestion-patrimoniale/simulateur" element={<SimulateurPatrimonialPage />} />
-              <Route path="/fiscalite" element={<FiscalitePage />} />
-              <Route path="/patrimoine-professionnel" element={<PatrimoineProPage />} />
-              <Route path="/financement" element={<Navigate to="/courtage-patrimonial" replace />} />
-              <Route path="/courtage-patrimonial" element={<CourtageFinancementPage />} />
-              <Route path="/courtage-patrimonial/simulateur-financement" element={<SimulateurFinancementPage />} />
-              <Route path="/actualites" element={<ActualitesPage />} />
-              <Route path="/actualites/:id" element={<ArticleDetailPage />} />
-              <Route path="/contact" element={<ContactPage />} />
-              <Route path="/bilan-patrimonial-bordeaux" element={<BilanPatrimonialPage />} />
-              <Route path="/gestion-patrimoine-chef-entreprise" element={<ChefEntreprisePage />} />
-              <Route path="/optimisation-fiscale-bordeaux" element={<OptimisationFiscalePage />} />
-              <Route path="/transmission-patrimoine-famille" element={<TransmissionPage />} />
-              <Route path="/patrimoine-immobilier-strategie" element={<ImmobilierPage />} />
-              <Route path="/notre-methode" element={<NotreMethodePage />} />
-              <Route path="/cas-clients" element={<CasClientsPage />} />
-              <Route path="/faq-patrimoniale" element={<FAQPage />} />
+              {/* Pages publiques — protégées par le guard de maintenance */}
+              <Route element={<PublicLayout />}>
+                <Route path="/" element={<Index />} />
+                <Route path="/cabinet" element={<CabinetPage />} />
+                <Route path="/gestion-patrimoniale" element={<GestionPatrimonialePage />} />
+                <Route path="/gestion-patrimoniale/simulateur" element={<SimulateurPatrimonialPage />} />
+                <Route path="/fiscalite" element={<FiscalitePage />} />
+                <Route path="/patrimoine-professionnel" element={<PatrimoineProPage />} />
+                <Route path="/financement" element={<Navigate to="/courtage-patrimonial" replace />} />
+                <Route path="/courtage-patrimonial" element={<CourtageFinancementPage />} />
+                <Route path="/courtage-patrimonial/simulateur-financement" element={<SimulateurFinancementPage />} />
+                <Route path="/actualites" element={<ActualitesPage />} />
+                <Route path="/actualites/:id" element={<ArticleDetailPage />} />
+                <Route path="/contact" element={<ContactPage />} />
+                <Route path="/bilan-patrimonial-bordeaux" element={<BilanPatrimonialPage />} />
+                <Route path="/gestion-patrimoine-chef-entreprise" element={<ChefEntreprisePage />} />
+                <Route path="/optimisation-fiscale-bordeaux" element={<OptimisationFiscalePage />} />
+                <Route path="/transmission-patrimoine-famille" element={<TransmissionPage />} />
+                <Route path="/patrimoine-immobilier-strategie" element={<ImmobilierPage />} />
+                <Route path="/notre-methode" element={<NotreMethodePage />} />
+                <Route path="/cas-clients" element={<CasClientsPage />} />
+                <Route path="/faq-patrimoniale" element={<FAQPage />} />
+                <Route path="/ressources" element={<RessourcesPage />} />
+                <Route path="/profil-de-risque" element={<ProfilRisquePage />} />
+              </Route>
+              {/* Pages toujours accessibles (légal, auth) */}
               <Route path="/mentions-legales" element={<MentionsLegalesPage />} />
               <Route path="/politique-de-confidentialite" element={<PolitiqueConfidentialitePage />} />
               <Route path="/reclamations" element={<ReclamationsPage />} />
-              <Route path="/ressources" element={<RessourcesPage />} />
-              <Route path="/profil-de-risque" element={<ProfilRisquePage />} />
               <Route path="/merci" element={<MerciPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
@@ -196,6 +206,7 @@ const AppShell = () => {
                 <Route path="legal" element={<AdminLegalList />} />
                 <Route path="legal/:pageKey/edit" element={<AdminLegalForm />} />
                 <Route path="categories" element={<AdminCategoriesList />} />
+                <Route path="maintenance" element={<AdminPagesMaintenance />} />
               </Route>
               <Route path="/:categorySlug/:productSlug" element={<ProductDetailPage />} />
               <Route path="*" element={<NotFound />} />

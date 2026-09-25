@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 const bullets = [
   "Questionnaire conforme aux exigences réglementaires",
   "Score SRI 1 → 7 calculé instantanément",
-  "Recommandations personnalisées + export PDF",
+  "Export PDF de votre fiche profil",
 ];
 
 export default function HomeProfilRisque() {

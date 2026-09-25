@@ -36,7 +36,7 @@ const EQUIPE_FALLBACK = [
     short: "Vision · stratégie · clientèle",
     bio: "Fondateur de KANTI, Quentin accompagne ses clients avec une approche globale de la gestion de patrimoine. Passionné par la transmission et l'optimisation fiscale, il construit avec chaque famille une stratégie patrimoniale sur mesure, fondée sur la confiance et la durée.",
     image: "/quentin-perromat.png",
-    credentials: ["Associé Fondateur · KANTI", "Conseil en gestion de patrimoine", "ORIAS n° 20 000 855"],
+    credentials: ["Associé Fondateur · KANTI", "Conseil en gestion de patrimoine", "+ 20 ans d'expérience des marchés financiers"],
   },
   {
     name: "Thomas Robert",

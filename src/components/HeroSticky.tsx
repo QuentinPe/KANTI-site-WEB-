@@ -297,9 +297,12 @@ export default function HeroSticky() {
               <Link
                 to="/courtage-patrimonial"
                 data-magnetic
-                className="inline-flex items-center justify-center px-7 py-3.5 btn-glass text-white text-sm font-medium tracking-wide"
+                className="group inline-flex items-center justify-center gap-2 px-7 py-3.5 btn-glass text-white text-sm font-medium tracking-wide"
               >
                 Financer mon projet
+                <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
+                </svg>
               </Link>
             </div>
 

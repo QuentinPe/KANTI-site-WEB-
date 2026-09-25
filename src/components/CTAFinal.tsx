@@ -205,7 +205,7 @@ export default function CTAFinal() {
                 />
               </h2>
               <p className="text-white/70 text-lg lg:text-xl font-light leading-relaxed max-w-xl mb-10">
-                30 minutes en visio ou dans nos bureaux du 12 rue Ferrere. Gratuit, confidentiel, sans engagement. Vous repartez avec un regard expert sur votre situation.
+                30 minutes en visio ou dans nos bureaux du 12 rue Ferrere. Gratuit, confidentiel, sans engagement. Vous repartez avec un premier regard sur votre situation.
               </p>
               <div className="flex flex-wrap gap-4">
                 <Link
@@ -226,6 +226,17 @@ export default function CTAFinal() {
                 >
                   Demander un bilan patrimonial
                 </Link>
+                <a
+                  href="/DER-KANTI-2026-Bordeaux.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 text-white/55 text-xs tracking-wide hover:text-white/80 transition-colors duration-300"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14" />
+                  </svg>
+                  Document d'Entrée en Relation (DER)
+                </a>
               </div>
             </div>
 

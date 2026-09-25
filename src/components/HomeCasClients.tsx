@@ -11,7 +11,7 @@ const cas = [
   {
     profil: "Couple avec enfants",
     situation: "Patrimoine immobilier et assurance-vie, aucune disposition successorale prévue.",
-    axes: "Donation-partage, clause bénéficiaire, démembrement de la résidence principale.",
+    axes: "Donation-partage, clause bénéficiaire, démembrement immobilier.",
     chiffre: "Droits de succession réduits de 65 %",
   },
   {
