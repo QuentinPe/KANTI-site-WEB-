@@ -15,26 +15,29 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://zoqpsjodmlazmottqshl.supabase.co" />
 
+    <!-- Google Fonts — <link> is non-blocking unlike CSS @import -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@200;300;400;500;600;700&display=swap" />
+
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="KANTI" />
     <meta property="og:locale" content="fr_FR" />
     <meta property="og:title" content="KANTI, Cabinet de gestion de patrimoine à Bordeaux" />
     <meta property="og:description" content="Conseil patrimonial sur-mesure : gestion, fiscalité, transmission, immobilier, financement." />
-    <meta property="og:url" content="https://kanti-patrimoine-courtage.vercel.app/" />
-    <meta property="og:image" content="https://kanti-patrimoine-courtage.vercel.app/og-default.jpg" />
+    <meta property="og:url" content="https://www.kanti-patrimoine.com/" />
+    <meta property="og:image" content="https://www.kanti-patrimoine.com/og-default.jpg" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="KANTI, Cabinet de gestion de patrimoine à Bordeaux" />
     <meta name="twitter:description" content="Conseil patrimonial sur-mesure : gestion, fiscalité, transmission, immobilier, financement." />
-    <meta name="twitter:image" content="https://kanti-patrimoine-courtage.vercel.app/og-default.jpg" />
+    <meta name="twitter:image" content="https://www.kanti-patrimoine.com/og-default.jpg" />
   </head>
 
   <body>
     <div id="root"></div>
     <!-- Pre-React crash reporter (external pour respecter le CSP sans unsafe-inline) -->
-    <script src="/crash-reporter.js"></script>
+    <script src="/crash-reporter.js" defer></script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

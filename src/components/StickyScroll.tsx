@@ -16,16 +16,23 @@ export default function StickyScroll({ title, subtitle, steps }: StickyScrollPro
   const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
+    let rafId = 0;
     const handleScroll = () => {
-      if (!containerRef.current) return;
-      const rect = containerRef.current.getBoundingClientRect();
-      const progress = Math.max(0, Math.min(1, -rect.top / (rect.height - window.innerHeight)));
-      const index = Math.min(steps.length - 1, Math.floor(progress * steps.length));
-      setActiveIndex(index);
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        if (!containerRef.current) return;
+        const rect = containerRef.current.getBoundingClientRect();
+        const progress = Math.max(0, Math.min(1, -rect.top / (rect.height - window.innerHeight)));
+        const index = Math.min(steps.length - 1, Math.floor(progress * steps.length));
+        setActiveIndex(index);
+      });
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      cancelAnimationFrame(rafId);
+    };
   }, [steps.length]);
 
   return (

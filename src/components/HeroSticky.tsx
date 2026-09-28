@@ -118,12 +118,37 @@ export default function HeroSticky() {
         img.src = frameSrc(dir, i + 1);
       });
 
-    // Load frame 0 first (blocks "ready"), then everything else in parallel
+    // Load frame 0 first, then frames 1-29 eagerly, rest during idle time
     (async () => {
       await loadOne(0, true);
-      // fire-and-forget the rest
-      for (let i = 1; i < FRAME_COUNT; i++) {
+      // Eager: load first 30 frames so scrubbing feels instant
+      for (let i = 1; i < Math.min(30, FRAME_COUNT); i++) {
         loadOne(i, false);
+      }
+      // Idle: load remaining frames in batches to avoid saturating the network
+      const loadRemaining = (start: number) => {
+        const end = Math.min(start + 15, FRAME_COUNT);
+        for (let i = start; i < end; i++) {
+          loadOne(i, false);
+        }
+        if (end < FRAME_COUNT) {
+          if ("requestIdleCallback" in window) {
+            (window as Window & { requestIdleCallback: (cb: () => void) => void }).requestIdleCallback(
+              () => loadRemaining(end)
+            );
+          } else {
+            setTimeout(() => loadRemaining(end), 200);
+          }
+        }
+      };
+      if (FRAME_COUNT > 30) {
+        if ("requestIdleCallback" in window) {
+          (window as Window & { requestIdleCallback: (cb: () => void) => void }).requestIdleCallback(
+            () => loadRemaining(30)
+          );
+        } else {
+          setTimeout(() => loadRemaining(30), 200);
+        }
       }
     })();
 

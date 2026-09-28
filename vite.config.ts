@@ -47,6 +47,8 @@ export default defineConfig(({ mode }) => ({
           if (id.includes("recharts") || id.includes("/d3-") || id.includes("d3/")) return "vendor-recharts";
           // Lucide icons — large set, shared across all pages
           if (id.includes("lucide-react")) return "vendor-lucide";
+          // PostHog analytics — isolate from main bundle
+          if (id.includes("posthog")) return "vendor-posthog";
           // React ecosystem (react-router, react-hook-form, zod…)
           if (
             id.includes("/react/") || id.includes("/react-dom/") ||
