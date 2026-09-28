@@ -6,7 +6,7 @@ import {
   Download, X, FileText, CheckCircle2, Shield,
   Mail, Lock, ChevronDown, Phone,
 } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -81,7 +81,6 @@ interface DisplayResource {
   pages: number | null;
   storagePath: string;
   image?: string;
-  hasBody?: boolean;
 }
 
 const RESOURCES_FALLBACK: DisplayResource[] = [
@@ -229,17 +228,6 @@ function ResourceCard({
           >
             {resource.category}
           </span>
-          {resource.hasBody && heroSubmitted && (
-            <span
-              className="inline-flex items-center gap-1 text-[9px] font-medium tracking-wide px-2 py-0.5 rounded-full"
-              style={{ background: "hsl(142 50% 94%)", color: "hsl(142 45% 32%)" }}
-            >
-              <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-              </svg>
-              Lire en ligne
-            </span>
-          )}
         </div>
         <h3 className="font-heading text-[14px] font-light leading-snug tracking-tight mb-2" style={{ color: "hsl(224 55% 12%)" }}>
           {resource.title}
@@ -254,7 +242,7 @@ function ResourceCard({
             {heroSubmitted ? "Accès libre" : "Accès verrouillé"}
           </p>
           <span className="flex items-center gap-1 text-[11px] font-medium" style={{ color: locked ? "hsl(224 15% 60%)" : "hsl(224 45% 36%)" }}>
-            {locked ? "Verrouillé" : resource.hasBody ? "Lire →" : <>Télécharger <Download className="w-3 h-3" strokeWidth={1.5} /></>}
+            {locked ? "Verrouillé" : <>Télécharger <Download className="w-3 h-3" strokeWidth={1.5} /></>}
           </span>
         </div>
       </div>
@@ -266,8 +254,6 @@ function ResourceCard({
 
 export default function RessourcesPage() {
   useScrollReveal();
-  const navigate = useNavigate();
-
   // Hero form state
   const [heroForm, setHeroForm] = useState({ prenom: "", nom: "", email: "", telephone: "", statut: "" });
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
@@ -309,7 +295,6 @@ export default function RessourcesPage() {
       title: r.title,
       description: r.description,
       storagePath: r.storage_path,
-      hasBody: Boolean(r.body && r.body.trim().length > 0),
     }));
   }, [dbRessources]);
 
@@ -423,11 +408,7 @@ export default function RessourcesPage() {
   // Card click handler
   const handleCardOpen = (resource: DisplayResource) => {
     if (heroSubmitted) {
-      if (resource.hasBody) {
-        navigate(`/ressources/${resource.id}`);
-      } else {
-        triggerDownload(resource).catch(() => toast.error("Erreur de téléchargement"));
-      }
+      triggerDownload(resource).catch(() => toast.error("Erreur de téléchargement"));
     } else {
       setOpenId(resource.id);
     }
