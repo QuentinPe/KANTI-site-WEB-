@@ -669,8 +669,8 @@ function LeadDetailPanel({ lead, onClose }: { lead: Lead; onClose: () => void })
   );
 }
 
-/* ─── Table row ─── */
-function LeadTableRow({ lead, onClick, selected, onSelect, seen }: {
+/* ─── Lead card (grid view) ─── */
+function LeadCard({ lead, onClick, selected, onSelect, seen }: {
   lead: Lead; onClick: () => void; selected: boolean; onSelect: (v: boolean) => void; seen: boolean;
 }) {
   const qc = useQueryClient();
@@ -679,6 +679,14 @@ function LeadTableRow({ lead, onClick, selected, onSelect, seen }: {
   const hue = avatarHue(lead.nom);
   const { color: levelColor, bg: levelBg } = scoreMeta(level);
   const isUnseen = lead.status === "nouveau" && !seen;
+  const source = getSource(lead);
+
+  const relativeDate = (() => {
+    const d = Math.floor((Date.now() - new Date(lead.created_at).getTime()) / 86_400_000);
+    if (d === 0) return "Aujourd'hui";
+    if (d === 1) return "Hier";
+    return `Il y a ${d}j`;
+  })();
 
   const statusMut = useMutation({
     mutationFn: (s: LeadStatus) => updateLeadStatus(lead.id, s),
@@ -687,140 +695,152 @@ function LeadTableRow({ lead, onClick, selected, onSelect, seen }: {
   });
 
   return (
-    <tr className="group transition-colors cursor-pointer"
+    <div
+      className="rounded-2xl cursor-pointer group relative flex flex-col transition-all"
       style={{
-        borderBottom: `1px solid ${INNER_BORDER}`,
-        background: selected ? "hsl(215 42% 65% / 0.08)" : isUnseen ? "hsl(40 50% 62% / 0.08)" : "transparent",
-        borderLeft: isUnseen ? `3px solid ${C_GOLD}` : "3px solid transparent",
+        ...GLASS,
+        borderLeft: isUnseen ? `3px solid ${C_GOLD}` : undefined,
+        outline: selected ? `2px solid hsl(var(--at-blue) / 0.45)` : "2px solid transparent",
+        background: selected ? "hsl(var(--at-blue) / 0.08)" : undefined,
       }}
-      onMouseEnter={(e) => { if (!selected) (e.currentTarget as HTMLElement).style.background = isUnseen ? "hsl(40 50% 62% / 0.12)" : INNER_BG; }}
-      onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = selected ? "hsl(215 42% 65% / 0.08)" : isUnseen ? "hsl(40 50% 62% / 0.08)" : "transparent"; }}
-      onClick={onClick}>
-
-      {/* Checkbox */}
-      <td className="pl-5 pr-2 py-3.5 w-8" onClick={(e) => e.stopPropagation()}>
-        <input type="checkbox" checked={selected} onChange={(e) => onSelect(e.target.checked)}
-          className="w-3.5 h-3.5 rounded" style={{ accentColor: C_BLUE }} />
-      </td>
-
-      {/* Lead */}
-      <td className="py-3.5 pr-4">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-semibold flex-shrink-0"
-            style={{ background: `hsl(${hue} 50% 88%)`, color: `hsl(${hue} 55% 28%)` }}>
-            {getInitials(lead.nom)}
-          </div>
-          <div className="min-w-0">
-            <div className="flex items-center gap-2">
-              <p className="text-[13px] font-medium truncate" style={{ color: T_PRIMARY }}>{lead.nom}</p>
-              {isUnseen && (
-                <span className="flex-shrink-0 w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: C_GOLD }} />
-              )}
-            </div>
-            <p className="text-[11px] font-light truncate" style={{ color: T_SECONDARY }}>{lead.email}</p>
-          </div>
-        </div>
-      </td>
-
-      {/* Source */}
-      <td className="py-3.5 pr-4">
-        <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium"
-          style={{ background: "hsl(215 42% 65% / 0.12)", color: C_BLUE }}>
-          {getSource(lead)}
-        </span>
-      </td>
-
-      {/* Statut · Radix Select styled as badge */}
-      <td className="py-3.5 pr-4" onClick={(e) => e.stopPropagation()}>
-        <Select
-          value={lead.status}
-          onValueChange={(v) => statusMut.mutate(v as LeadStatus)}
-          disabled={statusMut.isPending}
+      onClick={onClick}
+    >
+      {/* Checkbox — visible on hover or when selected */}
+      <div
+        className="absolute top-3.5 right-3.5 z-10"
+        onClick={(e) => { e.stopPropagation(); onSelect(!selected); }}
+      >
+        <div
+          className="w-[18px] h-[18px] rounded-[5px] flex items-center justify-center transition-all"
+          style={{
+            background: selected ? C_BLUE : INNER_BG,
+            border: `1.5px solid ${selected ? C_BLUE : INNER_BORDER}`,
+          }}
         >
-          <SelectTrigger
-            className="h-auto ring-0 focus:ring-0 focus:ring-offset-0 shadow-none text-[11px] font-medium rounded-full px-2.5 py-1 gap-1 [&>svg]:w-3 [&>svg]:h-3 [&>svg]:opacity-50 disabled:opacity-50"
-            style={{ background: cfg.bg, color: cfg.color, border: `1px solid ${cfg.dot}55`, minWidth: 90 }}
-          >
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent
-            className="min-w-[148px] rounded-xl border-0 p-1"
-            style={{
-              background: "hsl(224 58% 8% / 0.97)",
-              backdropFilter: "blur(24px) saturate(180%)",
-              border: "1px solid rgba(255,255,255,0.13)",
-              boxShadow: "0 20px 60px rgba(0,0,0,0.55)",
-              zIndex: 999,
-            }}
-          >
-            {STATUS_ORDER.map((s) => {
-              const sc = STATUS_CONFIG[s];
-              return (
-                <SelectItem key={s} value={s} textValue={sc.label}
-                  className="text-[12px] rounded-lg cursor-pointer data-[highlighted]:bg-white/10 data-[highlighted]:text-white"
-                  style={{ color: "rgba(255,255,255,0.78)" }}
-                >
-                  <span className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: sc.dot }} />
-                    {sc.label}
-                  </span>
-                </SelectItem>
-              );
-            })}
-          </SelectContent>
-        </Select>
-      </td>
-
-      {/* Score */}
-      <td className="py-3.5 pr-4">
-        <div className="flex items-center gap-2">
-          <span className="text-[13px] font-medium tabular-nums" style={{ color: T_PRIMARY }}>{score}</span>
-          <span className="text-[10px] font-medium px-1.5 py-0.5 rounded" style={{ background: levelBg, color: levelColor }}>
-            {level}
-          </span>
+          {selected && <span style={{ color: "white", fontSize: 9, lineHeight: 1, fontWeight: 800 }}>✓</span>}
         </div>
-      </td>
+      </div>
 
-      {/* Assigné */}
-      <td className="py-3.5 pr-4">
-        {lead.conseiller && lead.conseiller !== "any" ? (
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold flex-shrink-0"
-              style={{ background: "hsl(215 42% 65% / 0.15)", color: C_BLUE }}>
+      {/* Header */}
+      <div className="p-4 pb-3.5 flex-1">
+        {/* Avatar + name */}
+        <div className="flex items-start gap-3 mb-3.5">
+          <div className="relative flex-shrink-0">
+            <div
+              className="w-10 h-10 rounded-full flex items-center justify-center text-[13px] font-semibold"
+              style={{ background: `hsl(${hue} 45% 86%)`, color: `hsl(${hue} 55% 28%)` }}
+            >
+              {getInitials(lead.nom)}
+            </div>
+            {isUnseen && (
+              <span
+                className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full animate-pulse"
+                style={{ background: C_GOLD, border: "2px solid var(--at-glass-bg)" }}
+              />
+            )}
+          </div>
+          <div className="min-w-0 pr-7">
+            <p className="text-[14px] font-medium leading-snug truncate" style={{ color: T_PRIMARY }}>{lead.nom}</p>
+            <p className="text-[11.5px] font-light truncate mt-0.5" style={{ color: T_SECONDARY }}>{lead.email}</p>
+          </div>
+        </div>
+
+        {/* Source + status */}
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10.5px] font-medium"
+            style={{ background: "hsl(var(--at-blue) / 0.12)", color: C_BLUE }}>
+            {source}
+          </span>
+          <div onClick={(e) => e.stopPropagation()}>
+            <Select value={lead.status} onValueChange={(v) => statusMut.mutate(v as LeadStatus)} disabled={statusMut.isPending}>
+              <SelectTrigger
+                className="h-auto ring-0 focus:ring-0 focus:ring-offset-0 shadow-none text-[10.5px] font-medium rounded-full px-2.5 py-[3px] gap-1 [&>svg]:w-2.5 [&>svg]:h-2.5 [&>svg]:opacity-40 disabled:opacity-50"
+                style={{ background: cfg.bg, color: cfg.color, border: `1px solid ${cfg.dot}44`, minWidth: 82 }}
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent
+                className="min-w-[148px] rounded-xl border-0 p-1"
+                style={{
+                  background: "hsl(224 58% 8% / 0.97)",
+                  backdropFilter: "blur(24px) saturate(180%)",
+                  border: "1px solid rgba(255,255,255,0.13)",
+                  boxShadow: "0 20px 60px rgba(0,0,0,0.55)",
+                  zIndex: 999,
+                }}
+              >
+                {STATUS_ORDER.map((s) => {
+                  const sc = STATUS_CONFIG[s];
+                  return (
+                    <SelectItem key={s} value={s} textValue={sc.label}
+                      className="text-[12px] rounded-lg cursor-pointer data-[highlighted]:bg-white/10 data-[highlighted]:text-white"
+                      style={{ color: "rgba(255,255,255,0.78)" }}
+                    >
+                      <span className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: sc.dot }} />
+                        {sc.label}
+                      </span>
+                    </SelectItem>
+                  );
+                })}
+              </SelectContent>
+            </Select>
+          </div>
+          {lead.conseiller && lead.conseiller !== "any" && (
+            <div className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold"
+              style={{ background: "hsl(var(--at-blue) / 0.15)", color: C_BLUE }}>
               {ADVISOR_INITIALS[lead.conseiller] ?? "?"}
             </div>
-            <span className="text-[12px] font-light truncate" style={{ color: T_LABEL }}>
-              {ADVISOR_LABELS[lead.conseiller] ?? lead.conseiller}
-            </span>
-          </div>
-        ) : (
-          <span className="text-[12px]" style={{ color: T_MUTED }}>—</span>
-        )}
-      </td>
-
-      {/* Date */}
-      <td className="py-3.5 pr-4">
-        <p className="text-[12px] font-light tabular-nums" style={{ color: T_SECONDARY }}>
-          {fmtDate(lead.created_at)}
-        </p>
-      </td>
-
-      {/* Actions */}
-      <td className="py-3.5 pr-5" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-          {lead.telephone && (
-            <a href={`tel:${lead.telephone}`}
-              className="p-1.5 rounded-lg transition-colors"
-              style={{ color: C_TEAL }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(180 32% 54% / 0.12)"; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
-              <Phone className="w-3.5 h-3.5" />
-            </a>
           )}
-          <MailTemplatePicker lead={lead} variant="icon" />
         </div>
-      </td>
-    </tr>
+      </div>
+
+      {/* Score bar */}
+      <div className="px-4 pb-4">
+        <div className="flex items-center justify-between mb-1.5">
+          <span className="text-[10px] uppercase tracking-wider font-medium" style={{ color: T_MUTED }}>Score</span>
+          <div className="flex items-center gap-1.5">
+            <span className="text-[12px] font-semibold tabular-nums" style={{ color: T_PRIMARY }}>{score}</span>
+            <span className="text-[9.5px] font-medium px-1.5 py-[2px] rounded-[4px]"
+              style={{ background: levelBg, color: levelColor }}>{level}</span>
+          </div>
+        </div>
+        <div className="h-[5px] rounded-full overflow-hidden" style={{ background: INNER_BG }}>
+          <div
+            className="h-full rounded-full"
+            style={{ width: `${score}%`, background: levelColor, opacity: 0.80 }}
+          />
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="px-4 py-3 flex items-center justify-between"
+        style={{ borderTop: `1px solid ${INNER_BORDER}` }}>
+        <div className="flex items-center gap-1.5 min-w-0">
+          <Clock className="w-3 h-3 flex-shrink-0" style={{ color: T_MUTED }} />
+          <span className="text-[11px] truncate" style={{ color: T_SECONDARY }}>
+            {lead.timing ? (TIMING_LABELS[lead.timing] ?? lead.timing) : "Non précisé"}
+          </span>
+        </div>
+        <div className="flex items-center gap-1 flex-shrink-0">
+          <span className="text-[10.5px] tabular-nums" style={{ color: T_MUTED }}>{relativeDate}</span>
+          <div className="flex items-center ml-1" onClick={(e) => e.stopPropagation()}>
+            {lead.telephone && (
+              <a href={`tel:${lead.telephone}`}
+                className="p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                style={{ color: C_TEAL }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(180 32% 54% / 0.12)"; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
+                <Phone className="w-3.5 h-3.5" />
+              </a>
+            )}
+            <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+              <MailTemplatePicker lead={lead} variant="icon" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -1242,6 +1262,18 @@ export default function AdminLeadsList() {
                 </SelectContent>
               </Select>
             </div>
+            <button
+              onClick={() => setSelectedRows(allPageSelected ? new Set() : new Set(paginated.map((l) => l.id)))}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-[12px] font-medium flex-shrink-0 transition-all"
+              style={{ background: INNER_BG, color: T_SECONDARY, border: `1px solid ${INNER_BORDER}` }}
+              title="Sélectionner / désélectionner la page"
+            >
+              <span className="w-3.5 h-3.5 rounded-[4px] border flex items-center justify-center"
+                style={{ borderColor: allPageSelected ? C_BLUE : T_MUTED, background: allPageSelected ? C_BLUE : "transparent" }}>
+                {allPageSelected && <span style={{ color: "white", fontSize: 8, fontWeight: 800 }}>✓</span>}
+              </span>
+              Sélectionner
+            </button>
             <button onClick={() => setShowNewLead(true)}
               className="flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-medium flex-shrink-0"
               style={{ background: "hsl(215 42% 65% / 0.18)", color: C_BLUE, border: `1px solid hsl(215 42% 65% / 0.30)` }}>
@@ -1256,6 +1288,12 @@ export default function AdminLeadsList() {
               <span className="text-[12px] font-medium" style={{ color: C_BLUE }}>
                 {selectedRows.size} sélectionné{selectedRows.size > 1 ? "s" : ""}
               </span>
+              <button
+                onClick={() => setSelectedRows(allPageSelected ? new Set() : new Set(paginated.map((l) => l.id)))}
+                className="text-[12px] px-2.5 py-1.5 rounded-lg transition-colors"
+                style={{ color: T_SECONDARY, border: `1px solid ${INNER_BORDER}` }}>
+                {allPageSelected ? "Tout désélectionner" : "Sélectionner la page"}
+              </button>
               <button onClick={handleBulkArchive}
                 className="flex items-center gap-1.5 text-[12px] px-3 py-1.5 rounded-lg font-medium transition-colors"
                 style={{ background: "hsl(40 50% 62% / 0.12)", color: C_GOLD, border: `1px solid hsl(40 50% 62% / 0.25)` }}>
@@ -1269,7 +1307,7 @@ export default function AdminLeadsList() {
               <button onClick={() => setSelectedRows(new Set())}
                 className="ml-auto text-[11px] font-light transition-opacity hover:opacity-70"
                 style={{ color: T_MUTED }}>
-                Désélectionner tout
+                Effacer la sélection
               </button>
             </div>
           )}
@@ -1292,7 +1330,7 @@ export default function AdminLeadsList() {
           {/* Convertis stats panel */}
           {tabFilter === "converti" && <ConvertisHeader leads={leads} />}
 
-          {/* Table */}
+          {/* Card grid */}
           {isLoading ? (
             <div className="flex justify-center py-16">
               <div className="w-6 h-6 rounded-full border-2 animate-spin"
@@ -1305,39 +1343,22 @@ export default function AdminLeadsList() {
               </p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr style={{ borderBottom: `1px solid ${INNER_BORDER}`, background: INNER_BG }}>
-                    <th className="pl-5 pr-2 py-3 w-8">
-                      <input type="checkbox" checked={allPageSelected}
-                        onChange={(e) => setSelectedRows(e.target.checked ? new Set(paginated.map((l) => l.id)) : new Set())}
-                        className="w-3.5 h-3.5 rounded" style={{ accentColor: C_BLUE }} />
-                    </th>
-                    {["Lead", "Source", "Statut", "Score", "Assigné à", "Date", "Actions"].map((h) => (
-                      <th key={h} className="py-3 pr-4 text-left text-[11px] font-medium uppercase tracking-wide"
-                        style={{ color: T_MUTED }}>{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody style={{ background: "transparent" }}>
-                  {paginated.map((lead) => (
-                    <LeadTableRow key={lead.id} lead={lead}
-                      selected={selectedRows.has(lead.id)}
-                      seen={seenIds.has(lead.id)}
-                      onSelect={(v) => setSelectedRows((prev) => {
-                        const next = new Set(prev);
-                        v ? next.add(lead.id) : next.delete(lead.id);
-                        return next;
-                      })}
-                      onClick={() => {
-                        markAsSeen(lead.id);
-                        setSelectedId((id) => id === lead.id ? null : lead.id);
-                      }}
-                    />
-                  ))}
-                </tbody>
-              </table>
+            <div className="p-4 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
+              {paginated.map((lead) => (
+                <LeadCard key={lead.id} lead={lead}
+                  selected={selectedRows.has(lead.id)}
+                  seen={seenIds.has(lead.id)}
+                  onSelect={(v) => setSelectedRows((prev) => {
+                    const next = new Set(prev);
+                    v ? next.add(lead.id) : next.delete(lead.id);
+                    return next;
+                  })}
+                  onClick={() => {
+                    markAsSeen(lead.id);
+                    setSelectedId((id) => id === lead.id ? null : lead.id);
+                  }}
+                />
+              ))}
             </div>
           )}
 
