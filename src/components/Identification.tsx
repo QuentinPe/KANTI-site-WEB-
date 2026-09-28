@@ -327,7 +327,7 @@ function DesktopIdentification() {
             </div>
           </div>
           <Link
-            to="/bilan-patrimonial-bordeaux"
+            to="/contact"
             className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-medium tracking-wide transition-opacity duration-200 hover:opacity-90"
             style={{
               background: "hsl(0 0% 100%)",
@@ -460,7 +460,7 @@ function MobileIdentification() {
         </ul>
 
         <Link
-          to="/bilan-patrimonial-bordeaux"
+          to="/contact"
           className="mt-6 w-full flex items-center justify-center gap-2 px-5 py-3.5 rounded-full text-sm font-medium tracking-wide transition-opacity hover:opacity-90"
           style={{ background: "hsl(0 0% 100%)", color: "hsl(224 60% 12%)" }}
         >
