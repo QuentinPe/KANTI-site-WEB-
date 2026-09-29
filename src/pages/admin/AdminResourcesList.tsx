@@ -77,7 +77,7 @@ export default function AdminResourcesList() {
         <div className="flex items-center justify-center py-20">
           <div
             className="w-7 h-7 rounded-full animate-spin"
-            style={{ border: "2px solid rgba(255,255,255,0.15)", borderTopColor: "rgba(255,255,255,0.60)" }}
+            style={{ border: "2px solid hsl(220 20% 88%)", borderTopColor: "hsl(214 55% 50%)" }}
           />
         </div>
       ) : ressources.length === 0 ? (

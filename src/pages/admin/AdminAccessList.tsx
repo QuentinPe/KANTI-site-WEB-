@@ -120,7 +120,7 @@ function ActionsMenu({
     <button
       onClick={() => { action(); setOpen(false); }}
       className="flex items-center gap-2.5 w-full px-3 py-2 rounded-lg text-[12px] transition-colors hover:bg-white/8"
-      style={{ color: danger ? C_CORAL : "rgba(255,255,255,0.78)", textAlign: "left" }}
+      style={{ color: danger ? C_CORAL : T_HEADING, textAlign: "left" }}
     >
       {icon}
       {label}
@@ -148,10 +148,9 @@ function ActionsMenu({
             transition={{ duration: 0.12 }}
             className="absolute right-0 top-8 z-[200] rounded-xl p-1.5 min-w-[180px]"
             style={{
-              background: "hsl(224 58% 8% / 0.97)",
-              backdropFilter: "blur(24px) saturate(180%)",
-              border: "1px solid rgba(255,255,255,0.13)",
-              boxShadow: "0 20px 60px rgba(0,0,0,0.55)",
+              background: "hsl(0 0% 100%)",
+              border: "1px solid var(--at-inner-border)",
+              boxShadow: "0 4px 20px hsl(220 60% 8% / 0.12), 0 1px 4px hsl(220 60% 8% / 0.06)",
             }}
           >
             {!isSelf && isSuperAdmin && menuItem("Modifier le rôle", <Pencil className="w-3.5 h-3.5" />, onEdit)}
@@ -161,7 +160,7 @@ function ActionsMenu({
             {status === "disabled" && !isSelf && menuItem("Réactiver", <RefreshCw className="w-3.5 h-3.5" />, onToggle)}
             {!isSelf && isSuperAdmin && (
               <>
-                <div className="my-1 mx-1" style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }} />
+                <div className="my-1 mx-1" style={{ borderTop: "1px solid var(--at-inner-border)" }} />
                 {menuItem("Supprimer l'accès", <Trash2 className="w-3.5 h-3.5" />, onDelete, true)}
               </>
             )}
@@ -389,7 +388,7 @@ function RoleEditModal({
         exit={{ opacity: 0, scale: 0.96, y: 8 }}
         transition={{ duration: 0.18 }}
         className="w-full max-w-sm rounded-2xl overflow-hidden"
-        style={{ background: "hsl(224 62% 9%)", border: "1px solid rgba(255,255,255,0.13)", boxShadow: "0 32px 80px rgba(0,0,0,0.70)" }}
+        style={{ background: "hsl(0 0% 100%)", border: "1px solid var(--at-inner-border)", boxShadow: "0 8px 32px hsl(220 60% 8% / 0.16), 0 2px 8px hsl(220 60% 8% / 0.08)" }}
       >
         <div className="px-6 py-5" style={{ borderBottom: `1px solid ${INNER_BORDER}` }}>
           <p className="text-[15px] font-medium" style={{ color: T_HEADING }}>Modifier le rôle</p>
@@ -873,7 +872,7 @@ export default function AdminAccessList() {
               exit={{ opacity: 0, scale: 0.96, y: 8 }}
               transition={{ duration: 0.18 }}
               className="w-full max-w-sm rounded-2xl p-6"
-              style={{ background: "hsl(224 62% 9%)", border: "1px solid rgba(255,255,255,0.13)", boxShadow: "0 32px 80px rgba(0,0,0,0.70)" }}
+              style={{ background: "hsl(0 0% 100%)", border: "1px solid var(--at-inner-border)", boxShadow: "0 8px 32px hsl(220 60% 8% / 0.16), 0 2px 8px hsl(220 60% 8% / 0.08)" }}
             >
               <p className="text-[15px] font-medium mb-1" style={{ color: T_HEADING }}>
                 Supprimer l'accès ?

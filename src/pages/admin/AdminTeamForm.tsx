@@ -272,7 +272,7 @@ export default function AdminTeamForm() {
             />
           </div>
           <div className="flex items-center gap-2 mt-4">
-            <input {...register("active")} id="active" type="checkbox" className="w-4 h-4 rounded accent-[hsl(224_55%_32%)]" />
+            <input {...register("active")} id="active" type="checkbox" className="w-4 h-4 rounded accent-[hsl(214_55%_50%)]" />
             <label htmlFor="active" className="text-[13px] font-light cursor-pointer" style={{ color: T_LABEL }}>
               Membre actif (visible sur le site)
             </label>

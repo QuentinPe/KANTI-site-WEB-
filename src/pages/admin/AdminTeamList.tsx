@@ -54,7 +54,7 @@ export default function AdminTeamList() {
           <div className="py-16 flex justify-center">
             <div
               className="w-6 h-6 rounded-full animate-spin"
-              style={{ border: "2px solid rgba(255,255,255,0.15)", borderTopColor: "rgba(255,255,255,0.60)" }}
+              style={{ border: "2px solid hsl(220 20% 88%)", borderTopColor: "hsl(214 55% 50%)" }}
             />
           </div>
         ) : members.length === 0 ? (
@@ -107,7 +107,7 @@ export default function AdminTeamList() {
                         to={`/admin/equipe/${m.id}/edit`}
                         className="p-1.5 rounded-lg transition-colors"
                         style={{ color: C_BLUE }}
-                        onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.07)")}
+                        onMouseEnter={e => (e.currentTarget.style.background = "hsl(216 20% 94%)")}
                         onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
                         title="Modifier"
                       >

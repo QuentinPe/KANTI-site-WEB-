@@ -85,16 +85,16 @@ const REFETCH_MS = 1000 * 60 * 5; // 5 min auto-refresh
 
 const RC_TIP = {
   contentStyle: {
-    background: "hsl(224 58% 9%)",
-    border: "1px solid rgba(255,255,255,0.14)",
-    borderRadius: 12,
-    boxShadow: "0 8px 28px rgba(0,0,0,0.5)",
+    background: "hsl(0 0% 100%)",
+    border: "1px solid hsl(216 18% 89%)",
+    borderRadius: 10,
+    boxShadow: "0 4px 16px hsl(220 60% 8% / 0.10)",
     fontSize: 12,
-    color: "rgba(255,255,255,0.88)",
+    color: "hsl(220 60% 10%)",
   },
-  labelStyle:  { color: "rgba(255,255,255,0.38)", fontSize: 10, marginBottom: 2 },
-  itemStyle:   { color: "rgba(255,255,255,0.70)" },
-  cursor:      { stroke: "rgba(255,255,255,0.12)", strokeWidth: 1 },
+  labelStyle:  { color: "hsl(220 15% 62%)", fontSize: 10, marginBottom: 2 },
+  itemStyle:   { color: "hsl(220 20% 42%)" },
+  cursor:      { stroke: "hsl(216 18% 89%)", strokeWidth: 1 },
 };
 
 // ── Utils ──────────────────────────────────────────────────────────────────────
@@ -211,7 +211,7 @@ function MetricCard({
               {tip && (
                 <div
                   className="absolute left-0 top-full mt-1.5 z-20 w-52 rounded-xl px-3 py-2 text-[10px] leading-relaxed"
-                  style={{ background: "hsl(224 58% 8%)", border: "1px solid rgba(255,255,255,0.14)", color: T_SECONDARY, boxShadow: "0 8px 28px rgba(0,0,0,0.5)" }}
+                  style={{ background: "hsl(0 0% 100%)", border: "1px solid hsl(216 18% 89%)", color: T_SECONDARY, boxShadow: "0 4px 16px hsl(220 60% 8% / 0.10)" }}
                 >
                   {tooltip}
                 </div>
@@ -299,9 +299,9 @@ function VisitsChart({
                 <stop offset="100%" stopColor={C_MAUVE} stopOpacity={0}    />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 5" stroke="rgba(255,255,255,0.07)" />
-            <XAxis dataKey="label" tick={{ fill: "rgba(255,255,255,0.35)", fontSize: 9 }} axisLine={false} tickLine={false} />
-            <YAxis tick={{ fill: "rgba(255,255,255,0.35)", fontSize: 9 }} axisLine={false} tickLine={false} width={28} allowDecimals={false} />
+            <CartesianGrid strokeDasharray="3 5" stroke="hsl(216 18% 91%)" />
+            <XAxis dataKey="label" tick={{ fill: "hsl(220 15% 62%)", fontSize: 9 }} axisLine={false} tickLine={false} />
+            <YAxis tick={{ fill: "hsl(220 15% 62%)", fontSize: 9 }} axisLine={false} tickLine={false} width={28} allowDecimals={false} />
             <RechartsTip
               contentStyle={RC_TIP.contentStyle}
               labelStyle={RC_TIP.labelStyle}
@@ -662,7 +662,7 @@ function DiagnosticSteps({ leads }: { leads: Lead[] }) {
               <span className="text-[10px]" style={{ color: T_MUTED }}>Taux de conversion post-diagnostic</span>
               <span className="text-[12px] font-medium tabular-nums" style={{ color: C_SAGE }}>{fmtPct(convRate, 0)}</span>
             </div>
-            <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.06)" }}>
+            <div className="h-1.5 rounded-full overflow-hidden" style={{ background: INNER_BORDER }}>
               <div
                 className="h-full rounded-full"
                 style={{ width: `${Math.max(convRate, 0.5)}%`, background: C_SAGE, opacity: 0.78, transition: "width 700ms ease" }}

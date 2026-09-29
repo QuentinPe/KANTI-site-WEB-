@@ -12,8 +12,8 @@ import {
 } from "@/lib/adminTheme";
 
 const inputClass = "w-full px-3.5 py-2.5 rounded-xl text-[13px] outline-none transition-all duration-150";
-const inputFocus = { borderColor: "rgba(255,255,255,0.30)", boxShadow: "0 0 0 3px rgba(255,255,255,0.06)" };
-const inputBlur  = { boxShadow: "none", borderColor: "rgba(255,255,255,0.12)" };
+const inputFocus = { borderColor: "hsl(214 55% 50%)", boxShadow: "0 0 0 3px hsl(214 55% 50% / 0.12)" };
+const inputBlur  = { boxShadow: "none", borderColor: "var(--at-input-border)" };
 
 const SEO_PAGES = [
   { key: "home",             label: "Accueil",                    path: "/" },
@@ -124,7 +124,7 @@ export default function AdminSiteSettings() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-24">
-        <div className="w-6 h-6 rounded-full border-2 border-white/15 border-t-white/60 animate-spin" />
+        <div className="w-6 h-6 rounded-full border-2 animate-spin" style={{ borderColor: "hsl(220 20% 88%)", borderTopColor: "hsl(214 55% 50%)" }} />
       </div>
     );
   }

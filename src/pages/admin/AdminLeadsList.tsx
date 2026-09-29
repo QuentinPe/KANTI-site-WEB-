@@ -108,10 +108,9 @@ function MailTemplatePicker({ lead, variant = "icon" }: { lead: Lead; variant?: 
         bottom: "calc(100% + 6px)",
         left: 0,
         minWidth: 200,
-        background: "hsl(224 58% 8% / 0.97)",
-        backdropFilter: "blur(24px) saturate(180%)",
-        border: "1px solid rgba(255,255,255,0.13)",
-        boxShadow: "0 20px 60px rgba(0,0,0,0.55)",
+        background: "hsl(0 0% 100%)",
+        border: "1px solid var(--at-inner-border)",
+        boxShadow: "0 4px 20px hsl(220 60% 8% / 0.12), 0 1px 4px hsl(220 60% 8% / 0.06)",
       }}
     >
       <p className="px-2.5 py-1.5 text-[10px] font-medium uppercase tracking-wide" style={{ color: T_MUTED }}>
@@ -120,16 +119,20 @@ function MailTemplatePicker({ lead, variant = "icon" }: { lead: Lead; variant?: 
       {EMAIL_TEMPLATES.map((t) => (
         <a key={t.id} href={buildMailto(t)} target="_blank" rel="noreferrer"
           onClick={() => setOpen(false)}
-          className="flex items-center px-2.5 py-2 rounded-lg text-[12px] transition-colors hover:bg-white/10"
-          style={{ color: "rgba(255,255,255,0.80)" }}
+          className="flex items-center px-2.5 py-2 rounded-lg text-[12px] transition-colors"
+          style={{ color: T_HEADING }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = INNER_BG; }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}
         >
           {t.label}
         </a>
       ))}
-      <div className="my-1" style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }} />
+      <div className="my-1" style={{ borderTop: "1px solid var(--at-inner-border)" }} />
       <a href={`mailto:${lead.email}`} onClick={() => setOpen(false)}
-        className="flex items-center px-2.5 py-2 rounded-lg text-[12px] transition-colors hover:bg-white/10"
-        style={{ color: "rgba(255,255,255,0.38)" }}
+        className="flex items-center px-2.5 py-2 rounded-lg text-[12px] transition-colors"
+        style={{ color: T_MUTED }}
+        onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = INNER_BG; }}
+        onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}
       >
         Email vierge
       </a>
@@ -183,7 +186,7 @@ function computeScore(lead: Lead): { score: number; level: "Élevé" | "Moyen" |
 function scoreMeta(level: "Élevé" | "Moyen" | "Faible") {
   if (level === "Élevé") return { color: C_SAGE, bg: "hsl(158 32% 56% / 0.15)" };
   if (level === "Moyen") return { color: C_GOLD, bg: "hsl(40 50% 62% / 0.15)" };
-  return { color: T_MUTED, bg: "rgba(255,255,255,0.06)" };
+  return { color: T_MUTED, bg: INNER_BG };
 }
 
 /* ─── Multi-line chart ─── */
@@ -251,7 +254,7 @@ function MultiLineChart({ leads, days }: { leads: Lead[]; days: number }) {
         </defs>
         {[0.25, 0.5, 0.75, 1].map((f) => (
           <line key={f} x1={0} y1={H - padY - f * (H - padY * 2)} x2={W} y2={H - padY - f * (H - padY * 2)}
-            stroke="rgba(255,255,255,0.07)" strokeWidth="0.8" />
+            stroke="hsl(216 18% 92%)" strokeWidth="0.8" />
         ))}
         {totalLine.area && <path d={totalLine.area} fill="url(#mlg-total)" />}
         {traiteLine.area && <path d={traiteLine.area} fill="url(#mlg-traite)" />}
@@ -260,7 +263,7 @@ function MultiLineChart({ leads, days }: { leads: Lead[]; days: number }) {
         {convertiLine.path && <path d={convertiLine.path} fill="none" stroke={C_SAGE} strokeWidth="1.4" strokeDasharray="4 2" strokeLinecap="round" />}
         {totalLine.pts.length > 0 && (
           <circle cx={totalLine.pts[totalLine.pts.length - 1].x} cy={totalLine.pts[totalLine.pts.length - 1].y}
-            r="3" fill="rgba(255,255,255,0.9)" stroke={C_BLUE} strokeWidth="1.8" />
+            r="3" fill="hsl(0 0% 100%)" stroke={C_BLUE} strokeWidth="1.8" />
         )}
       </svg>
       <div className="relative" style={{ height: 18 }}>
@@ -356,14 +359,14 @@ function ChartsModal({ leads, onClose }: { leads: Lead[]; onClose: () => void })
                 <button key={p.key} onClick={() => setPeriod(p.key)}
                   className="px-2.5 py-1 rounded-md text-[11px] font-medium transition-all"
                   style={{
-                    background: period === p.key ? "rgba(255,255,255,0.12)" : "transparent",
+                    background: period === p.key ? "hsl(0 0% 100%)" : "transparent",
                     color: period === p.key ? C_BLUE : T_SECONDARY,
-                    boxShadow: "none",
+                    boxShadow: period === p.key ? "0 1px 3px hsl(220 60% 8% / 0.08)" : "none",
                   }}>{p.label}</button>
               ))}
             </div>
             <button onClick={onClose} className="p-2 rounded-lg"
-              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.08)"; }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = INNER_BG; }}
               onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
               <X className="w-4 h-4" style={{ color: T_SECONDARY }} />
             </button>
@@ -432,7 +435,7 @@ function NewLeadModal({ onClose }: { onClose: () => void }) {
         <div className="flex items-center justify-between px-6 py-5" style={{ borderBottom: `1px solid ${INNER_BORDER}` }}>
           <h2 className="text-[16px] font-medium" style={{ color: T_PRIMARY }}>Nouveau lead</h2>
           <button onClick={onClose} className="p-1.5 rounded-lg"
-            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.08)"; }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = INNER_BG; }}
             onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
             <X className="w-4 h-4" style={{ color: T_SECONDARY }} />
           </button>
@@ -553,7 +556,7 @@ function LeadDetailPanel({ lead, onClose }: { lead: Lead; onClose: () => void })
             </div>
           </div>
           <button onClick={onClose} className="p-1.5 rounded-lg"
-            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.08)"; }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = INNER_BG; }}
             onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
             <X className="w-4 h-4" style={{ color: T_SECONDARY }} />
           </button>
@@ -762,10 +765,9 @@ function LeadCard({ lead, onClick, selected, onSelect, seen }: {
               <SelectContent
                 className="min-w-[148px] rounded-xl border-0 p-1"
                 style={{
-                  background: "hsl(224 58% 8% / 0.97)",
-                  backdropFilter: "blur(24px) saturate(180%)",
-                  border: "1px solid rgba(255,255,255,0.13)",
-                  boxShadow: "0 20px 60px rgba(0,0,0,0.55)",
+                  background: "hsl(0 0% 100%)",
+                  border: "1px solid var(--at-inner-border)",
+                  boxShadow: "0 4px 20px hsl(220 60% 8% / 0.12)",
                   zIndex: 999,
                 }}
               >
@@ -773,8 +775,8 @@ function LeadCard({ lead, onClick, selected, onSelect, seen }: {
                   const sc = STATUS_CONFIG[s];
                   return (
                     <SelectItem key={s} value={s} textValue={sc.label}
-                      className="text-[12px] rounded-lg cursor-pointer data-[highlighted]:bg-white/10 data-[highlighted]:text-white"
-                      style={{ color: "rgba(255,255,255,0.78)" }}
+                      className="text-[12px] rounded-lg cursor-pointer"
+                      style={{ color: T_HEADING }}
                     >
                       <span className="flex items-center gap-2">
                         <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: sc.dot }} />
@@ -1083,22 +1085,22 @@ export default function AdminLeadsList() {
             <a href="/" target="_blank" rel="noreferrer"
               className="flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-medium transition-all"
               style={{ background: INNER_BG, border: `1px solid ${INNER_BORDER}`, color: T_SECONDARY }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.10)"; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = INNER_BG; }}>
+              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "hsl(214 55% 50% / 0.35)"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = INNER_BORDER; }}>
               <ExternalLink className="w-3.5 h-3.5" />Voir le site
             </a>
             <button onClick={() => setShowCharts(true)}
               className="flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-medium transition-all"
               style={{ background: INNER_BG, border: `1px solid ${INNER_BORDER}`, color: T_SECONDARY }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.10)"; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = INNER_BG; }}>
+              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "hsl(214 55% 50% / 0.35)"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = INNER_BORDER; }}>
               <BarChart3 className="w-4 h-4" />Analyse
             </button>
             <button onClick={() => exportLeadsCSV(leads)} disabled={leads.length === 0}
               className="flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-medium transition-all disabled:opacity-40"
               style={{ background: INNER_BG, border: `1px solid ${INNER_BORDER}`, color: T_SECONDARY }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.10)"; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = INNER_BG; }}>
+              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "hsl(214 55% 50% / 0.35)"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = INNER_BORDER; }}>
               <Download className="w-4 h-4" />Exporter
             </button>
           </div>
@@ -1136,9 +1138,9 @@ export default function AdminLeadsList() {
                   <button key={p.key} onClick={() => setChartPeriod(p.key)}
                     className="px-2.5 py-1 rounded-md text-[11px] font-medium transition-all"
                     style={{
-                      background: chartPeriod === p.key ? "rgba(255,255,255,0.12)" : "transparent",
+                      background: chartPeriod === p.key ? "hsl(0 0% 100%)" : "transparent",
                       color: chartPeriod === p.key ? C_BLUE : T_SECONDARY,
-                      boxShadow: "none",
+                      boxShadow: chartPeriod === p.key ? "0 1px 3px hsl(220 60% 8% / 0.08)" : "none",
                     }}>{p.label}</button>
                 ))}
               </div>
@@ -1219,16 +1221,15 @@ export default function AdminLeadsList() {
                 <SelectContent
                   className="min-w-[160px] rounded-xl border-0 p-1"
                   style={{
-                    background: "hsl(224 58% 9% / 0.97)",
-                    backdropFilter: "blur(24px) saturate(180%)",
-                    border: "1px solid rgba(255,255,255,0.12)",
-                    boxShadow: "0 20px 60px rgba(0,0,0,0.50)",
+                    background: "hsl(0 0% 100%)",
+                    border: "1px solid var(--at-inner-border)",
+                    boxShadow: "0 4px 20px hsl(220 60% 8% / 0.12)",
                   }}
                 >
                   {(["tous", "aujourd", "7j", "30j"] as const).map((v, i) => (
                     <SelectItem key={v} value={v}
-                      className="text-[12px] rounded-lg cursor-pointer data-[highlighted]:bg-white/10 data-[highlighted]:text-white"
-                      style={{ color: "rgba(255,255,255,0.78)" }}
+                      className="text-[12px] rounded-lg cursor-pointer"
+                      style={{ color: T_HEADING }}
                     >
                       {["Toute période", "Aujourd'hui", "7 derniers jours", "30 derniers jours"][i]}
                     </SelectItem>
@@ -1245,16 +1246,15 @@ export default function AdminLeadsList() {
                 <SelectContent
                   className="min-w-[180px] rounded-xl border-0 p-1"
                   style={{
-                    background: "hsl(224 58% 9% / 0.97)",
-                    backdropFilter: "blur(24px) saturate(180%)",
-                    border: "1px solid rgba(255,255,255,0.12)",
-                    boxShadow: "0 20px 60px rgba(0,0,0,0.50)",
+                    background: "hsl(0 0% 100%)",
+                    border: "1px solid var(--at-inner-border)",
+                    boxShadow: "0 4px 20px hsl(220 60% 8% / 0.12)",
                   }}
                 >
                   {(["date_desc", "date_asc", "urgent", "score_desc"] as const).map((v, i) => (
                     <SelectItem key={v} value={v}
-                      className="text-[12px] rounded-lg cursor-pointer data-[highlighted]:bg-white/10 data-[highlighted]:text-white"
-                      style={{ color: "rgba(255,255,255,0.78)" }}
+                      className="text-[12px] rounded-lg cursor-pointer"
+                      style={{ color: T_HEADING }}
                     >
                       {["Récents d'abord", "Anciens d'abord", "Urgents d'abord", "Score décroissant"][i]}
                     </SelectItem>

@@ -46,8 +46,8 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 const inputClass = "w-full px-3.5 py-2.5 rounded-xl text-[13px] outline-none transition-all duration-150";
-const inputFocus = { borderColor: "rgba(255,255,255,0.28)", background: "rgba(255,255,255,0.10)", boxShadow: "0 0 0 3px rgba(255,255,255,0.06)" };
-const inputBlur = { boxShadow: "none", borderColor: "rgba(255,255,255,0.12)", background: "rgba(255,255,255,0.07)" };
+const inputFocus = { borderColor: "hsl(214 55% 50%)", boxShadow: "0 0 0 3px hsl(214 55% 50% / 0.12)" };
+const inputBlur  = { boxShadow: "none", borderColor: "var(--at-input-border)" };
 
 function Field({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
   return (
@@ -187,7 +187,7 @@ export default function AdminCasClientsForm() {
     return (
       <div className="flex items-center justify-center py-20">
         <div className="w-7 h-7 rounded-full border-2 animate-spin"
-          style={{ borderColor: "rgba(255,255,255,0.15)", borderTopColor: "rgba(255,255,255,0.6)" }} />
+          style={{ borderColor: "hsl(220 20% 88%)", borderTopColor: "hsl(214 55% 50%)" }} />
       </div>
     );
   }
@@ -196,7 +196,7 @@ export default function AdminCasClientsForm() {
     <div className="p-8 max-w-2xl mx-auto">
       <div className="flex items-center gap-4 mb-8">
         <Link to="/admin/cas-clients" className="p-2 rounded-lg transition-all duration-150" style={{ color: T_SECONDARY }}
-          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.08)"; }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(216 20% 94%)"; }}
           onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
           <ArrowLeft className="w-5 h-5" />
         </Link>

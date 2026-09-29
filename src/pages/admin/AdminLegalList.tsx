@@ -39,7 +39,7 @@ export default function AdminLegalList() {
 
       {isLoading ? (
         <div className="py-16 flex justify-center">
-          <div className="w-6 h-6 rounded-full border-2 animate-spin" style={{ borderColor: "rgba(255,255,255,0.15)", borderTopColor: "rgba(255,255,255,0.6)" }} />
+          <div className="w-6 h-6 rounded-full border-2 animate-spin" style={{ borderColor: "hsl(220 20% 88%)", borderTopColor: "hsl(214 55% 50%)" }} />
         </div>
       ) : (
         <div className="space-y-3">
@@ -67,7 +67,7 @@ export default function AdminLegalList() {
                 to={`/admin/legal/${page.page_key}/edit`}
                 className="ml-4 flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-medium transition-colors"
                 style={{ background: INNER_BG, color: C_BLUE, border: `1px solid ${INNER_BORDER}` }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.13)"; }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(216 20% 94%)"; }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = INNER_BG; }}
               >
                 <Pencil className="w-3.5 h-3.5" />

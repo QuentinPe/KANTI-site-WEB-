@@ -4,6 +4,34 @@ export type AdminTheme = "dark" | "light";
 
 const LS_KEY = "kanti-admin-theme";
 
+// ── Light mode — CRM professionnel (défaut) ───────────────────────────────────
+const LIGHT_VARS: Record<string, string> = {
+  "--at-blue":               "214 55% 50%",          // #3978C6 bleu action
+  "--at-gold":               "38 62% 48%",
+  "--at-sage":               "158 48% 38%",
+  "--at-mauve":              "270 38% 52%",
+  "--at-coral":              "5 58% 50%",
+  "--at-teal":               "180 45% 38%",
+  "--at-primary":            "hsl(220 60% 10%)",     // texte principal, presque navy
+  "--at-secondary":          "hsl(220 20% 42%)",
+  "--at-muted":              "hsl(220 15% 62%)",
+  "--at-heading":            "hsl(220 60% 8%)",
+  "--at-label":              "hsl(220 25% 35%)",
+  "--at-inner-bg":           "hsl(216 35% 96%)",     // fond intérieur teinté
+  "--at-inner-border":       "hsl(216 18% 89%)",
+  "--at-glass-bg":           "hsl(0 0% 100%)",       // carte blanche
+  "--at-glass-border":       "hsl(216 18% 91%)",
+  "--at-glass-shadow":       "0 1px 3px hsl(220 60% 8% / 0.06), 0 4px 12px hsl(220 60% 8% / 0.04)",
+  "--at-glass-hover-shadow": "0 2px 8px hsl(220 60% 8% / 0.10), 0 8px 24px hsl(220 60% 8% / 0.06)",
+  "--at-blur":               "none",
+  "--at-input-bg":           "hsl(0 0% 100%)",
+  "--at-input-border":       "hsl(216 18% 84%)",
+  "--at-input-focus-bg":     "hsl(0 0% 100%)",
+  "--at-input-focus-border": "hsl(214 55% 50%)",
+  "--at-main-bg":            "hsl(216 30% 97%)",     // fond page #F7F9FC
+};
+
+// ── Dark mode — glassmorphisme (conservé) ─────────────────────────────────────
 const DARK_VARS: Record<string, string> = {
   "--at-blue":               "215 42% 65%",
   "--at-gold":               "40 50% 62%",
@@ -30,53 +58,27 @@ const DARK_VARS: Record<string, string> = {
   "--at-main-bg":            "linear-gradient(160deg, rgba(11,14,28,0.82) 0%, rgba(8,11,22,0.88) 100%)",
 };
 
-const LIGHT_VARS: Record<string, string> = {
-  "--at-blue":               "215 55% 38%",
-  "--at-gold":               "38 62% 34%",
-  "--at-sage":               "158 48% 30%",
-  "--at-mauve":              "270 38% 46%",
-  "--at-coral":              "5 58% 42%",
-  "--at-teal":               "180 45% 32%",
-  "--at-primary":            "hsl(220 40% 12%)",
-  "--at-secondary":          "hsl(220 18% 40%)",
-  "--at-muted":              "hsl(220 12% 58%)",
-  "--at-heading":            "hsl(220 45% 10%)",
-  "--at-label":              "hsl(220 22% 32%)",
-  "--at-inner-bg":           "rgba(0,0,0,0.04)",
-  "--at-inner-border":       "rgba(0,0,0,0.10)",
-  "--at-glass-bg":           "rgba(255,255,255,0.84)",
-  "--at-glass-border":       "rgba(0,0,0,0.10)",
-  "--at-glass-shadow":       "0 2px 12px rgba(0,0,0,0.07), 0 1px 3px rgba(0,0,0,0.04)",
-  "--at-glass-hover-shadow": "0 4px 20px rgba(0,0,0,0.10), 0 2px 6px rgba(0,0,0,0.05)",
-  "--at-blur":               "blur(20px) saturate(130%)",
-  "--at-input-bg":           "rgba(0,0,0,0.04)",
-  "--at-input-border":       "rgba(0,0,0,0.14)",
-  "--at-input-focus-bg":     "rgba(0,0,0,0.07)",
-  "--at-input-focus-border": "rgba(0,0,0,0.30)",
-  "--at-main-bg":            "linear-gradient(160deg, rgba(245,248,255,0.93) 0%, rgba(238,244,255,0.95) 100%)",
-};
-
 interface AdminThemeCtx {
   theme: AdminTheme;
   toggleTheme: () => void;
 }
 
-const Ctx = createContext<AdminThemeCtx>({ theme: "dark", toggleTheme: () => {} });
+const Ctx = createContext<AdminThemeCtx>({ theme: "light", toggleTheme: () => {} });
 
 export function AdminThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<AdminTheme>(() => {
-    try { return (localStorage.getItem(LS_KEY) as AdminTheme) || "dark"; }
-    catch { return "dark"; }
+    try { return (localStorage.getItem(LS_KEY) as AdminTheme) || "light"; }
+    catch { return "light"; }
   });
 
   useEffect(() => {
-    const vars = theme === "dark" ? DARK_VARS : LIGHT_VARS;
+    const vars = theme === "light" ? LIGHT_VARS : DARK_VARS;
     const root = document.documentElement;
     Object.entries(vars).forEach(([k, v]) => root.style.setProperty(k, v));
     localStorage.setItem(LS_KEY, theme);
   }, [theme]);
 
-  const toggleTheme = () => setTheme(t => t === "dark" ? "light" : "dark");
+  const toggleTheme = () => setTheme(t => t === "light" ? "dark" : "light");
 
   return <Ctx.Provider value={{ theme, toggleTheme }}>{children}</Ctx.Provider>;
 }

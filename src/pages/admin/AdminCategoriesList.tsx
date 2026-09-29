@@ -106,7 +106,7 @@ function Section({
       >
         <div
           className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-          style={{ background: "rgba(255,255,255,0.1)" }}
+          style={{ background: INNER_BG }}
         >
           {icon}
         </div>
@@ -116,7 +116,7 @@ function Section({
         </div>
         <span
           className="px-2.5 py-1 rounded-full text-[11px] font-medium tabular-nums"
-          style={{ background: "rgba(255,255,255,0.1)", color: accent }}
+          style={{ background: INNER_BG, color: accent }}
         >
           {categories.length}
         </span>
@@ -127,7 +127,7 @@ function Section({
         <div className="px-6 py-4 flex items-center gap-2.5 text-[12px]"
           style={{ background: INNER_BG, borderBottom: `1px solid ${INNER_BORDER}`, color: C_GOLD }}>
           <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
-          Table <code className="font-mono text-[11px] px-1 rounded" style={{ background: "rgba(255,255,255,0.1)" }}>content_categories</code> introuvable · exécutez le SQL de migration d'abord.
+          Table <code className="font-mono text-[11px] px-1 rounded" style={{ background: INNER_BG }}>content_categories</code> introuvable · exécutez le SQL de migration d'abord.
         </div>
       )}
 
@@ -188,7 +188,7 @@ function Section({
                     onClick={() => deleteMutation.mutate(cat.id)}
                     disabled={deleteMutation.isPending}
                     className="px-2.5 py-1 rounded-lg text-[11px] font-medium disabled:opacity-60"
-                    style={{ background: "rgba(255,255,255,0.1)", color: C_CORAL }}
+                    style={{ background: "hsl(5 58% 50% / 0.10)", color: C_CORAL }}
                   >
                     {deleteMutation.isPending ? "…" : "Supprimer"}
                   </button>
@@ -238,9 +238,9 @@ function Section({
           onClick={handleAdd}
           disabled={!newName.trim() || createMutation.isPending}
           className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-[12px] font-medium transition-all duration-200 disabled:opacity-40 flex-shrink-0"
-          style={{ background: "rgba(255,255,255,0.12)", color: accent }}
-          onMouseEnter={(e) => { if (!createMutation.isPending) (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.18)"; }}
-          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.12)"; }}
+          style={{ background: INNER_BG, color: accent, border: `1px solid ${INNER_BORDER}` }}
+          onMouseEnter={(e) => { if (!createMutation.isPending) (e.currentTarget as HTMLElement).style.background = "hsl(216 20% 94%)"; }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = INNER_BG; }}
         >
           {createMutation.isPending ? (
             <Loader2 className="w-3.5 h-3.5 animate-spin" />

@@ -74,11 +74,8 @@ function Field({ label, hint, error, children }: { label: string; hint?: string;
 }
 
 const inputClass = "w-full px-3.5 py-2.5 rounded-xl text-[13px] outline-none transition-all duration-150";
-const inputFocus = {
-  borderColor: "rgba(255,255,255,0.30)",
-  boxShadow: "0 0 0 3px rgba(255,255,255,0.06)",
-};
-const inputBlur = { boxShadow: "none", borderColor: "rgba(255,255,255,0.12)" };
+const inputFocus = { borderColor: "hsl(214 55% 50%)", boxShadow: "0 0 0 3px hsl(214 55% 50% / 0.12)" };
+const inputBlur  = { boxShadow: "none", borderColor: "var(--at-input-border)" };
 
 export default function AdminArticleForm() {
   const { id } = useParams<{ id: string }>();
@@ -268,7 +265,7 @@ export default function AdminArticleForm() {
       <div className="flex items-center justify-center py-20">
         <div
           className="w-7 h-7 rounded-full border-2 animate-spin"
-          style={{ borderColor: "rgba(255,255,255,0.15)", borderTopColor: "rgba(255,255,255,0.60)" }}
+          style={{ borderColor: "hsl(220 20% 88%)", borderTopColor: "hsl(214 55% 50%)" }}
         />
       </div>
     );
@@ -488,7 +485,7 @@ export default function AdminArticleForm() {
             type="button"
             onClick={() => setRelatedOpen((v) => !v)}
             className="w-full flex items-center justify-between px-5 py-4 text-left transition-colors duration-150"
-            style={{ background: relatedOpen ? "rgba(255,255,255,0.10)" : INNER_BG }}
+            style={{ background: relatedOpen ? "hsl(216 20% 96%)" : INNER_BG }}
           >
             <div className="flex items-center gap-2.5">
               <Link2 className="w-4 h-4" style={{ color: relatedOpen ? T_SECONDARY : C_BLUE }} />
@@ -497,13 +494,13 @@ export default function AdminArticleForm() {
               </span>
               {selectedRelated.length > 0 && (
                 <span className="text-[10px] tracking-wide px-2 py-0.5 rounded-full font-medium"
-                  style={{ background: relatedOpen ? "rgba(255,255,255,0.14)" : "hsl(215 42% 65% / 0.15)", color: relatedOpen ? T_PRIMARY : C_BLUE }}>
+                  style={{ background: relatedOpen ? "hsl(216 18% 92%)" : "hsl(215 42% 65% / 0.15)", color: relatedOpen ? T_PRIMARY : C_BLUE }}>
                   {selectedRelated.length} sélectionné{selectedRelated.length > 1 ? "s" : ""}
                 </span>
               )}
               {selectedRelated.length === 0 && (
                 <span className="text-[10px] tracking-wide px-2 py-0.5 rounded-full"
-                  style={{ background: "rgba(255,255,255,0.08)", color: T_MUTED }}>
+                  style={{ background: INNER_BG, color: T_MUTED }}>
                   Optionnel
                 </span>
               )}
@@ -609,7 +606,7 @@ export default function AdminArticleForm() {
             type="button"
             onClick={() => setSeoOpen((v) => !v)}
             className="w-full flex items-center justify-between px-5 py-4 text-left transition-colors duration-150"
-            style={{ background: seoOpen ? "rgba(255,255,255,0.10)" : INNER_BG }}
+            style={{ background: seoOpen ? "hsl(216 20% 96%)" : INNER_BG }}
           >
             <div className="flex items-center gap-2.5">
               <Search className="w-4 h-4" style={{ color: seoOpen ? T_SECONDARY : C_BLUE }} />
@@ -617,7 +614,7 @@ export default function AdminArticleForm() {
                 Référencement (SEO)
               </span>
               <span className="text-[10px] tracking-wide px-2 py-0.5 rounded-full"
-                style={{ background: "rgba(255,255,255,0.08)", color: T_MUTED }}>
+                style={{ background: INNER_BG, color: T_MUTED }}>
                 Optionnel
               </span>
             </div>

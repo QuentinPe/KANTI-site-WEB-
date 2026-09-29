@@ -102,7 +102,7 @@ export default function AdminLegalForm() {
 
       {isLoading ? (
         <div className="py-16 flex justify-center">
-          <div className="w-6 h-6 rounded-full border-2 animate-spin" style={{ borderColor: "rgba(255,255,255,0.15)", borderTopColor: "rgba(255,255,255,0.6)" }} />
+          <div className="w-6 h-6 rounded-full border-2 animate-spin" style={{ borderColor: "hsl(220 20% 88%)", borderTopColor: "hsl(214 55% 50%)" }} />
         </div>
       ) : (
         <div className="space-y-6">

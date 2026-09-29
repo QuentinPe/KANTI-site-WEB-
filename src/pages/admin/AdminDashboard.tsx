@@ -71,7 +71,7 @@ function RingProgress({ pct, color, size = 48 }: { pct: number; color: string; s
   return (
     <svg width={size} height={size} style={{ transform: "rotate(-90deg)", flexShrink: 0 }} aria-hidden>
       <circle cx={size / 2} cy={size / 2} r={r} fill="none"
-        stroke="hsl(0 0% 100% / 0.15)" strokeWidth={4} />
+        stroke="hsl(220 20% 88%)" strokeWidth={4} />
       <circle cx={size / 2} cy={size / 2} r={r} fill="none"
         stroke={color} strokeWidth={4}
         strokeDasharray={`${filled.toFixed(1)} ${circ.toFixed(1)}`}
@@ -188,7 +188,7 @@ function DonutChart({ segments }: { segments: { label: string; count: number; co
     <div className="relative flex-shrink-0" style={{ width: SIZE, height: SIZE }}>
       <svg viewBox={`0 0 ${SIZE} ${SIZE}`} style={{ width: SIZE, height: SIZE }}>
         <circle cx={cx} cy={cy} r={r} fill="none"
-          stroke="hsl(0 0% 100% / 0.12)" strokeWidth={15} />
+          stroke="hsl(220 20% 88%)" strokeWidth={15} />
         {total > 0 && arcs.map((arc, i) => {
           const filled = Math.max(arc.frac * circ - (active.length > 1 ? 2 : 0), 0);
           return (
@@ -257,7 +257,7 @@ function LeadsChartModal({ leads, onClose }: { leads: Lead[]; onClose: () => voi
                   className="px-2.5 py-1 rounded-md text-[11px] font-medium transition-all"
                   style={{
                     background: period === p.key ? "hsl(0 0% 100% / 0.18)" : "transparent",
-                    color: period === p.key ? "hsl(218 80% 78%)" : T_SECONDARY,
+                    color: period === p.key ? "hsl(214 75% 80%)" : T_SECONDARY,
                     boxShadow: period === p.key ? "0 1px 3px -1px hsl(224 60% 4% / 0.30)" : "none",
                   }}>
                   {p.label}
@@ -279,10 +279,10 @@ function LeadsChartModal({ leads, onClose }: { leads: Lead[]; onClose: () => voi
               </p>
               <div className="flex items-center gap-4 text-[10px]" style={{ color: T_MUTED }}>
                 <span className="flex items-center gap-1.5">
-                  <span className="inline-block w-6 h-0.5 rounded" style={{ background: "hsl(218 45% 42%)" }} /> Total
+                  <span className="inline-block w-6 h-0.5 rounded" style={{ background: "hsl(214 55% 50%)" }} /> Total
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <span className="inline-block w-6 rounded" style={{ height: 1, background: "hsl(142 50% 40%)", borderTop: "2px dashed hsl(142 50% 40%)" }} /> Convertis
+                  <span className="inline-block w-6 rounded" style={{ height: 1, background: "hsl(142 48% 38%)", borderTop: "2px dashed hsl(142 48% 38%)" }} /> Convertis
                 </span>
               </div>
             </div>
@@ -430,53 +430,45 @@ export default function AdminDashboard() {
     <div className="min-h-screen">
 
       {/* ── Page header ── */}
-      <div className="px-8 pt-10 pb-8 max-w-6xl mx-auto">
+      <div className="px-8 pt-8 pb-6 max-w-6xl mx-auto">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p
-              className="text-[10px] tracking-[0.32em] uppercase font-semibold mb-2"
-              style={{ color: "hsl(0 0% 100% / 0.45)" }}
-            >
-              {greeting} · {dateStr}
-            </p>
             <h1
-              className="text-[28px] font-heading font-light tracking-tight"
-              style={{ color: "white" }}
+              className="text-[24px] font-heading font-light tracking-tight"
+              style={{ color: T_HEADING }}
             >
-              Tableau de bord
+              Vue d'ensemble
             </h1>
-            {user?.email && (
-              <p className="text-[12px] font-light mt-1" style={{ color: "hsl(0 0% 100% / 0.40)" }}>
-                {user.email}
-              </p>
-            )}
+            <p className="text-[12px] font-light mt-0.5" style={{ color: T_MUTED }}>
+              {greeting}{user?.email ? ` · ${user.email}` : ""}
+            </p>
           </div>
-          <div className="flex items-center gap-2 pt-2 flex-shrink-0">
+          <div className="flex items-center gap-2 pt-1 flex-shrink-0">
             {newLeads > 0 && (
               <Link
                 to="/admin/leads"
-                className="flex items-center gap-2 px-3.5 py-2 rounded-full text-[11px] font-medium transition-opacity hover:opacity-85"
+                className="flex items-center gap-2 px-3.5 py-2 rounded-lg text-[11px] font-medium transition-opacity hover:opacity-85"
                 style={{
-                  background: "hsl(38 90% 50% / 0.92)",
-                  color: "white",
-                  backdropFilter: "blur(8px)",
-                  boxShadow: "0 4px 16px -4px hsl(38 80% 40% / 0.40)",
+                  background: "hsl(214 55% 50% / 0.12)",
+                  color: "hsl(214 55% 42%)",
+                  border: "1px solid hsl(214 55% 50% / 0.22)",
                 }}
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: "hsl(5 58% 50%)" }} />
                 {newLeads} nouveau{newLeads > 1 ? "x" : ""} lead{newLeads > 1 ? "s" : ""}
               </Link>
             )}
             <button
               type="button"
               onClick={() => exportLeadsCSV(leads)}
-              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full text-[11px] font-medium transition-opacity hover:opacity-85"
+              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-[11px] font-medium transition-all"
               style={{
-                background: "hsl(0 0% 100% / 0.13)",
-                color: "white",
-                backdropFilter: "blur(8px)",
-                border: "1px solid hsl(0 0% 100% / 0.20)",
+                background: INNER_BG,
+                color: T_SECONDARY,
+                border: `1px solid ${INNER_BORDER}`,
               }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "hsl(214 55% 50% / 0.40)"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = INNER_BORDER; }}
             >
               <Download className="w-3.5 h-3.5" />
               Exporter CSV
@@ -534,14 +526,14 @@ export default function AdminDashboard() {
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <div className="flex items-center gap-0.5 p-1 rounded-lg" style={{ background: "hsl(0 0% 100% / 0.08)" }}>
+                <div className="flex items-center gap-0.5 p-1 rounded-lg" style={{ background: INNER_BG, border: `1px solid ${INNER_BORDER}` }}>
                   {PERIODS.slice(0, 4).map((p) => (
                     <button key={p.key} onClick={() => setChartPeriod(p.key)}
                       className="px-2.5 py-1 rounded-md text-[11px] font-medium transition-all duration-150"
                       style={{
-                        background: chartPeriod === p.key ? "hsl(0 0% 100% / 0.18)" : "transparent",
-                        color: chartPeriod === p.key ? "hsl(218 80% 78%)" : T_SECONDARY,
-                        boxShadow: chartPeriod === p.key ? "0 1px 3px -1px hsl(224 60% 4% / 0.25)" : "none",
+                        background: chartPeriod === p.key ? "hsl(0 0% 100%)" : "transparent",
+                        color: chartPeriod === p.key ? "hsl(214 55% 50%)" : T_SECONDARY,
+                        boxShadow: chartPeriod === p.key ? "0 1px 3px hsl(220 60% 8% / 0.08)" : "none",
                       }}>
                       {p.label}
                     </button>
@@ -553,7 +545,7 @@ export default function AdminDashboard() {
                   className="p-2 rounded-lg transition-colors"
                   style={{ color: T_SECONDARY }}
                   title="Agrandir"
-                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(0 0% 100% / 0.08)"; }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = INNER_BG; }}
                   onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}
                 >
                   <Maximize2 className="w-3.5 h-3.5" />
@@ -564,13 +556,13 @@ export default function AdminDashboard() {
               <VolumeChart leads={leads} days={chartDays} height={148} showConverti />
             </div>
             <div className="flex items-center gap-4 mt-3 pt-3"
-              style={{ borderTop: "1px solid hsl(0 0% 100% / 0.08)" }}>
+              style={{ borderTop: `1px solid ${INNER_BORDER}` }}>
               <span className="flex items-center gap-1.5 text-[10px]" style={{ color: T_SECONDARY }}>
-                <span className="inline-block w-5 rounded" style={{ height: 2, background: "hsl(218 45% 42%)" }} />
+                <span className="inline-block w-5 rounded" style={{ height: 2, background: "hsl(214 55% 50%)" }} />
                 Total
               </span>
               <span className="flex items-center gap-1.5 text-[10px]" style={{ color: T_SECONDARY }}>
-                <span className="inline-block w-5 rounded" style={{ height: 1, border: "1px dashed hsl(142 50% 40%)" }} />
+                <span className="inline-block w-5 rounded" style={{ height: 1, border: "1px dashed hsl(142 48% 38%)" }} />
                 Convertis
               </span>
             </div>
@@ -623,9 +615,9 @@ export default function AdminDashboard() {
                 ].map(({ to, label, icon: Icon }) => (
                   <Link key={to} to={to}
                     className="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-[12px] font-medium transition-all duration-150"
-                    style={{ color: T_HEADING, background: "hsl(0 0% 100% / 0.05)" }}
-                    onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(0 0% 100% / 0.12)"; }}
-                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(0 0% 100% / 0.05)"; }}>
+                    style={{ color: T_HEADING, background: INNER_BG, border: `1px solid ${INNER_BORDER}` }}
+                    onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "hsl(214 55% 50% / 0.30)"; }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = INNER_BORDER; }}>
                     <span className="flex items-center gap-2.5">
                       <Icon className="w-3.5 h-3.5" strokeWidth={1.5} style={{ color: T_LABEL }} />
                       {label}
@@ -661,7 +653,7 @@ export default function AdminDashboard() {
                 {activity.map((item, i) => (
                   <Link key={i} to={item.to}
                     className="flex items-start gap-2.5 py-2.5 group transition-opacity hover:opacity-70"
-                    style={{ borderBottom: i < activity.length - 1 ? "1px solid hsl(0 0% 100% / 0.06)" : "none" }}>
+                    style={{ borderBottom: i < activity.length - 1 ? `1px solid ${INNER_BORDER}` : "none" }}>
                     <div className="w-7 h-7 rounded-lg flex-shrink-0 flex items-center justify-center mt-0.5 text-[10px] font-semibold"
                       style={{ background: cA(item.color, 0.16), color: item.color }}>
                       <item.icon className="w-3 h-3" style={{ color: item.color }} strokeWidth={1.5} />
@@ -695,7 +687,7 @@ export default function AdminDashboard() {
                 </p>
               </div>
               <Link to="/admin/leads" className="text-[10px] font-medium hover:opacity-75"
-                style={{ color: "hsl(218 65% 65%)" }}>
+                style={{ color: C_BLUE }}>
                 Voir tout →
               </Link>
             </div>
@@ -708,7 +700,7 @@ export default function AdminDashboard() {
             )}
             {leads.length > 0 && (
               <div className="mt-4 pt-3 flex items-center gap-2"
-                style={{ borderTop: "1px solid hsl(0 0% 100% / 0.08)" }}>
+                style={{ borderTop: `1px solid ${INNER_BORDER}` }}>
                 <span className="text-[10px] font-medium tabular-nums" style={{ color: T_SECONDARY }}>
                   {leads.length} leads · {conversionRate}% convertis
                 </span>
@@ -726,7 +718,7 @@ export default function AdminDashboard() {
                 </p>
               </div>
               <Link to="/admin/articles" className="text-[10px] font-medium hover:opacity-75"
-                style={{ color: "hsl(218 65% 65%)" }}>
+                style={{ color: C_BLUE }}>
                 Voir tout →
               </Link>
             </div>
@@ -737,7 +729,7 @@ export default function AdminDashboard() {
                 </p>
                 <Link to="/admin/articles/new"
                   className="inline-flex items-center gap-1.5 text-[11px] font-medium px-3 py-1.5 rounded-lg"
-                  style={{ background: "hsl(218 55% 42% / 0.18)", color: "hsl(218 80% 78%)" }}>
+                  style={{ background: cA(C_BLUE, 0.12), color: C_BLUE }}>
                   Créer le premier
                 </Link>
               </div>
@@ -843,8 +835,8 @@ export default function AdminDashboard() {
               {tasks.map((task, i) => (
                 <Link key={i} to={task.to}
                   className="flex items-start gap-3 px-4 py-3 rounded-xl transition-all duration-150"
-                  style={{ background: INNER_BG, border: `1px solid ${cA(task.color, 0.20)}` }}
-                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(0 0% 100% / 0.10)"; }}
+                  style={{ background: INNER_BG, border: `1px solid ${cA(task.color, 0.22)}` }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(0 0% 100%)"; }}
                   onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = INNER_BG; }}
                 >
                   {task.done ? (

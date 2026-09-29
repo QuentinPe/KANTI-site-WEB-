@@ -13,7 +13,20 @@ export function cA(c: string, a: number): string {
   return c.replace(/\)$/, ` / ${a})`);
 }
 
-// ── Glass surface ──────────────────────────────────────────────────────────────
+// ── Card surface — white card with subtle shadow (light mode default) ──────────
+export const CARD: CSSProperties = {
+  background: "var(--at-glass-bg)",
+  border: "1px solid var(--at-glass-border)",
+  boxShadow: "var(--at-glass-shadow)",
+  borderRadius: "1rem",
+};
+
+export const CARD_HOVER: CSSProperties = {
+  ...CARD,
+  boxShadow: "var(--at-glass-hover-shadow)",
+};
+
+// ── Glass surface (alias to CARD — kept for back-compat) ──────────────────────
 export const GLASS: CSSProperties = {
   background: "var(--at-glass-bg)",
   backdropFilter: "var(--at-blur)",
@@ -29,7 +42,7 @@ export const GLASS_HOVER: CSSProperties = {
 
 export const GLASS_HOVER_SHADOW = "var(--at-glass-hover-shadow)";
 
-// Inner surface nested inside a glass card
+// Inner surface nested inside a card
 export const INNER_BG     = "var(--at-inner-bg)";
 export const INNER_BORDER = "var(--at-inner-border)";
 
@@ -45,8 +58,8 @@ export const INPUT_STYLE: CSSProperties = {
   background: "var(--at-input-bg)",
   border: "1px solid var(--at-input-border)",
   color: "var(--at-primary)",
-  borderRadius: "0.75rem",
-  padding: "0.625rem 0.875rem",
+  borderRadius: "0.5rem",
+  padding: "0.5625rem 0.875rem",
   outline: "none",
   width: "100%",
 };
@@ -60,20 +73,32 @@ export const INPUT_FOCUS_STYLE: CSSProperties = {
 // ── Badge helpers ──────────────────────────────────────────────────────────────
 export function deltaBadgeStyle(up: boolean): CSSProperties {
   return {
-    background: up ? "rgba(52,190,90,0.18)" : "rgba(200,80,65,0.18)",
-    color: up ? "rgb(62,200,100)" : "rgb(210,90,78)",
-    border: up ? "1px solid rgba(52,190,90,0.25)" : "1px solid rgba(200,80,65,0.25)",
+    background: up ? "hsl(142 55% 36% / 0.12)" : "hsl(5 58% 50% / 0.12)",
+    color: up ? "hsl(142 55% 34%)" : "hsl(5 58% 46%)",
+    border: up ? "1px solid hsl(142 55% 36% / 0.20)" : "1px solid hsl(5 58% 50% / 0.20)",
+    borderRadius: "9999px",
+    padding: "0.15rem 0.55rem",
+    fontSize: "0.72rem",
+    fontWeight: 500,
   };
 }
 
 export function statusChipStyle(active: boolean): CSSProperties {
   return {
-    background: active ? "rgba(52,190,90,0.16)" : "var(--at-inner-bg)",
-    color: active ? "rgb(62,200,100)" : "var(--at-secondary)",
-    border: active ? "1px solid rgba(52,190,90,0.22)" : "1px solid var(--at-inner-border)",
+    background: active ? "hsl(142 55% 36% / 0.12)" : "var(--at-inner-bg)",
+    color: active ? "hsl(142 55% 30%)" : "var(--at-secondary)",
+    border: active ? "1px solid hsl(142 55% 36% / 0.20)" : "1px solid var(--at-inner-border)",
     borderRadius: "9999px",
     padding: "0.15rem 0.55rem",
     fontSize: "0.65rem",
     fontWeight: 500,
   };
 }
+
+// ── Semantic color helpers ─────────────────────────────────────────────────────
+export const SEMANTIC = {
+  success: { bg: "hsl(142 55% 36% / 0.10)", text: "hsl(142 55% 28%)", border: "hsl(142 55% 36% / 0.20)" },
+  warning: { bg: "hsl(38 85% 48% / 0.10)", text: "hsl(38 72% 32%)", border: "hsl(38 85% 48% / 0.20)" },
+  error:   { bg: "hsl(5 58% 50% / 0.10)", text: "hsl(5 58% 42%)", border: "hsl(5 58% 50% / 0.20)" },
+  info:    { bg: "hsl(214 55% 50% / 0.10)", text: "hsl(214 55% 38%)", border: "hsl(214 55% 50% / 0.20)" },
+};

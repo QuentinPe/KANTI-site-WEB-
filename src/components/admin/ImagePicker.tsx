@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { Upload, Image as ImageIcon, X, Check } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
+import { T_LABEL, T_MUTED, T_HEADING, T_SECONDARY, C_BLUE, INNER_BG, INNER_BORDER, INPUT_STYLE } from "@/lib/adminTheme";
 
 const BUCKET = "article-images";
 const OUTPUT_W = 1200;
@@ -21,16 +22,16 @@ function SliderRow({
 }) {
   return (
     <div className="flex items-center gap-3">
-      <span className="text-[11px] font-medium w-20 flex-shrink-0" style={{ color: "hsl(224 25% 45%)" }}>
+      <span className="text-[11px] font-medium w-20 flex-shrink-0" style={{ color: T_LABEL }}>
         {label}
       </span>
       <input
         type="range" min={min} max={max} step={step} value={value}
         onChange={(e) => onChange(Number(e.target.value))}
         className="flex-1 cursor-pointer"
-        style={{ accentColor: "hsl(224 60% 18%)" }}
+        style={{ accentColor: C_BLUE }}
       />
-      <span className="text-[11px] tabular-nums w-10 text-right flex-shrink-0" style={{ color: "hsl(224 15% 55%)" }}>
+      <span className="text-[11px] tabular-nums w-10 text-right flex-shrink-0" style={{ color: T_MUTED }}>
         {unit === "%" ? `${Math.round(value)}%` : `${value.toFixed(2)}×`}
       </span>
     </div>
@@ -166,8 +167,8 @@ export default function ImagePicker({ value, onChange, error }: ImagePickerProps
           className="relative w-full rounded-2xl overflow-hidden cursor-pointer group"
           style={{
             aspectRatio: "16/7",
-            background: "hsl(220 25% 96%)",
-            border: `2px dashed ${dragging ? "hsl(218 55% 42%)" : value ? "transparent" : "hsl(224 20% 78%)"}`,
+            background: INNER_BG,
+            border: `2px dashed ${dragging ? C_BLUE : value ? "transparent" : INNER_BORDER}`,
           }}
           onClick={() => fileInputRef.current?.click()}
           onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") fileInputRef.current?.click(); }}
@@ -184,11 +185,11 @@ export default function ImagePicker({ value, onChange, error }: ImagePickerProps
                 onError={(e) => { (e.currentTarget as HTMLImageElement).style.opacity = "0.3"; }} />
               <div
                 className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center"
-                style={{ background: "hsl(224 40% 8% / 0.52)" }}
+                style={{ background: "hsl(220 60% 8% / 0.40)" }}
               >
                 <span
                   className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-[12px] font-medium text-white"
-                  style={{ background: "hsl(224 60% 18% / 0.85)" }}
+                  style={{ background: "hsl(214 55% 50% / 0.90)" }}
                 >
                   <Upload className="w-3.5 h-3.5" /> Changer l'image
                 </span>
@@ -196,12 +197,12 @@ export default function ImagePicker({ value, onChange, error }: ImagePickerProps
             </>
           ) : (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-              <ImageIcon className="w-8 h-8" style={{ color: "hsl(224 18% 70%)" }} />
-              <p className="text-[13px] font-light" style={{ color: "hsl(224 20% 52%)" }}>
+              <ImageIcon className="w-8 h-8" style={{ color: T_MUTED }} />
+              <p className="text-[13px] font-light" style={{ color: T_SECONDARY }}>
                 Glissez une image ou{" "}
-                <span className="font-medium" style={{ color: "hsl(218 55% 38%)" }}>cliquez pour choisir</span>
+                <span className="font-medium" style={{ color: C_BLUE }}>cliquez pour choisir</span>
               </p>
-              <p className="text-[11px] font-light" style={{ color: "hsl(224 20% 62%)" }}>
+              <p className="text-[11px] font-light" style={{ color: T_MUTED }}>
                 JPG, PNG, WebP · cadrée et uploadée dans la médiathèque
               </p>
             </div>
@@ -212,19 +213,19 @@ export default function ImagePicker({ value, onChange, error }: ImagePickerProps
         <div className="flex gap-2">
           <input
             className="flex-1 px-3.5 py-2.5 rounded-xl text-[13px] outline-none transition-all duration-150"
-            style={{ background: "white", border: "1px solid hsl(224 20% 12% / 0.12)", color: "hsl(224 55% 12%)" }}
+            style={{ ...INPUT_STYLE }}
             placeholder="https://… ou uploadez une image ci-dessus"
             value={value}
             onChange={(e) => onChange(e.target.value)}
-            onFocus={(e) => Object.assign(e.target.style, { borderColor: "hsl(224 60% 18% / 0.40)", boxShadow: "0 0 0 3px hsl(224 60% 18% / 0.08)" })}
-            onBlur={(e) => Object.assign(e.target.style, { boxShadow: "none", borderColor: "hsl(224 20% 12% / 0.12)" })}
+            onFocus={(e) => Object.assign(e.target.style, { borderColor: "hsl(214 55% 50%)", boxShadow: "0 0 0 3px hsl(214 55% 50% / 0.12)" })}
+            onBlur={(e) => Object.assign(e.target.style, { boxShadow: "none", borderColor: "var(--at-input-border)" })}
           />
           {value && (
             <button
               type="button"
               onClick={() => openCropForUrl(value)}
               className="flex-shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-[12px] font-medium transition-all duration-150"
-              style={{ background: "hsl(218 55% 42% / 0.10)", color: "hsl(218 55% 35%)", border: "1px solid hsl(218 55% 50% / 0.20)" }}
+              style={{ background: "hsl(214 55% 50% / 0.10)", color: C_BLUE, border: `1px solid hsl(214 55% 50% / 0.20)` }}
             >
               {/* Crop icon */}
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
@@ -250,27 +251,27 @@ export default function ImagePicker({ value, onChange, error }: ImagePickerProps
       {cropSrc && (
         <div
           className="fixed inset-0 z-[500] flex items-center justify-center p-6"
-          style={{ background: "hsl(224 60% 5% / 0.78)", backdropFilter: "blur(10px)" }}
+          style={{ background: "hsl(220 60% 8% / 0.60)", backdropFilter: "blur(8px)" }}
         >
           <div
             className="w-full max-w-xl flex flex-col rounded-3xl overflow-hidden"
-            style={{ background: "hsl(220 25% 98%)", boxShadow: "0 32px 80px -20px hsl(224 60% 5% / 0.45)" }}
+            style={{ background: "hsl(0 0% 100%)", boxShadow: "0 32px 80px -20px hsl(220 60% 8% / 0.35), 0 0 0 1px " + INNER_BORDER }}
           >
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-4"
-              style={{ borderBottom: "1px solid hsl(224 20% 12% / 0.08)" }}>
+              style={{ borderBottom: `1px solid ${INNER_BORDER}` }}>
               <div>
-                <p className="text-[14px] font-medium" style={{ color: "hsl(224 55% 12%)" }}>
+                <p className="text-[14px] font-medium" style={{ color: T_HEADING }}>
                   Cadrer l'image
                 </p>
-                <p className="text-[11px] font-light mt-0.5" style={{ color: "hsl(224 15% 52%)" }}>
+                <p className="text-[11px] font-light mt-0.5" style={{ color: T_MUTED }}>
                   {isLocalFile
                     ? "Ajustez le cadrage · l'image sera uploadée dans la médiathèque"
                     : "L'image sera re-uploadée dans votre médiathèque au format WebP"}
                 </p>
               </div>
               <button type="button" onClick={cancelCrop} disabled={uploading}
-                className="p-2 rounded-full transition-colors" style={{ color: "hsl(224 20% 50%)" }}>
+                className="p-2 rounded-full transition-colors" style={{ color: T_MUTED }}>
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -278,15 +279,15 @@ export default function ImagePicker({ value, onChange, error }: ImagePickerProps
             <div className="p-6 flex flex-col gap-4">
               {/* Aspect ratio selector */}
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-[11px] font-medium flex-shrink-0" style={{ color: "hsl(224 25% 45%)" }}>
+                <span className="text-[11px] font-medium flex-shrink-0" style={{ color: T_LABEL }}>
                   Format :
                 </span>
                 {ASPECTS.map((a) => (
                   <button key={a.label} type="button" onClick={() => setCropAspect(a.ratio)}
                     className="px-3 py-1 rounded-full text-[12px] font-medium transition-all duration-150"
                     style={cropAspect === a.ratio
-                      ? { background: "hsl(224 60% 18%)", color: "white" }
-                      : { background: "hsl(224 20% 12% / 0.07)", color: "hsl(224 30% 48%)" }}>
+                      ? { background: C_BLUE, color: "hsl(0 0% 100%)" }
+                      : { background: INNER_BG, color: T_SECONDARY, border: `1px solid ${INNER_BORDER}` }}>
                     {a.label}
                   </button>
                 ))}
@@ -298,7 +299,7 @@ export default function ImagePicker({ value, onChange, error }: ImagePickerProps
                 style={{
                   aspectRatio: `${cropAspect}`,
                   maxHeight: "300px",
-                  background: "hsl(224 20% 88%)",
+                  background: "hsl(216 18% 92%)",
                 }}
               >
                 <img
@@ -316,10 +317,11 @@ export default function ImagePicker({ value, onChange, error }: ImagePickerProps
                 {uploading && (
                   <div
                     className="absolute inset-0 flex flex-col items-center justify-center gap-3"
-                    style={{ background: "hsl(224 60% 5% / 0.60)" }}
+                    style={{ background: "hsl(220 60% 8% / 0.55)" }}
                   >
-                    <div className="w-7 h-7 rounded-full border-2 border-white/30 border-t-white animate-spin" />
-                    <p className="text-[12px] font-light" style={{ color: "hsl(0 0% 100% / 0.70)" }}>
+                    <div className="w-7 h-7 rounded-full border-2 animate-spin"
+                      style={{ borderColor: "hsl(0 0% 100% / 0.30)", borderTopColor: "hsl(0 0% 100%)" }} />
+                    <p className="text-[12px] font-light" style={{ color: "hsl(0 0% 100% / 0.80)" }}>
                       Upload en cours…
                     </p>
                   </div>
@@ -336,15 +338,15 @@ export default function ImagePicker({ value, onChange, error }: ImagePickerProps
 
             {/* Footer */}
             <div className="flex items-center justify-between px-6 py-4"
-              style={{ borderTop: "1px solid hsl(224 20% 12% / 0.08)" }}>
+              style={{ borderTop: `1px solid ${INNER_BORDER}` }}>
               <button type="button" onClick={cancelCrop} disabled={uploading}
                 className="px-4 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-150 disabled:opacity-40"
-                style={{ background: "hsl(224 20% 12% / 0.07)", color: "hsl(224 40% 35%)" }}>
+                style={{ background: INNER_BG, color: T_SECONDARY, border: `1px solid ${INNER_BORDER}` }}>
                 Annuler
               </button>
               <button type="button" onClick={confirmCrop} disabled={uploading}
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-150 disabled:opacity-60"
-                style={{ background: "hsl(224 60% 18%)", color: "white" }}>
+                style={{ background: C_BLUE, color: "hsl(0 0% 100%)" }}>
                 <Check className="w-4 h-4" />
                 {uploading
                   ? "Upload…"

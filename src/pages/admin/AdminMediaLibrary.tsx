@@ -238,9 +238,9 @@ function PickerModal({
       <div
         className="w-full max-w-lg rounded-2xl overflow-hidden flex flex-col"
         style={{
-          background: "hsl(224 62% 9%)",
-          border: "1px solid rgba(255,255,255,0.13)",
-          boxShadow: "0 32px 80px rgba(0,0,0,0.75)",
+          background: "hsl(0 0% 100%)",
+          border: "1px solid var(--at-inner-border)",
+          boxShadow: "0 8px 32px hsl(220 60% 8% / 0.16)",
           maxHeight: "80vh",
         }}
       >
@@ -302,7 +302,7 @@ function PickerModal({
                   disabled={isPending}
                   className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-left transition-all duration-150 disabled:opacity-50"
                   style={{ background: INNER_BG, border: `1px solid ${INNER_BORDER}` }}
-                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.11)"; }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(0 0% 100%)"; }}
                   onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = INNER_BG; }}
                 >
                   {item.image ? (
@@ -316,7 +316,7 @@ function PickerModal({
                   ) : (
                     <div
                       className="w-10 h-8 rounded-lg flex-shrink-0 flex items-center justify-center"
-                      style={{ background: "rgba(255,255,255,0.05)", border: `1px solid ${INNER_BORDER}` }}
+                      style={{ background: INNER_BG, border: `1px solid ${INNER_BORDER}` }}
                     >
                       <ImageIcon className="w-3.5 h-3.5" style={{ color: T_MUTED }} />
                     </div>
@@ -381,7 +381,7 @@ function FileCard({
       {/* Image preview */}
       <div
         className="relative overflow-hidden"
-        style={{ aspectRatio: "16/9", background: "rgba(255,255,255,0.04)" }}
+        style={{ aspectRatio: "16/9", background: INNER_BG }}
       >
         <img
           src={file.url}
@@ -418,7 +418,7 @@ function FileCard({
               <button
                 onClick={copy}
                 className="w-9 h-9 rounded-full flex items-center justify-center transition-transform hover:scale-110"
-                style={{ background: "rgba(255,255,255,0.16)", color: "white" }}
+                style={{ background: "hsl(0 0% 100% / 0.85)", color: "hsl(220 60% 10%)" }}
                 title="Copier l'URL"
               >
                 {copied
@@ -452,7 +452,7 @@ function FileCard({
             onClick={download}
             className="w-7 h-7 rounded-lg flex items-center justify-center transition-colors flex-shrink-0"
             style={{ background: INNER_BG, border: `1px solid ${INNER_BORDER}`, color: T_LABEL }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.10)"; }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(0 0% 100%)"; }}
             onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = INNER_BG; }}
             title="Télécharger"
           >

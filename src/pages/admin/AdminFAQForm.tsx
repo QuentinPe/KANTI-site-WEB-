@@ -35,8 +35,8 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 const inputClass = "w-full text-[13px] transition-all duration-150";
-const inputFocus = { border: "1px solid rgba(255,255,255,0.28)", background: "rgba(255,255,255,0.10)", boxShadow: "0 0 0 3px rgba(255,255,255,0.06)" };
-const inputBlur = { border: "1px solid rgba(255,255,255,0.12)", background: "rgba(255,255,255,0.07)", boxShadow: "none" };
+const inputFocus = { borderColor: "hsl(214 55% 50%)", boxShadow: "0 0 0 3px hsl(214 55% 50% / 0.12)" };
+const inputBlur  = { boxShadow: "none", borderColor: "var(--at-input-border)" };
 
 function Field({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
   return (

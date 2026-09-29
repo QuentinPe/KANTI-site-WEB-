@@ -180,19 +180,19 @@ export function VolumeChart({
           <div
             className="rounded-xl px-3 py-2 text-center"
             style={{
-              background: "hsl(224 58% 9%)",
-              border: "1px solid rgba(255,255,255,0.14)",
-              boxShadow: "0 8px 28px rgba(0,0,0,0.50)",
+              background: "hsl(0 0% 100%)",
+              border: "1px solid hsl(216 18% 89%)",
+              boxShadow: "0 4px 16px hsl(220 60% 8% / 0.10)",
               minWidth: 68,
             }}
           >
-            <p className="mb-1 tracking-wide" style={{ color: "rgba(255,255,255,0.40)", fontSize: 9 }}>
+            <p className="mb-1 tracking-wide" style={{ color: "hsl(220 15% 62%)", fontSize: 9 }}>
               {hb.label}
             </p>
-            <p className="font-semibold tabular-nums" style={{ color: "hsl(218 80% 78%)", fontSize: 14 }}>
+            <p className="font-semibold tabular-nums" style={{ color: "hsl(214 55% 42%)", fontSize: 14 }}>
               {hb.total}
             </p>
-            <p style={{ color: "rgba(255,255,255,0.38)", fontSize: 9 }}>
+            <p style={{ color: "hsl(220 15% 62%)", fontSize: 9 }}>
               lead{hb.total !== 1 ? "s" : ""}
             </p>
             {showConverti && hb.converti > 0 && (
@@ -225,13 +225,13 @@ export function VolumeChart({
           <g key={i}>
             <line
               x1={pL} y1={y} x2={W - pR} y2={y}
-              stroke="rgba(255,255,255,0.07)" strokeWidth="0.75"
+              stroke="hsl(216 18% 92%)" strokeWidth="0.75"
               strokeDasharray="3 5"
             />
             <text
               x={pL - 5} y={y + 3.5}
               textAnchor="end"
-              fill="rgba(255,255,255,0.30)"
+              fill="hsl(220 15% 68%)"
               style={{ fontSize: "8px", fontVariantNumeric: "tabular-nums" }}
             >
               {val}
@@ -242,7 +242,7 @@ export function VolumeChart({
         {/* Baseline */}
         <line
           x1={pL} y1={pT + cH} x2={W - pR} y2={pT + cH}
-          stroke="rgba(255,255,255,0.12)" strokeWidth="0.75"
+          stroke="hsl(216 18% 89%)" strokeWidth="0.75"
         />
 
         {/* X labels */}
@@ -251,7 +251,7 @@ export function VolumeChart({
             key={label}
             x={x} y={H - 3}
             textAnchor="middle"
-            fill="rgba(255,255,255,0.30)"
+            fill="hsl(220 15% 68%)"
             style={{ fontSize: "7.5px" }}
           >
             {label}
@@ -262,7 +262,7 @@ export function VolumeChart({
         {hp && !isEmpty && (
           <line
             x1={hp.x} y1={pT} x2={hp.x} y2={pT + cH}
-            stroke="rgba(255,255,255,0.18)" strokeWidth="1"
+            stroke="hsl(214 55% 50% / 0.35)" strokeWidth="1"
             strokeDasharray="2 3"
           />
         )}
@@ -326,7 +326,7 @@ export function VolumeChart({
           <text
             x={W / 2} y={H / 2}
             textAnchor="middle" dominantBaseline="middle"
-            fill="rgba(255,255,255,0.22)"
+            fill="hsl(220 15% 68%)"
             style={{ fontSize: "11px" }}
           >
             Aucun lead sur la période
