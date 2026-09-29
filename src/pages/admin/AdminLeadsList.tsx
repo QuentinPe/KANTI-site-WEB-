@@ -1,9 +1,9 @@
-﻿import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
-  Search, Download, BarChart3, X, Phone, Mail,
-  Trash2, Clock, TrendingUp, Users, CheckCircle2, ExternalLink, Archive,
+  Search, Download, BarChart3, X, Phone, Mail, Plus,
+  Trash2, Archive, MoreHorizontal, Users, TrendingUp, CheckCircle2, Clock,
 } from "lucide-react";
 import {
   getLeads, updateLeadStatus, updateLeadNotes, deleteLead, exportLeadsCSV, createLead,
@@ -11,22 +11,36 @@ import {
 import type { Lead, LeadStatus, LeadInput } from "@/lib/leadsService";
 import { ADVISOR_LABELS, ADVISOR_INITIALS, FORMAT_LABELS, TIMING_LABELS } from "@/lib/leadsConfig";
 import {
-  StatusBars, PipelineHealth, bucketLeadsByDay, PERIODS, STATUS_CONFIG, STATUS_ORDER,
+  StatusBars, PipelineHealth, bucketLeadsByDay, PERIODS,
 } from "@/components/admin/LeadsVolumeChart";
 import type { PeriodKey } from "@/components/admin/LeadsVolumeChart";
 import {
-  GLASS, GLASS_HOVER_SHADOW, INNER_BG, INNER_BORDER,
+  GLASS, INNER_BG, INNER_BORDER,
   T_PRIMARY, T_SECONDARY, T_MUTED, T_HEADING, T_LABEL,
   C_BLUE, C_GOLD, C_SAGE, C_MAUVE, C_CORAL, C_TEAL,
-  INPUT_STYLE, statusChipStyle, cA,
+  INPUT_STYLE, cA,
 } from "@/lib/adminTheme";
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from "@/components/ui/select";
+
+/* ─── Status config (light-theme) ─── */
+const PS: Record<LeadStatus, { label: string; bg: string; color: string; dot: string }> = {
+  nouveau:  { label: "Nouveau",  bg: "hsl(214 80% 55% / 0.12)", color: "hsl(214 65% 38%)", dot: "hsl(214 65% 42%)" },
+  appele:   { label: "Appelé",   bg: "hsl(200 55% 50% / 0.12)", color: "hsl(200 55% 36%)", dot: "hsl(200 55% 42%)" },
+  traite:   { label: "Traité",   bg: "hsl(38 85% 55% / 0.12)",  color: "hsl(38 70% 34%)",  dot: "hsl(38 70% 40%)"  },
+  converti: { label: "Converti", bg: "hsl(142 50% 42% / 0.12)", color: "hsl(142 50% 28%)", dot: "hsl(142 50% 34%)" },
+  archive:  { label: "Archivé",  bg: "hsl(220 12% 55% / 0.10)", color: "hsl(220 12% 44%)", dot: "hsl(220 12% 50%)" },
+};
+const STATUS_ORDER: LeadStatus[] = ["nouveau", "appele", "traite", "converti", "archive"];
 
 /* ─── Helpers ─── */
-function fmtDate(iso: string) {
-  return new Intl.DateTimeFormat("fr-FR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }).format(new Date(iso));
+function fmtShort(iso: string) {
+  const diff = Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000);
+  if (diff === 0) return "Aujourd'hui";
+  if (diff === 1) return "Hier";
+  if (diff < 7) return `Il y a ${diff}j`;
+  return new Date(iso).toLocaleDateString("fr-FR", { day: "2-digit", month: "short" });
+}
+function fmtFull(iso: string) {
+  return new Date(iso).toLocaleDateString("fr-FR", { day: "2-digit", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" });
 }
 function getInitials(nom: string) {
   return nom.split(" ").map((w) => w[0]).filter(Boolean).slice(0, 2).join("").toUpperCase();
@@ -46,6 +60,14 @@ function getSource(lead: Lead): string {
   if (s.includes("dirigeant") || s.includes("société")) return "Dirigeants";
   return "Formulaire contact";
 }
+function getActionLabel(lead: Lead): string {
+  if (lead.timing === "asap") return "Dès que possible";
+  if (lead.timing === "week") return "Cette semaine";
+  if (lead.timing === "two_weeks") return "Dans 2 sem.";
+  if (lead.timing === "month") return "Ce mois";
+  return "—";
+}
+
 /* ─── Email templates ─── */
 const EMAIL_TEMPLATES = [
   {
@@ -71,8 +93,7 @@ const EMAIL_TEMPLATES = [
     label: "Confirmation RDV",
     subject: "Confirmation de votre rendez-vous – KANTI",
     body: (nom: string) =>
-      `Bonjour ${nom},\n\nNous confirmons votre rendez-vous avec notre équipe.\n\n` +
-      `Date : [DATE]\nHeure : [HEURE]\nLieu : [LIEU / Visioconférence]\n\n` +
+      `Bonjour ${nom},\n\nNous confirmons votre rendez-vous avec notre équipe.\n\nDate : [DATE]\nHeure : [HEURE]\nLieu : [LIEU / Visioconférence]\n\n` +
       `Merci de nous prévenir en cas d'empêchement. Nous vous attendons avec plaisir.\n\nCordialement,\nL'équipe KANTI`,
   },
   {
@@ -109,8 +130,8 @@ function MailTemplatePicker({ lead, variant = "icon" }: { lead: Lead; variant?: 
         left: 0,
         minWidth: 200,
         background: "hsl(0 0% 100%)",
-        border: "1px solid var(--at-inner-border)",
-        boxShadow: "0 4px 20px hsl(220 60% 8% / 0.12), 0 1px 4px hsl(220 60% 8% / 0.06)",
+        border: `1px solid ${INNER_BORDER}`,
+        boxShadow: "0 4px 20px hsl(220 60% 8% / 0.12)",
       }}
     >
       <p className="px-2.5 py-1.5 text-[10px] font-medium uppercase tracking-wide" style={{ color: T_MUTED }}>
@@ -127,7 +148,7 @@ function MailTemplatePicker({ lead, variant = "icon" }: { lead: Lead; variant?: 
           {t.label}
         </a>
       ))}
-      <div className="my-1" style={{ borderTop: "1px solid var(--at-inner-border)" }} />
+      <div className="my-1" style={{ borderTop: `1px solid ${INNER_BORDER}` }} />
       <a href={`mailto:${lead.email}`} onClick={() => setOpen(false)}
         className="flex items-center px-2.5 py-2 rounded-lg text-[12px] transition-colors"
         style={{ color: T_MUTED }}
@@ -147,7 +168,7 @@ function MailTemplatePicker({ lead, variant = "icon" }: { lead: Lead; variant?: 
           className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-[13px] font-medium"
           style={{ background: INNER_BG, color: T_SECONDARY, border: `1px solid ${INNER_BORDER}` }}
         >
-          <Mail className="w-4 h-4" />Email
+          <Mail className="w-4 h-4" /> Envoyer un e-mail
         </button>
         {dropdown}
       </div>
@@ -171,29 +192,10 @@ function MailTemplatePicker({ lead, variant = "icon" }: { lead: Lead; variant?: 
   );
 }
 
-function computeScore(lead: Lead): { score: number; level: "Élevé" | "Moyen" | "Faible" } {
-  let s = 0;
-  if (lead.timing === "asap") s += 50;
-  else if (lead.timing === "week") s += 35;
-  else if (lead.timing === "two_weeks") s += 20;
-  else s += 10;
-  if (lead.telephone) s += 20;
-  if ((lead.message ?? "").length > 80) s += 15;
-  if (lead.format === "cabinet") s += 15;
-  const score = Math.min(s, 100);
-  return { score, level: score >= 70 ? "Élevé" : score >= 40 ? "Moyen" : "Faible" };
-}
-function scoreMeta(level: "Élevé" | "Moyen" | "Faible") {
-  if (level === "Élevé") return { color: C_SAGE, bg: "hsl(158 32% 56% / 0.15)" };
-  if (level === "Moyen") return { color: C_GOLD, bg: "hsl(40 50% 62% / 0.15)" };
-  return { color: T_MUTED, bg: INNER_BG };
-}
-
-/* ─── Multi-line chart ─── */
+/* ─── Multi-line chart (for ChartsModal) ─── */
 function MultiLineChart({ leads, days }: { leads: Lead[]; days: number }) {
   const useWeeks = days > 60;
   const count = useWeeks ? Math.ceil(days / 7) : days;
-
   const buckets = useMemo(() => {
     const now = Date.now();
     return Array.from({ length: count }, (_, i) => {
@@ -217,7 +219,6 @@ function MultiLineChart({ leads, days }: { leads: Lead[]; days: number }) {
 
   const maxY = Math.max(...buckets.map((b) => b.total), 1);
   const W = 500, H = 120, padX = 2, padY = 8;
-
   const line = (key: "total" | "traite" | "converti") => {
     const pts = buckets.map((b, i) => ({
       x: buckets.length === 1 ? W / 2 : padX + (i / (buckets.length - 1)) * (W - padX * 2),
@@ -230,7 +231,6 @@ function MultiLineChart({ leads, days }: { leads: Lead[]; days: number }) {
       pts,
     };
   };
-
   const totalLine = line("total");
   const traiteLine = line("traite");
   const convertiLine = line("converti");
@@ -272,58 +272,6 @@ function MultiLineChart({ leads, days }: { leads: Lead[]; days: number }) {
             style={{ left: `${(i / Math.max(count - 1, 1)) * 100}%`, color: T_MUTED }}>
             {label}
           </span>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-/* ─── Donut chart ─── */
-function DonutChart({ leads }: { leads: Lead[] }) {
-  const COLORS = [C_BLUE, C_GOLD, C_SAGE, C_MAUVE, C_CORAL];
-  const groups = useMemo(() => {
-    const map = new Map<string, number>();
-    leads.forEach((l) => { const src = getSource(l); map.set(src, (map.get(src) ?? 0) + 1); });
-    return [...map.entries()].sort((a, b) => b[1] - a[1]).map(([label, count], i) => ({
-      label, count, color: COLORS[i % COLORS.length],
-    }));
-  }, [leads]);
-
-  const total = leads.length;
-  if (total === 0) return <p className="text-[11px] text-center py-4" style={{ color: T_MUTED }}>Aucune donnée</p>;
-
-  const cx = 50, cy = 50, R = 42, r = 26;
-  let angle = -Math.PI / 2;
-  const arcs = groups.map((g) => {
-    const sweep = (g.count / total) * 2 * Math.PI;
-    const end = angle + sweep;
-    const path = sweep >= 2 * Math.PI - 0.001
-      ? `M ${cx + R},${cy} A ${R},${R},0,1,1,${cx + R - 0.001},${cy} Z M ${cx + r},${cy} A ${r},${r},0,1,0,${cx + r - 0.001},${cy} Z`
-      : [`M ${cx + R * Math.cos(angle)},${cy + R * Math.sin(angle)}`,
-         `A ${R},${R},0,${sweep > Math.PI ? 1 : 0},1,${cx + R * Math.cos(end)},${cy + R * Math.sin(end)}`,
-         `L ${cx + r * Math.cos(end)},${cy + r * Math.sin(end)}`,
-         `A ${r},${r},0,${sweep > Math.PI ? 1 : 0},0,${cx + r * Math.cos(angle)},${cy + r * Math.sin(angle)} Z`,
-        ].join(" ");
-    const result = { ...g, path };
-    angle = end;
-    return result;
-  });
-
-  return (
-    <div className="flex items-center gap-5">
-      <svg viewBox="0 0 100 100" className="flex-shrink-0" style={{ width: 88, height: 88 }}>
-        {arcs.map((a, i) => <path key={i} d={a.path} fill={a.color} />)}
-        <text x={cx} y={cy - 5} textAnchor="middle" fontSize="13" fontWeight="600" fill={T_PRIMARY}>{total}</text>
-        <text x={cx} y={cy + 9} textAnchor="middle" fontSize="7" fill={T_MUTED}>Total</text>
-      </svg>
-      <div className="space-y-2 flex-1 min-w-0">
-        {arcs.map((a) => (
-          <div key={a.label} className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: a.color }} />
-            <span className="text-[11px] font-light truncate flex-1" style={{ color: T_SECONDARY }}>{a.label}</span>
-            <span className="text-[11px] font-medium tabular-nums flex-shrink-0" style={{ color: T_PRIMARY }}>{a.count}</span>
-            <span className="text-[10px] flex-shrink-0" style={{ color: T_MUTED }}>({Math.round(a.count / total * 100)}%)</span>
-          </div>
         ))}
       </div>
     </div>
@@ -404,7 +352,7 @@ function ChartsModal({ leads, onClose }: { leads: Lead[]; onClose: () => void })
   );
 }
 
-/* ─── New Lead Modal ─── */
+/* ─── New lead modal ─── */
 function NewLeadModal({ onClose }: { onClose: () => void }) {
   const qc = useQueryClient();
   const [form, setForm] = useState<Partial<LeadInput>>({ conseiller: "any", format: "visio", timing: "asap" });
@@ -416,9 +364,17 @@ function NewLeadModal({ onClose }: { onClose: () => void }) {
     if (!form.nom?.trim() || !form.email?.trim()) { toast.error("Nom et email obligatoires"); return; }
     setSaving(true);
     try {
-      await createLead({ nom: form.nom, email: form.email, telephone: form.telephone || null, conseiller: form.conseiller || "any", format: form.format || "visio", timing: form.timing || "asap", sujet: form.sujet || null, message: form.message || null });
+      await createLead({
+        nom: form.nom, email: form.email,
+        telephone: form.telephone || null,
+        conseiller: form.conseiller || "any",
+        format: form.format || "visio",
+        timing: form.timing || "asap",
+        sujet: form.sujet || null,
+        message: form.message || null,
+      });
       await qc.invalidateQueries({ queryKey: ["leads"] });
-      toast.success("Lead créé");
+      toast.success("Prospect créé");
       onClose();
     } catch { toast.error("Erreur lors de la création"); }
     finally { setSaving(false); }
@@ -433,7 +389,7 @@ function NewLeadModal({ onClose }: { onClose: () => void }) {
       <div className="w-full max-w-lg rounded-2xl overflow-hidden"
         style={{ ...GLASS, boxShadow: "0 24px 60px -16px rgba(0,0,0,0.5)" }}>
         <div className="flex items-center justify-between px-6 py-5" style={{ borderBottom: `1px solid ${INNER_BORDER}` }}>
-          <h2 className="text-[16px] font-medium" style={{ color: T_PRIMARY }}>Nouveau lead</h2>
+          <h2 className="text-[16px] font-medium" style={{ color: T_PRIMARY }}>Nouveau prospect</h2>
           <button onClick={onClose} className="p-1.5 rounded-lg"
             onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = INNER_BG; }}
             onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
@@ -499,8 +455,8 @@ function NewLeadModal({ onClose }: { onClose: () => void }) {
           </button>
           <button onClick={handleSave} disabled={saving}
             className="px-5 py-2 rounded-xl text-[13px] font-medium disabled:opacity-50"
-            style={{ background: "hsl(215 42% 65% / 0.18)", color: C_BLUE, border: `1px solid hsl(215 42% 65% / 0.30)` }}>
-            {saving ? "Création…" : "Créer le lead"}
+            style={{ background: C_BLUE, color: "hsl(0 0% 100%)" }}>
+            {saving ? "Création…" : "Créer le prospect"}
           </button>
         </div>
       </div>
@@ -508,13 +464,16 @@ function NewLeadModal({ onClose }: { onClose: () => void }) {
   );
 }
 
-/* ─── Lead detail panel ─── */
-function LeadDetailPanel({ lead, onClose }: { lead: Lead; onClose: () => void }) {
+/* ─── Lead side panel ─── */
+function LeadSidePanel({ lead, onClose }: { lead: Lead; onClose: () => void }) {
   const qc = useQueryClient();
   const [notes, setNotes] = useState(lead.notes ?? "");
   const [notesDirty, setNotesDirty] = useState(false);
 
-  useEffect(() => { setNotes(lead.notes ?? ""); setNotesDirty(false); }, [lead.id, lead.notes]);
+  useEffect(() => {
+    setNotes(lead.notes ?? "");
+    setNotesDirty(false);
+  }, [lead.id, lead.notes]);
 
   const statusMut = useMutation({
     mutationFn: (s: LeadStatus) => updateLeadStatus(lead.id, s),
@@ -527,427 +486,411 @@ function LeadDetailPanel({ lead, onClose }: { lead: Lead; onClose: () => void })
   });
   const deleteMut = useMutation({
     mutationFn: () => deleteLead(lead.id),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["leads"] }); onClose(); },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["leads"] }); onClose(); toast.success("Prospect supprimé"); },
+    onError: () => toast.error("Impossible de supprimer ce prospect"),
   });
 
-  const { score, level } = computeScore(lead);
-  const { color: levelColor } = scoreMeta(level);
-  const cfg = STATUS_CONFIG[lead.status];
+  const cfg = PS[lead.status];
   const hue = avatarHue(lead.nom);
+  const initials = getInitials(lead.nom);
+  const advLabel = lead.conseiller && lead.conseiller !== "any"
+    ? (ADVISOR_LABELS[lead.conseiller] ?? lead.conseiller)
+    : null;
 
   return (
-    <>
-      {/* Backdrop */}
-      <div className="fixed inset-0" style={{ zIndex: 200, background: "hsl(224 60% 6% / 0.30)" }} onClick={onClose} />
-      {/* Panel */}
-      <div className="fixed right-0 top-0 h-full w-full max-w-md flex flex-col"
-        style={{ zIndex: 201, ...GLASS, borderLeft: `1px solid ${INNER_BORDER}`, boxShadow: "-24px 0 60px -20px rgba(0,0,0,0.4)", borderRadius: 0 }}>
-        <div className="flex items-start justify-between px-6 py-5" style={{ borderBottom: `1px solid ${INNER_BORDER}` }}>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full flex items-center justify-center text-[13px] font-semibold flex-shrink-0"
-              style={{ background: `hsl(${hue} 55% 88%)`, color: `hsl(${hue} 55% 28%)` }}>
-              {getInitials(lead.nom)}
-            </div>
-            <div>
-              <p className="text-[15px] font-medium" style={{ color: T_PRIMARY }}>{lead.nom}</p>
-              <a href={`mailto:${lead.email}`} className="text-[12px] font-light hover:underline" style={{ color: C_BLUE }}>
+    <div
+      className="flex-shrink-0 flex flex-col overflow-hidden"
+      style={{
+        width: 360,
+        background: "hsl(0 0% 100%)",
+        borderLeft: `1px solid ${INNER_BORDER}`,
+      }}
+    >
+      {/* Header */}
+      <div className="px-5 py-4 flex-shrink-0" style={{ borderBottom: `1px solid ${INNER_BORDER}` }}>
+        <div className="flex items-center justify-between mb-4">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium"
+            style={{ background: cfg.bg, color: cfg.color }}>
+            <span className="w-1.5 h-1.5 rounded-full" style={{ background: cfg.dot }} />
+            {cfg.label}
+          </span>
+          <button onClick={onClose} className="p-1.5 rounded-full transition-colors"
+            style={{ color: T_MUTED }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = INNER_BG; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-12 h-12 rounded-full flex items-center justify-center text-[15px] font-semibold flex-shrink-0"
+            style={{ background: `hsl(${hue} 45% 86%)`, color: `hsl(${hue} 55% 28%)` }}>
+            {initials}
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-[16px] font-medium leading-tight" style={{ color: T_PRIMARY }}>{lead.nom}</p>
+            <p className="text-[12px] font-light mt-0.5 truncate" style={{ color: T_MUTED }}>{lead.email}</p>
+          </div>
+        </div>
+        <div className="flex gap-2">
+          {lead.telephone ? (
+            <a href={`tel:${lead.telephone}`}
+              onClick={() => { if (lead.status !== "appele" && lead.status !== "traite") statusMut.mutate("appele"); }}
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-[12.5px] font-medium"
+              style={{ background: C_BLUE, color: "hsl(0 0% 100%)" }}>
+              <Phone className="w-3.5 h-3.5" /> Appeler
+            </a>
+          ) : (
+            <button disabled className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-[12.5px] font-medium opacity-40"
+              style={{ background: INNER_BG, color: T_SECONDARY, border: `1px solid ${INNER_BORDER}` }}>
+              <Phone className="w-3.5 h-3.5" /> Appeler
+            </button>
+          )}
+          <MailTemplatePicker lead={lead} variant="button" />
+        </div>
+      </div>
+
+      {/* Scrollable body */}
+      <div className="flex-1 overflow-y-auto">
+        {/* Contact info */}
+        <div className="px-5 py-4" style={{ borderBottom: `1px solid ${INNER_BORDER}` }}>
+          <p className="text-[10px] font-semibold uppercase tracking-widest mb-3" style={{ color: T_LABEL }}>
+            Informations de contact
+          </p>
+          <div className="space-y-2.5">
+            <div className="flex items-center gap-3">
+              <Mail className="w-3.5 h-3.5 flex-shrink-0" style={{ color: T_MUTED }} />
+              <a href={`mailto:${lead.email}`} className="text-[12.5px] hover:underline truncate" style={{ color: C_BLUE }}>
                 {lead.email}
               </a>
             </div>
+            {lead.telephone && (
+              <div className="flex items-center gap-3">
+                <Phone className="w-3.5 h-3.5 flex-shrink-0" style={{ color: T_MUTED }} />
+                <a href={`tel:${lead.telephone}`} className="text-[12.5px] hover:underline" style={{ color: C_BLUE }}>
+                  {lead.telephone}
+                </a>
+              </div>
+            )}
+            <Row label="Source" value={getSource(lead)} />
+            {advLabel && <Row label="Conseiller" value={advLabel} />}
+            <Row label="Ajouté le" value={fmtFull(lead.created_at)} />
           </div>
-          <button onClick={onClose} className="p-1.5 rounded-lg"
-            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = INNER_BG; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
-            <X className="w-4 h-4" style={{ color: T_SECONDARY }} />
-          </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
-          <div className="flex items-center gap-3">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium"
-              style={{ background: cfg.bg, color: cfg.color }}>
-              <span className="w-1.5 h-1.5 rounded-full" style={{ background: cfg.dot }} />{cfg.label}
-            </span>
-            <span className="text-[12px] font-medium" style={{ color: levelColor }}>
-              Score {score} · <span style={{ fontWeight: 400 }}>{level}</span>
-            </span>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            {[
-              { label: "Source",       value: getSource(lead) },
-              { label: "Téléphone",    value: lead.telephone ?? "—" },
-              { label: "Format",       value: lead.format ? (FORMAT_LABELS[lead.format] ?? lead.format) : "—" },
-              { label: "Disponibilité",value: lead.timing ? (TIMING_LABELS[lead.timing] ?? lead.timing) : "—" },
-              { label: "Conseiller",   value: lead.conseiller ? (ADVISOR_LABELS[lead.conseiller] ?? lead.conseiller) : "—" },
-              { label: "Reçu le",      value: fmtDate(lead.created_at) },
-            ].map((f) => (
-              <div key={f.label}>
-                <p className="text-[10px] uppercase tracking-[0.18em] font-medium mb-0.5" style={{ color: T_MUTED }}>{f.label}</p>
-                {f.label === "Téléphone" && lead.telephone ? (
-                  <a href={`tel:${lead.telephone}`} className="text-[13px] font-light hover:underline" style={{ color: C_BLUE }}>
-                    {lead.telephone}
-                  </a>
-                ) : (
-                  <p className="text-[13px] font-light" style={{ color: T_SECONDARY }}>{f.value}</p>
-                )}
+        {/* Demande */}
+        <div className="px-5 py-4" style={{ borderBottom: `1px solid ${INNER_BORDER}` }}>
+          <p className="text-[10px] font-semibold uppercase tracking-widest mb-3" style={{ color: T_LABEL }}>
+            Demande
+          </p>
+          <div className="space-y-2.5">
+            {lead.sujet && <Row label="Sujet" value={lead.sujet} />}
+            {lead.format && <Row label="Format" value={FORMAT_LABELS[lead.format] ?? lead.format} />}
+            {lead.timing && <Row label="Horizon" value={TIMING_LABELS[lead.timing] ?? lead.timing} isUrgent={lead.timing === "asap"} />}
+            {lead.message && (
+              <div className="pt-1">
+                <p className="text-[11px] font-medium mb-1.5" style={{ color: T_MUTED }}>Message</p>
+                <p className="text-[12.5px] font-light leading-relaxed italic" style={{ color: T_SECONDARY }}>
+                  « {lead.message} »
+                </p>
               </div>
-            ))}
-          </div>
-
-          {lead.message && (
-            <div>
-              <p className="text-[10px] uppercase tracking-[0.18em] font-medium mb-2" style={{ color: T_MUTED }}>Message</p>
-              <p className="text-[13px] font-light leading-relaxed" style={{ color: T_SECONDARY }}>{lead.message}</p>
-            </div>
-          )}
-
-          <div>
-            <p className="text-[10px] uppercase tracking-[0.18em] font-medium mb-2" style={{ color: T_MUTED }}>Changer le statut</p>
-            <div className="flex flex-wrap gap-1.5">
-              {STATUS_ORDER.filter((s) => s !== lead.status).map((s) => {
-                const c = STATUS_CONFIG[s];
-                return (
-                  <button key={s} onClick={() => statusMut.mutate(s)} disabled={statusMut.isPending}
-                    className="px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all disabled:opacity-50"
-                    style={{ background: c.bg, color: c.color, border: `1px solid ${c.dot}33` }}>
-                    {c.label}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          <div>
-            <p className="text-[10px] uppercase tracking-[0.18em] font-medium mb-2" style={{ color: T_MUTED }}>Notes internes</p>
-            <textarea value={notes} rows={3}
-              onChange={(e) => { setNotes(e.target.value); setNotesDirty(e.target.value !== (lead.notes ?? "")); }}
-              placeholder="Suivi, rappels, observations…"
-              className="w-full resize-none rounded-xl px-3.5 py-2.5 text-[13px] font-light outline-none transition-all"
-              style={{
-                ...INPUT_STYLE,
-                border: `1px solid ${notesDirty ? cA(C_BLUE, 0.66) : INNER_BORDER}`,
-              }} />
-            {notesDirty && (
-              <button onClick={() => notesMut.mutate(notes)} disabled={notesMut.isPending}
-                className="mt-2 text-[11px] font-medium px-3 py-1.5 rounded-lg disabled:opacity-60"
-                style={{ background: "hsl(215 42% 65% / 0.18)", color: C_BLUE, border: `1px solid hsl(215 42% 65% / 0.30)` }}>
-                {notesMut.isPending ? "Enregistrement…" : "Enregistrer"}
-              </button>
             )}
           </div>
         </div>
 
-        <div className="px-6 py-4 flex items-center gap-3" style={{ borderTop: `1px solid ${INNER_BORDER}` }}>
-          {lead.telephone && (
-            <a href={`tel:${lead.telephone}`}
-              onClick={() => { if (lead.status !== "appele") statusMut.mutate("appele"); }}
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-[13px] font-medium"
-              style={{ background: "hsl(215 42% 65% / 0.12)", color: C_BLUE, border: `1px solid hsl(215 42% 65% / 0.25)` }}>
-              <Phone className="w-4 h-4" />Appeler
-            </a>
-          )}
-          <MailTemplatePicker lead={lead} variant="button" />
-          {lead.status !== "archive" && (
-            <button onClick={() => { statusMut.mutate("archive"); onClose(); }}
-              title="Archiver ce lead"
-              className="p-2.5 rounded-xl transition-colors"
-              style={{ color: C_GOLD, border: `1px solid hsl(40 50% 62% / 0.25)` }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(40 50% 62% / 0.12)"; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
-              <Archive className="w-4 h-4" />
+        {/* Changer statut */}
+        <div className="px-5 py-4" style={{ borderBottom: `1px solid ${INNER_BORDER}` }}>
+          <p className="text-[10px] font-semibold uppercase tracking-widest mb-3" style={{ color: T_LABEL }}>
+            Changer le statut
+          </p>
+          <div className="flex flex-wrap gap-1.5">
+            {STATUS_ORDER.filter((s) => s !== lead.status).map((s) => {
+              const c = PS[s];
+              return (
+                <button key={s} onClick={() => statusMut.mutate(s)} disabled={statusMut.isPending}
+                  className="px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all disabled:opacity-50"
+                  style={{ background: c.bg, color: c.color, border: `1px solid ${c.dot}55` }}>
+                  {c.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Notes */}
+        <div className="px-5 py-4">
+          <p className="text-[10px] font-semibold uppercase tracking-widest mb-3" style={{ color: T_LABEL }}>
+            Notes internes
+          </p>
+          <textarea
+            value={notes}
+            rows={4}
+            onChange={(e) => { setNotes(e.target.value); setNotesDirty(e.target.value !== (lead.notes ?? "")); }}
+            placeholder="Suivi, rappels, observations…"
+            className="w-full resize-none rounded-xl text-[12.5px] font-light outline-none transition-all"
+            style={{
+              ...INPUT_STYLE,
+              border: `1px solid ${notesDirty ? cA(C_BLUE, 0.55) : INNER_BORDER}`,
+            }}
+          />
+          {notesDirty && (
+            <button onClick={() => notesMut.mutate(notes)} disabled={notesMut.isPending}
+              className="mt-2 text-[11px] font-medium px-3 py-1.5 rounded-lg disabled:opacity-60"
+              style={{ background: cA(C_BLUE, 0.10), color: C_BLUE, border: `1px solid ${cA(C_BLUE, 0.25)}` }}>
+              {notesMut.isPending ? "Enregistrement…" : "Enregistrer"}
             </button>
           )}
-          <button onClick={() => { if (confirm(`Supprimer le lead de ${lead.nom} ?`)) deleteMut.mutate(); }}
-            title="Supprimer définitivement"
-            className="p-2.5 rounded-xl transition-colors"
-            style={{ color: C_CORAL, border: `1px solid hsl(5 45% 56% / 0.25)` }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(5 45% 56% / 0.12)"; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
-            <Trash2 className="w-4 h-4" />
-          </button>
         </div>
       </div>
-    </>
+
+      {/* Footer actions */}
+      <div className="px-5 py-3 flex items-center gap-1 flex-shrink-0" style={{ borderTop: `1px solid ${INNER_BORDER}` }}>
+        {lead.status !== "archive" && (
+          <button
+            onClick={() => { statusMut.mutate("archive"); onClose(); }}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-[12px] font-medium transition-colors"
+            style={{ color: C_GOLD }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = cA(C_GOLD, 0.10); }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
+            <Archive className="w-3.5 h-3.5" /> Archiver
+          </button>
+        )}
+        <div className="flex-1" />
+        <button
+          onClick={() => { if (confirm(`Supprimer ${lead.nom} définitivement ?`)) deleteMut.mutate(); }}
+          disabled={deleteMut.isPending}
+          className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-[12px] font-medium transition-colors disabled:opacity-50"
+          style={{ color: C_CORAL }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = cA(C_CORAL, 0.10); }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
+          <Trash2 className="w-3.5 h-3.5" /> Supprimer
+        </button>
+      </div>
+    </div>
   );
 }
 
-/* ─── Lead card (grid view) ─── */
-function LeadCard({ lead, onClick, selected, onSelect, seen }: {
-  lead: Lead; onClick: () => void; selected: boolean; onSelect: (v: boolean) => void; seen: boolean;
+function Row({ label, value, isUrgent }: { label: string; value: string; isUrgent?: boolean }) {
+  return (
+    <div className="flex items-start gap-3">
+      <span className="text-[11px] font-medium w-20 flex-shrink-0 mt-[1px]" style={{ color: T_MUTED }}>{label}</span>
+      <span className="text-[12.5px] leading-snug" style={{ color: isUrgent ? C_CORAL : T_SECONDARY }}>{value}</span>
+    </div>
+  );
+}
+
+/* ─── Table row ─── */
+function LeadRow({
+  lead, isSelected, isActive, isUnseen, onSelect, onClick, isLast,
+}: {
+  lead: Lead; isSelected: boolean; isActive: boolean; isUnseen: boolean;
+  onSelect: (v: boolean) => void; onClick: () => void; isLast: boolean;
 }) {
   const qc = useQueryClient();
-  const { score, level } = computeScore(lead);
-  const cfg = STATUS_CONFIG[lead.status];
-  const hue = avatarHue(lead.nom);
-  const { color: levelColor, bg: levelBg } = scoreMeta(level);
-  const isUnseen = lead.status === "nouveau" && !seen;
-  const source = getSource(lead);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const cfg = PS[lead.status];
 
-  const relativeDate = (() => {
-    const d = Math.floor((Date.now() - new Date(lead.created_at).getTime()) / 86_400_000);
-    if (d === 0) return "Aujourd'hui";
-    if (d === 1) return "Hier";
-    return `Il y a ${d}j`;
-  })();
+  useEffect(() => {
+    if (!menuOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [menuOpen]);
 
   const statusMut = useMutation({
     mutationFn: (s: LeadStatus) => updateLeadStatus(lead.id, s),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["leads"] }); toast.success("Statut mis à jour"); },
-    onError: () => toast.error("Impossible de mettre à jour le statut"),
+  });
+  const deleteMut = useMutation({
+    mutationFn: () => deleteLead(lead.id),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["leads"] }); toast.success("Prospect supprimé"); },
   });
 
+  const hue = avatarHue(lead.nom);
+  const initials = getInitials(lead.nom);
+  const advInitials = lead.conseiller && lead.conseiller !== "any"
+    ? (ADVISOR_INITIALS[lead.conseiller] ?? null)
+    : null;
+
   return (
-    <div
-      className="rounded-2xl cursor-pointer group relative flex flex-col transition-all"
+    <tr
+      className="group cursor-pointer"
       style={{
-        ...GLASS,
-        borderLeft: isUnseen ? `3px solid ${C_GOLD}` : undefined,
-        outline: selected ? `2px solid hsl(var(--at-blue) / 0.45)` : "2px solid transparent",
-        background: selected ? "hsl(var(--at-blue) / 0.08)" : undefined,
+        borderBottom: isLast ? "none" : `1px solid ${INNER_BORDER}`,
+        background: isActive ? cA(C_BLUE, 0.06) : "transparent",
+        transition: "background 0.1s",
       }}
+      onMouseEnter={(e) => { if (!isActive) (e.currentTarget as HTMLElement).style.background = INNER_BG; }}
+      onMouseLeave={(e) => { if (!isActive) (e.currentTarget as HTMLElement).style.background = "transparent"; }}
       onClick={onClick}
     >
-      {/* Checkbox — visible on hover or when selected */}
-      <div
-        className="absolute top-3.5 right-3.5 z-10"
-        onClick={(e) => { e.stopPropagation(); onSelect(!selected); }}
-      >
+      {/* Checkbox */}
+      <td className="px-4 py-3 w-8" onClick={(e) => e.stopPropagation()}>
         <div
-          className="w-[18px] h-[18px] rounded-[5px] flex items-center justify-center transition-all"
+          className="w-4 h-4 rounded-[4px] flex items-center justify-center border cursor-pointer transition-all"
           style={{
-            background: selected ? C_BLUE : INNER_BG,
-            border: `1.5px solid ${selected ? C_BLUE : INNER_BORDER}`,
+            borderColor: isSelected ? C_BLUE : INNER_BORDER,
+            background: isSelected ? C_BLUE : "transparent",
           }}
+          onClick={() => onSelect(!isSelected)}
         >
-          {selected && <span style={{ color: "white", fontSize: 9, lineHeight: 1, fontWeight: 800 }}>✓</span>}
+          {isSelected && <span style={{ color: "white", fontSize: 7, fontWeight: 900, lineHeight: 1 }}>✓</span>}
         </div>
-      </div>
+      </td>
 
-      {/* Header */}
-      <div className="p-4 pb-3.5 flex-1">
-        {/* Avatar + name */}
-        <div className="flex items-start gap-3 mb-3.5">
-          <div className="relative flex-shrink-0">
-            <div
-              className="w-10 h-10 rounded-full flex items-center justify-center text-[13px] font-semibold"
-              style={{ background: `hsl(${hue} 45% 86%)`, color: `hsl(${hue} 55% 28%)` }}
-            >
-              {getInitials(lead.nom)}
-            </div>
+      {/* Prospect */}
+      <td className="px-3 py-3">
+        <div className="flex items-center gap-2.5">
+          <div className="relative w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-semibold flex-shrink-0"
+            style={{ background: `hsl(${hue} 45% 86%)`, color: `hsl(${hue} 55% 28%)` }}>
+            {initials}
             {isUnseen && (
-              <span
-                className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full animate-pulse"
-                style={{ background: C_GOLD, border: "2px solid var(--at-glass-bg)" }}
-              />
+              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full"
+                style={{ background: C_BLUE, border: "1.5px solid white" }} />
             )}
           </div>
-          <div className="min-w-0 pr-7">
-            <p className="text-[14px] font-medium leading-snug truncate" style={{ color: T_PRIMARY }}>{lead.nom}</p>
-            <p className="text-[11.5px] font-light truncate mt-0.5" style={{ color: T_SECONDARY }}>{lead.email}</p>
+          <div className="min-w-0">
+            <p className="text-[13px] font-medium truncate" style={{ color: T_PRIMARY, maxWidth: 140 }}>{lead.nom}</p>
+            <p className="text-[11px] truncate font-light" style={{ color: T_MUTED, maxWidth: 140 }}>{lead.email}</p>
           </div>
         </div>
+      </td>
 
-        {/* Source + status */}
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10.5px] font-medium"
-            style={{ background: "hsl(var(--at-blue) / 0.12)", color: C_BLUE }}>
-            {source}
-          </span>
-          <div onClick={(e) => e.stopPropagation()}>
-            <Select value={lead.status} onValueChange={(v) => statusMut.mutate(v as LeadStatus)} disabled={statusMut.isPending}>
-              <SelectTrigger
-                className="h-auto ring-0 focus:ring-0 focus:ring-offset-0 shadow-none text-[10.5px] font-medium rounded-full px-2.5 py-[3px] gap-1 [&>svg]:w-2.5 [&>svg]:h-2.5 [&>svg]:opacity-40 disabled:opacity-50"
-                style={{ background: cfg.bg, color: cfg.color, border: `1px solid ${cfg.dot}44`, minWidth: 82 }}
-              >
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent
-                className="min-w-[148px] rounded-xl border-0 p-1"
-                style={{
-                  background: "hsl(0 0% 100%)",
-                  border: "1px solid var(--at-inner-border)",
-                  boxShadow: "0 4px 20px hsl(220 60% 8% / 0.12)",
-                  zIndex: 999,
-                }}
-              >
-                {STATUS_ORDER.map((s) => {
-                  const sc = STATUS_CONFIG[s];
-                  return (
-                    <SelectItem key={s} value={s} textValue={sc.label}
-                      className="text-[12px] rounded-lg cursor-pointer"
-                      style={{ color: T_HEADING }}
-                    >
-                      <span className="flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: sc.dot }} />
-                        {sc.label}
-                      </span>
-                    </SelectItem>
-                  );
-                })}
-              </SelectContent>
-            </Select>
+      {/* Demande */}
+      <td className="px-3 py-3">
+        <p className="text-[12.5px] truncate font-light" style={{ color: T_SECONDARY, maxWidth: 120 }}>
+          {lead.sujet ?? "—"}
+        </p>
+      </td>
+
+      {/* Source */}
+      <td className="px-3 py-3">
+        <p className="text-[12.5px] truncate font-light" style={{ color: T_SECONDARY, maxWidth: 120 }}>
+          {getSource(lead)}
+        </p>
+      </td>
+
+      {/* Statut */}
+      <td className="px-3 py-3">
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium whitespace-nowrap"
+          style={{ background: cfg.bg, color: cfg.color }}>
+          <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: cfg.dot }} />
+          {cfg.label}
+        </span>
+      </td>
+
+      {/* Responsable */}
+      <td className="px-3 py-3">
+        {advInitials ? (
+          <div className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold"
+            style={{ background: cA(C_BLUE, 0.10), color: C_BLUE }}>
+            {advInitials}
           </div>
-          {lead.conseiller && lead.conseiller !== "any" && (
-            <div className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold"
-              style={{ background: "hsl(var(--at-blue) / 0.15)", color: C_BLUE }}>
-              {ADVISOR_INITIALS[lead.conseiller] ?? "?"}
+        ) : (
+          <span className="text-[12px] font-light" style={{ color: T_MUTED }}>—</span>
+        )}
+      </td>
+
+      {/* Reçu le */}
+      <td className="px-3 py-3">
+        <p className="text-[12px] whitespace-nowrap font-light" style={{ color: T_SECONDARY }}>
+          {fmtShort(lead.created_at)}
+        </p>
+      </td>
+
+      {/* Disponibilité */}
+      <td className="px-3 py-3">
+        <p className="text-[12px] truncate font-light"
+          style={{ color: lead.timing === "asap" ? C_CORAL : T_SECONDARY, maxWidth: 120 }}>
+          {getActionLabel(lead)}
+        </p>
+      </td>
+
+      {/* Actions ⋮ */}
+      <td className="px-3 py-3 w-10" onClick={(e) => e.stopPropagation()}>
+        <div ref={menuRef} className="relative">
+          <button
+            onClick={() => setMenuOpen((v) => !v)}
+            className="p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
+            style={{ color: T_MUTED }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLElement).style.background = INNER_BG;
+              (e.currentTarget as HTMLElement).style.opacity = "1";
+            }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}
+          >
+            <MoreHorizontal className="w-4 h-4" />
+          </button>
+          {menuOpen && (
+            <div className="absolute right-0 top-8 z-[200] rounded-xl p-1.5"
+              style={{
+                minWidth: 170,
+                background: "hsl(0 0% 100%)",
+                border: `1px solid ${INNER_BORDER}`,
+                boxShadow: "0 4px 20px hsl(220 60% 8% / 0.12)",
+              }}>
+              {lead.telephone && (
+                <a href={`tel:${lead.telephone}`} onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[12px] transition-colors"
+                  style={{ color: T_HEADING }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = INNER_BG; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
+                  <Phone className="w-3.5 h-3.5" style={{ color: T_MUTED }} /> Appeler
+                </a>
+              )}
+              <a href={`mailto:${lead.email}`} onClick={() => setMenuOpen(false)}
+                className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[12px] transition-colors"
+                style={{ color: T_HEADING }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = INNER_BG; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
+                <Mail className="w-3.5 h-3.5" style={{ color: T_MUTED }} /> Envoyer un email
+              </a>
+              <div style={{ borderTop: `1px solid ${INNER_BORDER}`, margin: "4px 0" }} />
+              {lead.status !== "archive" && (
+                <button onClick={() => { statusMut.mutate("archive"); setMenuOpen(false); }}
+                  className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[12px] transition-colors"
+                  style={{ color: C_GOLD }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = cA(C_GOLD, 0.08); }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
+                  <Archive className="w-3.5 h-3.5" /> Archiver
+                </button>
+              )}
+              <button
+                onClick={() => {
+                  if (confirm(`Supprimer ${lead.nom} définitivement ?`)) {
+                    deleteMut.mutate();
+                    setMenuOpen(false);
+                  }
+                }}
+                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[12px] transition-colors"
+                style={{ color: C_CORAL }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = cA(C_CORAL, 0.08); }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
+                <Trash2 className="w-3.5 h-3.5" /> Supprimer
+              </button>
             </div>
           )}
         </div>
-      </div>
-
-      {/* Score bar */}
-      <div className="px-4 pb-4">
-        <div className="flex items-center justify-between mb-1.5">
-          <span className="text-[10px] uppercase tracking-wider font-medium" style={{ color: T_MUTED }}>Score</span>
-          <div className="flex items-center gap-1.5">
-            <span className="text-[12px] font-semibold tabular-nums" style={{ color: T_PRIMARY }}>{score}</span>
-            <span className="text-[9.5px] font-medium px-1.5 py-[2px] rounded-[4px]"
-              style={{ background: levelBg, color: levelColor }}>{level}</span>
-          </div>
-        </div>
-        <div className="h-[5px] rounded-full overflow-hidden" style={{ background: INNER_BG }}>
-          <div
-            className="h-full rounded-full"
-            style={{ width: `${score}%`, background: levelColor, opacity: 0.80 }}
-          />
-        </div>
-      </div>
-
-      {/* Footer */}
-      <div className="px-4 py-3 flex items-center justify-between"
-        style={{ borderTop: `1px solid ${INNER_BORDER}` }}>
-        <div className="flex items-center gap-1.5 min-w-0">
-          <Clock className="w-3 h-3 flex-shrink-0" style={{ color: T_MUTED }} />
-          <span className="text-[11px] truncate" style={{ color: T_SECONDARY }}>
-            {lead.timing ? (TIMING_LABELS[lead.timing] ?? lead.timing) : "Non précisé"}
-          </span>
-        </div>
-        <div className="flex items-center gap-1 flex-shrink-0">
-          <span className="text-[10.5px] tabular-nums" style={{ color: T_MUTED }}>{relativeDate}</span>
-          <div className="flex items-center ml-1" onClick={(e) => e.stopPropagation()}>
-            {lead.telephone && (
-              <a href={`tel:${lead.telephone}`}
-                className="p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
-                style={{ color: C_TEAL }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "hsl(180 32% 54% / 0.12)"; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
-                <Phone className="w-3.5 h-3.5" />
-              </a>
-            )}
-            <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-              <MailTemplatePicker lead={lead} variant="icon" />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+      </td>
+    </tr>
   );
 }
 
-/* ─── Main page ─── */
-type SortKey = "date_desc" | "date_asc" | "urgent" | "score_desc";
-
-/* ─── Convertis Panel ─── */
-function ConvertisHeader({ leads }: { leads: Lead[] }) {
-  const converted = leads.filter((l) => l.status === "converti");
-  const total = leads.length;
-  const rate = total === 0 ? 0 : Math.round((converted.length / total) * 100);
-
-  const sourceMap = new Map<string, number>();
-  converted.forEach((l) => {
-    const s = getSource(l);
-    sourceMap.set(s, (sourceMap.get(s) ?? 0) + 1);
-  });
-  const topSource = [...sourceMap.entries()].sort((a, b) => b[1] - a[1])[0];
-
-  const consMap = new Map<string, number>();
-  converted.forEach((l) => {
-    if (l.conseiller && l.conseiller !== "any") {
-      const label = ADVISOR_LABELS[l.conseiller] ?? l.conseiller;
-      consMap.set(label, (consMap.get(label) ?? 0) + 1);
-    }
-  });
-  const topCons = [...consMap.entries()].sort((a, b) => b[1] - a[1])[0];
-
-  const avgDays = converted.length === 0 ? null : Math.round(
-    converted.reduce((s, l) => s + (Date.now() - new Date(l.created_at).getTime()) / 86_400_000, 0) / converted.length,
-  );
-
-  if (converted.length === 0) return null;
-
-  const cards = [
-    {
-      label: "Total convertis",
-      value: String(converted.length),
-      sub: `sur ${total} lead${total !== 1 ? "s" : ""} au pipeline`,
-      big: true,
-    },
-    {
-      label: "Taux de conversion",
-      value: `${rate}%`,
-      sub: "du pipeline total",
-      big: true,
-    },
-    {
-      label: "Source principale",
-      value: topSource ? topSource[0] : "—",
-      sub: topSource ? `${topSource[1]} converti${topSource[1] !== 1 ? "s" : ""}` : "Aucune donnée",
-      big: false,
-    },
-    {
-      label: "Conseiller top",
-      value: topCons ? topCons[0] : "Non assigné",
-      sub: topCons ? `${topCons[1]} converti${topCons[1] !== 1 ? "s" : ""}` : `Ancienneté moy. ${avgDays ?? "—"}j`,
-      big: false,
-    },
-  ];
-
-  return (
-    <div className="px-5 pt-5">
-      <div className="grid grid-cols-4 gap-3 mb-4">
-        {cards.map((card) => (
-          <div key={card.label} className="rounded-xl p-4"
-            style={{ background: "hsl(142 55% 38% / 0.08)", border: "1px solid hsl(142 55% 38% / 0.20)" }}>
-            <p className="text-[10px] font-medium uppercase tracking-wide mb-1.5" style={{ color: T_MUTED }}>
-              {card.label}
-            </p>
-            {card.big ? (
-              <p className="text-[26px] font-light tabular-nums leading-none" style={{ color: C_SAGE }}>
-                {card.value}
-              </p>
-            ) : (
-              <p className="text-[15px] font-medium leading-snug" style={{ color: T_PRIMARY }}>
-                {card.value}
-              </p>
-            )}
-            <p className="text-[10px] mt-1.5 leading-snug" style={{ color: T_MUTED }}>{card.sub}</p>
-          </div>
-        ))}
-      </div>
-      <div className="flex items-center gap-2 pb-3" style={{ borderBottom: `1px solid ${INNER_BORDER}` }}>
-        <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" style={{ color: C_SAGE }} />
-        <p className="text-[12px] font-medium" style={{ color: C_SAGE }}>
-          {converted.length} lead{converted.length !== 1 ? "s" : ""} converti{converted.length !== 1 ? "s" : ""}
-        </p>
-        <span className="text-[11px]" style={{ color: T_MUTED }}>
-          · ancienneté moyenne {avgDays ?? "—"} jour{avgDays !== 1 ? "s" : ""}
-        </span>
-      </div>
-    </div>
-  );
-}
+/* ─── Main export ─── */
+type TabKey = "tous" | "nouveau" | "en_cours" | "converti" | "archive";
 
 export default function AdminLeadsList() {
   const qc = useQueryClient();
-  const [tabFilter, setTabFilter] = useState<"tous" | LeadStatus>("tous");
+  const [tab, setTab] = useState<TabKey>("tous");
   const [search, setSearch] = useState("");
-  const [sort, setSort] = useState<SortKey>("date_desc");
+  const [sourceFilter, setSourceFilter] = useState("tous");
+  const [conseillerFilter, setConseillerFilter] = useState("tous");
+  const [dateRange, setDateRange] = useState<"tous" | "aujourd" | "7j" | "30j">("tous");
+  const [sort, setSort] = useState<"date_desc" | "date_asc" | "urgent">("date_desc");
   const [showCharts, setShowCharts] = useState(false);
   const [showNewLead, setShowNewLead] = useState(false);
-  const [chartPeriod, setChartPeriod] = useState<PeriodKey>("30j");
-  const [dateRange, setDateRange] = useState<"tous" | "aujourd" | "7j" | "30j">("tous");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
   const [page, setPage] = useState(1);
@@ -956,78 +899,51 @@ export default function AdminLeadsList() {
     catch { return new Set(); }
   });
 
-  const markAsSeen = (id: string) => {
-    setSeenIds(prev => {
-      if (prev.has(id)) return prev;
-      const next = new Set(prev);
-      next.add(id);
-      // Cap at 1000 IDs to prevent unbounded localStorage growth
-      const arr = [...next];
-      const capped = arr.length > 1000 ? arr.slice(arr.length - 1000) : arr;
-      localStorage.setItem("seen-lead-ids", JSON.stringify(capped));
-      return new Set(capped);
-    });
-  };
-  const PER_PAGE = 20;
+  const PER_PAGE = 25;
 
   const { data: leads = [], isLoading } = useQuery({ queryKey: ["leads"], queryFn: getLeads });
 
-  const handleBulkArchive = async () => {
-    const ids = [...selectedRows];
-    try {
-      await Promise.all(ids.map((id) => updateLeadStatus(id, "archive")));
-      await qc.invalidateQueries({ queryKey: ["leads"] });
-      setSelectedRows(new Set());
-      toast.success(`${ids.length} lead${ids.length > 1 ? "s" : ""} archivé${ids.length > 1 ? "s" : ""}`);
-    } catch { toast.error("Erreur lors de l'archivage"); }
+  const markAsSeen = (id: string) => {
+    setSeenIds((prev) => {
+      if (prev.has(id)) return prev;
+      const next = new Set(prev);
+      next.add(id);
+      const arr = [...next];
+      const capped = arr.length > 1000 ? arr.slice(-1000) : arr;
+      try { localStorage.setItem("seen-lead-ids", JSON.stringify(capped)); } catch {}
+      return new Set(capped);
+    });
   };
-
-  const handleBulkDelete = async () => {
-    const ids = [...selectedRows];
-    if (!confirm(`Supprimer définitivement ${ids.length} lead${ids.length > 1 ? "s" : ""} ?`)) return;
-    try {
-      await Promise.all(ids.map((id) => deleteLead(id)));
-      await qc.invalidateQueries({ queryKey: ["leads"] });
-      setSelectedRows(new Set());
-      toast.success(`${ids.length} lead${ids.length > 1 ? "s" : ""} supprimé${ids.length > 1 ? "s" : ""}`);
-    } catch { toast.error("Erreur lors de la suppression"); }
-  };
-  const chartDays = PERIODS.find((p) => p.key === chartPeriod)?.days ?? 30;
-
-  /* Trend vs previous period */
-  const { leadsInPeriod, leadsInPrev } = useMemo(() => {
-    const now = Date.now();
-    const periodMs = chartDays * 86_400_000;
-    return {
-      leadsInPeriod: leads.filter((l) => now - new Date(l.created_at).getTime() <= periodMs),
-      leadsInPrev:   leads.filter((l) => { const age = now - new Date(l.created_at).getTime(); return age > periodMs && age <= 2 * periodMs; }),
-    };
-  }, [leads, chartDays]);
-
-  function trend(curr: number, prev: number) {
-    if (prev === 0) return null;
-    return Math.round(((curr - prev) / prev) * 100);
-  }
 
   const counts = useMemo(() => ({
     tous:     leads.length,
     nouveau:  leads.filter((l) => l.status === "nouveau").length,
-    appele:   leads.filter((l) => l.status === "appele").length,
-    traite:   leads.filter((l) => l.status === "traite").length,
+    en_cours: leads.filter((l) => l.status === "appele" || l.status === "traite").length,
     converti: leads.filter((l) => l.status === "converti").length,
     archive:  leads.filter((l) => l.status === "archive").length,
   }), [leads]);
 
-  const conversionRate = leads.length === 0 ? 0 : Math.round((counts.converti / leads.length) * 100);
+  const allSources = useMemo(() => {
+    const s = new Set(leads.map((l) => getSource(l)));
+    return [...s];
+  }, [leads]);
 
   const filtered = useMemo(() => {
-    const now = Date.now();
     const rangeCutoff: Record<string, number> = {
       aujourd: 86_400_000, "7j": 7 * 86_400_000, "30j": 30 * 86_400_000,
     };
+    const now = Date.now();
     return leads
-      .filter((l) => tabFilter === "tous" || l.status === tabFilter)
+      .filter((l) => {
+        if (tab === "nouveau") return l.status === "nouveau";
+        if (tab === "en_cours") return l.status === "appele" || l.status === "traite";
+        if (tab === "converti") return l.status === "converti";
+        if (tab === "archive") return l.status === "archive";
+        return true;
+      })
       .filter((l) => dateRange === "tous" || now - new Date(l.created_at).getTime() <= rangeCutoff[dateRange])
+      .filter((l) => sourceFilter === "tous" || getSource(l) === sourceFilter)
+      .filter((l) => conseillerFilter === "tous" || l.conseiller === conseillerFilter)
       .filter((l) => {
         if (!search.trim()) return true;
         const q = search.toLowerCase();
@@ -1036,365 +952,444 @@ export default function AdminLeadsList() {
       .sort((a, b) => {
         if (sort === "date_asc") return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
         if (sort === "urgent") return (a.timing === "asap" ? 0 : 1) - (b.timing === "asap" ? 0 : 1);
-        if (sort === "score_desc") return computeScore(b).score - computeScore(a).score;
         return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
       });
-  }, [leads, tabFilter, search, sort, dateRange]);
+  }, [leads, tab, dateRange, sourceFilter, conseillerFilter, search, sort]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
   const paginated = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
   const selectedLead = selectedId ? leads.find((l) => l.id === selectedId) ?? null : null;
+  const allPageSelected = paginated.length > 0 && paginated.every((l) => selectedRows.has(l.id));
 
-  /* Reset page + selection on filter change */
   useEffect(() => {
     setPage(1);
     setSelectedRows(new Set());
-  }, [tabFilter, search, sort, dateRange]);
+  }, [tab, search, sort, dateRange, sourceFilter, conseillerFilter]);
 
-  const allPageSelected = paginated.length > 0 && paginated.every((l) => selectedRows.has(l.id));
+  const handleBulkArchive = async () => {
+    const ids = [...selectedRows];
+    try {
+      await Promise.all(ids.map((id) => updateLeadStatus(id, "archive")));
+      await qc.invalidateQueries({ queryKey: ["leads"] });
+      setSelectedRows(new Set());
+      toast.success(`${ids.length} prospect${ids.length > 1 ? "s" : ""} archivé${ids.length > 1 ? "s" : ""}`);
+    } catch { toast.error("Erreur lors de l'archivage"); }
+  };
 
-  const TABS: { key: "tous" | LeadStatus; label: string }[] = [
-    { key: "tous",     label: `Tous (${counts.tous})` },
-    { key: "nouveau",  label: `Nouveaux (${counts.nouveau})` },
-    { key: "appele",   label: `Assignés (${counts.appele})` },
-    { key: "traite",   label: `Traités (${counts.traite})` },
-    { key: "converti", label: `Convertis (${counts.converti})` },
-    { key: "archive",  label: `Archivés (${counts.archive})` },
+  const handleBulkDelete = async () => {
+    const ids = [...selectedRows];
+    if (!confirm(`Supprimer définitivement ${ids.length} prospect${ids.length > 1 ? "s" : ""} ?`)) return;
+    try {
+      await Promise.all(ids.map((id) => deleteLead(id)));
+      await qc.invalidateQueries({ queryKey: ["leads"] });
+      setSelectedRows(new Set());
+      toast.success(`${ids.length} prospect${ids.length > 1 ? "s" : ""} supprimé${ids.length > 1 ? "s" : ""}`);
+    } catch { toast.error("Erreur lors de la suppression"); }
+  };
+
+  const toTreat = useMemo(() =>
+    leads.filter((l) => l.timing === "asap" && l.status !== "converti" && l.status !== "archive"),
+  [leads]);
+
+  const sourceStats = useMemo(() => {
+    const map = new Map<string, number>();
+    leads.filter((l) => l.status !== "archive").forEach((l) => {
+      const s = getSource(l);
+      map.set(s, (map.get(s) ?? 0) + 1);
+    });
+    return [...map.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5);
+  }, [leads]);
+  const sourceTotal = sourceStats.reduce((s, [, c]) => s + c, 0);
+
+  const TABS: { key: TabKey; label: string; count: number }[] = [
+    { key: "tous",     label: "Tous",      count: counts.tous },
+    { key: "nouveau",  label: "Nouveaux",  count: counts.nouveau },
+    { key: "en_cours", label: "En cours",  count: counts.en_cours },
+    { key: "converti", label: "Convertis", count: counts.converti },
+    { key: "archive",  label: "Archivés",  count: counts.archive },
   ];
 
-  const statCards = [
-    { label: "Total leads",       value: counts.tous,       t: trend(leadsInPeriod.length, leadsInPrev.length),                                                                                          icon: Users,         color: C_BLUE,  iconBg: "hsl(215 42% 65% / 0.12)" },
-    { label: "Nouveaux leads",    value: counts.nouveau,    t: trend(leadsInPeriod.filter((l) => l.status === "nouveau").length,  leadsInPrev.filter((l) => l.status === "nouveau").length),             icon: TrendingUp,    color: C_TEAL,  iconBg: "hsl(180 32% 54% / 0.12)" },
-    { label: "Convertis",         value: counts.converti,   t: trend(leadsInPeriod.filter((l) => l.status === "converti").length, leadsInPrev.filter((l) => l.status === "converti").length),            icon: CheckCircle2,  color: C_SAGE,  iconBg: "hsl(158 32% 56% / 0.12)" },
-    { label: "Taux de conversion",value: `${conversionRate}%`, t: null,                                                                                                                                   icon: Clock,         color: C_GOLD,  iconBg: "hsl(40 50% 62% / 0.12)" },
+  const KPI = [
+    { label: "Prospects",   value: counts.tous,     icon: Users,         color: C_BLUE },
+    { label: "Nouveaux",    value: counts.nouveau,  icon: TrendingUp,    color: C_BLUE },
+    { label: "En cours",    value: counts.en_cours, icon: Clock,         color: C_TEAL },
+    { label: "Convertis",   value: counts.converti, icon: CheckCircle2,  color: C_SAGE },
   ];
+
+  const SOURCE_COLORS = [C_BLUE, C_TEAL, C_SAGE, C_MAUVE, C_GOLD];
+
+  const selectStyle = {
+    ...INPUT_STYLE,
+    padding: "0.4rem 0.75rem",
+    fontSize: "0.78rem",
+    width: "auto",
+    cursor: "pointer",
+  };
 
   return (
-    <div className="min-h-screen">
-      <div className="p-7 space-y-5">
+    <div className="h-full flex flex-col">
 
-        {/* ── Header ── */}
-        <div className="flex items-start justify-between gap-4 flex-wrap">
+      {/* ── Fixed top area ─────────────────────────────────────────────── */}
+      <div className="flex-shrink-0 px-6 pt-5 pb-0">
+
+        {/* Page header */}
+        <div className="flex items-center justify-between mb-5">
           <div>
-            <h1 className="text-2xl font-heading font-light tracking-tight" style={{ color: T_PRIMARY }}>Leads</h1>
+            <h1 className="text-[22px] font-heading font-semibold tracking-tight" style={{ color: T_PRIMARY }}>
+              Prospects
+            </h1>
             <p className="text-[13px] font-light mt-0.5" style={{ color: T_SECONDARY }}>
-              Gérez et analysez vos leads générés depuis votre site web.
+              Suivez les demandes et les prochaines actions.
             </p>
           </div>
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <a href="/" target="_blank" rel="noreferrer"
-              className="flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-medium transition-all"
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowCharts(true)}
+              className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-[12.5px] font-medium transition-all"
               style={{ background: INNER_BG, border: `1px solid ${INNER_BORDER}`, color: T_SECONDARY }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "hsl(214 55% 50% / 0.35)"; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = INNER_BORDER; }}>
-              <ExternalLink className="w-3.5 h-3.5" />Voir le site
-            </a>
-            <button onClick={() => setShowCharts(true)}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-medium transition-all"
-              style={{ background: INNER_BG, border: `1px solid ${INNER_BORDER}`, color: T_SECONDARY }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "hsl(214 55% 50% / 0.35)"; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = INNER_BORDER; }}>
-              <BarChart3 className="w-4 h-4" />Analyse
+              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "var(--at-inner-bg-hover, hsl(220 18% 93%))"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = INNER_BG; }}
+            >
+              <BarChart3 className="w-3.5 h-3.5" /> Analyse
             </button>
-            <button onClick={() => exportLeadsCSV(leads)} disabled={leads.length === 0}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-medium transition-all disabled:opacity-40"
+            <button
+              onClick={() => exportLeadsCSV(leads)}
+              disabled={leads.length === 0}
+              className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-[12.5px] font-medium transition-all disabled:opacity-40"
               style={{ background: INNER_BG, border: `1px solid ${INNER_BORDER}`, color: T_SECONDARY }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "hsl(214 55% 50% / 0.35)"; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = INNER_BORDER; }}>
-              <Download className="w-4 h-4" />Exporter
+            >
+              <Download className="w-3.5 h-3.5" /> Exporter
+            </button>
+            <button
+              onClick={() => setShowNewLead(true)}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-medium"
+              style={{ background: C_BLUE, color: "hsl(0 0% 100%)" }}
+            >
+              <Plus className="w-4 h-4" /> Nouveau prospect
             </button>
           </div>
         </div>
 
-        {/* ── Stat cards ── */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {statCards.map((s) => (
-            <div key={s.label} className="rounded-2xl p-5" style={{ ...GLASS }}>
-              <div className="flex items-start justify-between mb-3">
-                <p className="text-[12px] font-medium" style={{ color: T_SECONDARY }}>{s.label}</p>
-                <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: s.iconBg }}>
-                  <s.icon className="w-4 h-4" style={{ color: s.color }} strokeWidth={1.5} />
-                </div>
+        {/* KPI tiles */}
+        <div className="grid grid-cols-4 gap-3 mb-5">
+          {KPI.map((tile) => (
+            <div key={tile.label}
+              className="rounded-xl p-4 flex items-center gap-3"
+              style={{
+                background: "hsl(0 0% 100%)",
+                border: `1px solid ${INNER_BORDER}`,
+                boxShadow: "0 1px 3px hsl(220 60% 8% / 0.04)",
+              }}
+            >
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style={{ background: cA(C_BLUE, 0.08) }}>
+                <tile.icon className="w-4 h-4" style={{ color: tile.color }} strokeWidth={1.5} />
               </div>
-              <p className="text-3xl font-heading font-light tabular-nums" style={{ color: T_PRIMARY }}>{s.value}</p>
-              {s.t !== null ? (
-                <p className="text-[11px] font-light mt-1.5" style={{ color: s.t >= 0 ? C_SAGE : C_CORAL }}>
-                  {s.t >= 0 ? "↑" : "↓"} {Math.abs(s.t)}% vs période précédente
+              <div>
+                <p className="text-[24px] font-heading font-light tabular-nums leading-none" style={{ color: T_PRIMARY }}>
+                  {tile.value}
                 </p>
-              ) : (
-                <p className="text-[11px] font-light mt-1.5" style={{ color: T_MUTED }}>Période : {chartPeriod}</p>
-              )}
+                <p className="text-[11px] font-light mt-0.5" style={{ color: T_MUTED }}>{tile.label}</p>
+              </div>
             </div>
           ))}
         </div>
 
-        {/* ── Chart section ── */}
-        <div className="rounded-2xl" style={{ ...GLASS }}>
-          <div className="px-6 py-4 flex items-center justify-between flex-wrap gap-3" style={{ borderBottom: `1px solid ${INNER_BORDER}` }}>
-            <div className="flex items-center gap-4 flex-wrap">
-              <p className="text-[14px] font-medium" style={{ color: T_HEADING }}>Évolution des leads</p>
-              <div className="flex items-center gap-1 p-1 rounded-lg" style={{ background: INNER_BG }}>
-                {PERIODS.map((p) => (
-                  <button key={p.key} onClick={() => setChartPeriod(p.key)}
-                    className="px-2.5 py-1 rounded-md text-[11px] font-medium transition-all"
-                    style={{
-                      background: chartPeriod === p.key ? "hsl(0 0% 100%)" : "transparent",
-                      color: chartPeriod === p.key ? C_BLUE : T_SECONDARY,
-                      boxShadow: chartPeriod === p.key ? "0 1px 3px hsl(220 60% 8% / 0.08)" : "none",
-                    }}>{p.label}</button>
-                ))}
-              </div>
-            </div>
-            <div className="flex items-center gap-4 text-[11px]" style={{ color: T_SECONDARY }}>
-              <span className="flex items-center gap-1.5">
-                <span className="w-5 h-0.5 rounded inline-block" style={{ background: C_BLUE }} />Nouveaux
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="w-5 h-0.5 rounded inline-block" style={{ background: C_TEAL }} />Traités
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="w-5 inline-block" style={{ height: 1, borderTop: `2px dashed ${C_SAGE}` }} />Convertis
-              </span>
-            </div>
+        {/* Filter bar */}
+        <div className="flex items-center gap-2 mb-3 flex-wrap">
+          <div className="relative flex-1 min-w-[180px] max-w-xs">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style={{ color: T_MUTED }} />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Rechercher un prospect…"
+              className="pl-9 pr-4 outline-none"
+              style={{ ...INPUT_STYLE, padding: "0.4rem 0.875rem 0.4rem 2rem", fontSize: "0.78rem" }}
+            />
           </div>
-          <div className="grid lg:grid-cols-[1fr_300px]">
-            <div className="p-6" style={{ borderRight: `1px solid ${INNER_BORDER}` }}>
-              <MultiLineChart leads={leads} days={chartDays} />
-            </div>
-            <div className="p-6 space-y-6">
-              <div className="space-y-4">
-                {[
-                  { label: "Nouveaux / Assignés", count: counts.nouveau + counts.appele,
-                    t: trend(leadsInPeriod.filter((l) => l.status === "nouveau" || l.status === "appele").length, leadsInPrev.filter((l) => l.status === "nouveau" || l.status === "appele").length),
-                    color: C_BLUE },
-                  { label: "Traités", count: counts.traite,
-                    t: trend(leadsInPeriod.filter((l) => l.status === "traite").length, leadsInPrev.filter((l) => l.status === "traite").length),
-                    color: C_TEAL },
-                  { label: "Convertis", count: counts.converti,
-                    t: trend(leadsInPeriod.filter((l) => l.status === "converti").length, leadsInPrev.filter((l) => l.status === "converti").length),
-                    color: C_SAGE },
-                ].map((item) => (
-                  <div key={item.label} className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 rounded-full" style={{ background: item.color }} />
-                      <span className="text-[12px] font-light" style={{ color: T_SECONDARY }}>{item.label}</span>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-[14px] font-medium tabular-nums" style={{ color: T_PRIMARY }}>{item.count}</p>
-                      {item.t !== null && (
-                        <p className="text-[10px]" style={{ color: item.t >= 0 ? C_SAGE : C_CORAL }}>
-                          {item.t >= 0 ? "↑" : "↓"} {Math.abs(item.t)}%
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div style={{ borderTop: `1px solid ${INNER_BORDER}`, paddingTop: "1.25rem" }}>
-                <p className="text-[11px] font-medium uppercase tracking-wide mb-3" style={{ color: T_SECONDARY }}>Sources des leads</p>
-                <DonutChart leads={leads} />
-              </div>
-            </div>
-          </div>
+          <select value={sourceFilter} onChange={(e) => setSourceFilter(e.target.value)} style={selectStyle} className="outline-none">
+            <option value="tous">Source · Toutes</option>
+            {allSources.map((s) => <option key={s} value={s}>{s}</option>)}
+          </select>
+          <select value={conseillerFilter} onChange={(e) => setConseillerFilter(e.target.value)} style={selectStyle} className="outline-none">
+            <option value="tous">Responsable · Tous</option>
+            {Object.entries(ADVISOR_LABELS).filter(([k]) => k !== "any").map(([k, v]) => (
+              <option key={k} value={k}>{v}</option>
+            ))}
+          </select>
+          <select value={dateRange} onChange={(e) => setDateRange(e.target.value as typeof dateRange)} style={selectStyle} className="outline-none">
+            <option value="tous">Période · Toute</option>
+            <option value="aujourd">Aujourd'hui</option>
+            <option value="7j">7 derniers jours</option>
+            <option value="30j">30 derniers jours</option>
+          </select>
+          <select value={sort} onChange={(e) => setSort(e.target.value as typeof sort)} style={selectStyle} className="outline-none">
+            <option value="date_desc">Trier · Récents</option>
+            <option value="date_asc">Trier · Anciens</option>
+            <option value="urgent">Trier · Urgents</option>
+          </select>
         </div>
 
-        {/* ── Table section ── */}
-        <div className="rounded-2xl overflow-hidden" style={{ ...GLASS }}>
-          {/* Toolbar */}
-          <div className="px-5 py-4 flex items-center justify-between gap-3 flex-wrap"
-            style={{ borderBottom: `1px solid ${INNER_BORDER}` }}>
-            <div className="flex items-center gap-2 flex-wrap flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style={{ color: T_MUTED }} />
-                <input type="text" value={search} onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Rechercher un lead…"
-                  className="pl-9 pr-4 py-2 rounded-lg text-[13px] outline-none w-52"
-                  style={{ ...INPUT_STYLE }} />
-              </div>
-              <Select value={dateRange} onValueChange={(v) => setDateRange(v as typeof dateRange)}>
-                <SelectTrigger
-                  className="h-auto w-auto text-[12px] rounded-lg border-0 shadow-none ring-0 focus:ring-0 focus:ring-offset-0 min-w-[140px]"
-                  style={{ ...INPUT_STYLE, padding: "0.5rem 0.75rem" }}
-                >
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent
-                  className="min-w-[160px] rounded-xl border-0 p-1"
-                  style={{
-                    background: "hsl(0 0% 100%)",
-                    border: "1px solid var(--at-inner-border)",
-                    boxShadow: "0 4px 20px hsl(220 60% 8% / 0.12)",
-                  }}
-                >
-                  {(["tous", "aujourd", "7j", "30j"] as const).map((v, i) => (
-                    <SelectItem key={v} value={v}
-                      className="text-[12px] rounded-lg cursor-pointer"
-                      style={{ color: T_HEADING }}
-                    >
-                      {["Toute période", "Aujourd'hui", "7 derniers jours", "30 derniers jours"][i]}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Select value={sort} onValueChange={(v) => setSort(v as SortKey)}>
-                <SelectTrigger
-                  className="h-auto w-auto text-[12px] rounded-lg border-0 shadow-none ring-0 focus:ring-0 focus:ring-offset-0 min-w-[160px]"
-                  style={{ ...INPUT_STYLE, padding: "0.5rem 0.75rem" }}
-                >
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent
-                  className="min-w-[180px] rounded-xl border-0 p-1"
-                  style={{
-                    background: "hsl(0 0% 100%)",
-                    border: "1px solid var(--at-inner-border)",
-                    boxShadow: "0 4px 20px hsl(220 60% 8% / 0.12)",
-                  }}
-                >
-                  {(["date_desc", "date_asc", "urgent", "score_desc"] as const).map((v, i) => (
-                    <SelectItem key={v} value={v}
-                      className="text-[12px] rounded-lg cursor-pointer"
-                      style={{ color: T_HEADING }}
-                    >
-                      {["Récents d'abord", "Anciens d'abord", "Urgents d'abord", "Score décroissant"][i]}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <button
-              onClick={() => setSelectedRows(allPageSelected ? new Set() : new Set(paginated.map((l) => l.id)))}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-[12px] font-medium flex-shrink-0 transition-all"
-              style={{ background: INNER_BG, color: T_SECONDARY, border: `1px solid ${INNER_BORDER}` }}
-              title="Sélectionner / désélectionner la page"
-            >
-              <span className="w-3.5 h-3.5 rounded-[4px] border flex items-center justify-center"
-                style={{ borderColor: allPageSelected ? C_BLUE : T_MUTED, background: allPageSelected ? C_BLUE : "transparent" }}>
-                {allPageSelected && <span style={{ color: "white", fontSize: 8, fontWeight: 800 }}>✓</span>}
-              </span>
-              Sélectionner
-            </button>
-            <button onClick={() => setShowNewLead(true)}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-medium flex-shrink-0"
-              style={{ background: "hsl(215 42% 65% / 0.18)", color: C_BLUE, border: `1px solid hsl(215 42% 65% / 0.30)` }}>
-              + Nouveau lead
-            </button>
-          </div>
-
-          {/* Bulk actions bar */}
-          {selectedRows.size > 0 && (
-            <div className="px-5 py-2.5 flex items-center gap-3 flex-wrap"
-              style={{ background: "hsl(215 42% 65% / 0.08)", borderBottom: `1px solid hsl(215 42% 65% / 0.15)` }}>
-              <span className="text-[12px] font-medium" style={{ color: C_BLUE }}>
-                {selectedRows.size} sélectionné{selectedRows.size > 1 ? "s" : ""}
-              </span>
+        {/* Tabs + bulk bar */}
+        <div className="flex items-center justify-between pb-0">
+          <div className="flex items-center gap-0.5">
+            {TABS.map((t) => (
               <button
-                onClick={() => setSelectedRows(allPageSelected ? new Set() : new Set(paginated.map((l) => l.id)))}
-                className="text-[12px] px-2.5 py-1.5 rounded-lg transition-colors"
-                style={{ color: T_SECONDARY, border: `1px solid ${INNER_BORDER}` }}>
-                {allPageSelected ? "Tout désélectionner" : "Sélectionner la page"}
-              </button>
-              <button onClick={handleBulkArchive}
-                className="flex items-center gap-1.5 text-[12px] px-3 py-1.5 rounded-lg font-medium transition-colors"
-                style={{ background: "hsl(40 50% 62% / 0.12)", color: C_GOLD, border: `1px solid hsl(40 50% 62% / 0.25)` }}>
-                <Archive className="w-3.5 h-3.5" />Archiver
-              </button>
-              <button onClick={handleBulkDelete}
-                className="flex items-center gap-1.5 text-[12px] px-3 py-1.5 rounded-lg font-medium transition-colors"
-                style={{ background: "hsl(5 45% 56% / 0.10)", color: C_CORAL, border: `1px solid hsl(5 45% 56% / 0.25)` }}>
-                <Trash2 className="w-3.5 h-3.5" />Supprimer
-              </button>
-              <button onClick={() => setSelectedRows(new Set())}
-                className="ml-auto text-[11px] font-light transition-opacity hover:opacity-70"
-                style={{ color: T_MUTED }}>
-                Effacer la sélection
-              </button>
-            </div>
-          )}
-
-          {/* Tabs */}
-          <div className="flex items-center gap-0 px-5 overflow-x-auto" style={{ borderBottom: `1px solid ${INNER_BORDER}` }}>
-            {TABS.map((tab) => (
-              <button key={tab.key} onClick={() => setTabFilter(tab.key)}
-                className="px-4 py-3 text-[13px] font-medium whitespace-nowrap transition-all"
+                key={t.key}
+                onClick={() => setTab(t.key)}
+                className="px-3.5 py-2 rounded-lg text-[12.5px] font-medium transition-all"
                 style={{
-                  color: tabFilter === tab.key ? C_BLUE : T_SECONDARY,
-                  borderBottom: tabFilter === tab.key ? `2px solid ${C_BLUE}` : "2px solid transparent",
-                  background: "transparent",
-                }}>
-                {tab.label}
+                  background: tab === t.key ? C_BLUE : "transparent",
+                  color: tab === t.key ? "hsl(0 0% 100%)" : T_SECONDARY,
+                }}
+              >
+                {t.label}
+                <span
+                  className="ml-1.5 text-[10.5px] tabular-nums"
+                  style={{ opacity: tab === t.key ? 0.75 : 0.55 }}
+                >
+                  {t.count}
+                </span>
               </button>
             ))}
           </div>
-
-          {/* Convertis stats panel */}
-          {tabFilter === "converti" && <ConvertisHeader leads={leads} />}
-
-          {/* Card grid */}
-          {isLoading ? (
-            <div className="flex justify-center py-16">
-              <div className="w-6 h-6 rounded-full border-2 animate-spin"
-                style={{ borderColor: INNER_BORDER, borderTopColor: T_SECONDARY }} />
-            </div>
-          ) : filtered.length === 0 ? (
-            <div className="text-center py-16">
-              <p className="text-[14px] font-light" style={{ color: T_SECONDARY }}>
-                {search ? "Aucun résultat pour cette recherche" : "Aucun lead dans cette catégorie"}
-              </p>
-            </div>
-          ) : (
-            <div className="p-4 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
-              {paginated.map((lead) => (
-                <LeadCard key={lead.id} lead={lead}
-                  selected={selectedRows.has(lead.id)}
-                  seen={seenIds.has(lead.id)}
-                  onSelect={(v) => setSelectedRows((prev) => {
-                    const next = new Set(prev);
-                    v ? next.add(lead.id) : next.delete(lead.id);
-                    return next;
-                  })}
-                  onClick={() => {
-                    markAsSeen(lead.id);
-                    setSelectedId((id) => id === lead.id ? null : lead.id);
-                  }}
-                />
-              ))}
-            </div>
-          )}
-
-          {/* Pagination */}
-          {filtered.length > PER_PAGE && (
-            <div className="flex items-center justify-between px-5 py-3.5"
-              style={{ borderTop: `1px solid ${INNER_BORDER}` }}>
-              <p className="text-[12px] font-light" style={{ color: T_SECONDARY }}>
-                {(page - 1) * PER_PAGE + 1}–{Math.min(page * PER_PAGE, filtered.length)} sur {filtered.length} leads
-              </p>
-              <div className="flex items-center gap-1.5">
-                <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1}
-                  className="w-7 h-7 rounded flex items-center justify-center text-[12px] disabled:opacity-30"
-                  style={{ border: `1px solid ${INNER_BORDER}`, color: T_SECONDARY }}>‹</button>
-                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                  const p = Math.max(1, Math.min(totalPages - 4, page - 2)) + i;
-                  return (
-                    <button key={p} onClick={() => setPage(p)}
-                      className="w-7 h-7 rounded text-[12px] font-medium"
-                      style={{
-                        background: page === p ? "hsl(215 42% 65% / 0.22)" : "transparent",
-                        color: page === p ? C_BLUE : T_SECONDARY,
-                        border: page === p ? "none" : `1px solid ${INNER_BORDER}`,
-                      }}>{p}</button>
-                  );
-                })}
-                <button onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={page === totalPages}
-                  className="w-7 h-7 rounded flex items-center justify-center text-[12px] disabled:opacity-30"
-                  style={{ border: `1px solid ${INNER_BORDER}`, color: T_SECONDARY }}>›</button>
-              </div>
+          {selectedRows.size > 0 && (
+            <div className="flex items-center gap-2">
+              <span className="text-[12px]" style={{ color: T_MUTED }}>
+                {selectedRows.size} sélectionné{selectedRows.size > 1 ? "s" : ""}
+              </span>
+              <button
+                onClick={handleBulkArchive}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-medium"
+                style={{ color: C_GOLD, background: cA(C_GOLD, 0.10), border: `1px solid ${cA(C_GOLD, 0.22)}` }}
+              >
+                <Archive className="w-3.5 h-3.5" /> Archiver
+              </button>
+              <button
+                onClick={handleBulkDelete}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-medium"
+                style={{ color: C_CORAL, background: cA(C_CORAL, 0.08), border: `1px solid ${cA(C_CORAL, 0.22)}` }}
+              >
+                <Trash2 className="w-3.5 h-3.5" /> Supprimer
+              </button>
+              <button onClick={() => setSelectedRows(new Set())} className="p-1.5 rounded-lg" style={{ color: T_MUTED }}>
+                <X className="w-3.5 h-3.5" />
+              </button>
             </div>
           )}
         </div>
       </div>
 
-      {selectedLead && <LeadDetailPanel lead={selectedLead} onClose={() => setSelectedId(null)} />}
+      {/* ── Content area ───────────────────────────────────────────────── */}
+      <div className="flex-1 min-h-0 flex" style={{ borderTop: `1px solid ${INNER_BORDER}` }}>
+
+        {/* Table + bottom widgets */}
+        <div className="flex-1 overflow-auto">
+          {isLoading ? (
+            <div className="flex items-center justify-center py-24">
+              <div className="w-6 h-6 rounded-full border-2 animate-spin"
+                style={{ borderColor: "hsl(220 20% 88%)", borderTopColor: C_BLUE }} />
+            </div>
+          ) : (
+            <table className="w-full border-collapse">
+              <thead>
+                <tr style={{ background: INNER_BG, borderBottom: `1px solid ${INNER_BORDER}` }}>
+                  <th className="px-4 py-3 w-8">
+                    <div
+                      className="w-4 h-4 rounded-[4px] flex items-center justify-center border cursor-pointer transition-all"
+                      style={{
+                        borderColor: allPageSelected ? C_BLUE : INNER_BORDER,
+                        background: allPageSelected ? C_BLUE : "transparent",
+                      }}
+                      onClick={() => setSelectedRows(
+                        allPageSelected ? new Set() : new Set(paginated.map((l) => l.id))
+                      )}
+                    >
+                      {allPageSelected && <span style={{ color: "white", fontSize: 7, fontWeight: 900, lineHeight: 1 }}>✓</span>}
+                    </div>
+                  </th>
+                  {["Prospect", "Demande", "Source", "Statut", "Responsable", "Reçu le", "Disponibilité", ""].map((h) => (
+                    <th key={h} className="px-3 py-3 text-left text-[10.5px] font-semibold uppercase tracking-wide"
+                      style={{ color: T_LABEL, whiteSpace: "nowrap" }}>
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {paginated.length === 0 ? (
+                  <tr>
+                    <td colSpan={9} className="py-16 text-center">
+                      <p className="text-[14px] font-light" style={{ color: T_MUTED }}>Aucun prospect trouvé</p>
+                    </td>
+                  </tr>
+                ) : (
+                  paginated.map((lead, i) => (
+                    <LeadRow
+                      key={lead.id}
+                      lead={lead}
+                      isSelected={selectedRows.has(lead.id)}
+                      isActive={selectedId === lead.id}
+                      isUnseen={lead.status === "nouveau" && !seenIds.has(lead.id)}
+                      onSelect={(v) => setSelectedRows((prev) => {
+                        const next = new Set(prev);
+                        if (v) next.add(lead.id); else next.delete(lead.id);
+                        return next;
+                      })}
+                      onClick={() => {
+                        if (selectedId === lead.id) { setSelectedId(null); return; }
+                        setSelectedId(lead.id);
+                        markAsSeen(lead.id);
+                      }}
+                      isLast={i === paginated.length - 1}
+                    />
+                  ))
+                )}
+              </tbody>
+            </table>
+          )}
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between px-5 py-3" style={{ borderTop: `1px solid ${INNER_BORDER}` }}>
+              <p className="text-[12px]" style={{ color: T_MUTED }}>
+                {filtered.length} prospect{filtered.length !== 1 ? "s" : ""} · Page {page}/{totalPages}
+              </p>
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                  className="px-3 py-1.5 rounded-lg text-[12px] disabled:opacity-40"
+                  style={{ background: INNER_BG, border: `1px solid ${INNER_BORDER}`, color: T_SECONDARY }}
+                >
+                  Précédent
+                </button>
+                <button
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={page === totalPages}
+                  className="px-3 py-1.5 rounded-lg text-[12px] disabled:opacity-40"
+                  style={{ background: INNER_BG, border: `1px solid ${INNER_BORDER}`, color: T_SECONDARY }}
+                >
+                  Suivant
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Bottom widgets */}
+          <div className="grid grid-cols-2 gap-5 px-5 py-5" style={{ borderTop: `1px solid ${INNER_BORDER}` }}>
+
+            {/* À traiter aujourd'hui */}
+            <div className="rounded-xl overflow-hidden" style={{ background: "hsl(0 0% 100%)", border: `1px solid ${INNER_BORDER}` }}>
+              <div className="px-4 py-3 flex items-center gap-2"
+                style={{ borderBottom: `1px solid ${INNER_BORDER}`, background: INNER_BG }}>
+                <Clock className="w-3.5 h-3.5" style={{ color: C_CORAL }} />
+                <p className="text-[12px] font-medium" style={{ color: T_HEADING }}>
+                  À traiter aujourd'hui
+                </p>
+                <span className="ml-auto text-[11px] tabular-nums px-2 py-0.5 rounded-full"
+                  style={{ background: cA(C_CORAL, 0.10), color: C_CORAL }}>
+                  {toTreat.length}
+                </span>
+              </div>
+              {toTreat.length === 0 ? (
+                <div className="px-4 py-6 text-center">
+                  <CheckCircle2 className="w-7 h-7 mx-auto mb-2" style={{ color: C_SAGE }} />
+                  <p className="text-[12px]" style={{ color: T_MUTED }}>Aucun prospect urgent</p>
+                </div>
+              ) : (
+                <div>
+                  {toTreat.slice(0, 5).map((l, i) => (
+                    <div
+                      key={l.id}
+                      className="px-4 py-3 flex items-center justify-between gap-3 cursor-pointer"
+                      style={{ borderTop: i === 0 ? "none" : `1px solid ${INNER_BORDER}` }}
+                      onClick={() => { setSelectedId(l.id); markAsSeen(l.id); }}
+                      onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = INNER_BG; }}
+                      onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}
+                    >
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[13px] font-medium truncate" style={{ color: T_PRIMARY }}>{l.nom}</p>
+                        <p className="text-[11px] font-light truncate" style={{ color: T_MUTED }}>{l.sujet ?? getSource(l)}</p>
+                      </div>
+                      <div className="flex items-center gap-1.5 flex-shrink-0">
+                        {l.telephone && (
+                          <a href={`tel:${l.telephone}`} onClick={(e) => e.stopPropagation()}
+                            className="p-1 rounded-md transition-colors"
+                            style={{ color: C_BLUE }}
+                            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = cA(C_BLUE, 0.10); }}
+                            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
+                            <Phone className="w-3.5 h-3.5" />
+                          </a>
+                        )}
+                        <a href={`mailto:${l.email}`} onClick={(e) => e.stopPropagation()}
+                          className="p-1 rounded-md transition-colors"
+                          style={{ color: C_BLUE }}
+                          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = cA(C_BLUE, 0.10); }}
+                          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
+                          <Mail className="w-3.5 h-3.5" />
+                        </a>
+                      </div>
+                    </div>
+                  ))}
+                  {toTreat.length > 5 && (
+                    <p className="px-4 py-2 text-[11px]" style={{ color: T_MUTED, borderTop: `1px solid ${INNER_BORDER}` }}>
+                      +{toTreat.length - 5} autres urgents
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Sources des demandes */}
+            <div className="rounded-xl overflow-hidden" style={{ background: "hsl(0 0% 100%)", border: `1px solid ${INNER_BORDER}` }}>
+              <div className="px-4 py-3 flex items-center justify-between"
+                style={{ borderBottom: `1px solid ${INNER_BORDER}`, background: INNER_BG }}>
+                <p className="text-[12px] font-medium" style={{ color: T_HEADING }}>Sources des demandes</p>
+                <span className="text-[11px]" style={{ color: T_MUTED }}>actifs</span>
+              </div>
+              <div className="px-4 py-4 space-y-3">
+                {sourceStats.length === 0 ? (
+                  <p className="text-[12px] text-center py-4" style={{ color: T_MUTED }}>Aucune donnée</p>
+                ) : (
+                  sourceStats.map(([label, count], i) => {
+                    const pct = sourceTotal === 0 ? 0 : Math.round((count / sourceTotal) * 100);
+                    return (
+                      <div key={label}>
+                        <div className="flex items-center justify-between mb-1">
+                          <div className="flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full flex-shrink-0"
+                              style={{ background: SOURCE_COLORS[i % SOURCE_COLORS.length] }} />
+                            <span className="text-[12px]" style={{ color: T_SECONDARY }}>{label}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-[12px] font-medium tabular-nums" style={{ color: T_PRIMARY }}>{count}</span>
+                            <span className="text-[11px] w-9 text-right" style={{ color: T_MUTED }}>{pct}%</span>
+                          </div>
+                        </div>
+                        <div className="h-1.5 rounded-full overflow-hidden" style={{ background: INNER_BG }}>
+                          <div className="h-full rounded-full transition-all"
+                            style={{ width: `${pct}%`, background: SOURCE_COLORS[i % SOURCE_COLORS.length] }} />
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Side panel */}
+        {selectedLead && (
+          <LeadSidePanel
+            lead={selectedLead}
+            onClose={() => setSelectedId(null)}
+          />
+        )}
+      </div>
+
       {showCharts && <ChartsModal leads={leads} onClose={() => setShowCharts(false)} />}
       {showNewLead && <NewLeadModal onClose={() => setShowNewLead(false)} />}
     </div>
