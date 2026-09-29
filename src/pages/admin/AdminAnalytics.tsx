@@ -854,7 +854,7 @@ export default function AdminAnalytics() {
     <div className="min-h-screen pb-16">
 
       {/* ── Header ── */}
-      <div className="px-8 pt-10 pb-6 max-w-7xl mx-auto">
+      <div className="px-6 pt-6 pb-5">
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
             <h1 className="text-[26px] font-heading font-light tracking-tight mb-1" style={{ color: T_PRIMARY }}>
@@ -901,7 +901,7 @@ export default function AdminAnalytics() {
         </div>
       </div>
 
-      <div className="px-8 max-w-7xl mx-auto space-y-5">
+      <div className="px-6 pb-8 space-y-5">
 
         {/* ── ROW 1 · 4 KPI cards ── */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">

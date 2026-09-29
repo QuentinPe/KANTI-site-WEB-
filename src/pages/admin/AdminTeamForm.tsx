@@ -124,7 +124,7 @@ export default function AdminTeamForm() {
   const labelCls = "block text-[11px] font-medium tracking-wide uppercase mb-1.5";
 
   return (
-    <div className="p-8 max-w-2xl mx-auto">
+    <div className="px-6 py-6 max-w-4xl">
       <button
         onClick={() => navigate("/admin/equipe")}
         className="flex items-center gap-2 text-[13px] font-medium mb-6 transition-opacity hover:opacity-70"

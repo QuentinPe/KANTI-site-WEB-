@@ -159,7 +159,7 @@ export default function AdminResourceForm() {
   }
 
   return (
-    <div className="p-8 max-w-2xl mx-auto">
+    <div className="px-6 py-6 max-w-4xl">
       <div className="flex items-center gap-4 mb-8">
         <Link to="/admin/ressources" className="p-2 rounded-lg transition-all duration-150"
           style={{ color: T_SECONDARY }}

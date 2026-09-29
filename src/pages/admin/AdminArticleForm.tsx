@@ -273,7 +273,7 @@ export default function AdminArticleForm() {
 
   if (isEdit && !existing && !articlesLoading) {
     return (
-      <div className="p-8 max-w-2xl mx-auto">
+      <div className="px-6 py-6">
         <p className="text-[14px]" style={{ color: C_CORAL }}>Article introuvable.</p>
         <Link to="/admin/articles" className="mt-4 block text-[13px] underline" style={{ color: C_BLUE }}>← Retour</Link>
       </div>
@@ -282,9 +282,9 @@ export default function AdminArticleForm() {
 
   return (
     <div
-      className={fullscreen ? "fixed inset-0 overflow-y-auto z-[400]" : "p-8 max-w-3xl mx-auto"}
+      className={fullscreen ? "fixed inset-0 overflow-y-auto z-[400]" : "px-6 py-6 max-w-4xl"}
     >
-    <div className={fullscreen ? "p-8 max-w-5xl mx-auto" : ""}>
+    <div className={fullscreen ? "px-8 py-8 max-w-5xl mx-auto" : ""}>
       {/* Header */}
       <div className="flex items-center gap-4 mb-8">
         <Link

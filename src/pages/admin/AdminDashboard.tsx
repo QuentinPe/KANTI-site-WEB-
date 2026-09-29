@@ -430,7 +430,7 @@ export default function AdminDashboard() {
     <div className="min-h-screen">
 
       {/* ── Page header ── */}
-      <div className="px-8 pt-8 pb-6 max-w-6xl mx-auto">
+      <div className="px-6 pt-6 pb-5">
         <div className="flex items-start justify-between gap-4">
           <div>
             <h1
@@ -478,7 +478,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* ── Main content ── */}
-      <div className="px-8 pb-10 max-w-6xl mx-auto space-y-5">
+      <div className="px-6 pb-8 space-y-5">
 
         {/* ── 4 KPI cards ── */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">

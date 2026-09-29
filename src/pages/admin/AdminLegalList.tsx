@@ -26,7 +26,7 @@ export default function AdminLegalList() {
   };
 
   return (
-    <div className="p-8 max-w-4xl mx-auto">
+    <div className="p-6">
       <div className="flex items-center gap-2.5 mb-2">
         <Scale className="w-5 h-5" style={{ color: C_BLUE }} />
         <h1 className="text-2xl font-heading font-light tracking-tight" style={{ color: T_PRIMARY }}>

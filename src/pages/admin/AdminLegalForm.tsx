@@ -64,7 +64,7 @@ export default function AdminLegalForm() {
   const labelCls = "block text-[11px] font-medium tracking-wide uppercase mb-1.5";
 
   return (
-    <div className="p-8 max-w-4xl mx-auto">
+    <div className="p-6">
       <button
         onClick={() => navigate("/admin/legal")}
         className="flex items-center gap-2 text-[13px] font-medium mb-6 transition-opacity hover:opacity-70"

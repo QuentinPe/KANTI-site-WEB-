@@ -51,7 +51,7 @@ export default function AdminPagesMaintenance() {
   };
 
   return (
-    <div className="p-8 max-w-3xl">
+    <div className="p-6">
       <div className="mb-8">
         <p className="text-[10px] tracking-[0.28em] uppercase font-medium text-foreground/40 mb-1">Admin · Site</p>
         <h1 className="text-2xl font-heading font-light text-foreground tracking-tight mb-2">
