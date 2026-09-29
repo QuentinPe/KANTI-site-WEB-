@@ -184,8 +184,8 @@
       min-height: auto !important;
     }
 
-    /* Reserve space for the sticky CTA at the bottom of every page */
-    main { padding-bottom: 96px; }
+    /* Reserve space for the sticky CTA at the bottom of every page (public site only) */
+    main:not([data-admin-main]) { padding-bottom: 96px; }
   }
 }
 

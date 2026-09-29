@@ -317,16 +317,20 @@ function AdminLayoutInner() {
         </div>
       )}
 
-      {/* Content area */}
-      <div className="flex-1 flex flex-col min-h-0">
+      {/* Content area — CSS Grid gives main an explicit 1fr height with no min-h ambiguity */}
+      <div
+        className="flex-1"
+        style={{ display: "grid", gridTemplateRows: "auto 1fr", minWidth: 0 }}
+      >
         <TopBar
           newLeads={newLeadsCount}
           userEmail={user.email ?? undefined}
           onMenuToggle={() => setMobileOpen(true)}
         />
         <main
-          className="flex-1 min-h-0 overflow-y-auto"
-          style={{ background: "var(--at-main-bg)" }}
+          data-admin-main
+          className="overflow-y-auto"
+          style={{ background: "var(--at-main-bg)", minHeight: 0 }}
           aria-busy="false"
         >
           <Outlet />
