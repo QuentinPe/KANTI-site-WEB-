@@ -318,14 +318,14 @@ function AdminLayoutInner() {
       )}
 
       {/* Content area */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col min-h-0">
         <TopBar
           newLeads={newLeadsCount}
           userEmail={user.email ?? undefined}
           onMenuToggle={() => setMobileOpen(true)}
         />
         <main
-          className="flex-1 min-h-0 overflow-auto"
+          className="flex-1 min-h-0 overflow-y-auto"
           style={{ background: "var(--at-main-bg)" }}
           aria-busy="false"
         >
